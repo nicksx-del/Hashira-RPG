@@ -1153,10 +1153,479 @@ window.generateShop = function () {
     }
 };
 
-// Init Tools logic if elements verify
-setTimeout(() => {
-    if (document.getElementById('wishlistInput') && charData.wishlist) {
-        document.getElementById('wishlistInput').value = charData.wishlist;
+// --- NEW INVENTORY LOGIC (LIST SYSTEM) ---
+
+let currentFilter = 'all';
+let currentSearch = '';
+let selectedItemIdx = -1;
+
+window.renderInventory = function () {
+    const grid = document.getElementById('inventoryGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    let totalWeight = 0;
+    const maxLoad = (charData.attributes.str || 0) * 15;
+
+    // Filter Items
+    const filtered = charData.inventory.map((item, idx) => ({ ...item, originalIdx: idx })).filter(item => {
+        if (currentSearch && !item.name.toLowerCase().includes(currentSearch.toLowerCase())) return false;
+        if (currentFilter === 'all') return true;
+        if (currentFilter === 'weapon' && item.type === 'weapon') return true;
+        if (currentFilter === 'armor' && item.type === 'armor') return true;
+        if (currentFilter === 'consumable' && item.type !== 'weapon' && item.type !== 'armor') return true;
+        return false;
+    });
+
+    // Render LIST Rows
+    filtered.forEach(item => {
+        const wVal = parseFloat(String(item.weight || "0").replace(/[^\d\.]/g, '')) || 0;
+        totalWeight += wVal;
+
+        const isSelected = item.originalIdx === selectedItemIdx;
+        let icon = 'box';
+        if (item.type === 'weapon') icon = 'sword';
+        if (item.type === 'armor') icon = 'shield';
+        if (item.type === 'consumable') icon = 'flask-conical';
+
+        const rarity = item.rarity || 'Comum';
+        const isRare = rarity === 'Raro' || rarity === 'Épico';
+        const tagClass = rarity === 'Raro' ? 'tag-rare' : (rarity === 'Épico' ? 'tag-epic' : '');
+
+        grid.innerHTML += `
+        <div class="inv-row-card ${isSelected ? 'selected' : ''} ${item.equipped ? 'equipped' : ''}" onclick="selectInventoryItem(${item.originalIdx})">
+            <div class="inv-row-icon" style="color:${isRare ? '#00b4d8' : '#888'}">
+                <i data-lucide="${icon}"></i>
+            </div>
+            <div style="flex:1;">
+                <div style="font-weight:bold; font-family:var(--font-display); font-size:1.0rem; color:white;">${item.name}</div>
+                <div style="font-size:0.75rem; color:#666;">${item.type?.toUpperCase() || 'ITEM'} • ${item.weight || '0kg'}</div>
+            </div>
+            <div class="inv-tags">
+                ${item.equipped ? '<span class="inv-tag" style="color:#00ffaa; border-color:rgba(0,255,170,0.3); background:rgba(0,255,170,0.1)">EQUIPADO</span>' : ''}
+                <span class="inv-tag ${tagClass}">${rarity}</span>
+            </div>
+        </div>`;
+    });
+
+    // Update Capacity
+    const capBar = document.getElementById('capacityBar');
+    const capText = document.getElementById('capacityText');
+    if (capBar && capText) {
+        const pct = Math.min(100, (totalWeight / maxLoad) * 100);
+        capBar.style.width = pct + "%";
+        capBar.style.background = pct > 90 ? '#d90429' : (pct > 75 ? '#ffaa00' : '#00ffaa');
+        capText.innerText = `${totalWeight.toFixed(1)} / ${maxLoad} kg`;
     }
-    if (document.getElementById('shopList')) generateShop();
-}, 500);
+
+    // Render Details
+    renderDetailPanel();
+    renderEquippedSlots();
+
+    if (window.lucide) window.lucide.createIcons();
+};
+
+window.setFilter = function (filter, el) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    renderInventory();
+};
+
+window.filterInventory = function (val) {
+    currentSearch = val;
+    renderInventory();
+};
+
+window.selectInventoryItem = function (idx) {
+    selectedItemIdx = idx;
+    renderInventory(); // Re-render to update selection highlight
+};
+
+window.renderDetailPanel = function () {
+    const container = document.getElementById('itemDetailContainer');
+    const empty = document.getElementById('itemDetailEmpty');
+
+    if (selectedItemIdx === -1 || !charData.inventory[selectedItemIdx]) {
+        container.style.display = 'none';
+        empty.style.display = 'flex';
+        return;
+    }
+
+    const item = charData.inventory[selectedItemIdx];
+    container.style.display = 'flex';
+    empty.style.display = 'none';
+
+    const rarity = item.rarity || 'Comum';
+    const rarityColor = rarity === 'Raro' ? '#00b4d8' : (rarity === 'Épico' ? '#9d4edd' : '#ccc');
+    let icon = 'box';
+    if (item.type === 'weapon') icon = 'sword';
+    if (item.type === 'armor') icon = 'shield';
+    if (item.type === 'consumable') icon = 'flask-conical';
+
+    container.innerHTML = `
+        <div class="inv-hero">
+            <span style="background:#1a3a5a; color:#4cc9f0; padding:4px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; text-transform:uppercase;">${item.type || 'Item'}</span>
+            <div class="inv-big-icon" style="color:${rarityColor}; border-color:${rarityColor}; box-shadow: 0 0 20px ${rarityColor}40;">
+                <i data-lucide="${icon}"></i>
+            </div>
+            <h2 style="margin:0; font-family:var(--font-display); line-height:1.2;">${item.name}</h2>
+            <div style="color:${rarityColor}; font-size:0.8rem; margin-top:5px; text-transform:uppercase; letter-spacing:1px;">${rarity}</div>
+        </div>
+        
+        <div class="abil-stats-grid"> <!-- Reusing stats grid from abilities -->
+            <div class="stat-box">
+                <div class="sb-label">Peso</div>
+                <div class="sb-val">${item.weight || '0'}</div>
+            </div>
+            <div class="stat-box">
+                <div class="sb-label">Valor</div>
+                <div class="sb-val" style="color:#ffaa00;">¥${item.value || '100'}</div>
+            </div>
+            ${item.dmg ? `
+            <div class="stat-box">
+                <div class="sb-label">Dano</div>
+                <div class="sb-val" style="color:#d90429;">${item.dmg}</div>
+            </div>` : ''}
+            ${item.ac ? `
+            <div class="stat-box">
+                <div class="sb-label">Defesa</div>
+                <div class="sb-val" style="color:#00ffaa;">${item.ac}</div>
+            </div>` : ''}
+        </div>
+        
+        <div style="padding: 0 1.5rem 1.5rem; flex:1; display:flex; flex-direction:column;">
+            <h4 style="color:#888; font-size:0.8rem; text-transform:uppercase; margin-bottom:10px;">Descrição Detalhada</h4>
+            <p style="color:#ccc; line-height:1.6; font-size:0.9rem;">
+                ${item.desc || 'Sem descrição.'}
+            </p>
+            
+            <div style="margin-top:auto; display: grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                 ${(item.type === 'weapon' || item.type === 'armor') ?
+            `<button class="upgrade-btn" onclick="toggleEquip(${selectedItemIdx})">${item.equipped ? 'Desequipar' : 'Equipar'}</button>` :
+            `<button class="upgrade-btn" onclick="console.log('Use')">Usar</button>`
+        }
+                <button class="upgrade-btn" style="background:#d90429;" onclick="removeInvItem(${selectedItemIdx})">Descartar</button>
+            </div>
+        </div>
+    `;
+
+    if (window.lucide) window.lucide.createIcons();
+};
+
+window.renderEquippedSlots = function () {
+    // Clear all first
+    ['head', 'torso', 'hands', 'legs', 'weapon'].forEach(s => {
+        const el = document.getElementById(`slot-${s}`);
+        if (el) {
+            el.innerHTML = `<i data-lucide="${getSlotIcon(s)}"></i>`;
+            el.classList.remove('active');
+        }
+    });
+
+    // Find equipped items
+    charData.inventory.filter(i => i.equipped).forEach(item => {
+        let slotId = '';
+        if (item.type === 'weapon') slotId = 'weapon';
+        else if (item.type === 'armor') {
+            if (item.name.toLowerCase().includes('capacete')) slotId = 'head';
+            else if (item.name.toLowerCase().includes('bota')) slotId = 'legs';
+            else if (item.name.toLowerCase().includes('luva')) slotId = 'hands';
+            else slotId = 'torso';
+        }
+
+        const el = document.getElementById(`slot-${slotId}`);
+        if (el) {
+            el.classList.add('active'); // Highlight
+        }
+    });
+};
+
+function getSlotIcon(s) {
+    if (s === 'weapon') return 'sword';
+    if (s === 'head') return 'smile';
+    if (s === 'torso') return 'shirt';
+    if (s === 'hands') return 'hand';
+    if (s === 'legs') return 'footprints';
+    return 'gem';
+}
+
+
+// --- OVERRIDES FOR NEW SIDEBAR ---
+
+window.updateBars = function () {
+    // Current Values
+    if (document.getElementById('hpCurrent')) document.getElementById('hpCurrent').innerText = currentHP;
+    if (document.getElementById('peCurrent')) document.getElementById('peCurrent').innerText = currentPE;
+
+    // Max Values Display (New Sidebar)
+    if (document.getElementById('hpMaxDisp')) document.getElementById('hpMaxDisp').innerText = maxHP;
+    if (document.getElementById('peMaxDisp')) document.getElementById('peMaxDisp').innerText = maxPE;
+
+    // Inputs
+    if (document.getElementById('hpMaxInput')) document.getElementById('hpMaxInput').value = maxHP;
+    if (document.getElementById('peMaxInput')) document.getElementById('peMaxInput').value = maxPE;
+
+    updateSidebarInfo(); // Trigger the extra details like Weapon Name
+};
+
+window.updateSidebarInfo = function () {
+    // Basic Info
+    if (document.getElementById('dispName')) document.getElementById('dispName').innerText = charData.name || "Caçador";
+    if (document.getElementById('dispRace')) document.getElementById('dispRace').innerText = charData.race || "Humano";
+
+    // Breathing
+    if (document.getElementById('dispClass')) {
+        const style = charData.breathingStyle ? charData.breathingStyle.name : "Nenhuma";
+        document.getElementById('dispClass').innerHTML = style;
+    }
+
+    // Equipped Weapon
+    let weaponName = "Desarmado";
+    const weapon = charData.inventory.find(i => i.equipped && i.type === 'weapon');
+    if (weapon) weaponName = weapon.name;
+    if (document.getElementById('dispWeapon')) document.getElementById('dispWeapon').innerText = weaponName;
+
+    // Rank Badge logic
+    updateRankDisplay();
+};
+
+window.updateRankDisplay = function () {
+    let rankName = "Mizunoto";
+    for (let i = RANKS.length - 1; i >= 0; i--) {
+        if (charData.level >= RANKS[i].min) {
+            rankName = RANKS[i].name.split(' ')[0]; // Just first word for badge
+            break;
+        }
+    }
+    if (document.getElementById('dispRankBadge')) document.getElementById('dispRankBadge').innerText = rankName;
+};
+
+// --- PREMIUM MODAL LOGIC ---
+let modalFilter = 'weapon';
+let modalSearch = '';
+
+window.populateItemModal = function () {
+    modalFilter = 'weapon'; // Reset
+    renderModalItems();
+}
+
+window.filterModal = function (cat, el) {
+    modalFilter = cat;
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    renderModalItems();
+}
+
+window.searchModal = function (val) {
+    modalSearch = val;
+    renderModalItems();
+}
+
+// Extended DB for Display
+const FULL_ITEMS_DB = [
+    // Weapons
+    ...ITEMS_DB.weapons.map(i => ({ ...i, cat: 'weapon', rarity: 'Comum' })),
+    // Armor
+    ...ITEMS_DB.armor.map(i => ({ ...i, cat: 'armor', rarity: 'Comum' })),
+    // Add Consumables
+    { name: "Semente de Cura", type: "consumable", weight: "0.1 kg", desc: "Recupera 1d4 PV.", cat: 'consumable', rarity: 'Comum' },
+    { name: "Chá de Glicínia", type: "consumable", weight: "0.2 kg", desc: "Cura venenos menores.", cat: 'consumable', rarity: 'Incomum' },
+    { name: "Onigiri", type: "consumable", weight: "0.1 kg", desc: "Restaura um pouco de vigor.", cat: 'consumable', rarity: 'Comum' },
+    // Misc
+    { name: "Corda (15m)", type: "item", weight: "1 kg", desc: "Corda resistente.", cat: 'misc', rarity: 'Comum' },
+    { name: "Lanterna", type: "item", weight: "0.5 kg", desc: "Ilumina 10m.", cat: 'misc', rarity: 'Comum' },
+    { name: "Minério Carmesim", type: "item", weight: "2 kg", desc: "Material para forja.", cat: 'misc', rarity: 'Raro' }
+];
+
+window.renderModalItems = function () {
+    const grid = document.getElementById('pickerGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    FULL_ITEMS_DB.filter(item => {
+        if (modalFilter && item.cat !== modalFilter) return false;
+        if (modalSearch && !item.name.toLowerCase().includes(modalSearch.toLowerCase())) return false;
+        return true;
+    }).forEach(item => {
+
+        let icon = 'box';
+        if (item.cat === 'weapon') icon = 'sword';
+        if (item.cat === 'armor') icon = 'shield';
+        if (item.cat === 'consumable') icon = 'flask-conical';
+
+        grid.innerHTML += `
+        <div class="picker-card" onclick='addItem(${JSON.stringify(item)})'>
+            <div class="picker-icon"><i data-lucide="${icon}"></i></div>
+            <div class="picker-name">${item.name}</div>
+            <div class="picker-sub">${item.dmg || item.ac || item.weight}</div>
+        </div>`;
+    });
+
+    if (window.lucide) window.lucide.createIcons();
+}
+
+// --- NEW ABILITY LOGIC ---
+let abilFilter = 'all';
+let abilSearch = '';
+let selectedAbilIdx = -1;
+
+window.renderAbilitiesList = function () {
+    const container = document.getElementById('abilitiesList');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // Combine custom and built-in for display
+    let allAbils = [...(charData.abilities || [])];
+    // Add dummy Breathing Forms if none exist for demo
+    if (allAbils.length === 0 && charData.breathingStyle) {
+        allAbils.push({
+            name: "Ichi no kata: Minamo giri",
+            desc: "Um corte horizontal poderoso.",
+            type: "breath",
+            cost: "2 PE",
+            cd: "1 Turno",
+            dmg: "1d8 + AGI",
+            level: 1
+        });
+        allAbils.push({
+            name: "Concentração Total",
+            desc: "Aumenta atributos físicos.",
+            type: "passive",
+            cost: "Passivo",
+            level: "Max"
+        });
+    }
+
+    allAbils.forEach((abil, idx) => {
+        // Filter logic here if needed
+        if (abilFilter !== 'all' && abil.type !== abilFilter) return;
+        if (abilSearch && !abil.name.toLowerCase().includes(abilSearch.toLowerCase())) return;
+
+        const isSelected = idx === selectedAbilIdx;
+        const typeLabel = abil.type === 'passive' ? 'PASSIVA' : 'ATIVA';
+        const tagClass = abil.type === 'passive' ? 'tag-passive' : 'tag-active';
+        const icon = abil.type === 'breath' ? 'wind' : 'zap';
+
+        container.innerHTML += `
+        <div class="abil-card ${isSelected ? 'selected' : ''}" onclick="selectAbility(${idx})">
+            <div class="abil-icon"><i data-lucide="${icon}"></i></div>
+            <div style="flex:1;">
+                <div style="font-weight:bold; font-family:var(--font-display); font-size:1.1rem; margin-bottom:4px;">${abil.name}</div>
+                <div style="font-size:0.8rem; color:#888; display:flex; gap:10px;">
+                    <span><i data-lucide="zap" style="width:12px; display:inline-block; vertical-align:middle;"></i> ${abil.cost || '-'}</span>
+                    <span><i data-lucide="clock" style="width:12px; display:inline-block; vertical-align:middle;"></i> ${abil.cd || '-'}</span>
+                </div>
+                <div style="font-size:0.8rem; color:#666; margin-top:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    ${abil.desc}
+                </div>
+            </div>
+            <div class="abil-tags">
+                <span class="tag ${tagClass}">${typeLabel}</span>
+                <span class="tag" style="background:#333; color:#ccc;">Nv ${abil.level || 1}</span>
+            </div>
+        </div>
+        `;
+    });
+
+    renderAbilityDetail(allAbils);
+    if (window.lucide) window.lucide.createIcons();
+};
+
+window.selectAbility = function (idx) {
+    selectedAbilIdx = idx;
+    renderAbilitiesList(); // Re-render to update selection
+};
+
+window.setAbilFilter = function (filter, el) {
+    abilFilter = filter;
+    document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+    if (el) el.classList.add('active');
+    renderAbilitiesList();
+}
+
+window.filterAbilities = function (val) {
+    abilSearch = val;
+    renderAbilitiesList();
+}
+
+window.renderAbilityDetail = function (list) {
+    const container = document.getElementById('abilityDetailContainer');
+    const empty = document.getElementById('abilityDetailEmpty');
+
+    if (selectedAbilIdx === -1 || !list[selectedAbilIdx]) {
+        if (container) container.style.display = 'none';
+        if (empty) empty.style.display = 'flex';
+        return;
+    }
+
+    const abil = list[selectedAbilIdx];
+    if (container) container.style.display = 'flex';
+    if (empty) empty.style.display = 'none';
+
+    container.innerHTML = `
+        <div class="abil-hero">
+            <span style="background:#1a3a5a; color:#4cc9f0; padding:4px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; text-transform:uppercase;">${charData.breathingStyle ? charData.breathingStyle.name : 'Técnica'}</span>
+            <div class="abil-big-icon">
+                <i data-lucide="${abil.type === 'breath' ? 'wind' : 'zap'}" size="40"></i>
+            </div>
+            <h2 style="margin:0; font-family:var(--font-display); line-height:1.2;">${abil.name}</h2>
+            <div style="color:#4cc9f0; font-size:0.8rem; margin-top:5px; text-transform:uppercase; letter-spacing:1px;">Forma de Combate</div>
+        </div>
+        
+        <div class="abil-stats-grid">
+            <div class="stat-box">
+                <div class="sb-label">Custo</div>
+                <div class="sb-val" style="color:#4cc9f0;">${abil.cost || '0'}</div>
+            </div>
+            <div class="stat-box">
+                <div class="sb-label">Recarga</div>
+                <div class="sb-val">${abil.cd || '-'}</div>
+            </div>
+            <div class="stat-box">
+                <div class="sb-label">Alcance</div>
+                <div class="sb-val">Toque</div>
+            </div>
+            <div class="stat-box">
+                <div class="sb-label">Dano Base</div>
+                <div class="sb-val">${abil.dmg || '-'}</div>
+            </div>
+        </div>
+        
+        <div style="padding: 0 1.5rem 1.5rem; flex:1;">
+            <h4 style="color:#888; font-size:0.8rem; text-transform:uppercase; margin-bottom:10px;">Descrição Detalhada</h4>
+            <p style="color:#ccc; line-height:1.6; font-size:0.9rem;">
+                ${abil.desc}
+                <br><br>
+                O espadachim gera ímpeto suficiente para criar um único e poderoso corte concentrado. Este movimento é a base de todas as formas.
+            </p>
+            
+            <div style="background:#16161a; border-left: 2px solid #4cc9f0; padding:10px; margin-top:20px; font-style:italic; color:#888; font-size:0.9rem;">
+                "Como a água flui, a lâmina segue. Sem hesitação, sem pausa."
+            </div>
+        </div>
+        
+        <div class="mastery-container">
+            <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:bold; margin-bottom:5px;">
+                <span style="color:#888;">MAESTRIA DA TÉCNICA</span>
+                <span style="color:#4cc9f0;">Nível 1 / 5</span>
+            </div>
+            <div class="mastery-bar-bg">
+                <div class="mastery-fill" style="width: 20%;"></div>
+            </div>
+            <div style="text-align:right; font-size:0.7rem; color:#666; margin-top:5px; margin-bottom:15px;">Próximo nível: +1d4 de Dano</div>
+            
+            <div style="display:grid; grid-template-columns: 1fr 2fr; gap:10px;">
+                <button style="background:#222; border:1px solid #333; color:#ccc; border-radius:6px; cursor:pointer;"><i data-lucide="bookmark"></i></button>
+                <button class="upgrade-btn"><i data-lucide="arrow-up-circle"></i> Melhorar</button>
+            </div>
+        </div>
+    `;
+
+    if (window.lucide) window.lucide.createIcons();
+};
+
+// Initial Call
+setTimeout(() => {
+    if (window.renderAbilitiesList) window.renderAbilitiesList();
+}, 600);

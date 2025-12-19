@@ -3,70 +3,26 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | Demon Slayer RPG</title>
-    <link rel="stylesheet" href="style.css?v=layout_restore_final">
-    <!-- Lucide Icons -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700&display=swap"
+        rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        /* --- CORE THEME (From Character Creation) - MATCHES MOCKUP --- */
         :root {
-            --bg-dark: #121212;
-            --panel-bg: #1e1e1e;
-            --border-color: #333;
-            --text-main: #e0e0e0;
+            --bg-dark: #0a0a0f;
+            --bg-panel: #141419;
+            --text-main: #ffffff;
             --text-muted: #888;
-            --accent-purple: #9d4edd;
             --accent-red: #d90429;
+            --accent-red-hover: #ef233c;
+            --accent-purple: #9d4edd;
             --accent-cyan: #00b4d8;
+            --border-color: #2a2a35;
             --font-main: 'Outfit', sans-serif;
             --font-display: 'Cinzel', serif;
-            --font-mono: 'Consolas', monospace;
-        }
-
-        /* Editing Styles */
-        .ds-input-mini {
-            background: #000;
-            border: 1px solid #444;
-            color: #fff;
-            padding: 4px;
-            font-size: 0.8rem;
-            border-radius: 4px;
-        }
-
-        .ds-input-mini:focus {
-            border-color: var(--accent-purple);
-            outline: none;
-        }
-
-        .btn-save-mini {
-            background: var(--accent-purple);
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-
-        .btn-cancel-mini {
-            background: #333;
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-
-        .icon-btn-mini {
-            background: transparent;
-            border: none;
-            color: #aaa;
-            cursor: pointer;
-            padding: 2px;
-        }
-
-        .icon-btn-mini:hover {
-            color: #fff;
         }
 
         * {
@@ -80,260 +36,159 @@
             color: var(--text-main);
             font-family: var(--font-main);
             height: 100vh;
+            display: flex;
             overflow: hidden;
-            /* App-like feel */
         }
 
-        /* INVENTORY STYLES */
-        .inventory-section {
+        /* --- LEFT SIDEBAR (Navigation) --- */
+        .sidebar-left {
+            width: 260px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem 1.5rem;
             display: flex;
             flex-direction: column;
             gap: 2rem;
+            flex-shrink: 0;
+            z-index: 10;
         }
 
-        .inv-category h3 {
-            color: var(--accent-purple);
-            border-bottom: 1px solid #333;
-            padding-bottom: 0.5rem;
-            margin-top: 0;
-        }
-
-        .inv-item-card {
-            background: #151515;
-            border: 1px solid #333;
-            border-radius: 4px;
-            margin-bottom: 0.5rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .inv-item-card:hover {
-            background: #1e1e1e;
-            border-color: #555;
-        }
-
-        .inv-header {
-            padding: 0.8rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .inv-name {
-            font-weight: bold;
-            color: #e0e0e0;
-        }
-
-        .inv-mini-stat {
-            font-size: 0.8rem;
-            color: #888;
-            background: #000;
-            padding: 2px 6px;
-            border-radius: 4px;
-        }
-
-        .inv-details {
-            padding: 0 0.8rem 0.8rem 0.8rem;
-            color: #aaa;
-            font-size: 0.85rem;
-            border-top: 1px solid #333;
-            display: none;
-            /* Hidden by default */
-            margin-top: 0.5rem;
-            padding-top: 0.5rem;
-            line-height: 1.6;
-        }
-
-        .inv-details.expanded {
-            display: block;
-            animation: slideDown 0.2s;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-5px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .prop-tag {
-            color: var(--accent-cyan);
-        }
-
-        .val-tag {
+        .app-logo {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.2rem;
             color: white;
-            font-weight: bold;
-        }
-
-        /* MODAL */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(2px);
-            z-index: 1000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-overlay.open {
             display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .modal-window {
-            background: #1a1a1a;
-            border: 1px solid var(--accent-purple);
-            width: 800px;
-            max-height: 80vh;
+        .nav-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
             border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-header {
-            padding: 1rem;
-            border-bottom: 1px solid #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #222;
-        }
-
-        .modal-body {
-            padding: 1rem;
-            overflow-y: auto;
-            display: flex;
-            gap: 1rem;
-        }
-
-        .modal-col {
-            flex: 1;
-        }
-
-        .item-btn {
-            width: 100%;
-            text-align: left;
-            background: #111;
-            border: 1px solid #333;
-            padding: 0.5rem;
-            margin-bottom: 0.5rem;
-            color: #ccc;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .item-btn:hover {
-            border-color: var(--accent-purple);
-            color: white;
-            background: #1f1f1f;
-        }
-    </style>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700&display=swap"
-        rel="stylesheet">
-    <style>
-        .app-container {
-            display: grid;
-            grid-template-columns: 32% 32% 36%;
-            /* Sidebar | Skills | Main (Main is now less than half) */
-            height: 100vh;
-            width: 100vw;
-            margin: 0;
-            background: #050505;
-            overflow: hidden;
-        }
-
-        /* --- COL 1: SIDEBAR (Identity & Stats) --- */
-        .sidebar {
-            background: var(--panel-bg);
-            border-right: 1px solid var(--border-color);
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            overflow-y: auto;
-        }
-
-        .char-header {
-            display: flex;
-            flex-direction: column;
-            /* Stacked */
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .portrait {
-            width: 180px;
-            /* Increased from 120px */
-            height: 180px;
-            background: #1a1a1a;
-            border: 2px solid var(--accent-purple);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 6rem;
-            /* Bigger icon */
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
-            margin-bottom: 1rem;
-            transition: all 0.3s;
-        }
-
-        .portrait:hover {
-            border-color: var(--accent-glow);
-            box-shadow: 0 0 20px rgba(157, 78, 221, 0.4);
-            transform: scale(1.02);
-        }
-
-        .identity-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-            font-size: 0.9rem;
-            width: 100%;
-        }
-
-        .id-row {
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 1px solid #333;
-            padding: 4px 0;
-            font-size: 1rem;
-            /* Slightly larger */
-        }
-
-        .id-label {
             color: var(--text-muted);
-            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: hsla(0, 0%, 100%, 0.05);
+            color: white;
+        }
+
+        .nav-item.active {
+            border-right: 3px solid var(--accent-red);
+            background: linear-gradient(90deg, rgba(217, 4, 41, 0.1), transparent);
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* --- MAIN CONTENT (Center) --- */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem 4rem;
+            scroll-behavior: smooth;
+            position: relative;
+        }
+
+        .page-header {
+            margin-bottom: 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .breadcrumbs {
+            color: var(--accent-red);
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
             text-transform: uppercase;
         }
 
-        .id-val {
-            font-weight: 600;
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            margin: 0;
+            line-height: 1.1;
         }
 
-        /* REFINED ATTRIBUTE ANIMATION */
+        .page-subtitle {
+            color: var(--text-muted);
+            margin-top: 5px;
+            font-weight: 300;
+        }
+
+        /* Sections */
+        .dashboard-section {
+            display: none;
+            /* Hidden by default for Tabbed View */
+            margin-bottom: 4rem;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .dashboard-section.active-tab {
+            display: block;
+            /* Shown only when active */
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .sec-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: var(--font-display);
+            color: white;
+        }
+
+        /* --- RIGHT SIDEBAR (Summary) --- */
+        .sidebar-right {
+            width: 340px;
+            background: #0e0e12;
+            border-left: 1px solid var(--border-color);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
+
+        /* --- DASHBOARD SPECIFIC COMPONENTS --- */
+
+        /* 1. Attributes Hexagon (Ported) */
         .attributes-container {
             position: relative;
             width: 100%;
-            max-width: 450px;
-            /* Limit size in very wide columns */
+            max-width: 400px;
             aspect-ratio: 1/1;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 2rem auto;
+            margin: 0 auto;
             border-radius: 50%;
         }
 
@@ -341,80 +196,15 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            /* Layer 1: Outer Ring */
             border: 1px dashed rgba(255, 255, 255, 0.1);
             border-radius: 50%;
-            animation: spinSlow 30s linear infinite;
-        }
-
-        .pentagram-bg::before {
-            content: '';
-            position: absolute;
-            top: 10%;
-            left: 10%;
-            right: 10%;
-            bottom: 10%;
-            border: 1px solid rgba(157, 78, 221, 0.2);
-            border-radius: 50%;
-            border-top-color: transparent;
-            border-bottom-color: transparent;
-            animation: spinFast 10s linear infinite reverse;
-        }
-
-        .pentagram-bg::after {
-            content: '';
-            position: absolute;
-            top: 25%;
-            left: 25%;
-            right: 25%;
-            bottom: 25%;
-            border: 1px dotted rgba(0, 180, 216, 0.3);
-            border-radius: 50%;
-            animation: spinSlow 20s linear infinite;
-        }
-
-        /* Inner glowing core */
-        .attr-core {
-            position: absolute;
-            width: 40%;
-            height: 40%;
-            background: radial-gradient(circle, rgba(157, 78, 221, 0.1) 0%, transparent 70%);
-            animation: pulse 3s ease-in-out infinite;
-            border-radius: 50%;
-            z-index: 1;
-        }
-
-        @keyframes spinSlow {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        @keyframes spinFast {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-                opacity: 0.5;
-            }
-
-            50% {
-                transform: scale(1.2);
-                opacity: 0.8;
-            }
+            animation: spinSlow 60s linear infinite;
         }
 
         .stat-node {
             position: absolute;
-            width: 64px;
-            /* Increased from 50px */
-            height: 64px;
+            width: 50px;
+            height: 50px;
             background: #111;
             border: 2px solid #555;
             border-radius: 50%;
@@ -422,10 +212,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 1.4rem;
-            /* Larger font */
+            font-size: 1.2rem;
             font-weight: 800;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
             z-index: 2;
             cursor: pointer;
             transition: all 0.2s;
@@ -433,20 +222,17 @@
 
         .stat-node:hover {
             transform: scale(1.1);
-            background: #1a1a1a;
             box-shadow: 0 0 15px currentColor;
         }
 
         .stat-label {
-            font-size: 0.65rem;
-            /* Slightly larger */
+            font-size: 0.6rem;
             color: #888;
-            font-weight: 600;
-            margin-top: -2px;
             text-transform: uppercase;
+            margin-top: -2px;
         }
 
-        /* Positioning 6 Stats roughly in a Hexagon */
+        /* Hexagon Positions */
         .s-str {
             top: 0;
             left: 50%;
@@ -485,44 +271,21 @@
             border-color: #ff00ff;
         }
 
-        /* REFINED PREMIUM BARS */
-        .bar-section {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-top: 1rem;
+        @keyframes spinSlow {
+            to {
+                transform: rotate(360deg);
+            }
         }
 
-        .bar-label {
-            font-size: 0.75rem;
-            color: #888;
-            text-align: center;
-            margin-bottom: 3px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .bar-label {
-            display: block;
-            text-align: center;
-            font-size: 0.85rem;
-            color: #ccc;
-            margin-bottom: 4px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
+        /* 2. Premium Bars (Right Sidebar) */
         .premium-bar {
             position: relative;
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            height: 64px;
-            /* Increased from 54px */
-            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 48px;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.9), 0 6px 15px rgba(0, 0, 0, 0.4);
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         .premium-fill {
@@ -530,213 +293,68 @@
             top: 0;
             left: 0;
             height: 100%;
-            transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            z-index: 1;
+            transition: width 0.4s ease;
         }
 
         .bar-hp {
-            background: #a81111;
+            background: linear-gradient(90deg, #990000, #d90429);
         }
 
         .bar-pe {
-            background: #007ea7;
-        }
-
-        .premium-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
-            display: flex;
-            align-items: center;
-            padding: 0;
-        }
-
-        .bar-btn-group {
-            display: flex;
-            gap: 2px;
-            z-index: 10;
-        }
-
-        .bar-btn-group:last-of-type {
-            margin-left: auto;
-        }
-
-        .bar-btn {
-            background: transparent;
-            border: none;
-            color: rgba(255, 255, 255, 0.9);
-            cursor: pointer;
-            font-weight: bold;
-            font-family: var(--font-main);
-            font-size: 1.1rem;
-            width: 30px;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            padding-bottom: 2px;
-            /* Nudge icons up slightly */
-        }
-
-        .bar-btn:hover {
-            opacity: 1;
-            text-shadow: 0 0 5px white;
-            background: rgba(0, 0, 0, 0.2);
+            background: linear-gradient(90deg, #005f73, #00b4d8);
         }
 
         .bar-text-val {
             position: absolute;
-            left: 0;
-            top: 0;
             width: 100%;
             height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            /* Centralized */
-            font-weight: 950;
-            font-size: 1.8rem;
-            color: white;
-            text-shadow: 0 0 15px rgba(0, 0, 0, 1), 0 0 5px rgba(0, 0, 0, 0.8);
+            font-weight: 800;
+            font-size: 1.2rem;
+            text-shadow: 0 0 4px black;
+            z-index: 2;
+        }
+
+        .bar-btn-group {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            display: flex;
             z-index: 5;
-            pointer-events: none;
-            line-height: 1;
-            letter-spacing: 2px;
         }
 
-        .bar-val-left {
-            text-align: right;
-            padding-right: 6px;
-            pointer-events: auto;
-        }
-
-        .bar-val-right {
-            text-align: left;
-            padding-left: 6px;
-            pointer-events: auto;
-            display: flex;
-            align-items: center;
-        }
-
-        .bar-separator {
-            opacity: 0.6;
-            font-weight: 400;
-            pointer-events: none;
-        }
-
-        .bar-max-input {
-            background: transparent;
+        .bar-btn {
+            background: rgba(0, 0, 0, 0.3);
             border: none;
-            color: inherit;
-            font-weight: inherit;
-            font-size: inherit;
-            width: 45px;
-            text-align: center;
-            /* Centered */
-            padding: 0;
-            margin: 0;
-            cursor: text;
-        }
-
-        .bar-max-input:focus {
-            outline: none;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-        }
-
-        /* DEFENSE */
-        .defense-block {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            background: #151515;
-            padding: 0.8rem;
-            border-radius: 4px;
-            border: 1px solid #333;
-        }
-
-        .shield-icon {
-            font-size: 2rem;
+            color: white;
+            width: 24px;
+            cursor: pointer;
             font-weight: bold;
-            color: #fff;
-            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 115 L5 90 L5 20 L50 5 L95 20 L95 90 Z' fill='none' stroke='white' stroke-width='3'/%3E%3C/svg%3E") no-repeat center;
-            width: 50px;
-            height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding-bottom: 5px;
         }
 
-        .def-stats {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            gap: 5px;
+        .bar-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
 
-        .def-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-            color: #888;
-        }
-
-        .def-val {
-            color: white;
-            font-weight: bold;
-        }
-
-        /* --- COL 2: SKILLS --- */
-        .skills-col {
-            background: #1a1a1a;
-            /* Slightly lighter than sidebar */
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-
-        .col-header {
-            padding: 1.2rem;
-            background: #111;
-            border-bottom: 2px solid var(--accent-purple);
-            font-weight: 800;
-            text-align: center;
-            color: #fff;
-            font-size: 1.2rem;
-            /* Increased size */
-            font-family: var(--font-display);
-            /* Use display font */
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .skill-list {
-            display: flex;
-            flex-direction: column;
-        }
-
+        /* 3. Skills List */
         .skill-row {
             display: flex;
             justify-content: space-between;
-            padding: 0.8rem 1.2rem;
-            /* Increased padding */
-            border-bottom: 1px solid #222;
-            font-size: 1.1rem;
-            /* Increased font size */
             align-items: center;
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
             cursor: pointer;
-            transition: all 0.2s;
         }
 
         .skill-row:hover {
-            background: rgba(157, 78, 221, 0.1);
-            color: white;
-            box-shadow: inset 4px 0 0 var(--accent-purple);
+            background: rgba(255, 255, 255, 0.03);
         }
 
         .skill-row.proficient {
@@ -744,1347 +362,805 @@
             background: rgba(157, 78, 221, 0.05);
         }
 
-        .skill-row.proficient .skill-name {
-            color: white;
-            font-weight: 600;
-        }
-
-        .skill-attr {
-            color: #666;
-            font-size: 0.8rem;
-            /* Slightly larger */
-            margin-left: 8px;
-            font-weight: 400;
-        }
-
-        .skill-total {
-            font-family: var(--font-mono);
-            color: #eee;
-            font-size: 1.2rem;
-            /* Larger font */
-        }
-
-        .proficient .skill-total {
-            color: var(--accent-purple);
-            font-weight: bold;
-        }
-
-        .roll-btn-mini {
-            background: #252525;
-            border: 1px solid #444;
-            color: #888;
-            border-radius: 4px;
-            cursor: pointer;
-            padding: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-
-        .roll-btn-mini:hover {
-            color: white;
-            border-color: var(--accent-purple);
-            background: #333;
-            transform: scale(1.1);
-        }
-
-        .d20-icon {
-            width: 18px;
-            height: 18px;
-            fill: currentColor;
-            stroke: currentColor;
-            stroke-width: 1;
-        }
-
         .custom-checkbox {
             width: 14px;
             height: 14px;
-            border: 1px solid #444;
-            margin-right: 8px;
+            border: 1px solid #555;
+            margin-right: 10px;
             border-radius: 2px;
-            display: inline-block;
-            transition: all 0.2s;
         }
 
         .custom-checkbox.checked {
             background: var(--accent-purple);
             border-color: var(--accent-purple);
-            box-shadow: 0 0 5px var(--accent-purple);
         }
 
-        /* --- COL 3: MAIN (Combat etc) --- */
-        .main-col {
-            background: linear-gradient(135deg, #0f0f0f 0%, #161616 100%);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .main-col::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 50% 50%, rgba(157, 78, 221, 0.05) 0%, transparent 70%);
-            pointer-events: none;
-        }
-
-        .top-nav {
-            display: flex;
-            background: rgba(10, 10, 10, 0.95);
-            border-bottom: 1px solid #333;
-            padding: 0 1rem;
-            backdrop-filter: blur(10px);
-            z-index: 10;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-        }
-
-        .nav-tab {
-            padding: 1.2rem 1.5rem;
-            background: transparent;
-            color: #666;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: all 0.3s;
-            position: relative;
-        }
-
-        .nav-tab::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: var(--accent-purple);
-            transform: scaleX(0);
-            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            transform-origin: center;
-        }
-
-        .nav-tab:hover {
-            color: #ccc;
-        }
-
-        .nav-tab.active {
-            color: var(--accent-purple);
-            text-shadow: 0 0 10px rgba(157, 78, 221, 0.4);
-        }
-
-        .nav-tab.active::after {
-            transform: scaleX(1);
-        }
-
-        .personalization-btn {
-            margin-left: auto;
-            padding: 0 1rem;
-            color: #555;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: transform 0.3s;
-        }
-
-        .personalization-btn:hover {
-            color: white;
-            transform: rotate(90deg);
-        }
-
-        .content-area {
-            padding: 2rem;
-            overflow-y: auto;
-            flex: 1;
-            position: relative;
-        }
-
-        /* TAB ANIMATION */
-        .tab-content {
-            display: none;
-            opacity: 0;
-            transform: translateY(15px);
-            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-        }
-
-        .tab-content.active {
-            display: block;
-            animation: tabEntrance 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        }
-
-        @keyframes tabEntrance {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* COMBAT STYLES */
-        .search-bar {
-            background: #111;
-            border: 1px solid #333;
-            border-radius: 20px;
-            color: white;
-            padding: 0.8rem 1.2rem;
-            width: 100%;
-            margin-bottom: 2rem;
-            font-family: var(--font-main);
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-
-        .search-bar:focus {
-            outline: none;
-            border-color: var(--accent-purple);
-            box-shadow: 0 0 10px rgba(157, 78, 221, 0.2);
-        }
-
-        .combat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid #333;
-            padding-bottom: 1rem;
-        }
-
-        .combat-header h3 {
-            margin: 0;
-            font-size: 1.2rem;
-            font-weight: 500;
-            color: white;
-        }
-
-        .new-atk-btn {
-            background: transparent;
-            color: var(--accent-purple);
-            border: 1px solid var(--accent-purple);
-            padding: 0.4rem 1rem;
+        .roll-btn-mini {
+            background: #222;
+            border: 1px solid #444;
+            color: #888;
             border-radius: 4px;
+            padding: 4px;
             cursor: pointer;
-            font-weight: bold;
-            font-size: 0.8rem;
-            transition: all 0.2s;
         }
 
-        .new-atk-btn:hover {
-            background: var(--accent-purple);
-            color: white;
-            box-shadow: 0 0 10px var(--accent-purple);
+        .d20-icon {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
         }
 
+        /* 4. Attack Cards */
         .attack-card {
-            background: #181818;
+            background: #16161a;
             border: 1px solid #333;
             border-radius: 8px;
-            /* Smooth corners */
-            margin-bottom: 1rem;
             overflow: hidden;
-            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            transition: all 0.2s;
         }
 
         .attack-card:hover {
+            border-color: var(--accent-red);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-            border-color: #555;
-        }
-
-        /* ATTACK CARD TAGS */
-        .atk-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 4px;
-        }
-
-        .atk-tag {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            padding: 2px 6px;
-            font-size: 0.7rem;
-            color: #aaa;
-        }
-
-        .roll-btn svg {
-            transition: transform 0.2s;
-        }
-
-        .roll-btn:hover svg {
-            transform: rotate(20deg) scale(1.1);
-        }
-
-        /* ROLL ACTION */
-        .roll-action-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            margin-right: 15px;
-            /* Unstick from edge */
-            min-width: 40px;
-        }
-
-        .roll-result-display {
-            height: 20px;
-            font-family: 'Courier New', monospace;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #ffcc00;
-            /* Gold */
-            text-shadow: 0 0 5px rgba(255, 200, 0, 0.5);
-            margin-bottom: 2px;
-            opacity: 0;
-            transition: opacity 0.2s, transform 0.2s;
-            transform: translateY(5px);
-            pointer-events: none;
-        }
-
-        .roll-result-display.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .roll-btn-small {
-            background: transparent;
-            border: none;
-            color: #666;
-            cursor: pointer;
-            font-size: 1rem;
-            padding: 0 5px;
-        }
-
-        .roll-btn-small:hover {
-            color: #aaa;
         }
 
         .atk-header {
-            padding: 1rem;
-            background: #202020;
+            padding: 10px;
+            background: #111;
+            border-bottom: 1px solid #222;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            cursor: pointer;
         }
 
         .atk-name {
-            font-weight: 700;
-            font-size: 1.05rem;
-            letter-spacing: 0.5px;
+            font-weight: bold;
+            font-family: var(--font-display);
+        }
+
+        .atk-details {
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .roll-btn {
-            background: rgba(255, 255, 255, 0.05);
+            background: none;
             border: 1px solid #444;
-            color: #ddd;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
+            color: white;
+            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.2s;
+            padding: 5px;
         }
 
         .roll-btn:hover {
-            background: var(--accent-purple);
-            border-color: var(--accent-purple);
-            color: white;
-            transform: scale(1.1) rotate(15deg);
+            background: var(--accent-red);
+            border-color: var(--accent-red);
         }
 
-        /* TEXT AREAS */
-        .desc-box {
-            width: 100%;
-            height: 150px;
-            background: #121212;
-            border: 1px solid #333;
-            color: #ccc;
-            padding: 1.5rem;
-            border-radius: 6px;
-            resize: vertical;
-            font-family: var(--font-main);
-            line-height: 1.6;
-            transition: border-color 0.3s;
-            background-image: linear-gradient(#1a1a1a 1px, transparent 1px);
-            background-size: 100% 32px;
-            /* Lined paper effect */
-        }
-
-        .desc-box:focus {
-            outline: none;
-            border-color: var(--accent-purple);
-        }
-
-        .custom-checkbox {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #555;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
+        /* 5. Inventory */
+        .inv-item-card {
             background: #111;
-        }
-
-        .custom-checkbox.checked {
-            background: var(--accent-purple);
-            border-color: var(--accent-purple);
-            box-shadow: 0 0 5px var(--accent-purple);
-        }
-
-        .custom-checkbox::after {
-            content: '✔';
-            color: white;
-            font-size: 14px;
-            display: none;
-        }
-
-        .custom-checkbox.checked::after {
-            display: block;
-        }
-
-        /* HIDE INPUT SPINNERS */
-        input[type=number]::-webkit-inner-spin-button,
-        input[type=number]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        input[type=number] {
-            -moz-appearance: textfield;
-            /* Firefox */
-        }
-
-        /* STYLED INPUTS */
-        .level-input {
-            background: transparent;
             border: 1px solid #333;
-            color: white;
-            width: 50px;
-            padding: 5px;
-            text-align: center;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 1.1rem;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 5px;
+            cursor: pointer;
         }
 
-        .level-input:focus {
-            border-color: var(--accent-purple);
-            outline: none;
-        }
-
-        .def-input {
-            width: 30px;
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid #666;
-            color: white;
-            text-align: center;
-            font-weight: bold;
-            font-size: 0.9rem;
-            transition: border-color 0.2s;
-        }
-
-        .def-input:focus {
-            border-color: white;
-            outline: none;
-        }
-
-        /* MAX HP/PE INPUT STYLES */
-        .bar-max-input {
-            background: transparent;
-            border: none;
-            color: #fff;
-            width: 75px;
-            /* Further increased width */
-            text-align: left;
-            font-size: 1rem;
-            font-weight: 800;
-            font-family: inherit;
-            padding: 0 0 0 5px;
-            margin: 0;
-            /* Match shadow */
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
-            pointer-events: auto;
-            -moz-appearance: textfield;
-            appearance: textfield;
-        }
-
-        .bar-max-input:focus {
-            outline: none;
-            background: rgba(0, 0, 0, 0.2);
-            border-bottom: 1px dotted rgba(255, 255, 255, 0.5);
-            text-align: center;
-            padding: 0;
-        }
-
-        /* Remove arrows from number input */
-        .bar-max-input::-webkit-inner-spin-button,
-        .bar-max-input::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        /* LOCKED TAB STATE */
-        .locked-container {
-            position: relative;
-            width: 100%;
-            height: 400px;
-            border: 1px solid #333;
-            border-radius: 8px;
-            background: #000;
-            overflow: hidden;
+        .inv-header {
             display: flex;
-            align-items: center;
-            justify-content: center;
-        }
 
-        .locked-blur-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #111, #222);
-            filter: blur(8px);
-            z-index: 1;
-        }
+            /* --- INVENTORY LIST LAYOUT (MATCHING ABILITIES) --- */
+            .inv-workspace {
+                display: grid;
+                grid-template-columns: 1fr 400px;
+                /* Matching Abilities Width */
+                gap: 2rem;
+                height: calc(100vh - 200px);
+            }
 
-        .lock-overlay {
-            position: relative;
-            z-index: 5;
-            text-align: center;
-            color: #888;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-        }
+            /* Left: List (Replaces Grid) */
+            .inv-list-container {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                overflow-y: auto;
+                padding-right: 5px;
+                margin-top: 20px;
+            }
 
-        .lock-icon {
-            font-size: 3rem;
-            color: #444;
-            border: 2px solid #444;
-            border-radius: 50%;
-            width: 80px;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.5);
-        }
+            .inv-row-card {
+                background: #16161a;
+                border: 1px solid #2a2a35;
+                border-radius: 8px;
+                padding: 15px;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: flex;
+                gap: 15px;
+                align-items: center;
+                position: relative;
+            }
 
-        .lock-msg {
-            font-size: 1.1rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #666;
-        }
+            .inv-row-card:hover {
+                transform: translateX(5px);
+                background: #1f1f25;
+                border-color: #444;
+            }
+
+            .inv-row-card.selected {
+                border-color: var(--accent-cyan);
+                background: rgba(0, 180, 216, 0.05);
+            }
+
+            .inv-row-card.equipped {
+                border-left: 3px solid var(--accent-cyan);
+            }
+
+            .inv-row-icon {
+                width: 48px;
+                height: 48px;
+                background: #111;
+                border-radius: 8px;
+                border: 1px solid #333;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #888;
+                flex-shrink: 0;
+            }
+
+            .inv-tags {
+                margin-left: auto;
+                display: flex;
+                gap: 5px;
+                align-items: center;
+            }
+
+            .inv-tag {
+                font-size: 0.65rem;
+                padding: 2px 8px;
+                border-radius: 4px;
+                text-transform: uppercase;
+                font-weight: bold;
+                background: #222;
+                color: #888;
+                border: 1px solid #333;
+            }
+
+            .tag-rare {
+                color: #00b4d8;
+                border-color: rgba(0, 180, 216, 0.3);
+                background: rgba(0, 180, 216, 0.1);
+            }
+
+            .tag-epic {
+                color: #9d4edd;
+                border-color: rgba(157, 78, 221, 0.3);
+                background: rgba(157, 78, 221, 0.1);
+            }
+
+            /* Right: Details & Equip (Updated to Hero Style) */
+            .inv-panel {
+                background: #121215;
+                border: 1px solid #333;
+                border-radius: 12px;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+
+            .inv-hero {
+                background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%);
+                padding: 2rem;
+                text-align: center;
+                border-bottom: 1px solid #222;
+            }
+
+            .inv-big-icon {
+                width: 80px;
+                height: 80px;
+                margin: 0 auto 15px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #000;
+                border: 2px solid var(--accent-cyan);
+                border-radius: 50%;
+                box-shadow: 0 0 20px rgba(0, 180, 216, 0.3);
+                color: var(--accent-cyan);
+                font-size: 2.5rem;
+            }
+
+            .equip-slots-mini {
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+                margin-bottom: 20px;
+                padding: 10px;
+                background: #0e0e12;
+                border-bottom: 1px solid #222;
+            }
+
+            .es-mini {
+                width: 32px;
+                height: 32px;
+                background: #1a1a20;
+                border: 1px solid #333;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #555;
+            }
+
+            .es-mini.active {
+                border-color: var(--accent-cyan);
+                color: var(--accent-cyan);
+            }
+
+            /* 6. Grid Layouts */
+            .overview-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 3rem;
+            }
+
+            /* Utilities */
+            .ds-input {
+                background: rgba(0, 0, 0, 0.3);
+                border: 1px solid #333;
+                color: white;
+                padding: 8px;
+                border-radius: 4px;
+                width: 100%;
+                font-family: inherit;
+            }
+
+            /* Animations */
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* Portrait & Info */
+            .char-portrait {
+                width: 100%;
+                aspect-ratio: 1;
+                background: #000;
+                border: 2px solid var(--accent-red);
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 3rem;
+                color: #333;
+                overflow: hidden;
+                position: relative;
+            }
+
+            .char-portrait img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .char-info-block {
+                text-align: center;
+                margin-bottom: 2rem;
+            }
+
+            .vital-box {
+                background: #16161a;
+                border: 1px solid #333;
+                padding: 10px;
+                border-radius: 6px;
+                margin-bottom: 10px;
+            }
+
+            .def-row {
+                display: flex;
+                justify-content: space-between;
+                font-size: 0.9rem;
+                color: #ccc;
+                margin-bottom: 5px;
+            }
+
+            /* Roll Log */
+            .roll-log {
+                position: fixed;
+                bottom: 20px;
+                left: 280px;
+                width: 300px;
+                max-height: 200px;
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+                pointer-events: none;
+                z-index: 100;
+            }
+
+            .chat-msg {
+                background: rgba(0, 0, 0, 0.8);
+                border: 1px solid #333;
+                color: white;
+                padding: 8px;
+                border-radius: 4px;
+                font-size: 0.9rem;
+                pointer-events: auto;
+                animation: slideIn 0.3s;
+            }
+
+            @keyframes slideIn {
+                from {
+                    transform: translateX(-20px);
+                    opacity: 0;
+                }
+
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+
+            /* Modals */
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.85);
+                backdrop-filter: blur(5px);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .modal-overlay.open {
+                display: flex !important;
+            }
     </style>
 </head>
 
 <body>
-    <!-- Zen Toggle Moved to Sidebar -->
 
-    <div class="dashboard-container">
+    <!-- LEFT SIDEBAR -->
+    <nav class="sidebar-left">
+        <div class="app-logo">
+            <i data-lucide="flame" style="color: var(--accent-red);"></i> Demon Slayer
+        </div>
 
-        <!-- COLUMN 1: SIDEBAR -->
-        <aside class="sidebar">
-            <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-                <a href="index.html" style="color:#444; text-decoration:none; font-size:0.8rem;">← Sair</a>
-                <div style="display:flex; gap:5px;">
-                    <button onclick="toggleChat()" class="icon-btn-mini" title="Chat"
-                        style="background:none; border:none; color:#888;"><i data-lucide="message-square"></i></button>
-                    <button onclick="toggleZenMode()" class="icon-btn-mini" title="Modo Zen"
-                        style="background:none; border:none; color:#888;"><i data-lucide="sun-moon"></i></button>
-                </div>
+        <div class="nav-steps">
+            <div
+                style="font-size: 0.7rem; text-transform: uppercase; color: #555; font-weight: 700; letter-spacing: 1px; margin-bottom: 5px;">
+                Menu Principal</div>
+
+            <a href="#" class="nav-item active" onclick="showSection('overview'); return false;">
+                <i data-lucide="layout-dashboard" class="nav-icon"></i>
+                <span>Visão Geral</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('combat'); return false;">
+                <i data-lucide="sword" class="nav-icon"></i>
+                <span>Combate</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('inventory'); return false;">
+                <i data-lucide="backpack" class="nav-icon"></i>
+                <span>Inventário</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('abilities'); return false;">
+                <i data-lucide="zap" class="nav-icon"></i>
+                <span>Técnicas</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('bio'); return false;">
+                <i data-lucide="scroll" class="nav-icon"></i>
+                <span>Biografia</span>
+            </a>
+        </div>
+
+        <div style="margin-top: auto;">
+            <a href="index.html" class="nav-item" style="color: #666;">
+                <i data-lucide="log-out" class="nav-icon"></i>
+                <span>Sair</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- RIGHT SIDEBAR (Summary) -->
+    <aside class="sidebar-right">
+        <!-- Portrait -->
+        <div class="char-portrait" id="charPortraitContainer">
+            <i data-lucide="user"></i>
+        </div>
+
+        <div class="char-info-block">
+            <h2 id="dispName" style="margin: 10px 0 5px 0; font-family: var(--font-display);">Sem Nome</h2>
+            <div style="color: var(--accent-cyan); font-size: 0.9rem; font-weight: 600;" id="dispRank">Rank</div>
+            <div style="color: #666; font-size: 0.8rem; margin-top: 5px;" id="dispClass">Classe</div>
+        </div>
+
+        <!-- Vital Bars -->
+        <div>
+            <div
+                style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #888; margin-bottom: 4px;">
+                <span>VIDA (HP)</span>
+                <div>Max: <input type="number" id="hpMaxInput" class="ds-input"
+                        style="width: 50px; padding: 0; background:none; border:none; text-align:right;" value="20"
+                        onchange="updateMaxStats()"></div>
             </div>
-            <div class="char-header">
-                <div class="portrait" onclick="toggleAvatar()" style="cursor:pointer;" title="Clique para mudar humor">
-                    <i id="avatarIcon" data-lucide="smile" style="width:40px; height:40px;"></i>
+            <div class="premium-bar bar-hp">
+                <div class="premium-fill bar-hp" id="hpFill" style="width: 100%;"></div>
+                <div class="bar-text-val">
+                    <span id="hpCurrent">20</span> <span style="font-size: 0.8rem; opacity: 0.7; margin-left: 4px;"> /
+                        <span id="hpPercent">100%</span></span>
                 </div>
-                <div class="identity-list">
-                    <div class="id-row">
-                        <span class="id-label">CAÇADOR</span>
-                        <span class="id-val editable" id="dispName" onclick="editProfile('name')">... <i
-                                data-lucide="pencil" style="width:12px; margin-left:5px; opacity:0.5;"></i></span>
-                    </div>
-                    <div class="id-row">
-                        <span class="id-label">RANK</span>
-                        <span class="id-val rank-val" id="dispRank">Mizunoto (癸)</span>
-                    </div>
-                    <div class="id-row">
-                        <span class="id-label">RESPIRAÇÃO</span>
-                        <span class="id-val editable" id="dispClass" onclick="editProfile('class')">... <i
-                                data-lucide="pencil" style="width:12px; margin-left:5px; opacity:0.5;"></i></span>
-                    </div>
-                    <div class="id-row">
-                        <span class="id-label">ORIGEM</span>
-                        <span class="id-val editable" id="dispOrigin" onclick="editProfile('origin')">... <i
-                                data-lucide="pencil" style="width:12px; margin-left:5px; opacity:0.5;"></i></span>
-                    </div>
-                    <div class="id-row">
-                        <span class="id-label">IDADE</span>
-                        <span class="id-val editable" id="dispAge" onclick="editProfile('age')">... <i
-                                data-lucide="pencil" style="width:12px; margin-left:5px; opacity:0.5;"></i></span>
-                    </div>
+                <div class="bar-btn-group">
+                    <button class="bar-btn" onclick="modHP(-1)">-</button>
+                    <button class="bar-btn" onclick="modHP(1)">+</button>
                 </div>
-            </div>
-
-            <!-- ATTRIBUTE PENTAGRAM (HEXAGRAM for 6) -->
-            <div class="attributes-container">
-                <div class="pentagram-bg"></div>
-                <div class="attr-core"></div>
-                <!-- Nodes -->
-                <div class="stat-node s-str" onclick="rollStat('str')" title="Rolar Força"><span
-                        id="attr-str">10</span><span class="stat-label">FOR</span></div>
-                <div class="stat-node s-dex" onclick="rollStat('dex')" title="Rolar Agilidade"><span
-                        id="attr-dex">10</span><span class="stat-label">AGI</span></div>
-                <div class="stat-node s-con" onclick="rollStat('con')" title="Rolar Vigor"><span
-                        id="attr-con">10</span><span class="stat-label">VIG</span></div>
-                <div class="stat-node s-int" onclick="rollStat('int')" title="Rolar Intelecto"><span
-                        id="attr-int">10</span><span class="stat-label">INT</span></div>
-                <div class="stat-node s-wis" onclick="rollStat('wis')" title="Rolar Presença"><span
-                        id="attr-wis">10</span><span class="stat-label">PRE</span></div>
-                <div class="stat-node s-cha" onclick="rollStat('cha')" title="Rolar Carisma"><span
-                        id="attr-cha">10</span><span class="stat-label">CAR</span></div>
-                <!-- Added CAR for 6th -->
             </div>
 
             <div
-                style="display:flex; justify-content:space-between; align-items:flex-end; font-size:0.8rem; margin-top:1rem; padding-bottom:1rem; border-bottom:1px solid #333; gap: 5px;">
-                <div style="text-align:center; flex:1;">
-                    <label style="color:#666; display:block; margin-bottom:5px;">XP</label>
-                    <input type="number" id="xpInput" value="0" class="level-input"
-                        style="width:100%; text-align:center;" onchange="updateXP()">
+                style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #888; margin-bottom: 4px; margin-top: 15px;">
+                <span>VIGOR (PE)</span>
+                <div>Max: <input type="number" id="peMaxInput" class="ds-input"
+                        style="width: 50px; padding: 0; background:none; border:none; text-align:right;" value="5"
+                        onchange="updateMaxStats()"></div>
+            </div>
+            <div class="premium-bar bar-pe">
+                <div class="premium-fill bar-pe" id="peFill" style="width: 100%;"></div>
+                <div class="bar-text-val">
+                    <span id="peCurrent">5</span> <span style="font-size: 0.8rem; opacity: 0.7; margin-left: 4px;"> /
+                        <span id="pePercent">100%</span></span>
                 </div>
-                <div style="text-align:center; flex:1;">
-                    <label style="color:#666; display:block; margin-bottom:5px;">NÍVEL</label>
-                    <input type="number" id="levelInput" value="1" class="level-input" readonly
-                        style="width:100%; text-align:center; opacity:0.8;">
-                </div>
-                <div style="text-align:center; flex:1;">
-                    <label style="color:#666; display:block; margin-bottom:5px;">DESLOC.</label>
-                    <div style="height:36px; display:flex; align-items:center; justify-content:center;">
-                        <span style="font-size:1rem; font-weight:bold;">9m</span>
-                    </div>
+                <div class="bar-btn-group">
+                    <button class="bar-btn" onclick="modPE(-1)">-</button>
+                    <button class="bar-btn" onclick="modPE(1)">+</button>
                 </div>
             </div>
+        </div>
 
-            <!-- BARS -->
-            <div class="bar-section">
-                <!-- HP -->
-                <div style="margin-bottom: 1.5rem;">
-                    <div class="bar-label" style="display:flex; justify-content:space-between; align-items:center;">
-                        <span>VIDA</span>
-                        <span id="hpPercent" style="font-size:0.7rem; opacity:0.6;">100%</span>
-                    </div>
-                    <div class="premium-bar" style="border-color: rgba(168, 17, 17, 0.3);">
-                        <div class="premium-fill bar-hp" id="hpFill"
-                            style="width: 100%; background: linear-gradient(90deg, #7a0000, #d90429);"></div>
-                        <div class="premium-overlay">
-                            <div class="bar-btn-group">
-                                <button class="bar-btn" onclick="modHP(-5)" title="-5"
-                                    style="color:#ff8888;">&lt;&lt;</button>
-                                <button class="bar-btn" onclick="modHP(-1)" title="-1"
-                                    style="color:#ff8888;">&lt;</button>
-                            </div>
-                            <div class="bar-text-val">
-                                <span id="hpCurrent">22</span>
-                                <span class="bar-separator" style="margin: 0 8px;">/</span>
-                                <input type="number" id="hpMaxInput" class="bar-max-input" onchange="updateMaxStats()"
-                                    value="22" style="width: 50px; pointer-events: auto;">
-                            </div>
-                            <div class="bar-btn-group">
-                                <button class="bar-btn" onclick="modHP(1)" title="+1"
-                                    style="color:#88ff88;">&gt;</button>
-                                <button class="bar-btn" onclick="modHP(5)" title="+5"
-                                    style="color:#88ff88;">&gt;&gt;</button>
-                            </div>
+        <!-- Defense -->
+        <div class="vital-box" style="margin-top: 1rem;">
+            <div
+                style="font-size: 0.8rem; color: var(--accent-purple); font-weight: 700; margin-bottom: 10px; text-transform: uppercase;">
+                Defesa</div>
+            <div class="def-row">
+                <span>Classe de Armadura (CA)</span>
+                <span style="color: white; font-weight: bold;" id="val-ac">10</span>
+            </div>
+            <div class="def-row">
+                <span>Redução de Dano</span>
+                <span style="color: white; font-weight: bold;" id="def-other">0</span>
+            </div>
+            <div class="def-row">
+                <span>Iniciativa</span>
+                <span style="color: white; font-weight: bold;" id="val-init">+0</span>
+            </div>
+        </div>
+
+        <button onclick="saveState(); alert('Salvo!');"
+            style="background: var(--accent-purple); color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: auto;">
+            Salvar Progresso
+        </button>
+
+    </aside>
+
+    <!-- CONTENT AREA -->
+    <main class="main-content">
+
+        <header class="page-header">
+            <div>
+                <div class="breadcrumbs">Demon Slayer RPG</div>
+                <h1 class="page-title">Ficha do Caçador</h1>
+                <p class="page-subtitle">Gerencie seus atributos, habilidades e equipamentos.</p>
+            </div>
+            <!-- Hidden inputs relied on by script -->
+            <input type="hidden" id="levelInput" value="1">
+            <input type="hidden" id="xpInput" value="0">
+        </header>
+
+        <!-- SECTION 1: OVERVIEW (Stats + Skills) -->
+        <section id="overview" class="dashboard-section">
+            <div class="section-header">
+                <i data-lucide="layout-dashboard" style="color: var(--accent-red);"></i>
+                <span class="sec-title">Atributos e Perícias</span>
+            </div>
+
+            <div class="overview-grid">
+                <!-- COL 1: ATTRIBUTES HEXAGON -->
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <div class="attributes-container">
+                        <div class="pentagram-bg"></div>
+                        <!-- Nodes -->
+                        <div class="stat-node s-str" onclick="rollStat('str')">
+                            <span id="val-str">10</span>
+                            <span class="stat-label">FOR</span>
+                        </div>
+                        <div class="stat-node s-dex" onclick="rollStat('dex')">
+                            <span id="val-dex">10</span>
+                            <span class="stat-label">AGI</span>
+                        </div>
+                        <div class="stat-node s-con" onclick="rollStat('con')">
+                            <span id="val-con">10</span>
+                            <span class="stat-label">VIG</span>
+                        </div>
+                        <div class="stat-node s-int" onclick="rollStat('int')">
+                            <span id="val-int">10</span>
+                            <span class="stat-label">INT</span>
+                        </div>
+                        <div class="stat-node s-wis" onclick="rollStat('wis')">
+                            <span id="val-wis">10</span>
+                            <span class="stat-label">PRE</span>
+                        </div>
+                        <div class="stat-node s-cha" onclick="rollStat('cha')">
+                            <span id="val-cha">10</span>
+                            <span class="stat-label">CAR</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- PE -->
-                <div style="margin-bottom: 1.5rem;">
-                    <div class="bar-label" style="display:flex; justify-content:space-between; align-items:center;">
-                        <span>DETERMINAÇÃO (PE)</span>
-                        <span id="pePercent" style="font-size:0.7rem; opacity:0.6;">100%</span>
-                    </div>
-                    <div class="premium-bar" style="border-color: rgba(0, 126, 167, 0.3);">
-                        <div class="premium-fill bar-pe" id="peFill"
-                            style="width: 100%; background: linear-gradient(90deg, #005a78, #00b4d8);"></div>
-                        <div class="premium-overlay">
-                            <div class="bar-btn-group">
-                                <button class="bar-btn" onclick="modPE(-5)" title="-5"
-                                    style="color:#88ccff;">&lt;&lt;</button>
-                                <button class="bar-btn" onclick="modPE(-1)" title="-1"
-                                    style="color:#88ccff;">&lt;</button>
-                            </div>
-                            <div class="bar-text-val">
-                                <span id="peCurrent">5</span>
-                                <span class="bar-separator" style="margin: 0 8px;">/</span>
-                                <input type="number" id="peMaxInput" class="bar-max-input" onchange="updateMaxStats()"
-                                    value="5" style="width: 40px; pointer-events: auto;">
-                            </div>
-                            <div class="bar-btn-group">
-                                <button class="bar-btn" onclick="modPE(1)" title="+1"
-                                    style="color:#88ccff;">&gt;</button>
-                                <button class="bar-btn" onclick="modPE(5)" title="+5"
-                                    style="color:#88ccff;">&gt;&gt;</button>
-                            </div>
-                        </div>
+                <!-- COL 2: SKILLS -->
+                <div>
+                    <h3
+                        style="color: white; border-bottom: 2px solid var(--accent-purple); padding-bottom: 0.5rem; margin-top:0;">
+                        Perícias</h3>
+                    <div id="skillsListBody" style="display: flex; flex-direction: column; gap: 0;">
+                        <!-- Injected by JS -->
                     </div>
                 </div>
-            </div>
-
-            <!-- AMMO -->
-            <div class="sidebar-section"
-                style="margin-top:1rem; padding:10px; border:1px solid #333; border-radius:8px; background:rgba(0,0,0,0.3);">
-                <div
-                    style="font-size:0.8rem; color:#aaa; margin-bottom:5px; text-transform:uppercase; letter-spacing:1px; text-align:center;">
-                    Munição</div>
-                <div style="display:flex; justify-content:center; align-items:center; gap:10px;">
-                    <i data-lucide="crosshair" style="width:16px; color:#d90429;"></i>
-                    <input type="number" id="ammoInput" value="0" class="ds-input"
-                        style="width:60px; text-align:center; padding:5px;" onchange="updateAmmo()">
-                </div>
-            </div>
-
-            <!-- DEFENSE (Updated) -->
-            <div class="defense-block" style="display:block; padding:0.5rem;">
-                <div style="display:flex; align-items:center; gap:0.5rem;">
-                    <!-- Shield with Total -->
-                    <div class="shield-container"
-                        style="position:relative; width:50px; height:60px; display:flex; align-items:center; justify-content:center;">
-                        <svg viewBox="0 0 100 120" width="50" height="60" style="position:absolute; top:0; left:0;">
-                            <path d="M50 115 L5 90 L5 20 L50 5 L95 20 L95 90 Z" fill="none" stroke="white"
-                                stroke-width="4" />
-                        </svg>
-                        <span id="val-defense-total"
-                            style="font-size:1.5rem; font-weight:800; color:white; z-index:2;">10</span>
-                    </div>
-
-                    <!-- Formula -->
-                    <div class="def-formula" style="flex:1;">
-                        <h4 style="margin:0 0 0.2rem 0; color:#ccc; font-size:0.8rem; letter-spacing:1px;">DEFESA</h4>
-
-                        <div style="display:flex; align-items:center; gap:0.3rem; font-size:0.8rem; color:#888;">
-                            <span>= 10+</span>
-                            <span title="Modificador de Constituição">VIG</span>
-                            <span>+</span>
-
-                            <!-- Equip Input -->
-                            <div style="display:flex; flex-direction:column; align-items:center;">
-                                <input type="number" id="def-equip" value="0" class="def-input" readonly
-                                    style="color:var(--accent-cyan); border-bottom-color:var(--accent-cyan);">
-                                <span style="font-size:0.55rem;">Equip.</span>
-                            </div>
-
-                            <span>+</span>
-
-                            <!-- Others Input -->
-                            <div style="display:flex; flex-direction:column; align-items:center;">
-                                <input type="number" id="def-other" value="0" class="def-input"
-                                    onchange="calcDefense()">
-                                <span style="font-size:0.55rem;">Outr.</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </aside>
-
-        <!-- COLUMN 2: SKILLS -->
-        <section class="skills-col">
-            <header class="col-header">PERÍCIAS</header>
-            <div class="skill-list" id="skillsListBody">
-                <!-- JS Populated -->
             </div>
         </section>
 
-        <!-- COLUMN 3: CONTENT -->
-        <main class="main-col">
-            <nav class="top-nav">
-                <button class="nav-tab active" onclick="switchTab('combat')">COMBATE</button>
-                <button class="nav-tab" onclick="switchTab('breathing')">RESPIRAÇÃO</button>
-                <button class="nav-tab" onclick="switchTab('abilities')">HABILIDADES</button>
-                <button class="nav-tab" onclick="switchTab('inventory')">INVENTÁRIO</button>
-                <button class="nav-tab" onclick="switchTab('desc')">DESCRIÇÃO</button>
-                <button class="nav-tab" onclick="switchTab('tools')">FERRAMENTAS</button> <!-- NEW TAB -->
-                <button class="personalization-btn">⚙️</button>
-            </nav>
-
-            <div class="content-area">
-
-                <!-- COMBAT TAB -->
-                <div id="tab-combat" class="tab-content active">
-                    <input type="text" class="search-bar" placeholder="Filtrar ataques...">
-
-                    <div class="combat-header">
-                        <span style="color:#666;">Ataques</span>
-                        <button class="new-atk-btn" onclick="openAttackModal()">Novo Ataque</button>
-                    </div>
-
-                    <div id="attacksList">
-                        <!-- JS Populated -->
-                    </div>
-                </div>
-
-                <!-- BREATHING TAB -->
-                <div id="tab-breathing" class="tab-content">
-                    <div id="breathingContent">
-                        <!-- Filled by JS based on Level -->
-                    </div>
-                </div>
-
-                <!-- ABILITIES TAB -->
-                <div id="tab-abilities" class="tab-content">
-                    <h3>Habilidades de Classe</h3>
-                    <p style="color:#888;">Lista de poderes passivos...</p>
-                </div>
-
-                <!-- TOOLS TAB -->
-                <div id="tab-tools" class="tab-content">
-                    <h3>Ferramentas de Caçador</h3>
-                    <div class="tools-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
-                        <!-- Economy -->
-                        <div class="tool-card"
-                            style="background:rgba(255,255,255,0.05); padding:1rem; border-radius:8px;">
-                            <h4>Economia</h4>
-                            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                                <input type="number" id="yenInput" placeholder="Yen (¥)" class="ds-input"
-                                    style="width:45%;">
-                                <span>➡</span>
-                                <input type="number" id="kanInput" placeholder="Kan (金)" class="ds-input"
-                                    style="width:45%;" readonly>
-                            </div>
-                            <button class="btn-primary" onclick="convertCurrency()"
-                                style="width:100%; font-size:0.8rem;">Converter</button>
-                        </div>
-
-                        <!-- Appraisal -->
-                        <div class="tool-card"
-                            style="background:rgba(255,255,255,0.05); padding:1rem; border-radius:8px;">
-                            <h4>Avaliação</h4>
-                            <p style="font-size:0.8rem; color:#aaa;">Rolar Inteligência para estimar valor.</p>
-                            <button class="btn-secondary" onclick="rollAppraisal()" style="width:100%;">Avaliar Item
-                                🎲</button>
-                            <div id="appraisalResult" style="margin-top:10px; font-size:0.9rem; color: #ccc;"></div>
-                        </div>
-
-                        <!-- Wishlist -->
-                        <div class="tool-card"
-                            style="grid-column: 1 / -1; background:rgba(255,255,255,0.05); padding:1rem; border-radius:8px;">
-                            <h4>Lista de Desejos</h4>
-                            <textarea id="wishlistInput" class="desc-box" placeholder="Itens que desejo comprar..."
-                                style="height:100px;" onchange="saveWishlist()"></textarea>
-                        </div>
-
-                        <!-- Shop (Placeholder) -->
-                        <div class="tool-card"
-                            style="grid-column: 1 / -1; background:rgba(255,255,255,0.05); padding:1rem; border-radius:8px;">
-                            <h4>Loja do Kakushi (Rotativa)</h4>
-                            <p style="font-size:0.8rem;">Itens disponíveis esta semana:</p>
-                            <ul id="shopList" style="list-style:none; padding:0; color:#aaa;">
-                                <li>Carregando estoque...</li>
-                            </ul>
-                            <button class="btn-secondary" onclick="generateShop()"
-                                style="font-size:0.8rem; margin-top:10px;">Atualizar Estoque</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- INVENTORY TAB (UPDATED) -->
-                <div id="tab-inventory" class="tab-content">
-                    <div class="combat-header">
-                        <div>
-                            <h3>Mochila & Equipamento</h3>
-                            <div style="font-size:0.8rem; color:#888;">
-                                <span id="inv-total-items">0</span> Itens | Carga: <span id="inv-total-weight">0</span>
-                                kg
-                            </div>
-                        </div>
-                        <div style="display:flex; gap:5px;">
-                            <button class="new-atk-btn" onclick="openForge()"
-                                style="background:#d90429; border-color:#ff3355;">Forjar Nichirin</button>
-                            <button class="new-atk-btn" onclick="openItemModal()">+ Item</button>
-                        </div>
-                    </div>
-
-                    <div id="inventoryList" class="inventory-section">
-                        <!-- JS injected -->
-                    </div>
-                </div>
-
-                <!-- DESCRIPTION TAB -->
-                <div id="tab-desc" class="tab-content">
-                    <div style="margin-bottom:2rem;">
-                        <h3 style="color:var(--accent-purple); border-bottom:1px solid #333; padding-bottom:0.5rem;">
-                            História</h3>
-                        <textarea id="desc-story" class="desc-box" onchange="saveDescription()"
-                            placeholder="Escreva a história do seu personagem..."></textarea>
-                    </div>
-
-                    <div>
-                        <h3 style="color:var(--accent-purple); border-bottom:1px solid #333; padding-bottom:0.5rem;">
-                            Observações & Aparência</h3>
-                        <textarea id="desc-notes" class="desc-box" onchange="saveDescription()"
-                            placeholder="Cicatrizes, altura, detalhes visuais..."></textarea>
-                    </div>
-
-                    <div style="margin-top:2rem;">
-                        <h3 style="color:var(--accent-purple); border-bottom:1px solid #333; padding-bottom:0.5rem;">
-                            Finanças</h3>
-                        <div
-                            style="background:rgba(0,0,0,0.2); padding:1rem; border-radius:8px; display:flex; align-items:center; gap:1rem;">
-                            <span style="font-size:1.5rem;">💴</span>
-                            <div style="flex:1;">
-                                <label style="display:block; font-size:0.8rem; color:#888; margin-bottom:4px;">Yen
-                                    (Dinheiro)</label>
-                                <input type="text" id="desc-money" class="search-bar" style="margin:0; width:100%;"
-                                    placeholder="0" onchange="saveDescription()">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+        <!-- SECTION 2: COMBAT -->
+        <section id="combat" class="dashboard-section">
+            <div class="section-header">
+                <i data-lucide="sword" style="color: var(--accent-red);"></i>
+                <span class="sec-title">Combate</span>
+                <button onclick="openAttackModal()"
+                    style="margin-left: auto; background: #222; border: 1px solid #444; color: white; padding: 5px 10px; border-radius: 4px; cursor: pointer;">+
+                    Ataque</button>
             </div>
-        </main>
-    </div>
 
-    <!-- ITEM SELECT MODAL -->
-    <div id="itemModal" class="modal-overlay">
-        <div class="modal-window">
-            <div class="modal-header">
-                <h3>Adicionar Equipamento</h3>
+            <div id="attacksList"
+                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
+                <!-- Attacks Injected Here -->
+            </div>
+        </section>
+
+        <!-- SECTION 3: INVENTORY (REVAMPED) -->
+        <section id="inventory" class="dashboard-section">
+            <div class="section-header">
+                <i data-lucide="backpack" style="color: var(--accent-red);"></i>
+                <span class="sec-title">Inventário</span>
+                <button onclick="openItemModal()"
+                    style="margin-left: auto; background: var(--accent-purple); border: none; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight:bold;">+
+                    Adicionar Item</button>
+            </div>
+
+            <div class="inv-workspace">
+                <!-- COL 1: LIBRARY -->
+                <div class="inv-library">
+                    <!-- Search & Filters -->
+                    <div class="inv-toolbar">
+                        <div style="position:relative; flex:1;">
+                            <i data-lucide="search"
+                                style="position:absolute; left:10px; top:10px; color:#666; width:16px;"></i>
+                            <input type="text" class="inv-search" placeholder="Buscar item..." padding-left:35px;"
+                                oninput="filterInventory(this.value)">
+                        </div>
+                        <button
+                            style="background:#222; border:1px solid #333; width:40px; height:40px; border-radius:8px; cursor:pointer; color:#888;"><i
+                                data-lucide="sliders-horizontal"></i></button>
+                    </div>
+
+                    <div class="inv-filters">
+                        <div class="filter-tag active" onclick="setFilter('all', this)">TUDO</div>
+                        <div class="filter-tag" onclick="setFilter('weapon', this)">ARMAS</div>
+                        <div class="filter-tag" onclick="setFilter('armor', this)">EQUIPAMENTOS</div>
+                        <div class="filter-tag" onclick="setFilter('consumable', this)">CONSUMÍVEIS</div>
+                    </div>
+
+                    <div
+                        style="font-size:0.75rem; color:#666; margin-top:5px; display:flex; justify-content:space-between;">
+                        <span>CAPACIDADE DA MOCHILA</span>
+                        <span id="capacityText">14 / 50 kg</span>
+                    </div>
+                    <div class="capacity-bar-container">
+                        <div class="capacity-fill" id="capacityBar" style="width: 25%;"></div>
+                    </div>
+
+                    <!-- LIST (Matched to Abilities) -->
+                    <div class="inv-list-container" id="inventoryGrid">
+                        <!-- Items Loaded Here (Rows) -->
+                    </div>
+                </div>
+
+                <!-- COL 2: PANEL -->
+                <aside class="inv-panel">
+                    <!-- Mini Paper Doll (Always Visible) -->
+                    <div class="equip-slots-mini">
+                        <div class="es-mini" id="slot-head" title="Cabeça"><i data-lucide="smile"></i></div>
+                        <div class="es-mini" id="slot-torso" title="Tronco"><i data-lucide="shirt"></i></div>
+                        <div class="es-mini" id="slot-hands" title="Mãos"><i data-lucide="hand"></i></div>
+                        <div class="es-mini" id="slot-weapon" title="Arma"><i data-lucide="sword"></i></div>
+                        <div class="es-mini" id="slot-legs" title="Pernas"><i data-lucide="footprints"></i></div>
+                    </div>
+
+                    <!-- SELECTED ITEM DETAILS -->
+                    <div id="itemDetailContainer" style="display:none; flex-direction:column; flex:1;">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <!-- Empty State for Details -->
+                    <div id="itemDetailEmpty"
+                        style="flex:1; display:flex; align-items:center; justify-content:center; color:#444; margin: 20px; border:1px dashed #333; border-radius:8px;">
+                        Selecione um item
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <!-- SECTION 4: ABILITIES -->
+        <section id="abilities" class="dashboard-section">
+            <div class="section-header">
+                <i data-lucide="zap" style="color: var(--accent-red);"></i>
+                <span class="sec-title">Habilidades & Técnicas</span>
+            </div>
+            <div id="tab-abilities" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <!-- Abilities -->
+            </div>
+
+            <h3 style="margin-top: 2rem; color: var(--accent-cyan);">Respiração</h3>
+            <div id="breathingContent"></div>
+        </section>
+
+        <!-- SECTION 5: BIO -->
+        <section id="bio" class="dashboard-section">
+            <div class="section-header">
+                <i data-lucide="scroll" style="color: var(--accent-red);"></i>
+                <span class="sec-title">Biografia</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <div>
+                    <label style="color:#888; display:block; margin-bottom:5px;">História</label>
+                    <textarea id="desc-story" class="ds-input" style="height: 150px; width: 100%;"></textarea>
+                </div>
+                <div>
+                    <label style="color:#888; display:block; margin-bottom:5px;">Anotações</label>
+                    <textarea id="desc-notes" class="ds-input" style="height: 150px; width: 100%;"></textarea>
+                </div>
+            </div>
+            <div style="margin-top: 1rem;">
+                <label style="color:#888;">Dinheiro (Yenes)</label>
+                <input type="text" id="desc-money" class="ds-input" value="0">
+            </div>
+            <button onclick="saveDescription()"
+                style="margin-top: 1rem; background: #222; color: white; padding: 8px 16px; border: 1px solid #444; cursor: pointer;">Salvar
+                Bio</button>
+        </section>
+
+        <!-- Spacer -->
+        <div style="height: 50px;"></div>
+    </main>
+
+    <!-- ROLLING LOG OVERLAY (For chat messages) -->
+    <div class="roll-log" id="chatContent" style="display: flex; flex-direction:column-reverse;"></div>
+
+    <!-- MODALS (Preserved Structure from Dashboard.js expectations) -->
+    <!-- PREMIUM ITEM MODAL -->
+    <div id="itemModal" class="modal-overlay" style="display:none;">
+        <div class="premium-modal">
+            <div class="modal-top">
+                <h3 class="modal-title"><i data-lucide="package-plus"></i> Forja & Suprimentos</h3>
+                <button class="modal-close" onclick="closeItemModal()"><i data-lucide="x"></i></button>
+            </div>
+
+            <div class="modal-content-area">
+                <!-- Categories -->
+                <nav class="modal-cats">
+                    <button class="cat-btn active" onclick="filterModal('weapon', this)"><i data-lucide="sword"></i>
+                        Armas</button>
+                    <button class="cat-btn" onclick="filterModal('armor', this)"><i data-lucide="shield"></i>
+                        Proteção</button>
+                    <button class="cat-btn" onclick="filterModal('consumable', this)"><i
+                            data-lucide="flask-conical"></i> Consumíveis</button>
+                    <button class="cat-btn" onclick="filterModal('misc', this)"><i data-lucide="box"></i>
+                        Outros</button>
+                </nav>
+
+                <!-- Items Grid -->
+                <div class="modal-picker">
+                    <input type="text" id="pickerSearch" class="ds-input" placeholder="Buscar item..."
+                        style="margin-bottom:1rem;" oninput="searchModal(this.value)">
+                    <div id="pickerGrid" class="picker-grid">
+                        <!-- Items Loaded Here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <span style="font-size:0.8rem; color:#666; margin-right:auto;">Clique para adicionar ao
+                    inventário</span>
                 <button onclick="closeItemModal()"
-                    style="background:none; border:none; color:white; cursor:pointer;">✕</button>
-            </div>
-            <div class="modal-body">
-                <div class="modal-col">
-                    <h4 style="color:var(--accent-cyan)">Armas</h4>
-                    <div id="modalWeaponsList"></div>
-                </div>
-                <div class="modal-col">
-                    <h4 style="color:var(--accent-red)">Armaduras & Uniformes</h4>
-                    <div id="modalArmorList"></div>
-                </div>
+                    style="background:#333; color:white; border:none; padding:8px 16px; border-radius:4px; cursor:pointer;">Fechar</button>
             </div>
         </div>
     </div>
 
-    <!-- NEW ATTACK CREATE MODAL -->
-    <div id="attackModal" class="modal-overlay">
-        <div class="modal-window" style="width: 400px;">
-            <div class="modal-header">
-                <h3>Criar Novo Ataque</h3>
-                <button onclick="closeAttackModal()"
-                    style="background:none; border:none; color:white; cursor:pointer;">✕</button>
-            </div>
-            <div class="modal-body" style="flex-direction:column; gap:1rem;">
-                <!-- Fields match user image request -->
-                <div>
-                    <label style="display:block; color:#ccc; font-size:0.8rem; margin-bottom:5px;">Nome*</label>
-                    <input type="text" id="newAtkName" class="search-bar" style="margin:0; padding:0.5rem;"
-                        placeholder="Ex: Novo Ataque">
-                </div>
-
-                <div style="display:flex; gap:1rem;">
-                    <div style="flex:1;">
-                        <label style="display:block; color:#ccc; font-size:0.8rem; margin-bottom:5px;">Dano*</label>
-                        <input type="text" id="newAtkDmg" class="search-bar" style="margin:0; padding:0.5rem;"
-                            placeholder="1d4">
-                    </div>
-                    <div style="width:80px;">
-                        <label style="display:block; color:#ccc; font-size:0.8rem; margin-bottom:5px;">Crítico*</label>
-                        <input type="number" id="newAtkCrit" class="search-bar" style="margin:0; padding:0.5rem;"
-                            value="20">
-                    </div>
-                </div>
-
-                <div style="display:flex; gap:1rem;">
-                    <div style="flex:1;">
-                        <label style="display:block; color:#ccc; font-size:0.8rem; margin-bottom:5px;">Ataque
-                            Bônus</label>
-                        <input type="number" id="newAtkBonus" class="search-bar" style="margin:0; padding:0.5rem;"
-                            value="0">
-                    </div>
-                    <div style="flex:1;">
-                        <label style="display:block; color:#ccc; font-size:0.8rem; margin-bottom:5px;">Tipo de
-                            Dano</label>
-                        <input type="text" id="newAtkType" class="search-bar" style="margin:0; padding:0.5rem;"
-                            placeholder="Balístico">
-                    </div>
-                </div>
-
-                <button onclick="saveCustomAttack()" class="new-atk-btn"
-                    style="width:100%; text-align:center; margin-top:1rem; padding:0.8rem;">CRIAR ATAQUE</button>
-            </div>
+    <div id="attackModal" class="modal-overlay" style="display:none;">
+        <div style="background:#1a1a1a; padding:2rem; width:400px; border:1px solid #333; border-radius:8px;">
+            <h3>Novo Ataque</h3>
+            <input type="text" id="newAtkName" placeholder="Nome" class="ds-input" style="margin-bottom:10px;">
+            <input type="text" id="newAtkDmg" placeholder="Dano (ex: 1d6+2)" class="ds-input"
+                style="margin-bottom:10px;">
+            <input type="text" id="newAtkType" placeholder="Tipo (ex: Cortante)" class="ds-input"
+                style="margin-bottom:10px;">
+            <button onclick="saveCustomAttack()" style="width:100%; padding:10px;">Salvar</button>
+            <button onclick="closeAttackModal()"
+                style="width:100%; margin-top:5px; background:none; color:#888; border:none; cursor:pointer;">Cancelar</button>
         </div>
     </div>
 
-    <!-- NEW ABILITY CREATE MODAL -->
-    <div id="abilityModal" class="modal-overlay">
-        <div class="modal-window" style="width: 400px;">
-            <div class="modal-header">
-                <h3>Criar Nova Habilidade</h3>
-                <button onclick="closeAbilityModal()"
-                    style="background:none; border:none; color:white; cursor:pointer;">✕</button>
-            </div>
-            <div class="modal-body" style="flex-direction:column; gap:1rem;">
-                <div>
-                    <label style="display:block; color:#ccc; font-size:0.8rem; margin-bottom:5px;">Nome*</label>
-                    <input type="text" id="newAbilName" class="search-bar" style="margin:0; padding:0.5rem;"
-                        placeholder="Ex: Sentidos Aguçados">
-                </div>
-
-                <div>
-                    <label style="display:block; color:#ccc; font-size:0.8rem; margin-bottom:5px;">Descrição</label>
-                    <textarea id="newAbilDesc" class="desc-box" style="height:100px; padding:0.5rem;"
-                        placeholder="Descreva o efeito..."></textarea>
-                </div>
-
-                <div>
-                    <label style="display:block; color:#ccc; font-size:0.8rem; margin-bottom:5px;">Nível
-                        (Opcional)</label>
-                    <input type="number" id="newAbilLevel" class="search-bar" style="margin:0; padding:0.5rem;"
-                        value="1">
-                </div>
-
-                <button onclick="saveCustomAbility()" class="new-atk-btn"
-                    style="width:100%; text-align:center; margin-top:1rem; padding:0.8rem;">CRIAR HABILIDADE</button>
-            </div>
+    <div id="abilityModal" class="modal-overlay" style="display:none;">
+        <div style="background:#1a1a1a; padding:2rem; width:400px; border:1px solid #333; border-radius:8px;">
+            <h3>Nova Habilidade</h3>
+            <input type="text" id="newAbilName" placeholder="Nome" class="ds-input" style="margin-bottom:10px;">
+            <textarea id="newAbilDesc" placeholder="Descrição" class="ds-input"
+                style="margin-bottom:10px; height:80px;"></textarea>
+            <button onclick="saveCustomAbility()" style="width:100%; padding:10px;">Salvar</button>
+            <button onclick="closeAbilityModal()"
+                style="width:100%; margin-top:5px; background:none; color:#888; border:none; cursor:pointer;">Cancelar</button>
         </div>
     </div>
 
-    <!-- NICHIRIN FORGE MODAL (Redesigned) -->
-    <div id="forgeModal" class="modal-overlay">
-        <div class="modal-window forge-window" style="max-width: 900px; height: auto; max-height: 90vh;">
-            <div class="forge-header">
-                <div style="display:flex; align-items:center; gap:15px;">
-                    <i data-lucide="flame" style="color:#ff5500; width:32px; height:32px;"></i>
-                    <h2
-                        style="margin:0; font-size:1.8rem; background: linear-gradient(to right, #ff9966, #ff5e62); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                        Forja Nichirin (日輪)</h2>
-                </div>
-                <button onclick="document.getElementById('forgeModal').classList.remove('open')"
-                    class="icon-btn-mini"><i data-lucide="x"></i></button>
-            </div>
-
-            <div class="forge-body-grid">
-                <!-- LEFT: VISUAL -->
-                <div class="forge-preview-col">
-                    <div id="bladePreview" class="blade-preview-box">
-                        <div class="blade-glow"></div>
-                        <i data-lucide="sword" class="preview-icon"></i>
-                        <span id="previewLabel"
-                            style="margin-top:1rem; font-weight:bold; color:white; font-size:1.2rem; text-shadow:0 0 10px black;">Katana
-                            Nichirin</span>
-                        <div id="previewAttr" style="font-size:0.8rem; color:#aaa; margin-top:5px;">Afinidade: Água
-                        </div>
-                    </div>
-
-                    <div style="width:100%; margin-top:1rem;">
-                        <label
-                            style="display:block; color:#888; margin-bottom:5px; font-size:0.8rem; text-transform:uppercase;">Nome
-                            da Lâmina</label>
-                        <input type="text" id="forgeName" placeholder="Ex: Lâmina do Destino" class="forge-input"
-                            oninput="updateForgePreview()">
-                    </div>
-                </div>
-
-                <!-- RIGHT: OPTIONS -->
-                <div class="forge-options-col">
-
-                    <div class="forge-section">
-                        <h4>1. Estilo de Forja</h4>
-                        <div class="forge-types-grid" id="bladeTypeOpts">
-                            <div class="forge-card selected" onclick="selectBladeType('katana')">
-                                <i data-lucide="sword"></i>
-                                <span>Katana</span>
-                            </div>
-                            <div class="forge-card" onclick="selectBladeType('dual')">
-                                <i data-lucide="scissors"></i> <!-- close enough for dual -->
-                                <span>Duplas</span>
-                            </div>
-                            <div class="forge-card" onclick="selectBladeType('axe')">
-                                <i data-lucide="axe"></i>
-                                <span>Machado</span>
-                            </div>
-                            <div class="forge-card" onclick="selectBladeType('gun')">
-                                <i data-lucide="crosshair"></i>
-                                <span>Genya/Gun</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="forge-section">
-                        <h4>2. Minério & Afinidade</h4>
-                        <div class="ore-grid">
-                            <div class="ore-opt ore-blue selected" onclick="selectBladeColor('blue')"
-                                title="Água: Defesa Fluida">+1 AC</div>
-                            <div class="ore-opt ore-red" onclick="selectBladeColor('red')" title="Chamas: Dano Ardente">
-                                +1 Dano</div>
-                            <div class="ore-opt ore-yellow" onclick="selectBladeColor('yellow')"
-                                title="Trovão: Velocidade">+Iniciativa</div>
-                            <div class="ore-opt ore-green" onclick="selectBladeColor('green')" title="Vento: Fúria">Crit
-                                19-20</div>
-                            <div class="ore-opt ore-pink" onclick="selectBladeColor('pink')"
-                                title="Amor: Flexibilidade">+Acrobacia</div>
-                            <div class="ore-opt ore-black" onclick="selectBladeColor('black')"
-                                title="Sol/Vazio: Mistério">Equilibrado</div>
-                        </div>
-                        <div id="colorDesc" class="forge-desc-text">Água (Mizu): Lâmina fluida que aumenta sua defesa.
-                        </div>
-                    </div>
-
-                    <div style="margin-top:auto; display:flex; justify-content:flex-end; gap:1rem; padding-top:1rem;">
-                        <button class="btn-cancel"
-                            onclick="document.getElementById('forgeModal').classList.remove('open')">Sair</button>
-                        <button class="btn-save-forge" onclick="saveForge()">FORJAR AGORA</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <style>
-        /* INLINE STYLES FOR THE NEW FORGE UI */
-        .forge-window {
-            background: #0f0f13;
-            border: 1px solid #333;
-            overflow: hidden;
-            border-radius: 16px;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .forge-header {
-            padding: 1.5rem;
-            background: #16161c;
-            border-bottom: 1px solid #2a2a35;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .forge-body-grid {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        .forge-preview-col {
-            background: #121215;
-            border-right: 1px solid #2a2a35;
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .forge-options-col {
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-            background: linear-gradient(135deg, #1a1a20, #0f0f10);
-        }
-
-        .blade-preview-box {
-            width: 100%;
-            height: 300px;
-            background: #000;
-            border: 1px solid #333;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .blade-glow {
-            position: absolute;
-            width: 150px;
-            height: 150px;
-            background: radial-gradient(circle, var(--accent-color, #00b4d8) 0%, transparent 70%);
-            opacity: 0.2;
-            filter: blur(20px);
-            transition: all 0.5s;
-        }
-
-        .preview-icon {
-            width: 100px;
-            height: 100px;
-            color: #ccc;
-            z-index: 2;
-            transition: color 0.3s;
-        }
-
-        .forge-input {
-            width: 100%;
-            background: #000;
-            border: 1px solid #333;
-            padding: 10px;
-            color: white;
-            border-radius: 4px;
-        }
-
-        .forge-section h4 {
-            color: #888;
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.9rem;
-            border-bottom: 1px solid #333;
-            padding-bottom: 5px;
-        }
-
-        .forge-types-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-
-        .forge-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .forge-card:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateY(-2px);
-        }
-
-        .forge-card.selected {
-            border-color: var(--accent-purple);
-            background: rgba(157, 78, 221, 0.1);
-            color: white;
-        }
-
-        .ore-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-
-        .ore-opt {
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            text-align: center;
-            cursor: pointer;
-            border: 1px solid #333;
-            font-weight: bold;
-            color: #aaa;
-            transition: all 0.2s;
-        }
-
-        .ore-opt:hover {
-            filter: brightness(1.2);
-        }
-
-        .ore-opt.selected {
-            border: 2px solid white;
-            color: black;
-            box-shadow: 0 0 10px currentColor;
-        }
-
-        .ore-blue {
-            background: #00b4d8;
-            color: #000;
-        }
-
-        .ore-red {
-            background: #d90429;
-            color: #fff;
-        }
-
-        .ore-yellow {
-            background: #ffd60a;
-            color: #000;
-        }
-
-        .ore-green {
-            background: #2b9348;
-            color: #fff;
-        }
-
-        .ore-pink {
-            background: #ff006e;
-            color: #fff;
-        }
-
-        .ore-black {
-            background: #222;
-            color: #fff;
-            border-color: #555;
-        }
-
-        .btn-save-forge {
-            background: linear-gradient(45deg, #d90429, #ff5e62);
-            border: none;
-            padding: 10px 20px;
-            color: white;
-            font-weight: bold;
-            border-radius: 4px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(217, 4, 41, 0.4);
-            transition: all 0.3s;
-        }
-
-        .btn-save-forge:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(217, 4, 41, 0.6);
-        }
-    </style>
-
-    <!-- CHAT LOG -->
-    <!-- CHAT LOG (Usage: Toggled via Sidebar) -->
-    <div id="chatLog" class="chat-log" style="display:none;">
-        <div class="chat-header">Battle Log <button class="btn-clear-chat" onclick="clearChat()"><i
-                    data-lucide="trash-2" style="width:14px;"></i></button></div>
-        <div id="chatContent" class="chat-content">
-            <div class="chat-msg system">Bem-vindo ao Demon Slayer RPG!</div>
-        </div>
-    </div>
-
-    <script src="dashboard.js?v=FIXED3"></script>
+    <!-- Scripts -->
+    <script src="dashboard.js"></script>
     <script>
-        // Init Chat Icons 
-        if (window.lucide) window.lucide.createIcons();
+        // Tab Navigation Logic
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.dashboard-section').forEach(el => {
+                el.classList.remove('active-tab');
+            });
+
+            // Show target section
+            const target = document.getElementById(sectionId);
+            if (target) target.classList.add('active-tab');
+
+            // Update Sidebar State
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Find the button (approximate match by onclick content)
+            const activeNav = Array.from(document.querySelectorAll('.nav-item')).find(el => {
+                const clickAttr = el.getAttribute('onclick');
+                return clickAttr && clickAttr.includes(sectionId);
+            });
+
+            if (activeNav) activeNav.classList.add('active');
+        }
+
+        // Initialize Default Tab
+        document.addEventListener('DOMContentLoaded', () => {
+            showSection('overview');
+        });
+
+        // Initialize Lucide
+        if (window.lucide) lucide.createIcons();
     </script>
 </body>
 
