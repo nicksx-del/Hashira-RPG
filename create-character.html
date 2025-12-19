@@ -590,10 +590,116 @@
             background: #16161a;
             border-radius: 4px;
         }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                height: auto;
+                overflow-y: auto;
+            }
+
+            .sidebar-left {
+                display: none;
+                /* Hide nav on mobile, use scroll */
+            }
+
+            .sidebar-right {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 85%;
+                height: 100vh;
+                z-index: 1000;
+                transition: right 0.3s;
+                overflow-y: auto;
+                border-left: 1px solid #333;
+                background: #0e0e12;
+            }
+
+            .sidebar-right.open {
+                right: 0;
+            }
+
+            .main-content {
+                width: 100%;
+                padding: 5rem 1rem 5rem 1rem;
+                /* Space for header/footer */
+            }
+
+            .grid-2,
+            .forge-container,
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            div[style*="grid-template-columns: 1.5fr 1fr"] {
+                grid-template-columns: 1fr !important;
+                gap: 2rem !important;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            /* Mobile Header/Footer */
+            .mobile-header {
+                display: flex !important;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 60px;
+                background: rgba(10, 10, 15, 0.95);
+                backdrop-filter: blur(10px);
+                border-bottom: 1px solid var(--border-color);
+                z-index: 900;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 1rem;
+            }
+
+            .mobile-preview-btn {
+                display: flex !important;
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: var(--accent-red);
+                color: white;
+                border: none;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                align-items: center;
+                justify-content: center;
+                z-index: 900;
+                box-shadow: 0 4px 15px rgba(217, 4, 41, 0.5);
+                cursor: pointer;
+            }
+        }
+
+        .mobile-header,
+        .mobile-preview-btn {
+            display: none;
+        }
     </style>
 </head>
 
 <body>
+
+    <!-- MOBILE HEADER -->
+    <div class="mobile-header">
+        <a href="index.html" style="color:white;"><i data-lucide="arrow-left"></i></a>
+        <span style="font-weight:bold; font-family:var(--font-display);">Criação de Personagem</span>
+        <div style="width:24px;"></div> <!-- Spacer -->
+    </div>
+
+    <!-- MOBILE PREVIEW TOGGLE -->
+    <button class="mobile-preview-btn" onclick="togglePreview()">
+        <i data-lucide="user"></i>
+    </button>
+    <div class="mobile-overlay" id="previewOverlay" onclick="togglePreview()"
+        style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; display:none;">
+    </div>
 
     <!-- LEFT SIDEBAR -->
     <nav class="sidebar-left">
@@ -768,6 +874,19 @@
                 </div>
             </div>
         </section>
+
+        <script>
+            function togglePreview() {
+                const sb = document.querySelector('.sidebar-right');
+                const overlay = document.getElementById('previewOverlay');
+                sb.classList.toggle('open');
+                if (sb.classList.contains('open')) {
+                    overlay.style.display = 'block';
+                } else {
+                    overlay.style.display = 'none';
+                }
+            }
+        </script>
 
         <!-- SEC 4: STATS -->
         <section id="stats" class="form-section">
