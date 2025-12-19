@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Escolha sua Respiração | Handbook</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="breathing.css">
+    <link rel="stylesheet" href="theme-demonslayer.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Kaushan+Script&family=Patrick+Hand&display=swap"
+        rel="stylesheet">
+    <style>
+        .breathing-selection-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            animation: fadeIn 1s;
+        }
+
+        .scroll-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .scroll-header h1 {
+            color: var(--ink-black);
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .single-choice-grid {
+            margin-bottom: 3rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="breathing-selection-container">
+
+        <div class="creation-form" style="max-width:800px; width:100%; text-align:center;">
+            <div class="scroll-header">
+                <h1>Técnicas de Respiração</h1>
+                <p>O poder flui através dos pulmões. Escolha seu caminho.</p>
+            </div>
+
+            <div id="breathingChoiceArea" class="single-choice-grid">
+                <!-- We only want Water Breathing here as per request -->
+                <!-- Hardcoded Water Card for the "Only Water" request, or injected -->
+                <div class="breathing-card" onclick="selectWater()" id="waterCard">
+                    <div class="breath-icon">🌊</div>
+                    <h3>Respiração da Água</h3>
+                    <p>Equilíbrio, Defesa e Fluidez.</p>
+                    <div class="primary-stats-icons">
+                        <span class="stat-icon-glow">FOR</span> <span class="stat-icon-glow">DES</span>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="form-footer">
+                <button id="finalBtn" class="btn-primary" disabled onclick="finalizeCharacter()">Finalizar
+                    Ficha</button>
+            </footer>
+        </div>
+
+    </div>
+
+    <script>
+        // Load Temp Data
+        const tempData = JSON.parse(localStorage.getItem('demonSlayerChar_Temp'));
+        if (!tempData) {
+            alert("Dados não encontrados. Volte ao início.");
+            window.location.href = 'create-character.html';
+        }
+
+        console.log("Partial Data:", tempData);
+
+        let selected = false;
+
+        function selectWater() {
+            selected = true;
+            document.getElementById('waterCard').classList.add('selected');
+            document.getElementById('finalBtn').removeAttribute('disabled');
+        }
+
+        function finalizeCharacter() {
+            // Construct Final Data
+            // We hardcode Water Breathing data here since user said ONLY water for now
+            const waterBreathingData = {
+                "id": "class_water",
+                "name": "Respiração da Água",
+                "icon": "🌊",
+                "base_stats": {
+                    "hit_die": 10
+                },
+                "proficiencies": ["Acrobacia", "Atletismo"] // Default skills for simplicity/request
+            };
+
+            // Calculate Final HP (Base + Con Mod)
+            // Con Mod?
+            const con = tempData.attributes.con;
+            const conMod = Math.floor((con - 10) / 2);
+            const finalHP = 10 + conMod; // Level 1 Water Die = 10
+
+            const finalChar = {
+                ...tempData,
+                hp: finalHP,
+                currentHP: finalHP,
+                breathingStyle: waterBreathingData,
+                proficiencies: [...(new Set([...(tempData.proficiencies || []), "Acrobacia", "Atletismo"]))]
+            };
+
+            localStorage.setItem('demonSlayerChar', JSON.stringify(finalChar));
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+
+</html>

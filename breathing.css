@@ -1,0 +1,86 @@
+/* STEP 3: BREATHING STYLES */
+.breathing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.breathing-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.breathing-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-5px);
+}
+
+.breathing-card.selected {
+    border-color: var(--neon-cyan);
+    background: rgba(0, 243, 255, 0.05);
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
+}
+
+.breath-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.breath-stats {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-light);
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* SKILL SELECTION */
+.skill-selection {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-light);
+    text-align: center;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.5s;
+}
+
+.skill-options {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+.skill-checkbox {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.8rem 1.5rem;
+    border-radius: 50px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.skill-checkbox:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.skill-checkbox:has(input:checked) {
+    background: var(--accent-purple);
+    color: white;
+    border-color: var(--accent-glow);
+    box-shadow: 0 0 10px rgba(112, 0, 255, 0.4);
+}

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo Personagem | Handbook do Exterminador</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="breathing.css">
+    <link rel="stylesheet" href="theme-demonslayer.css">
+    <link rel="stylesheet" href="dice.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body class="creation-body">
+
+    <div class="creation-container">
+        <!-- HEADER -->
+        <header class="creation-header">
+            <a href="index.html" class="back-link"><i data-lucide="arrow-left" style="width:16px;"></i> Voltar</a>
+            <h1>Criação de Personagem</h1>
+
+            <!-- VISUAL PATH TRACKER -->
+            <div class="progress-path">
+                <div class="path-step active" id="path-step-1">
+                    <span class="step-icon"><i data-lucide="user"></i></span>
+                    <span class="path-label">Origem</span>
+                </div>
+                <!-- Line is CSS -->
+                <div class="path-step" id="path-step-2">
+                    <span class="step-icon"><i data-lucide="sparkles"></i></span>
+                    <span class="path-label">Destino</span>
+                </div>
+                <div class="path-step" id="path-step-3">
+                    <span class="step-icon"><i data-lucide="sword"></i></span>
+                    <span class="path-label">Especialização</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="creation-form">
+
+            <!-- STEP 1: IDENTITY -->
+            <section id="step1" class="input-section">
+                <header class="section-guide">
+                    <h2>Identidade & Origem</h2>
+                    <p>Antes de empunhar uma lâmina Nichirin, todo caçador tem uma história. Quem é você neste mundo
+                        infestado por Onis?</p>
+                </header>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="charName">Nome do Caçador</label>
+                        <input type="text" id="charName" placeholder="Ex: Tanjiro Kamado" autocomplete="off"
+                            class="ds-input">
+                        <small>Como você será conhecido nas lendas?</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="charAge">Idade</label>
+                        <input type="number" id="charAge" placeholder="15" min="10" max="999" class="ds-input">
+                        <small>Jovens têm potencial; anciões, sabedoria.</small>
+                    </div>
+                </div>
+
+                <div class="race-section">
+                    <div class="guide-text">
+                        <h3>Sua Linhagem</h3>
+                        <p>A maioria é humana, mas alguns nascem com sangue raro ou corpos anormais.</p>
+                    </div>
+
+                    <div class="race-cards">
+                        <!-- HUMANO -->
+                        <div class="race-card" id="card-Humano" onclick="selectRace('Humano')"
+                            style="cursor:pointer; position:relative;">
+                            <div class="card-visual"><i data-lucide="user" style="width:48px; height:48px;"></i></div>
+                            <div class="card-content">
+                                <h3>Humano</h3>
+                                <p class="race-tagline">Versatilidade & Determinação</p>
+                                <ul
+                                    style="font-size:0.8rem; text-align:left; color:#aaa; margin-top:5px; padding-left:15px;">
+                                    <li>+2 em 2 Atributos</li>
+                                    <li>1 Talento Extra</li>
+                                    <li>Proficiência em 2 Perícias</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- MARECHI -->
+                        <div class="race-card" id="card-Marechi" onclick="selectRace('Marechi')"
+                            style="cursor:pointer; position:relative;">
+                            <div class="card-visual"><i data-lucide="droplet" style="width:48px; height:48px;"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3>Marechi</h3>
+                                <p class="race-tagline">Sangue Raro & Maldito</p>
+                                <ul
+                                    style="font-size:0.8rem; text-align:left; color:#aaa; margin-top:5px; padding-left:15px;">
+                                    <li>+2 em 2 Atributos</li>
+                                    <li>Atrai Demônios (Vantagem/Risco)</li>
+                                    <li>Sangue Atordoante</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- TSUYOI -->
+                        <div class="race-card" id="card-Tsuyoi" onclick="selectRace('Tsuyoi')"
+                            style="cursor:pointer; position:relative;">
+                            <div class="card-visual"><i data-lucide="dumbbell" style="width:48px; height:48px;"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3>Tsuyoi</h3>
+                                <p class="race-tagline">Força & Flexibilidade Anormal</p>
+                                <ul
+                                    style="font-size:0.8rem; text-align:left; color:#aaa; margin-top:5px; padding-left:15px;">
+                                    <li>+2 Força, +2 Destreza</li>
+                                    <li>Corpo Flexível (Prof. DES)</li>
+                                    <li>Presença Encantadora (Kawaii)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HIDDEN MARECHI ROLL SECTION -->
+                    <div id="marechi-roll-section"
+                        style="display:none; margin-top:20px; padding:15px; background:rgba(255,0,0,0.1); border:1px solid #ff4d4d; border-radius:8px; text-align:center;">
+                        <h4 style="color:#ff4d4d;">Teste de Sangue Raro</h4>
+                        <p style="font-size:0.9rem; color:#ccc; margin-bottom:10px;">Role 1d20. Se tirar 18-20, você é
+                            um <strong>Marechi Raro</strong>!</p>
+                        <button id="roll-marechi-btn" onclick="rollMarechi()"
+                            style="padding:10px 20px; background:#ff4d4d; color:white; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">ROLAR
+                            1d20</button>
+                        <div id="marechi-result" style="margin-top:10px; font-weight:bold; font-size:1.2rem;"></div>
+                    </div>
+                </div>
+
+                <!-- BACKGROUND SECTION -->
+                <div class="background-section" style="margin-top:40px; padding-top:20px; border-top:1px dashed #444;">
+                    <div class="guide-text">
+                        <h3>Seu Passado (Antecedente)</h3>
+                        <p>O que você fazia antes de se juntar à Corporação? Sua vida antiga define suas habilidades
+                            iniciais.</p>
+                    </div>
+                    <div class="bg-grid" id="bgCards">
+                        <!-- Brigão (Brawler) -->
+                        <div class="race-card bg-card" id="card-brigao" data-bg="brigao"
+                            onclick="selectBackground('brigao')">
+                            <div class="card-visual"><i data-lucide="skull" style="width:40px; height:40px;"></i></div>
+                            <div class="card-content">
+                                <h3>Brigão</h3>
+                                <p class="race-tagline">Nascido na luta.</p>
+                                <ul class="mini-benefits">
+                                    <li>+ Atletismo, Intimidação</li>
+                                    <li>Briga de Rua (1d8)</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Herdeiro (Heir) -->
+                        <div class="race-card bg-card" id="card-herdeiro" data-bg="herdeiro"
+                            onclick="selectBackground('herdeiro')">
+                            <div class="card-visual"><i data-lucide="crown" style="width:40px; height:40px;"></i></div>
+                            <div class="card-content">
+                                <h3>Herdeiro</h3>
+                                <p class="race-tagline">Linhagem Nobre.</p>
+                                <ul class="mini-benefits">
+                                    <li>+ Persuasão, História</li>
+                                    <li>Recursos Extras</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Sobrevivente (Survivor) -->
+                        <div class="race-card bg-card" id="card-sobrevivente" data-bg="sobrevivente"
+                            onclick="selectBackground('sobrevivente')">
+                            <div class="card-visual"><i data-lucide="heart-pulse" style="width:40px; height:40px;"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3>Sobrevivente</h3>
+                                <p class="race-tagline">Escapou da morte.</p>
+                                <ul class="mini-benefits">
+                                    <li>+ Sobrevivência, Furtividade</li>
+                                    <li>Instinto Aguçado</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="infoPanel" class="info-panel hidden">
+                    <h3 id="infoTitle">Detalhes</h3>
+                    <div id="infoContent"></div>
+                </div>
+
+                <footer class="form-footer">
+                    <button id="nextBtn" class="btn-primary" disabled>Próximo: Rolar Atributos</button>
+                </footer>
+            </section>
+
+            <!-- STEP 2A: THE ROLL (Dedicated Screen) -->
+            <section id="step2-roll" class="rolling-section hidden">
+                <div class="roll-center-stage">
+                    <h2>Hora de definir seu Destino</h2>
+                    <p>O destino de um caçador é definido por sua força, agilidade e mente.</p>
+
+                    <div id="diceStage" class="dice-stage">
+                        <!-- Dice animate here -->
+                        <div class="placeholder-dice"><i data-lucide="dices" style="width:64px; height:64px;"></i></div>
+                    </div>
+
+                    <button id="rollDiceBtn" class="btn-primary" onclick="triggerRollingPhase()">
+                        DEIXAR OS DADOS ROLAREM
+                    </button>
+                </div>
+            </section>
+
+            <!-- STEP 2B: ASSIGNMENT (The Board) -->
+            <section id="step2-assign" class="assignment-section hidden">
+                <h2>Distribuição de Atributos</h2>
+                <p class="section-desc">Arraste os valores da esquerda para os atributos que melhor definem seu
+                    personagem.</p>
+
+                <div class="assignment-board">
+                    <!-- LEFT: POOL -->
+                    <div class="pool-container">
+                        <h3>Valores Rolados</h3>
+                        <div id="valuePool" class="value-pool">
+                            <!-- JS injects values here -->
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: SLOTS -->
+                    <div class="slots-grid">
+                        <div class="slot-card" data-stat="str" ondragover="allowDrop(event)" ondrop="drop(event)">
+                            <div class="slot-info">
+                                <h4>FORÇA</h4>
+                                <span class="tooltip-icon"
+                                    data-tooltip="Define dano corpo-a-corpo e capacidade de carga (Atletismo).">?</span>
+                            </div>
+                            <div class="slot-target" id="slot-str"></div>
+                            <div class="slot-mod" id="mod-str">+0</div>
+                        </div>
+
+                        <div class="slot-card" data-stat="dex" ondragover="allowDrop(event)" ondrop="drop(event)">
+                            <div class="slot-info">
+                                <h4>DESTREZA</h4>
+                                <span class="tooltip-icon"
+                                    data-tooltip="Define defesa (AC), iniciativa e ataques à distância/leves (Furtividade, Acrobatismo).">?</span>
+                            </div>
+                            <div class="slot-target" id="slot-dex"></div>
+                            <div class="slot-mod" id="mod-dex">+0</div>
+                        </div>
+
+                        <div class="slot-card" data-stat="con" ondragover="allowDrop(event)" ondrop="drop(event)">
+                            <div class="slot-info">
+                                <h4>CONSTITUIÇÃO</h4>
+                                <span class="tooltip-icon"
+                                    data-tooltip="Define seus Pontos de Vida (PV) e resistência física.">?</span>
+                            </div>
+                            <div class="slot-target" id="slot-con"></div>
+                            <div class="slot-mod" id="mod-con">+0</div>
+                        </div>
+
+                        <div class="slot-card" data-stat="int" ondragover="allowDrop(event)" ondrop="drop(event)">
+                            <div class="slot-info">
+                                <h4>INTELIGÊNCIA</h4>
+                                <span class="tooltip-icon"
+                                    data-tooltip="Capacidade de investigação, lógica e conhecimento sobre Onis.">?</span>
+                            </div>
+                            <div class="slot-target" id="slot-int"></div>
+                            <div class="slot-mod" id="mod-int">+0</div>
+                        </div>
+
+                        <div class="slot-card" data-stat="wis" ondragover="allowDrop(event)" ondrop="drop(event)">
+                            <div class="slot-info">
+                                <h4>SABEDORIA</h4>
+                                <span class="tooltip-icon"
+                                    data-tooltip="Percepção do mundo, intuição e força de vontade (Resistência Mental).">?</span>
+                            </div>
+                            <div class="slot-target" id="slot-wis"></div>
+                            <div class="slot-mod" id="mod-wis">+0</div>
+                        </div>
+
+                        <div class="slot-card" data-stat="cha" ondragover="allowDrop(event)" ondrop="drop(event)">
+                            <div class="slot-info">
+                                <h4>CARISMA</h4>
+                                <span class="tooltip-icon"
+                                    data-tooltip="Força de personalidade, intimidação e liderança.">?</span>
+                            </div>
+                            <div class="slot-target" id="slot-cha"></div>
+                            <div class="slot-mod" id="mod-cha">+0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RACIAL BONUS (UPDATED) -->
+                <div id="bonusSection" class="bonus-selector-container hidden">
+                    <h3>Genética & Origem (+2 / +2)</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">Escolha dois atributos distintos para receber seu
+                        bônus racial.</p>
+
+                    <div class="bonus-toggles" id="bonusToggles">
+                        <!-- Generated by JS -->
+                    </div>
+                </div>
+
+                <!-- PREVIEW FOOTER -->
+                <footer class="stats-preview-footer">
+                    <div class="preview-stat">
+                        <label>PV Máximo</label>
+                        <span id="finalHP">--</span>
+                    </div>
+                    <div class="preview-stat">
+                        <label>Defesa (AC)</label>
+                        <span id="finalAC">10</span>
+                    </div>
+                    <button id="finishStep2" class="btn-primary" disabled>Confirmar Atributos</button>
+                </footer>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="creation.js"></script>
+    <script>
+        // Init Icons
+        if (window.lucide) window.lucide.createIcons();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,237 @@
+/* DEMON SLAYER THENE OVERRIDE */
+
+:root {
+    /* Paper / Ink Palette */
+    --paper-bg: #f3e9d2;
+    --paper-texture: url('https://www.transparenttextures.com/patterns/aged-paper.png');
+    /* Fallback/Simple texture */
+    --ink-black: #1a1a1a;
+    --ink-red: #8a0000;
+    /* Hanko stamp color */
+    --wisteria-purple: #a862ea;
+
+    /* Fonts */
+    --font-brush: 'Kaushan Script', cursive;
+    --font-hand: 'Patrick Hand', cursive;
+}
+
+/* 1. BACKGROUND WITH CHECKERED PATTERN (Tangiro-esque subtle) */
+body {
+    background-color: #050505;
+    background-image:
+        linear-gradient(30deg, #111 12%, transparent 12.5%, transparent 87%, #111 87.5%, #111),
+        linear-gradient(150deg, #111 12%, transparent 12.5%, transparent 87%, #111 87.5%, #111),
+        linear-gradient(30deg, #111 12%, transparent 12.5%, transparent 87%, #111 87.5%, #111),
+        linear-gradient(150deg, #111 12%, transparent 12.5%, transparent 87%, #111 87.5%, #111),
+        linear-gradient(60deg, #0a0a0a 25%, transparent 25.5%, transparent 75%, #0a0a0a 75%, #0a0a0a),
+        linear-gradient(60deg, #0a0a0a 25%, transparent 25.5%, transparent 75%, #0a0a0a 75%, #0a0a0a);
+    background-size: 80px 140px;
+    background-blend-mode: multiply;
+}
+
+/* 2. THE PAPER SCROLL CONTAINER */
+.creation-form {
+    background-color: var(--paper-bg);
+    background-image: var(--paper-texture);
+    color: var(--ink-black);
+    padding: 3rem;
+    border-radius: 2px;
+    box-shadow:
+        0 0 20px rgba(0, 0, 0, 0.8),
+        inset 0 0 60px rgba(0, 0, 0, 0.2);
+    /* Vignette */
+    position: relative;
+    border-top: 10px solid #2c2c2c;
+    border-bottom: 10px solid #2c2c2c;
+    font-family: var(--font-hand);
+    /* Handwriting base */
+}
+
+/* Decorative 'Paper' borders */
+.creation-form::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    pointer-events: none;
+}
+
+/* 3. TYPOGRAPHY OVERRIDES */
+.creation-form h1,
+.creation-form h2,
+.creation-form h3 {
+    font-family: var(--font-brush);
+    color: var(--ink-black);
+    text-shadow: none;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid var(--ink-red);
+    display: inline-block;
+    padding-bottom: 5px;
+    margin-bottom: 1.5rem;
+}
+
+.creation-form p,
+.creation-form label {
+    font-family: var(--font-hand);
+    font-size: 1.2rem;
+    color: #333;
+    font-weight: 600;
+}
+
+/* 4. INPUTS AS INK LINES */
+.creation-form input[type="text"],
+.creation-form input[type="number"] {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid #555;
+    border-radius: 0;
+    color: #000;
+    /* Ink color */
+    font-family: var(--font-brush);
+    font-size: 1.5rem;
+    padding: 0.5rem;
+}
+
+.creation-form input:focus {
+    background: transparent;
+    border-color: var(--ink-red);
+    box-shadow: none;
+}
+
+/* 5. CARDS (Races, Breathings) to look like Woodblocks or Stamps */
+.race-card,
+.breathing-card {
+    background: rgba(255, 255, 255, 0.5);
+    border: 3px solid #333;
+    border-radius: 4px;
+    color: #111;
+    box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+}
+
+.race-card:hover,
+.breathing-card:hover {
+    background: #fff;
+    transform: translateY(-2px);
+    box-shadow: 5px 5px 0px var(--ink-red);
+    border-color: var(--ink-red);
+}
+
+.race-card.selected,
+.breathing-card.selected {
+    background: #fff;
+    border-color: var(--ink-red);
+    box-shadow: inset 0 0 0 2px var(--ink-red);
+    position: relative;
+}
+
+/* Hanko Stamp effect on selection */
+.race-card.selected::after,
+.breathing-card.selected::after {
+    content: '選';
+    /* Selected */
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: var(--ink-red);
+    border: 2px solid var(--ink-red);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: sans-serif;
+    font-size: 0.8rem;
+    transform: rotate(-15deg);
+}
+
+/* 6. TOKENS AS INK STONES */
+.val-token {
+    background: #111;
+    /* Ink stone */
+    color: #fff;
+    font-family: var(--font-brush);
+    border: none;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+.val-token.tier-legendary {
+    background: var(--ink-red);
+    /* Special red ink */
+    box-shadow: 0 0 10px var(--ink-red);
+}
+
+/* 7. SLOTS ON PAPER */
+.slot-card {
+    background: transparent;
+    border: 2px dashed #888;
+    color: #111;
+}
+
+.slot-target {
+    border-color: #555;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.slot-mod {
+    color: var(--ink-red);
+    font-family: var(--font-brush);
+    font-size: 2rem;
+}
+
+.pool-container,
+.bonus-selector-container {
+    background: rgba(0, 0, 0, 0.05);
+    /* Ink wash */
+    border: 1px solid #999;
+}
+
+/* 8. BUTTONS */
+.btn-primary {
+    background: var(--ink-black);
+    color: #f3e9d2;
+    font-family: var(--font-brush);
+    font-size: 1.3rem;
+    letter-spacing: 0.1em;
+    border: 2px solid #555;
+}
+
+.btn-primary:hover {
+    background: var(--ink-red);
+    color: white;
+    border-color: var(--ink-red);
+    box-shadow: 0 4px 10px rgba(138, 0, 0, 0.4);
+}
+
+/* 9. TEXT OVERRIDES */
+.section-desc {
+    color: #555;
+    font-style: italic;
+}
+
+.tooltip-icon {
+    background: transparent;
+    border: 1px solid #555;
+    color: #555;
+    font-weight: bold;
+}
+
+/* DICE SCENE */
+.dice-stage {
+    filter: invert(1) contrast(0.8);
+    /* Make dice look like ink sketches if possible, or just contrast */
+}
+
+/* Fix visibility */
+.creation-header h1 {
+    color: #f3e9d2;
+    border: none;
+}
+
+/* Header outside paper needs to be light */
+.creation-header .back-link {
+    color: #aaa;
+}

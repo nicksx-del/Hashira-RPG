@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Handbook do Exterminador</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #050505;
+            --text-main: #ffffff;
+            --text-muted: #888;
+            --accent: #9d4edd;
+            --font-main: 'Inter', sans-serif;
+            --font-title: 'Playfair Display', serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            height: 100vh;
+            overflow: hidden;
+            background-image: linear-gradient(to bottom, rgba(5, 5, 5, 0.3), rgba(5, 5, 5, 1)), url('https://w.wallhaven.cc/full/8o/wallhaven-8oxgqy.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* NAVIGATION overlay top right */
+        .top-nav {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 2rem 3rem;
+            display: flex;
+            gap: 2rem;
+            z-index: 10;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            font-weight: 400;
+            transition: color 0.3s, text-shadow 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: #fff;
+            box-shadow: 0 0 5px #fff;
+        }
+
+        /* MAIN CENTER CONTENT */
+        .main-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 2rem;
+        }
+
+        .section {
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            position: absolute;
+            /* Stack them */
+            pointer-events: none;
+        }
+
+        .section.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+            position: relative;
+            /* Let it flow */
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 3.5rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+        }
+
+        .unavailable-text {
+            font-size: 1.2rem;
+            color: #666;
+            font-style: italic;
+            border: 1px solid #333;
+            padding: 1rem 2rem;
+            display: inline-block;
+            border-radius: 50px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        /* CARDS GRID */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            justify-content: center;
+        }
+
+        .char-card {
+            background: rgba(20, 20, 20, 0.7);
+            border: 1px solid #333;
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .char-card:hover {
+            background: rgba(40, 40, 40, 0.8);
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: #111;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            border: 1px solid #444;
+        }
+
+        .new-card .card-icon {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .card-info h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-info span {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        /* ANIMATION for Intro */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVIGATION -->
+    <nav class="top-nav">
+        <div class="nav-link active" onclick="switchSection('chars', this)">Personagens</div>
+        <div class="nav-link" onclick="switchSection('campaigns', this)">Campanhas</div>
+        <div class="nav-link" onclick="switchSection('threats', this)">Ameaças</div>
+    </nav>
+
+    <!-- CONTENT -->
+    <main class="main-container">
+
+        <!-- PERSONAGENS -->
+        <div id="section-chars" class="section active">
+            <h1>Seus Personagens</h1>
+
+            <div class="card-grid">
+                <!-- EXISTING CHAR (Hidden if none) -->
+                <a href="dashboard.html" id="resume-btn" class="char-card" style="display:none">
+                    <div class="card-icon">👤</div>
+                    <div class="card-info">
+                        <h3 id="char-name">Nome</h3>
+                        <span id="char-desc">Nível 1</span>
+                    </div>
+                </a>
+
+                <!-- NEW CHAR -->
+                <a href="create-character.html" class="char-card new-card">
+                    <div class="card-icon">＋</div>
+                    <div class="card-info">
+                        <h3>Novo Personagem</h3>
+                        <span>Criar nova ficha</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- CAMPANHAS -->
+        <div id="section-campaigns" class="section">
+            <h1>Campanhas</h1>
+            <div class="unavailable-text">Ainda não disponível</div>
+        </div>
+
+        <!-- AMEAÇAS -->
+        <div id="section-threats" class="section">
+            <h1>Ameaças</h1>
+            <div class="unavailable-text">Ainda não disponível</div>
+        </div>
+
+    </main>
+
+    <script>
+        // Check for existing character
+        const savedData = localStorage.getItem('demonSlayerChar');
+        if (savedData) {
+            const char = JSON.parse(savedData);
+            const btn = document.getElementById('resume-btn');
+            btn.style.display = 'flex';
+            document.getElementById('char-name').innerText = char.name || "Sem Nome";
+            document.getElementById('char-desc').innerText = `${char.race} • Nível ${char.level}`;
+        }
+
+        // Section Switcher
+        function switchSection(sectionId, btnElement) {
+            // Update Nav
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+            btnElement.classList.add('active');
+
+            // Update Section
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+
+            // Short delay for fade out effect if we wanted to be fancy, but direct switch + css transition works
+            const target = document.getElementById(`section-${sectionId}`);
+            if (target) {
+                // We need to hide previous ones fully for position relative to work? 
+                // The CSS "absolute" for inactive handles overlay, but we switch "active" which makes it relative.
+                // This simple toggle works because others go back to absolute/hidden opacity.
+                target.classList.add('active');
+            }
+        }
+    </script>
+</body>
+
+</html>

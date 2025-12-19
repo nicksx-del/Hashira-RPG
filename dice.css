@@ -1,0 +1,83 @@
+/* 3D DICE ENGINE */
+.dice-container {
+    perspective: 1000px;
+    width: 100%;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+}
+
+.cube {
+    width: 60px;
+    height: 60px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 1s;
+}
+
+.cube.rolling {
+    animation: spinDice 2s cubic-bezier(0.17, 0.67, 0.83, 0.67) infinite;
+}
+
+@keyframes spinDice {
+    0% {
+        transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+    }
+
+    100% {
+        transform: rotateX(720deg) rotateY(1080deg) rotateZ(360deg);
+    }
+}
+
+.face {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: rgba(20, 20, 20, 0.95);
+    border: 2px solid var(--accent-purple);
+    box-shadow: 0 0 10px var(--accent-purple);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    backface-visibility: hidden;
+    border-radius: 8px;
+}
+
+/* Face Rotations */
+.front {
+    transform: rotateY(0deg) translateZ(30px);
+}
+
+.back {
+    transform: rotateY(180deg) translateZ(30px);
+}
+
+.right {
+    transform: rotateY(90deg) translateZ(30px);
+}
+
+.left {
+    transform: rotateY(-90deg) translateZ(30px);
+}
+
+.top {
+    transform: rotateX(90deg) translateZ(30px);
+}
+
+.bottom {
+    transform: rotateX(-90deg) translateZ(30px);
+}
+
+/* Dots/Numbers */
+.face span {
+    display: block;
+}
+
+/* Specific rolls styles if needed (dots vs numbers) */
+/* For now using Numbers as per request for "simpler/cooler" or standard D6 dots?
+   User asked for 3D dice. Numbers are clearer for stats. */
