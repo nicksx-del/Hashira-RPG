@@ -132,6 +132,33 @@ function saveState() {
     charData.currentHP = currentHP;
     charData.currentPE = currentPE;
     localStorage.setItem('demonSlayerChar', JSON.stringify(charData));
+
+    // Sync with array
+    let allChars = [];
+    try {
+        allChars = JSON.parse(localStorage.getItem('demonSlayerAllChars')) || [];
+    } catch (e) { }
+
+    // If active char has ID, find and update. If no ID (legacy), use name match or just index 0?
+    // We generated ID in new creation flow. Old chars might be ID-less.
+    if (charData.id) {
+        const idx = allChars.findIndex(c => c.id === charData.id);
+        if (idx >= 0) {
+            allChars[idx] = charData;
+        } else {
+            allChars.push(charData); // Should unlikely happen if we switch properly, but safety
+        }
+    } else {
+        // Fallback for legacy character without ID: Try name match or push
+        // Let's just push it and assign a temp ID to prevent dupes in future? 
+        // Or better: update the first one that matches name
+        const idx = allChars.findIndex(c => c.name === charData.name);
+        if (idx >= 0) allChars[idx] = charData;
+        else allChars.push(charData);
+    }
+
+    // Enforce consistency: save back array
+    localStorage.setItem('demonSlayerAllChars', JSON.stringify(allChars));
 }
 
 
@@ -230,19 +257,27 @@ window.modPE = function (val) {
     saveState();
 };
 
-function updateBars() {
+window.updateBars = function () {
     if (document.getElementById('hpCurrent')) document.getElementById('hpCurrent').innerText = currentHP;
     if (document.getElementById('peCurrent')) document.getElementById('peCurrent').innerText = currentPE;
 
     const hpFill = document.getElementById('hpFill');
     if (hpFill) hpFill.style.width = (maxHP > 0 ? (currentHP / maxHP) * 100 : 0) + "%";
 
+    const hpPercent = document.getElementById('hpPercent');
+    if (hpPercent) hpPercent.innerText = Math.round((currentHP / (maxHP || 1)) * 100) + "%";
+
     const peFill = document.getElementById('peFill');
     if (peFill) peFill.style.width = (maxPE > 0 ? (currentPE / maxPE) * 100 : 0) + "%";
 
+    const pePercent = document.getElementById('pePercent');
+    if (pePercent) pePercent.innerText = Math.round((currentPE / (maxPE || 1)) * 100) + "%";
+
     if (document.getElementById('hpMaxInput')) document.getElementById('hpMaxInput').value = maxHP;
     if (document.getElementById('peMaxInput')) document.getElementById('peMaxInput').value = maxPE;
-}
+
+    if (typeof updateTheme === 'function') updateTheme();
+};
 
 // --- RENDER SKILLS ---
 window.renderSkills = function () {
@@ -702,9 +737,13 @@ window.removeCustomAbility = function (id) {
 // --- CLICK-TO-ROLL ENGINE ---
 window.logMsg = function (html, type = 'system') {
     const chatContent = document.getElementById('chatContent');
+    const chatLog = document.getElementById('chatLog');
     if (!chatContent) return;
 
-    // Auto-expand if collapsed, maybe? For now just log.
+    // Auto-expand if collapsed when a roll happens
+    if (chatLog && chatLog.style.display === 'none') {
+        chatLog.style.display = 'flex';
+    }
 
     const msg = document.createElement('div');
     msg.className = `chat-msg ${type}`;
@@ -841,7 +880,8 @@ function initDashboard() {
 initDashboard();
 
 // --- NICHIRIN FORGE ---
-let tempForge = { type: 'katana', color: 'blue' };
+// --- NICHIRIN FORGE LOGIC ---
+let tempForge = { type: 'katana', color: 'blue', name: '' };
 
 window.openForge = function () {
     const modal = document.getElementById('forgeModal');
@@ -850,28 +890,35 @@ window.openForge = function () {
         if (charData.nichirin) {
             selectBladeType(charData.nichirin.type);
             selectBladeColor(charData.nichirin.color);
+            if (charData.nichirin.name) document.getElementById('forgeName').value = charData.nichirin.name;
         } else {
             selectBladeType('katana');
             selectBladeColor('blue');
         }
+        updateForgePreview();
     }
 };
 
 window.selectBladeType = function (type) {
     tempForge.type = type;
-    document.querySelectorAll('#bladeTypeOpts .forge-opt').forEach(el => el.classList.remove('selected'));
+    // Update UI
+    document.querySelectorAll('.forge-types-grid .forge-card').forEach(el => el.classList.remove('selected'));
 
-    // Manual mapping for now
+    // Index mapping manually for now or find by click
+    // Simpler: iterate and match onclick
+    // but here we just re-render is easier or logic:
     const map = ['katana', 'dual', 'axe', 'gun'];
     const idx = map.indexOf(type);
-    const opts = document.querySelectorAll('#bladeTypeOpts .forge-opt');
+    const opts = document.querySelectorAll('.forge-types-grid .forge-card');
     if (idx >= 0 && opts[idx]) opts[idx].classList.add('selected');
+
+    updateForgePreview();
 };
 
 window.selectBladeColor = function (color) {
     tempForge.color = color;
-    document.querySelectorAll('.color-opt').forEach(el => el.classList.remove('selected'));
-    const el = document.querySelector(`.c-${color}`);
+    document.querySelectorAll('.ore-grid .ore-opt').forEach(el => el.classList.remove('selected'));
+    const el = document.querySelector(`.ore-${color}`);
     if (el) el.classList.add('selected');
 
     const descMap = {
@@ -884,24 +931,64 @@ window.selectBladeColor = function (color) {
     };
     const descEl = document.getElementById('colorDesc');
     if (descEl) descEl.innerText = descMap[color] || "";
+
+    // Update accent color var if needed for preview glow
+    const colorMap = {
+        blue: '#00b4d8', red: '#d90429', yellow: '#ffd60a',
+        green: '#2b9348', pink: '#ff006e', black: '#888'
+    };
+    document.documentElement.style.setProperty('--accent-color', colorMap[color] || '#fff');
+
+    updateForgePreview();
+};
+
+window.updateForgePreview = function () {
+    const nameIn = document.getElementById('forgeName').value;
+    const label = document.getElementById('previewLabel');
+    const attr = document.getElementById('previewAttr');
+    const icon = document.querySelector('.preview-icon');
+
+    // Name
+    if (label) label.innerText = nameIn || `Lâmina ${tempForge.color.charAt(0).toUpperCase() + tempForge.color.slice(1)}`;
+
+    // Attr text
+    if (attr) attr.innerText = `Tipo: ${tempForge.type.toUpperCase()} | Cor: ${tempForge.color.toUpperCase()}`;
+
+    // Icon (Lucide needs re-render usually, but class replacement works if CSS content used? No, lucide replaces svg. We need to re-inject svg)
+    // For simplicity, we just change color for now, or re-call createIcons if we changed DOM structure.
+    // Actually, let's just rotate/scale based on type
+    if (icon) {
+        icon.style.color = getComputedStyle(document.documentElement).getPropertyValue('--accent-color');
+        if (tempForge.type === 'dual') { icon.style.transform = 'rotate(45deg) scale(0.8)'; icon.setAttribute('data-lucide', 'scissors'); }
+        else if (tempForge.type === 'axe') { icon.setAttribute('data-lucide', 'axe'); }
+        else if (tempForge.type === 'gun') { icon.setAttribute('data-lucide', 'crosshair'); }
+        else { icon.setAttribute('data-lucide', 'sword'); }
+
+        if (window.lucide) window.lucide.createIcons();
+    }
 };
 
 window.saveForge = function () {
+    const customName = document.getElementById('forgeName').value;
+    tempForge.name = customName;
     charData.nichirin = { ...tempForge };
 
     // Create Item
-    const nameMap = { katana: "Katana Nichirin", dual: "Nichirin Duplas", axe: "Machado Nichirin", gun: "Escopeta Nichirin" };
+    const defaultNames = { katana: "Katana Nichirin", dual: "Nichirin Duplas", axe: "Machado Nichirin", gun: "Escopeta Nichirin" };
+    const finalName = customName || `${defaultNames[tempForge.type]} (${tempForge.color})`;
+
     const item = {
-        name: `${nameMap[tempForge.type]} (${tempForge.color.toUpperCase()})`,
+        name: finalName,
         type: 'weapon',
         dmg: tempForge.type === 'axe' ? '1d10 cortante' : (tempForge.type === 'dual' ? '1d6 cortante (x2)' : '1d8 cortante'),
         props: `Lâmina ${tempForge.color}. Indestrutível.`,
         weight: tempForge.type === 'axe' ? '4 kg' : '1.5 kg',
-        equipped: true
+        equipped: true,
+        desc: "Uma lâmina forjada especialmente para você."
     };
 
     // Replace old Nichirin
-    charData.inventory = charData.inventory.filter(i => !i.name.includes("Nichirin"));
+    charData.inventory = charData.inventory.filter(i => !i.name.toLowerCase().includes("nichirin"));
     charData.inventory.push(item);
 
     saveState();
@@ -998,12 +1085,7 @@ window.updateTheme = function () {
     }
 };
 
-// Hook into updateBars to trigger theme check
-const originalUpdateBars = window.updateBars;
-window.updateBars = function () {
-    originalUpdateBars();
-    updateTheme();
-};
+// Theme update is now integrated into updateBars
 
 // --- CHAT TOGGLE ---
 window.toggleChat = function () {
@@ -1014,66 +1096,67 @@ window.toggleChat = function () {
         } else {
             chat.style.display = 'none';
         }
-    };
+    }
+};
 
-    // --- TOOLS LOGIC ---
-    window.convertCurrency = function () {
-        const yen = parseInt(document.getElementById('yenInput').value) || 0;
-        // Rate: 10,000 Yen = 1 Kan
-        const kan = (yen / 10000).toFixed(2);
-        document.getElementById('kanInput').value = kan;
-    };
+// --- TOOLS LOGIC ---
+window.convertCurrency = function () {
+    const yen = parseInt(document.getElementById('yenInput').value) || 0;
+    // Rate: 10,000 Yen = 1 Kan
+    const kan = (yen / 10000).toFixed(2);
+    document.getElementById('kanInput').value = kan;
+};
 
-    window.rollAppraisal = function () {
-        const intScore = charData.attributes.int;
-        const mod = getMod(intScore);
-        const d20 = Math.floor(Math.random() * 20) + 1;
-        const total = d20 + mod;
+window.rollAppraisal = function () {
+    const intScore = charData.attributes.int;
+    const mod = getMod(intScore);
+    const d20 = Math.floor(Math.random() * 20) + 1;
+    const total = d20 + mod;
 
-        const resultEl = document.getElementById('appraisalResult');
-        let quality = "Desconhecido";
-        if (total < 5) quality = "Lixo inútil...";
-        else if (total < 10) quality = "Comum/Barato.";
-        else if (total < 15) quality = "Boa qualidade.";
-        else if (total < 20) quality = "Raro/Valioso!";
-        else quality = "TESOURO LENDÁRIO?!";
+    const resultEl = document.getElementById('appraisalResult');
+    let quality = "Desconhecido";
+    if (total < 5) quality = "Lixo inútil...";
+    else if (total < 10) quality = "Comum/Barato.";
+    else if (total < 15) quality = "Boa qualidade.";
+    else if (total < 20) quality = "Raro/Valioso!";
+    else quality = "TESOURO LENDÁRIO?!";
 
-        resultEl.innerHTML = `Rolagem: ${d20} + ${mod} = <strong>${total}</strong><br>Resultado: <span style="color:${total > 15 ? 'gold' : '#ccc'}">${quality}</span>`;
-        logMsg(`Avaliação de Item: <strong>${total}</strong> (${quality})`);
-    };
+    resultEl.innerHTML = `Rolagem: ${d20} + ${mod} = <strong>${total}</strong><br>Resultado: <span style="color:${total > 15 ? 'gold' : '#ccc'}">${quality}</span>`;
+    logMsg(`Avaliação de Item: <strong>${total}</strong> (${quality})`);
+};
 
-    window.saveWishlist = function () {
-        const txt = document.getElementById('wishlistInput').value;
-        charData.wishlist = txt;
-        saveState();
-    };
+window.saveWishlist = function () {
+    const txt = document.getElementById('wishlistInput').value;
+    charData.wishlist = txt;
+    saveState();
+};
 
-    const SHOP_ITEMS = [
-        "Velas Aromáticas (Wisteria)", "Arroz de Onigiri (Recupera 1d4)", "Bandagens Limpas",
-        "Óleo de Lâmina", "Talismã de Proteção (Fake?)", "Mapa da Montanha",
-        "Sake de Qualidade", "Kit de Costura", "Tinta para Caligrafia"
-    ];
+const SHOP_ITEMS = [
+    "Velas Aromáticas (Wisteria)", "Arroz de Onigiri (Recupera 1d4)", "Bandagens Limpas",
+    "Óleo de Lâmina", "Talismã de Proteção (Fake?)", "Mapa da Montanha",
+    "Sake de Qualidade", "Kit de Costura", "Tinta para Caligrafia"
+];
 
-    window.generateShop = function () {
-        const list = document.getElementById('shopList');
-        if (!list) return;
-        list.innerHTML = "";
-        // Random 3-5 items
-        const count = Math.floor(Math.random() * 3) + 3;
-        for (let i = 0; i < count; i++) {
-            const item = SHOP_ITEMS[Math.floor(Math.random() * SHOP_ITEMS.length)];
-            const cost = Math.floor(Math.random() * 500) + 100;
-            const li = document.createElement('li');
-            li.innerText = `${item} - ¥${cost}`;
-            li.style.marginBottom = "5px";
-            list.appendChild(li);
-        }
-    };
+window.generateShop = function () {
+    const list = document.getElementById('shopList');
+    if (!list) return;
+    list.innerHTML = "";
+    // Random 3-5 items
+    const count = Math.floor(Math.random() * 3) + 3;
+    for (let i = 0; i < count; i++) {
+        const item = SHOP_ITEMS[Math.floor(Math.random() * SHOP_ITEMS.length)];
+        const cost = Math.floor(Math.random() * 500) + 100;
+        const li = document.createElement('li');
+        li.innerText = `${item} - ¥${cost}`;
+        li.style.marginBottom = "5px";
+        list.appendChild(li);
+    }
+};
 
-    // Init Tools logic if elements verify
-    setTimeout(() => {
-        if (document.getElementById('wishlistInput') && charData.wishlist) {
-            document.getElementById('wishlistInput').value = charData.wishlist;
-        }
-        if (document.getElementById('shopList')) generateShop();
-    }, 500);
+// Init Tools logic if elements verify
+setTimeout(() => {
+    if (document.getElementById('wishlistInput') && charData.wishlist) {
+        document.getElementById('wishlistInput').value = charData.wishlist;
+    }
+    if (document.getElementById('shopList')) generateShop();
+}, 500);

@@ -4,328 +4,1046 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Novo Personagem | Handbook do Exterminador</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="breathing.css">
-    <link rel="stylesheet" href="theme-demonslayer.css">
-    <link rel="stylesheet" href="dice.css">
-    <!-- Lucide Icons -->
+    <title>Forje seu Destino | Demon Slayer RPG</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700&display=swap"
+        rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-panel: #141419;
+            --text-main: #ffffff;
+            --text-muted: #888;
+            --accent-red: #d90429;
+            --accent-red-hover: #ef233c;
+            --border-color: #2a2a35;
+            --font-main: 'Outfit', sans-serif;
+            --font-display: 'Cinzel', serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            overflow: hidden;
+            /* App layout */
+            height: 100vh;
+            display: flex;
+        }
+
+        /* --- LEFT SIDEBAR (Navigation) --- */
+        .sidebar-left {
+            width: 250px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .app-logo {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: hsla(0, 0%, 100%, 0.05);
+            color: white;
+        }
+
+        .nav-item.active {
+            border-right: 3px solid var(--accent-red);
+        }
+
+        .step-icon {
+            width: 24px;
+            height: 24px;
+            background: #222;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .nav-item.active .step-icon {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        /* --- MAIN CONTENT (Middle) --- */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem 4rem;
+            scroll-behavior: smooth;
+        }
+
+        .page-header {
+            margin-bottom: 3rem;
+        }
+
+        .breadcrumbs {
+            color: var(--accent-red);
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            margin: 0;
+            transform: translateY(-5px);
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            margin-top: 5px;
+            font-weight: 300;
+        }
+
+        .form-section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .sec-num {
+            color: var(--accent-red);
+            font-weight: 800;
+            font-size: 1.2rem;
+            font-family: var(--font-display);
+        }
+
+        .sec-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: var(--font-main);
+        }
+
+        /* CARDS GRID (Race) */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .selection-card {
+            background: #1a1a20;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            height: 250px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .selection-card:hover {
+            border-color: #555;
+            transform: translateY(-2px);
+        }
+
+        .selection-card.selected {
+            border-color: var(--accent-red);
+            box-shadow: 0 0 0 2px var(--accent-red);
+        }
+
+        .card-bg-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.4;
+            transition: 0.5s;
+        }
+
+        .selection-card:hover .card-bg-img {
+            opacity: 0.6;
+            transform: scale(1.05);
+        }
+
+        .card-text {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+        }
+
+        .card-text h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.5rem;
+            font-family: var(--font-display);
+        }
+
+        .card-text p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        .selection-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(1);
+        }
+
+        .selection-card.locked:hover {
+            border-color: var(--border-color);
+            transform: none;
+        }
+
+        /* COMBAT STYLES (Small Cards) */
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .style-btn {
+            background: #1a1a20;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .style-btn:hover {
+            background: #222;
+        }
+
+        .style-btn.selected {
+            background: var(--accent-red);
+            color: white;
+            border-color: var(--accent-red);
+        }
+
+        .style-btn.locked {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .style-icon-box {
+            font-size: 1.5rem;
+        }
+
+        /* NICHIRIN SECTION */
+        .forge-container {
+            background: #121215;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .colors-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .color-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.2s;
+        }
+
+        .color-dot:hover {
+            transform: scale(1.2);
+        }
+
+        .color-dot.selected {
+            border-color: white;
+            transform: scale(1.1);
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .ds-input {
+            width: 100%;
+            background: #08080a;
+            border: 1px solid #333;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 5px;
+            font-family: var(--font-main);
+        }
+
+        .blade-preview-box {
+            height: 150px;
+            background: #08080a;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #333;
+            position: relative;
+        }
+
+        .preview-glow {
+            width: 80%;
+            height: 10px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 15px white;
+            transition: 0.3s;
+        }
+
+        /* ATTRIBUTES SLIDERS */
+        .attr-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .attr-label {
+            width: 140px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .attr-input-group {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--accent-red);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .attr-val-box {
+            background: #222;
+            width: 40px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-weight: bold;
+            font-family: var(--font-display);
+        }
+
+        .points-box {
+            background: #1a1a20;
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
+            padding: 5px 15px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            float: right;
+            transform: translateY(-5px);
+        }
+
+        /* RIGHT SIDEBAR (Preview) */
+        .sidebar-right {
+            width: 320px;
+            background: #0e0e12;
+            border-left: 1px solid var(--border-color);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .preview-card-header {
+            position: relative;
+            height: 200px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #111;
+            border: 1px solid #333;
+        }
+
+        .char-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .rank-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #000;
+            color: white;
+            padding: 4px 8px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            border-radius: 4px;
+            border: 1px solid #444;
+            text-transform: uppercase;
+        }
+
+        .char-name-display {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .breathing-subtitle {
+            font-size: 0.9rem;
+            color: #00b4d8;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .summary-table td {
+            padding: 8px 0;
+            border-bottom: 1px solid #222;
+        }
+
+        .summary-table td:last-child {
+            text-align: right;
+            font-weight: 600;
+            color: white;
+        }
+
+        .summary-table td:first-child {
+            color: #888;
+        }
+
+        .vital-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .vital-box {
+            background: #16161a;
+            border: 1px solid #2a2a35;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .vital-label {
+            font-size: 0.7rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .vital-val {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: white;
+        }
+
+        .vital-val span {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .confirm-btn {
+            width: 100%;
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 6px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .confirm-btn:hover {
+            background: var(--accent-red-hover);
+            box-shadow: 0 5px 20px rgba(217, 4, 41, 0.4);
+        }
+
+        .confirm-btn:disabled {
+            background: #333;
+            cursor: not-allowed;
+            box-shadow: none;
+            opacity: 0.6;
+        }
+
+        .draft-btn {
+            background: transparent;
+            color: #666;
+            border: none;
+            width: 100%;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .draft-btn:hover {
+            color: white;
+        }
+
+        /* SKILLS LIST */
+        .skills-summary {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .skill-tag {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            padding: 5px 10px;
+            background: #16161a;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 
-<body class="creation-body">
+<body>
 
-    <div class="creation-container">
-        <!-- HEADER -->
-        <header class="creation-header">
-            <a href="index.html" class="back-link"><i data-lucide="arrow-left" style="width:16px;"></i> Voltar</a>
-            <h1>Criação de Personagem</h1>
+    <!-- LEFT SIDEBAR -->
+    <nav class="sidebar-left">
+        <div class="app-logo">
+            <i data-lucide="flame" style="color: var(--accent-red);"></i> Demon Slayer RPG
+        </div>
 
-            <!-- VISUAL PATH TRACKER -->
-            <div class="progress-path">
-                <div class="path-step active" id="path-step-1">
-                    <span class="step-icon"><i data-lucide="user"></i></span>
-                    <span class="path-label">Origem</span>
-                </div>
-                <!-- Line is CSS -->
-                <div class="path-step" id="path-step-2">
-                    <span class="step-icon"><i data-lucide="sparkles"></i></span>
-                    <span class="path-label">Destino</span>
-                </div>
-                <div class="path-step" id="path-step-3">
-                    <span class="step-icon"><i data-lucide="sword"></i></span>
-                    <span class="path-label">Especialização</span>
-                </div>
-            </div>
+        <div class="nav-steps">
+            <div
+                style="font-size: 0.8rem; text-transform: uppercase; color: #555; font-weight: 700; margin-bottom: 5px;">
+                Etapas de Criação</div>
+
+            <a href="#race" class="nav-item active">
+                <div class="step-icon">1</div>
+                <span>Raça & Origem</span>
+            </a>
+            <a href="#combat" class="nav-item">
+                <div class="step-icon">2</div>
+                <span>Combate & Nichirin</span>
+            </a>
+            <a href="#stats" class="nav-item">
+                <div class="step-icon">3</div>
+                <span>Atributos</span>
+            </a>
+            <a href="#inventory" class="nav-item">
+                <div class="step-icon">4</div>
+                <span>Inventário</span>
+            </a>
+
+            <a href="index.html" class="nav-item" style="margin-top: auto; color: #666;">
+                <i data-lucide="arrow-left" size="16"></i> Cancelar
+            </a>
+        </div>
+    </nav>
+
+    <!-- CONTENT AREA -->
+    <main class="main-content">
+        <header class="page-header">
+            <div class="breadcrumbs">Início / Novos Caçadores</div>
+            <h1 class="page-title">Forje seu Destino</h1>
+            <p class="page-subtitle">Escolha sua linhagem, empunhe sua lâmina e prepare-se para as noites eternas.</p>
         </header>
 
-        <main class="creation-form">
+        <!-- SEC 1: RACE -->
+        <section id="race" class="form-section">
+            <div class="section-header">
+                <span class="sec-num">01.</span>
+                <span class="sec-title">Escolha sua Raça</span>
+            </div>
 
-            <!-- STEP 1: IDENTITY -->
-            <section id="step1" class="input-section">
-                <header class="section-guide">
-                    <h2>Identidade & Origem</h2>
-                    <p>Antes de empunhar uma lâmina Nichirin, todo caçador tem uma história. Quem é você neste mundo
-                        infestado por Onis?</p>
-                </header>
+            <!-- NAME INPUT INTEGRATED -->
+            <div style="margin-bottom: 2rem;">
+                <label style="display:block; color:#888; margin-bottom:5px; font-size:0.9rem;">Nome do
+                    Personagem</label>
+                <input type="text" id="inputName" class="ds-input" placeholder="Ex: Tanjiro Kamado"
+                    style="font-size:1.2rem; padding:15px; width:100%;" oninput="updatePreview()">
+            </div>
 
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="charName">Nome do Caçador</label>
-                        <input type="text" id="charName" placeholder="Ex: Tanjiro Kamado" autocomplete="off"
-                            class="ds-input">
-                        <small>Como você será conhecido nas lendas?</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="charAge">Idade</label>
-                        <input type="number" id="charAge" placeholder="15" min="10" max="999" class="ds-input">
-                        <small>Jovens têm potencial; anciões, sabedoria.</small>
-                    </div>
-                </div>
-
-                <div class="race-section">
-                    <div class="guide-text">
-                        <h3>Sua Linhagem</h3>
-                        <p>A maioria é humana, mas alguns nascem com sangue raro ou corpos anormais.</p>
-                    </div>
-
-                    <div class="race-cards">
-                        <!-- HUMANO -->
-                        <div class="race-card" id="card-Humano" onclick="selectRace('Humano')"
-                            style="cursor:pointer; position:relative;">
-                            <div class="card-visual"><i data-lucide="user" style="width:48px; height:48px;"></i></div>
-                            <div class="card-content">
-                                <h3>Humano</h3>
-                                <p class="race-tagline">Versatilidade & Determinação</p>
-                                <ul
-                                    style="font-size:0.8rem; text-align:left; color:#aaa; margin-top:5px; padding-left:15px;">
-                                    <li>+2 em 2 Atributos</li>
-                                    <li>1 Talento Extra</li>
-                                    <li>Proficiência em 2 Perícias</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- MARECHI -->
-                        <div class="race-card" id="card-Marechi" onclick="selectRace('Marechi')"
-                            style="cursor:pointer; position:relative;">
-                            <div class="card-visual"><i data-lucide="droplet" style="width:48px; height:48px;"></i>
-                            </div>
-                            <div class="card-content">
-                                <h3>Marechi</h3>
-                                <p class="race-tagline">Sangue Raro & Maldito</p>
-                                <ul
-                                    style="font-size:0.8rem; text-align:left; color:#aaa; margin-top:5px; padding-left:15px;">
-                                    <li>+2 em 2 Atributos</li>
-                                    <li>Atrai Demônios (Vantagem/Risco)</li>
-                                    <li>Sangue Atordoante</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- TSUYOI -->
-                        <div class="race-card" id="card-Tsuyoi" onclick="selectRace('Tsuyoi')"
-                            style="cursor:pointer; position:relative;">
-                            <div class="card-visual"><i data-lucide="dumbbell" style="width:48px; height:48px;"></i>
-                            </div>
-                            <div class="card-content">
-                                <h3>Tsuyoi</h3>
-                                <p class="race-tagline">Força & Flexibilidade Anormal</p>
-                                <ul
-                                    style="font-size:0.8rem; text-align:left; color:#aaa; margin-top:5px; padding-left:15px;">
-                                    <li>+2 Força, +2 Destreza</li>
-                                    <li>Corpo Flexível (Prof. DES)</li>
-                                    <li>Presença Encantadora (Kawaii)</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- HIDDEN MARECHI ROLL SECTION -->
-                    <div id="marechi-roll-section"
-                        style="display:none; margin-top:20px; padding:15px; background:rgba(255,0,0,0.1); border:1px solid #ff4d4d; border-radius:8px; text-align:center;">
-                        <h4 style="color:#ff4d4d;">Teste de Sangue Raro</h4>
-                        <p style="font-size:0.9rem; color:#ccc; margin-bottom:10px;">Role 1d20. Se tirar 18-20, você é
-                            um <strong>Marechi Raro</strong>!</p>
-                        <button id="roll-marechi-btn" onclick="rollMarechi()"
-                            style="padding:10px 20px; background:#ff4d4d; color:white; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">ROLAR
-                            1d20</button>
-                        <div id="marechi-result" style="margin-top:10px; font-weight:bold; font-size:1.2rem;"></div>
+            <div class="grid-2">
+                <!-- Human -->
+                <div class="selection-card selected" onclick="selectRace('Humano', this)">
+                    <img src="https://images.alphacoders.com/132/1328639.png" class="card-bg-img">
+                    <div class="card-text">
+                        <h3>Humano</h3>
+                        <p>Caçadores determinados que usam a Respiração para superar limites humanos.</p>
                     </div>
                 </div>
 
-                <!-- BACKGROUND SECTION -->
-                <div class="background-section" style="margin-top:40px; padding-top:20px; border-top:1px dashed #444;">
-                    <div class="guide-text">
-                        <h3>Seu Passado (Antecedente)</h3>
-                        <p>O que você fazia antes de se juntar à Corporação? Sua vida antiga define suas habilidades
-                            iniciais.</p>
-                    </div>
-                    <div class="bg-grid" id="bgCards">
-                        <!-- Brigão (Brawler) -->
-                        <div class="race-card bg-card" id="card-brigao" data-bg="brigao"
-                            onclick="selectBackground('brigao')">
-                            <div class="card-visual"><i data-lucide="skull" style="width:40px; height:40px;"></i></div>
-                            <div class="card-content">
-                                <h3>Brigão</h3>
-                                <p class="race-tagline">Nascido na luta.</p>
-                                <ul class="mini-benefits">
-                                    <li>+ Atletismo, Intimidação</li>
-                                    <li>Briga de Rua (1d8)</li>
-                                </ul>
-                            </div>
+                <!-- Oni -->
+                <div class="selection-card locked">
+                    <img src="https://wallpapers.com/images/hd/demon-slayer-upper-moon-1-kokushibo-4k-8j5v0a2z5z5z5z5z.jpg"
+                        class="card-bg-img" style="filter:grayscale(1);">
+                    <div class="card-text" style="display:flex; justify-content:space-between; align-items:end;">
+                        <div>
+                            <h3>Oni (Demônio)</h3>
+                            <p>Seres imortais com força sobrenatural e Artes de Sangue.</p>
                         </div>
-
-                        <!-- Herdeiro (Heir) -->
-                        <div class="race-card bg-card" id="card-herdeiro" data-bg="herdeiro"
-                            onclick="selectBackground('herdeiro')">
-                            <div class="card-visual"><i data-lucide="crown" style="width:40px; height:40px;"></i></div>
-                            <div class="card-content">
-                                <h3>Herdeiro</h3>
-                                <p class="race-tagline">Linhagem Nobre.</p>
-                                <ul class="mini-benefits">
-                                    <li>+ Persuasão, História</li>
-                                    <li>Recursos Extras</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- Sobrevivente (Survivor) -->
-                        <div class="race-card bg-card" id="card-sobrevivente" data-bg="sobrevivente"
-                            onclick="selectBackground('sobrevivente')">
-                            <div class="card-visual"><i data-lucide="heart-pulse" style="width:40px; height:40px;"></i>
-                            </div>
-                            <div class="card-content">
-                                <h3>Sobrevivente</h3>
-                                <p class="race-tagline">Escapou da morte.</p>
-                                <ul class="mini-benefits">
-                                    <li>+ Sobrevivência, Furtividade</li>
-                                    <li>Instinto Aguçado</li>
-                                </ul>
-                            </div>
-                        </div>
+                        <i data-lucide="lock"></i>
                     </div>
                 </div>
 
-                <div id="infoPanel" class="info-panel hidden">
-                    <h3 id="infoTitle">Detalhes</h3>
-                    <div id="infoContent"></div>
+                <!-- Marechi (Optional Extra based on prompt, let's include as selecteable) -->
+                <div class="selection-card" onclick="selectRace('Marechi', this)">
+                    <img src="https://images5.alphacoders.com/113/1131979.jpg" class="card-bg-img">
+                    <div class="card-text">
+                        <h3>Marechi</h3>
+                        <p>Sangue raro que atrai demônios, mas possui grande poder latente.</p>
+                    </div>
                 </div>
+                <!-- Tsuyoi -->
+                <div class="selection-card" onclick="selectRace('Tsuyoi', this)">
+                    <img src="https://images3.alphacoders.com/107/1070622.jpg" class="card-bg-img">
+                    <div class="card-text">
+                        <h3>Tsuyoi</h3>
+                        <p>Corpos com constituição muscular única e flexibilidade anormal.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-                <footer class="form-footer">
-                    <button id="nextBtn" class="btn-primary" disabled>Próximo: Rolar Atributos</button>
-                </footer>
-            </section>
+        <!-- SEC 2: COMBAT -->
+        <section id="combat" class="form-section">
+            <div class="section-header">
+                <span class="sec-num">02.</span>
+                <span class="sec-title">Estilo de Combate</span>
+            </div>
 
-            <!-- STEP 2A: THE ROLL (Dedicated Screen) -->
-            <section id="step2-roll" class="rolling-section hidden">
-                <div class="roll-center-stage">
-                    <h2>Hora de definir seu Destino</h2>
-                    <p>O destino de um caçador é definido por sua força, agilidade e mente.</p>
+            <div class="grid-4">
+                <div class="style-btn selected" onclick="selectCombat('water', this)">
+                    <div class="style-icon-box" style="color:#00b4d8"><i data-lucide="droplet"></i></div>
+                    <strong>Água</strong>
+                </div>
+                <div class="style-btn locked">
+                    <div class="style-icon-box" style="color:#ffb703"><i data-lucide="zap"></i></div>
+                    <strong>Trovão</strong>
+                    <i data-lucide="lock" size="12" style="margin-top:5px;"></i>
+                </div>
+                <div class="style-btn locked">
+                    <div class="style-icon-box" style="color:#ef233c"><i data-lucide="flame"></i></div>
+                    <strong>Chamas</strong>
+                    <i data-lucide="lock" size="12" style="margin-top:5px;"></i>
+                </div>
+                <div class="style-btn locked">
+                    <div class="style-icon-box" style="color:#888"><i data-lucide="paw-print"></i></div>
+                    <strong>Fera</strong>
+                    <i data-lucide="lock" size="12" style="margin-top:5px;"></i>
+                </div>
+            </div>
+        </section>
 
-                    <div id="diceStage" class="dice-stage">
-                        <!-- Dice animate here -->
-                        <div class="placeholder-dice"><i data-lucide="dices" style="width:64px; height:64px;"></i></div>
+        <!-- SEC 3: NICHIRIN -->
+        <section id="nichirin" class="form-section">
+            <div class="section-header">
+                <span class="sec-num">03.</span>
+                <span class="sec-title">Forjar sua Nichirin</span>
+                <span style="font-size:0.9rem; color:#666; margin-left:auto;">Personalize sua lâmina</span>
+            </div>
+
+            <div class="forge-container">
+                <div>
+                    <label style="color:#aaa; font-size:0.9rem;">Cor da Lâmina</label>
+                    <div class="colors-row">
+                        <div class="color-dot selected" style="background:#00b4d8"
+                            onclick="selectColor('#00b4d8', this)"></div>
+                        <div class="color-dot" style="background:#ffb703" onclick="selectColor('#ffb703', this)"></div>
+                        <div class="color-dot" style="background:#ef233c" onclick="selectColor('#ef233c', this)"></div>
+                        <div class="color-dot" style="background:#2d6a4f" onclick="selectColor('#2d6a4f', this)"></div>
+                        <div class="color-dot" style="background:#000000; border:1px solid #444;"
+                            onclick="selectColor('#000000', this)"></div>
                     </div>
 
-                    <button id="rollDiceBtn" class="btn-primary" onclick="triggerRollingPhase()">
-                        DEIXAR OS DADOS ROLAREM
-                    </button>
+                    <div style="margin-top:1.5rem;">
+                        <label style="color:#aaa; font-size:0.9rem;">Tipo de Guarda (Tsuba)</label>
+                        <select class="ds-input" style="cursor:pointer;" id="tsubaSelect">
+                            <option>Hexagonal (Água)</option>
+                            <option>Retangular (Névoa)</option>
+                            <option>Circular (Chamas)</option>
+                            <option>Floral (Inseto)</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-top:1.5rem;">
+                        <label style="color:#aaa; font-size:0.9rem;">Nome da Espada</label>
+                        <input type="text" class="ds-input" placeholder="Ex: Lâmina do Destino" id="swordName"
+                            oninput="updatePreview()">
+                    </div>
                 </div>
-            </section>
 
-            <!-- STEP 2B: ASSIGNMENT (The Board) -->
-            <section id="step2-assign" class="assignment-section hidden">
-                <h2>Distribuição de Atributos</h2>
-                <p class="section-desc">Arraste os valores da esquerda para os atributos que melhor definem seu
-                    personagem.</p>
+                <div class="blade-preview-box">
+                    <div class="preview-glow" id="bladeGlow"></div>
+                    <small style="position:absolute; top:10px; right:15px; color:#444;">Preview</small>
+                </div>
+            </div>
+        </section>
 
-                <div class="assignment-board">
-                    <!-- LEFT: POOL -->
-                    <div class="pool-container">
-                        <h3>Valores Rolados</h3>
-                        <div id="valuePool" class="value-pool">
-                            <!-- JS injects values here -->
+        <!-- SEC 4: STATS -->
+        <section id="stats" class="form-section">
+            <div class="section-header">
+                <span class="sec-num">04.</span>
+                <span class="sec-title">Atributos e Perícias</span>
+                <div class="points-box">Pontos Restantes: <span id="pointsRemain">27</span></div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap:3rem;">
+                <!-- ATTRIBUTES -->
+                <div>
+                    <h4 style="margin-top:0; color:#ddd; margin-bottom:1.5rem;">Atributos Básicos (Point Buy)</h4>
+
+                    <div class="attr-row">
+                        <div class="attr-label"><i data-lucide="swords" size="16" style="color:#d90429"></i> Força</div>
+                        <div class="attr-input-group">
+                            <input type="range" min="8" max="15" value="8" style="--val:0%"
+                                oninput="updateStat('str', this.value)">
+                            <div class="attr-val-box" id="val-str">8</div>
                         </div>
                     </div>
 
-                    <!-- RIGHT: SLOTS -->
-                    <div class="slots-grid">
-                        <div class="slot-card" data-stat="str" ondragover="allowDrop(event)" ondrop="drop(event)">
-                            <div class="slot-info">
-                                <h4>FORÇA</h4>
-                                <span class="tooltip-icon"
-                                    data-tooltip="Define dano corpo-a-corpo e capacidade de carga (Atletismo).">?</span>
-                            </div>
-                            <div class="slot-target" id="slot-str"></div>
-                            <div class="slot-mod" id="mod-str">+0</div>
+                    <div class="attr-row">
+                        <div class="attr-label"><i data-lucide="wind" size="16" style="color:#d90429"></i> Destreza
                         </div>
-
-                        <div class="slot-card" data-stat="dex" ondragover="allowDrop(event)" ondrop="drop(event)">
-                            <div class="slot-info">
-                                <h4>DESTREZA</h4>
-                                <span class="tooltip-icon"
-                                    data-tooltip="Define defesa (AC), iniciativa e ataques à distância/leves (Furtividade, Acrobatismo).">?</span>
-                            </div>
-                            <div class="slot-target" id="slot-dex"></div>
-                            <div class="slot-mod" id="mod-dex">+0</div>
+                        <div class="attr-input-group">
+                            <input type="range" min="8" max="15" value="8" oninput="updateStat('dex', this.value)">
+                            <div class="attr-val-box" id="val-dex">8</div>
                         </div>
+                    </div>
 
-                        <div class="slot-card" data-stat="con" ondragover="allowDrop(event)" ondrop="drop(event)">
-                            <div class="slot-info">
-                                <h4>CONSTITUIÇÃO</h4>
-                                <span class="tooltip-icon"
-                                    data-tooltip="Define seus Pontos de Vida (PV) e resistência física.">?</span>
-                            </div>
-                            <div class="slot-target" id="slot-con"></div>
-                            <div class="slot-mod" id="mod-con">+0</div>
+                    <div class="attr-row">
+                        <div class="attr-label"><i data-lucide="shield" size="16" style="color:#d90429"></i>
+                            Constituição</div>
+                        <div class="attr-input-group">
+                            <input type="range" min="8" max="15" value="8" oninput="updateStat('con', this.value)">
+                            <div class="attr-val-box" id="val-con">8</div>
                         </div>
+                    </div>
 
-                        <div class="slot-card" data-stat="int" ondragover="allowDrop(event)" ondrop="drop(event)">
-                            <div class="slot-info">
-                                <h4>INTELIGÊNCIA</h4>
-                                <span class="tooltip-icon"
-                                    data-tooltip="Capacidade de investigação, lógica e conhecimento sobre Onis.">?</span>
-                            </div>
-                            <div class="slot-target" id="slot-int"></div>
-                            <div class="slot-mod" id="mod-int">+0</div>
+                    <div class="attr-row">
+                        <div class="attr-label"><i data-lucide="brain" size="16" style="color:#d90429"></i> Inteligência
                         </div>
-
-                        <div class="slot-card" data-stat="wis" ondragover="allowDrop(event)" ondrop="drop(event)">
-                            <div class="slot-info">
-                                <h4>SABEDORIA</h4>
-                                <span class="tooltip-icon"
-                                    data-tooltip="Percepção do mundo, intuição e força de vontade (Resistência Mental).">?</span>
-                            </div>
-                            <div class="slot-target" id="slot-wis"></div>
-                            <div class="slot-mod" id="mod-wis">+0</div>
+                        <div class="attr-input-group">
+                            <input type="range" min="8" max="15" value="8" oninput="updateStat('int', this.value)">
+                            <div class="attr-val-box" id="val-int">8</div>
                         </div>
+                    </div>
 
-                        <div class="slot-card" data-stat="cha" ondragover="allowDrop(event)" ondrop="drop(event)">
-                            <div class="slot-info">
-                                <h4>CARISMA</h4>
-                                <span class="tooltip-icon"
-                                    data-tooltip="Força de personalidade, intimidação e liderança.">?</span>
-                            </div>
-                            <div class="slot-target" id="slot-cha"></div>
-                            <div class="slot-mod" id="mod-cha">+0</div>
+                    <div class="attr-row">
+                        <div class="attr-label"><i data-lucide="eye" size="16" style="color:#d90429"></i> Sabedoria
+                        </div>
+                        <div class="attr-input-group">
+                            <input type="range" min="8" max="15" value="8" oninput="updateStat('wis', this.value)">
+                            <div class="attr-val-box" id="val-wis">8</div>
+                        </div>
+                    </div>
+
+                    <div class="attr-row">
+                        <div class="attr-label"><i data-lucide="smile" size="16" style="color:#d90429"></i> Carisma
+                        </div>
+                        <div class="attr-input-group">
+                            <input type="range" min="8" max="15" value="8" oninput="updateStat('cha', this.value)">
+                            <div class="attr-val-box" id="val-cha">8</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- RACIAL BONUS (UPDATED) -->
-                <div id="bonusSection" class="bonus-selector-container hidden">
-                    <h3>Genética & Origem (+2 / +2)</h3>
-                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">Escolha dois atributos distintos para receber seu
-                        bônus racial.</p>
-
-                    <div class="bonus-toggles" id="bonusToggles">
-                        <!-- Generated by JS -->
+                <!-- SKILLS -->
+                <div>
+                    <h4 style="margin-top:0; color:#ddd; margin-bottom:1.5rem;">Perícias Treinadas</h4>
+                    <div class="skills-summary" id="skillsList">
+                        <!-- JS populated -->
+                        <div class="skill-tag"><span>Atletismo (FOR)</span> <span>+2</span></div>
+                        <div class="skill-tag"><span>Acrobacia (DES)</span> <span>+2</span></div>
                     </div>
                 </div>
+            </div>
+        </section>
 
-                <!-- PREVIEW FOOTER -->
-                <footer class="stats-preview-footer">
-                    <div class="preview-stat">
-                        <label>PV Máximo</label>
-                        <span id="finalHP">--</span>
-                    </div>
-                    <div class="preview-stat">
-                        <label>Defesa (AC)</label>
-                        <span id="finalAC">10</span>
-                    </div>
-                    <button id="finishStep2" class="btn-primary" disabled>Confirmar Atributos</button>
-                </footer>
-            </section>
+        <!-- SEC 5: INVENTORY -->
+        <section id="inventory" class="form-section">
+            <div class="section-header">
+                <span class="sec-num">05.</span>
+                <span class="sec-title">Inventário Inicial</span>
+            </div>
 
-        </main>
-    </div>
+            <div style="display:flex; gap:15px;">
+                <div
+                    style="background:#1a1a20; padding:15px; border-radius:8px; width:80px; text-align:center; border:1px solid #333;">
+                    <i data-lucide="backpack" style="margin-bottom:5px;"></i>
+                    <div style="font-size:0.7rem;">Mochila</div>
+                </div>
+                <div
+                    style="background:#1a1a20; padding:15px; border-radius:8px; width:80px; text-align:center; border:1px solid #333;">
+                    <i data-lucide="coins" style="margin-bottom:5px; color:#ffd700;"></i>
+                    <div style="font-size:0.7rem;">100 Kan</div>
+                </div>
+                <div
+                    style="background:#1a1a20; padding:15px; border-radius:8px; width:80px; text-align:center; border:1px solid #333;">
+                    <i data-lucide="bandage" style="margin-bottom:5px; color:#ff6b6b;"></i>
+                    <div style="font-size:0.7rem;">Curativos</div>
+                </div>
+            </div>
+        </section>
 
-    <script src="creation.js"></script>
+    </main>
+
+    <!-- RIGHT SIDEBAR (PREVIEW) -->
+    <aside class="sidebar-right">
+        <div class="preview-card-header">
+            <img src="https://i.pinimg.com/736x/8f/65/97/8f6597167733f5d522510c4fa4703a45.jpg" class="char-img"
+                id="charPortrait">
+            <div class="rank-badge">Mizunoto</div>
+        </div>
+
+        <div>
+            <h2 class="char-name-display" id="displayName">Tanaka Kenji</h2>
+            <div class="breathing-subtitle" id="displayBreathing"><i data-lucide="droplet" size="12"></i> Respiração da
+                Água</div>
+        </div>
+
+        <table class="summary-table">
+            <tr>
+                <td>Raça</td>
+                <td id="displayRace">Humano</td>
+            </tr>
+            <tr>
+                <td>Arma</td>
+                <td id="displayWeapon">Nichirin Azul</td>
+            </tr>
+        </table>
+
+        <div class="vital-stats">
+            <div class="vital-box">
+                <span class="vital-label">Vida</span>
+                <div class="vital-val" style="color:#d90429;" id="displayHP">24 <span>/24</span></div>
+            </div>
+            <div class="vital-box">
+                <span class="vital-label">Estamina</span>
+                <div class="vital-val" style="color:#ffb703;" id="displayPE">12 <span>/12</span></div>
+            </div>
+        </div>
+
+        <button class="confirm-btn" onclick="finishCreation()">
+            Confirmar Personagem <i data-lucide="arrow-right"></i>
+        </button>
+        <button class="draft-btn">Salvar Rascunho</button>
+    </aside>
+
     <script>
-        // Init Icons
-        if (window.lucide) window.lucide.createIcons();
+        lucide.createIcons();
+
+        // STATE
+        const state = {
+            race: 'Humano',
+            combat: 'water',
+            bladeColor: '#00b4d8',
+            stats: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 },
+            pointsMax: 27,
+            pointsSpent: 0
+        };
+
+        const COSTS = { 8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9 };
+
+        // --- UPDATERS ---
+
+        function updatePreview() {
+            // Name
+            const name = document.getElementById('inputName').value;
+            document.getElementById('displayName').innerText = name || "Sem Nome";
+
+            // Weapon Name
+            const wName = document.getElementById('swordName').value;
+            document.getElementById('displayWeapon').innerText = wName ? `Nichirin (${wName})` : "Nichirin (Padrão)";
+
+            // Calc HP (Base 10 + Con Mod + Race Bonus)
+            // Human: 0, Marechi: 0, Tsuyoi: +1?
+            // Level 1 Water: 10 + Con
+            const conMod = Math.floor((state.stats.con - 10) / 2);
+            const totalHP = 10 + conMod + (state.race === 'Tsuyoi' ? 2 : 0) + (state.race === 'Humano' ? 1 : 0);
+            // Arbitrary race hp bonus for variety logic
+
+            document.getElementById('displayHP').innerHTML = `${totalHP} <span>/${totalHP}</span>`;
+
+            // Calc PE (1 + Wis Mod? Or fixed?)
+            const totalPE = 1 + Math.max(0, Math.floor((state.stats.wis - 10) / 2));
+            document.getElementById('displayPE').innerHTML = `${totalPE} <span>/${totalPE}</span>`;
+        }
+
+        function selectRace(race, el) {
+            state.race = race;
+            // Update UI
+            document.querySelectorAll('#race .selection-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            document.getElementById('displayRace').innerText = race;
+            updatePreview();
+        }
+
+        function selectCombat(type, el) {
+            // Locked check handled by onClick not being on locked ones usually
+            state.combat = type;
+            // We only have water unlocked so this is simple
+        }
+
+        function selectColor(color, el) {
+            state.bladeColor = color;
+            document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+            el.classList.add('selected');
+            document.getElementById('bladeGlow').style.backgroundColor = color;
+            document.getElementById('bladeGlow').style.boxShadow = `0 0 15px ${color}`;
+        }
+
+        function updateStat(stat, val) {
+            val = parseInt(val);
+            const currentCost = COSTS[val];
+
+            // Calculate total cost of ALL stats to enforce limit
+            let totalCost = 0;
+            ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach(k => {
+                const sVal = k === stat ? val : state.stats[k];
+                totalCost += COSTS[sVal];
+            });
+
+            const remaining = state.pointsMax - totalCost;
+            document.getElementById('pointsRemain').innerText = remaining;
+
+            if (remaining < 0) {
+                // Revert visual if over budget (simplistic handling)
+                document.getElementById('pointsRemain').style.color = 'red';
+                // Ideally prevent input, but for now just visual warning
+            } else {
+                document.getElementById('pointsRemain').style.color = 'var(--accent-red)';
+            }
+
+            state.stats[stat] = val;
+            document.getElementById(`val-${stat}`).innerText = val;
+            updatePreview();
+        }
+
+        function finishCreation() {
+            // Validation
+            const name = document.getElementById('inputName').value;
+            if (!name) { alert("Por favor, dê um nome ao seu caçador."); return; }
+
+            // Build Object
+            const finalChar = {
+                id: Date.now().toString(),
+                name: name,
+                race: state.race,
+                level: 1,
+                hp: parseInt(document.getElementById('displayHP').innerText),
+                currentHP: parseInt(document.getElementById('displayHP').innerText),
+                pe: parseInt(document.getElementById('displayPE').innerText),
+                attributes: state.stats,
+                breathingStyle: {
+                    id: 'water', name: "Respiração da Água", icon: "🌊"
+                },
+                inventory: ["Mochila", "100 Kan", "Curativos", "Nichirin"],
+                skills: ["Atletismo", "Acrobacia"]
+            };
+
+            // Save to LocalStorage Array
+            let allChars = JSON.parse(localStorage.getItem('demonSlayerAllChars') || '[]');
+            if (allChars.length >= 5) { alert("Limite de personagens atingido."); return; }
+
+            allChars.push(finalChar);
+            localStorage.setItem('demonSlayerAllChars', JSON.stringify(allChars));
+            localStorage.setItem('demonSlayerChar', JSON.stringify(finalChar));
+
+            window.location.href = 'dashboard.html';
+        }
+
+        // Init
+        updatePreview();
     </script>
 </body>
 

@@ -3,93 +3,342 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Escolha sua Respiração | Handbook</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="breathing.css">
-    <link rel="stylesheet" href="theme-demonslayer.css">
+    <title>Escolha sua Respiração | Demon Slayer RPG</title>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Kaushan+Script&family=Patrick+Hand&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700&display=swap"
         rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        .breathing-selection-container {
-            min-height: 100vh;
+        :root {
+            --bg-dark: #050505;
+            --text-main: #ffffff;
+            --text-muted: #aaa;
+            --accent-red: #d90429;
+            --accent-glow: #ff5e62;
+            --font-main: 'Outfit', sans-serif;
+            --font-display: 'Cinzel', serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            overflow-x: hidden;
             display: flex;
             flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        .selection-header {
+            text-align: center;
+            padding: 4rem 1rem 2rem 1rem;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .selection-header h1 {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .selection-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* GRID */
+        .cards-container {
+            flex: 1;
+            display: flex;
             align-items: center;
             justify-content: center;
             padding: 2rem;
-            animation: fadeIn 1s;
         }
 
-        .scroll-header {
-            text-align: center;
-            margin-bottom: 3rem;
+        .styles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            width: 100%;
         }
 
-        .scroll-header h1 {
-            color: var(--ink-black);
-            font-size: 3rem;
+        /* CARD STYLE */
+        .breath-card {
+            position: relative;
+            height: 450px;
+            background: #111;
+            border-radius: 16px;
+            border: 1px solid #222;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .breath-card-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            z-index: 1;
+        }
+
+        .breath-card:hover .breath-card-bg {
+            transform: scale(1.1);
+        }
+
+        .breath-content {
+            position: relative;
+            z-index: 2;
+            padding: 2rem;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.6), transparent);
+            transform: translateY(10px);
+            transition: transform 0.3s;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .breath-card:hover .breath-content {
+            transform: translateY(0);
+        }
+
+        .breath-icon {
+            font-size: 2rem;
             margin-bottom: 0.5rem;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .single-choice-grid {
-            margin-bottom: 3rem;
+        .breath-name {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .breath-desc {
+            font-size: 0.9rem;
+            color: #ccc;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+        }
+
+        .select-btn {
+            background: white;
+            color: black;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            opacity: 0;
+            /* Hidden initially */
+            transform: translateY(20px);
+        }
+
+        .breath-card:hover .select-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .select-btn:hover {
+            background: var(--text-muted);
+        }
+
+        /* LOCKED STATE */
+        .breath-card.locked {
+            cursor: not-allowed;
+            border-color: #333;
+        }
+
+        .breath-card.locked .breath-card-bg {
+            filter: grayscale(1) blur(2px) brightness(0.5);
+        }
+
+        .breath-card.locked .breath-content {
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95), transparent);
+            justify-content: center;
+            align-items: center;
+            transform: translateY(0);
+        }
+
+        .lock-icon {
+            font-size: 3rem;
+            color: #555;
+            margin-bottom: 1rem;
+        }
+
+        .locked-text {
+            color: #555;
+            font-family: var(--font-display);
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        /* SPECIFIC THEMES */
+        .theme-water .breath-card-bg {
+            background: linear-gradient(135deg, #0cebeb, #20e3b2, #29ffc6);
+            /* Fallback */
+            background-image: url('https://w.wallhaven.cc/full/xl/wallhaven-xl3yvz.jpg');
+            background-size: cover;
+        }
+
+        .theme-water .breath-icon {
+            color: #00b4d8;
+            border-color: #00b4d8;
+        }
+
+        .theme-water:hover {
+            border-color: #00b4d8;
+            box-shadow: 0 0 30px rgba(0, 180, 216, 0.3);
+        }
+
+        .theme-thunder .breath-card-bg {
+            background: linear-gradient(135deg, #ffd700, #daa520);
+        }
+
+        .theme-beast .breath-card-bg {
+            background: linear-gradient(135deg, #7f8c8d, #2c3e50);
+        }
+
+        .theme-flame .breath-card-bg {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+        }
+
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ACTION BAR */
+        .action-bar {
+            padding: 2rem;
+            text-align: center;
+            background: #0a0a0a;
+            border-top: 1px solid #222;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="breathing-selection-container">
+    <div class="selection-header">
+        <h1>Escolha sua Respiração</h1>
+        <p>A técnica molda o espadachim. Qual elemento ressoa com sua alma?</p>
+    </div>
 
-        <div class="creation-form" style="max-width:800px; width:100%; text-align:center;">
-            <div class="scroll-header">
-                <h1>Técnicas de Respiração</h1>
-                <p>O poder flui através dos pulmões. Escolha seu caminho.</p>
-            </div>
+    <div class="cards-container">
+        <div class="styles-grid">
 
-            <div id="breathingChoiceArea" class="single-choice-grid">
-                <!-- We only want Water Breathing here as per request -->
-                <!-- Hardcoded Water Card for the "Only Water" request, or injected -->
-                <div class="breathing-card" onclick="selectWater()" id="waterCard">
-                    <div class="breath-icon">🌊</div>
-                    <h3>Respiração da Água</h3>
-                    <p>Equilíbrio, Defesa e Fluidez.</p>
-                    <div class="primary-stats-icons">
-                        <span class="stat-icon-glow">FOR</span> <span class="stat-icon-glow">DES</span>
-                    </div>
+            <!-- WATER BREATHING (AVAILABLE) -->
+            <div class="breath-card theme-water" onclick="selectBreathing('water')">
+                <div class="breath-card-bg"></div>
+                <div class="breath-content">
+                    <div style="flex:1"></div> <!-- Spacer -->
+                    <div class="breath-icon"><i data-lucide="droplet"></i></div>
+                    <div class="breath-name">Respiração da Água</div>
+                    <div class="breath-desc">Flexibilidade, defesa absoluta e fluxo contínuo. Perfeito para caçadores
+                        equilibrados.</div>
+                    <button class="select-btn">
+                        Selecionar <i data-lucide="arrow-right"></i>
+                    </button>
                 </div>
             </div>
 
-            <footer class="form-footer">
-                <button id="finalBtn" class="btn-primary" disabled onclick="finalizeCharacter()">Finalizar
-                    Ficha</button>
-            </footer>
-        </div>
+            <!-- THUNDER BREATHING (LOCKED) -->
+            <div class="breath-card locked theme-thunder">
+                <div class="breath-card-bg"></div>
+                <div class="breath-content">
+                    <i data-lucide="lock" class="lock-icon"></i>
+                    <div class="locked-text">Indisponível</div>
+                    <div style="margin-top:10px; color:#444; font-size:0.8rem;">Respiração do Trovão</div>
+                </div>
+            </div>
 
+            <!-- BEAST BREATHING (LOCKED) -->
+            <div class="breath-card locked theme-beast">
+                <div class="breath-card-bg"></div>
+                <div class="breath-content">
+                    <i data-lucide="lock" class="lock-icon"></i>
+                    <div class="locked-text">Indisponível</div>
+                    <div style="margin-top:10px; color:#444; font-size:0.8rem;">Respiração da Fera</div>
+                </div>
+            </div>
+
+            <!-- FLAME BREATHING (LOCKED) -->
+            <div class="breath-card locked theme-flame">
+                <div class="breath-card-bg"></div>
+                <div class="breath-content">
+                    <i data-lucide="lock" class="lock-icon"></i>
+                    <div class="locked-text">Indisponível</div>
+                    <div style="margin-top:10px; color:#444; font-size:0.8rem;">Respiração das Chamas</div>
+                </div>
+            </div>
+
+        </div>
     </div>
 
     <script>
-        // Load Temp Data
-        const tempData = JSON.parse(localStorage.getItem('demonSlayerChar_Temp'));
-        if (!tempData) {
-            alert("Dados não encontrados. Volte ao início.");
-            window.location.href = 'create-character.html';
-        }
+        lucide.createIcons();
 
-        console.log("Partial Data:", tempData);
+        function selectBreathing(type) {
+            if (type !== 'water') return;
 
-        let selected = false;
+            // Load Temp Data
+            let tempData = null;
+            try {
+                tempData = JSON.parse(localStorage.getItem('demonSlayerChar_Temp'));
+            } catch (e) { }
 
-        function selectWater() {
-            selected = true;
-            document.getElementById('waterCard').classList.add('selected');
-            document.getElementById('finalBtn').removeAttribute('disabled');
-        }
+            if (!tempData) {
+                alert("Erro: Dados de criação não encontrados.");
+                return;
+            }
 
-        function finalizeCharacter() {
-            // Construct Final Data
-            // We hardcode Water Breathing data here since user said ONLY water for now
+            // FINALIZATION LOGIC (Merged from previous step)
             const waterBreathingData = {
                 "id": "class_water",
                 "name": "Respiração da Água",
@@ -97,24 +346,41 @@
                 "base_stats": {
                     "hit_die": 10
                 },
-                "proficiencies": ["Acrobacia", "Atletismo"] // Default skills for simplicity/request
+                "proficiencies": ["Acrobacia", "Atletismo"]
             };
 
-            // Calculate Final HP (Base + Con Mod)
-            // Con Mod?
-            const con = tempData.attributes.con;
+            const con = tempData.attributes.con || 10;
             const conMod = Math.floor((con - 10) / 2);
-            const finalHP = 10 + conMod; // Level 1 Water Die = 10
+            const finalHP = 10 + conMod;
 
             const finalChar = {
+                id: Date.now().toString(),
                 ...tempData,
                 hp: finalHP,
                 currentHP: finalHP,
+                currentPE: 1, // Start with 1? Or max? Usually max = level.
+                maxPE: 1,
                 breathingStyle: waterBreathingData,
                 proficiencies: [...(new Set([...(tempData.proficiencies || []), "Acrobacia", "Atletismo"]))]
             };
 
+            // Multi Char Logic
+            let allChars = [];
+            try {
+                const stored = localStorage.getItem('demonSlayerAllChars');
+                if (stored) allChars = JSON.parse(stored);
+            } catch (e) { allChars = []; }
+
+            if (allChars.length >= 5) {
+                alert("Você atingiu o limite de 5 personagens.");
+                return;
+            }
+
+            allChars.push(finalChar);
+            localStorage.setItem('demonSlayerAllChars', JSON.stringify(allChars));
             localStorage.setItem('demonSlayerChar', JSON.stringify(finalChar));
+
+            // Redirect
             window.location.href = 'dashboard.html';
         }
     </script>

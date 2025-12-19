@@ -1,280 +1,888 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>Handbook do Exterminador</title>
-    <!-- Fonts -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demon Slayer RPG | Breath of the Sun</title>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700&display=swap"
         rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
             --bg-dark: #050505;
             --text-main: #ffffff;
-            --text-muted: #888;
-            --accent: #9d4edd;
-            --font-main: 'Inter', sans-serif;
-            --font-title: 'Playfair Display', serif;
+            --text-muted: #aaa;
+            --accent-red: #d90429;
+            --accent-glow: #ff5e62;
+            --font-main: 'Outfit', sans-serif;
+            --font-display: 'Cinzel', serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            margin: 0;
-            padding: 0;
             background-color: var(--bg-dark);
             color: var(--text-main);
             font-family: var(--font-main);
-            height: 100vh;
-            overflow: hidden;
-            background-image: linear-gradient(to bottom, rgba(5, 5, 5, 0.3), rgba(5, 5, 5, 1)), url('https://w.wallhaven.cc/full/8o/wallhaven-8oxgqy.jpg');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            flex-direction: column;
+            overflow-x: hidden;
         }
 
-        /* NAVIGATION overlay top right */
-        .top-nav {
-            position: absolute;
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            position: fixed;
             top: 0;
-            right: 0;
-            padding: 2rem 3rem;
+            width: 100%;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+            backdrop-filter: blur(2px);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
+        .logo i {
+            color: var(--accent-red);
+        }
+
+        .nav-links {
             display: flex;
             gap: 2rem;
-            z-index: 10;
         }
 
         .nav-link {
-            color: rgba(255, 255, 255, 0.6);
-            text-decoration: none;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: white;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .btn-login {
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .btn-login:hover {
+            color: white;
+        }
+
+        .btn-play {
+            background: var(--accent-red);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            font-size: 0.9rem;
-            font-weight: 400;
-            transition: color 0.3s, text-shadow 0.3s;
-            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(217, 4, 41, 0.4);
+        }
+
+        .btn-play:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(217, 4, 41, 0.6);
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
             position: relative;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            /* Fallback/Gradient BG since image gen is down */
+            background:
+                radial-gradient(circle at center bottom, rgba(217, 4, 41, 0.2) 0%, transparent 60%),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #050505),
+                url('https://images.alphacoders.com/109/1099882.jpg');
+            /* Placeholder external URL if active, else gradient covers */
+            background-size: cover;
+            background-position: center;
         }
 
-        .nav-link:hover,
-        .nav-link.active {
-            color: #fff;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-        }
-
-        .nav-link.active::after {
+        /* Overlay to darken image */
+        .hero::before {
             content: '';
             position: absolute;
-            bottom: -5px;
+            top: 0;
             left: 0;
             width: 100%;
-            height: 1px;
-            background: #fff;
-            box-shadow: 0 0 5px #fff;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1;
         }
 
-        /* MAIN CENTER CONTENT */
-        .main-container {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .hero-content {
             position: relative;
-            padding: 2rem;
+            z-index: 2;
+            max-width: 900px;
         }
 
-        .section {
-            text-align: center;
-            max-width: 800px;
-            width: 100%;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-            position: absolute;
-            /* Stack them */
-            pointer-events: none;
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: 4.5rem;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
         }
 
-        .section.active {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: all;
-            position: relative;
-            /* Let it flow */
-        }
-
-        h1 {
-            font-family: var(--font-title);
-            font-size: 3.5rem;
-            margin-bottom: 2rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
-        }
-
-        .unavailable-text {
+        .hero p {
             font-size: 1.2rem;
-            color: #666;
-            font-style: italic;
-            border: 1px solid #333;
-            padding: 1rem 2rem;
-            display: inline-block;
-            border-radius: 50px;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 600px;
+            margin: 0 auto 2.5rem auto;
+            line-height: 1.6;
         }
 
-        /* CARDS GRID */
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        .hero-btns {
+            display: flex;
             gap: 1.5rem;
             justify-content: center;
         }
 
-        .char-card {
-            background: rgba(20, 20, 20, 0.7);
-            border: 1px solid #333;
-            backdrop-filter: blur(10px);
-            padding: 1.5rem;
-            border-radius: 8px;
-            text-decoration: none;
+        .btn-hero-primary {
+            background: var(--accent-red);
             color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 1rem;
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 10px;
             transition: all 0.3s;
+        }
+
+        .btn-hero-primary:hover {
+            transform: scale(1.05);
+            background: #ff2a2a;
+        }
+
+        .btn-hero-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1rem;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+        }
+
+        .btn-hero-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: white;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            z-index: 2;
+            animation: bounce 2s infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* --- STORY SECTION --- */
+        .section-padding {
+            padding: 6rem 3rem;
+        }
+
+        .story-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            align-items: center;
+        }
+
+        .story-text h4 {
+            color: var(--accent-red);
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            font-weight: 800;
+        }
+
+        .story-text h2 {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .story-text p {
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            font-size: 1.05rem;
+        }
+
+        .read-more {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 700;
+            font-size: 0.9rem;
             cursor: pointer;
-            text-align: left;
+            transition: gap 0.2s;
         }
 
-        .char-card:hover {
-            background: rgba(40, 40, 40, 0.8);
-            border-color: var(--accent);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        .read-more:hover {
+            gap: 10px;
+            color: var(--accent-red);
         }
 
-        .card-icon {
-            width: 50px;
-            height: 50px;
-            background: #111;
-            border-radius: 50%;
+        .story-img-box {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #101015, #1a1a20);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #333;
+        }
+
+        /* Placeholder for Story Image using gradients */
+        .story-placeholder {
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 80% 20%, rgba(255, 200, 100, 0.2) 0%, transparent 20%),
+                linear-gradient(to bottom, #0a0a0f, #151520);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            border: 1px solid #444;
+            color: #333;
         }
 
-        .new-card .card-icon {
-            color: var(--accent);
-            border-color: var(--accent);
+        /* --- STYLES SECTION --- */
+        .styles-section {
+            background: #0a0a0a;
+            text-align: center;
         }
 
-        .card-info h3 {
-            margin: 0;
-            font-size: 1.1rem;
-            font-weight: 600;
+        .styles-section h2 {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
         }
 
-        .card-info span {
+        .subtitle {
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 4rem auto;
+        }
+
+        .styles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .style-card {
+            height: 400px;
+            background: #111;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #222;
+            text-align: left;
+            transition: all 0.3s;
+            cursor: pointer;
+            /* Removed group property */
+        }
+
+        .style-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent-glow);
+        }
+
+        .style-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s;
+        }
+
+        .style-card:hover .style-bg {
+            transform: scale(1.1);
+        }
+
+        .style-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 2rem;
+            background: linear-gradient(to top, black, transparent);
+            z-index: 2;
+        }
+
+        .style-icon {
+            margin-bottom: 10px;
+        }
+
+        .style-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-family: var(--font-display);
+        }
+
+        .style-desc {
             font-size: 0.85rem;
-            color: #888;
+            color: #ccc;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            opacity: 0.8;
         }
 
-        /* ANIMATION for Intro */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
+        .view-skills {
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Specific Gradients for Cards since image gen failed */
+        .bg-water {
+            background: linear-gradient(135deg, #023e8a, #0077b6, #000);
+        }
+
+        .bg-thunder {
+            background: linear-gradient(135deg, #ffb703, #fb8500, #000);
+        }
+
+        .bg-beast {
+            background: linear-gradient(135deg, #6c757d, #343a40, #000);
+        }
+
+        .bg-flame {
+            background: linear-gradient(135deg, #d00000, #9d0208, #000);
+        }
+
+        .txt-water {
+            color: #48cae4;
+        }
+
+        .txt-thunder {
+            color: #ffb703;
+        }
+
+        .txt-beast {
+            color: #adb5bd;
+        }
+
+        .txt-flame {
+            color: #ff5e62;
+        }
+
+        /* --- MECHANICS SECTION --- */
+        .mechanics-section {
+            background: #080808;
+        }
+
+        .mech-header {
+            max-width: 600px;
+            margin-bottom: 3rem;
+        }
+
+        .mech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .mech-card {
+            background: #111;
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid #222;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            transition: all 0.2s;
+        }
+
+        .mech-card:hover {
+            border-color: #333;
+            background: #151515;
+        }
+
+        .mech-icon-box {
+            width: 50px;
+            height: 50px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-red);
+        }
+
+        /* --- FOOTER CTA --- */
+        .cta-footer {
+            background: url('https://w.wallhaven.cc/full/8o/wallhaven-8oxgqy.jpg') center/cover fixed;
+            position: relative;
+            padding: 8rem 2rem;
+            text-align: center;
+        }
+
+        .cta-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .cta-content h2 {
+            font-family: var(--font-display);
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-content p {
+            color: #ccc;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .footer-links {
+            background: #050505;
+            padding: 2rem;
+            border-top: 1px solid #222;
+            color: #666;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 3rem;
             }
 
-            to {
-                opacity: 1;
+            .story-container {
+                grid-template-columns: 1fr;
             }
+
+            .navbar {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            /* Simplified for mobile */
         }
     </style>
 </head>
 
 <body>
 
-    <!-- NAVIGATION -->
-    <nav class="top-nav">
-        <div class="nav-link active" onclick="switchSection('chars', this)">Personagens</div>
-        <div class="nav-link" onclick="switchSection('campaigns', this)">Campanhas</div>
-        <div class="nav-link" onclick="switchSection('threats', this)">Ameaças</div>
+    <!-- NAV -->
+    <nav class="navbar">
+        <div class="logo">
+            <i data-lucide="flame"></i>
+            Demon Slayer RPG
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-link">História</a>
+            <a href="#styles" class="nav-link">Respirações</a>
+            <a href="#mechanics" class="nav-link">Sistema</a>
+            <a href="#" class="nav-link">Comunidade</a>
+        </div>
+        <div class="nav-actions">
+            <!-- Trigger Modal -->
+            <div onclick="openCharsModal()" class="btn-login" id="loginBtn">Meus Personagens</div>
+            <a href="create-character.html" class="btn-play">Jogar Grátis</a>
+        </div>
     </nav>
 
-    <!-- CONTENT -->
-    <main class="main-container">
-
-        <!-- PERSONAGENS -->
-        <div id="section-chars" class="section active">
-            <h1>Seus Personagens</h1>
-
-            <div class="card-grid">
-                <!-- EXISTING CHAR (Hidden if none) -->
-                <a href="dashboard.html" id="resume-btn" class="char-card" style="display:none">
-                    <div class="card-icon">👤</div>
-                    <div class="card-info">
-                        <h3 id="char-name">Nome</h3>
-                        <span id="char-desc">Nível 1</span>
-                    </div>
+    <!-- HERO -->
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Breath of the Sun.<br>End the Nightmare.</h1>
+            <p>Junte-se à Corporação de Caçadores na experiência definitiva de RPG baseada em navegador. Cace demônios,
+                masterize estilos de respiração e ascenda de Mizunoto a Hashira.</p>
+            <div class="hero-btns">
+                <a href="create-character.html" class="btn-hero-primary">
+                    <i data-lucide="play" style="width:18px;"></i> Jogar Agora
                 </a>
-
-                <!-- NEW CHAR -->
-                <a href="create-character.html" class="char-card new-card">
-                    <div class="card-icon">＋</div>
-                    <div class="card-info">
-                        <h3>Novo Personagem</h3>
-                        <span>Criar nova ficha</span>
-                    </div>
+                <a href="#" class="btn-hero-secondary">
+                    Ver Trailer
                 </a>
             </div>
         </div>
+        <div class="scroll-indicator"><i data-lucide="chevron-down"></i></div>
+    </header>
 
-        <!-- CAMPANHAS -->
-        <div id="section-campaigns" class="section">
-            <h1>Campanhas</h1>
-            <div class="unavailable-text">Ainda não disponível</div>
+    <!-- CHARACTERS MODAL -->
+    <div id="charsModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:999; backdrop-filter:blur(8px); background:rgba(0,0,0,0.8); align-items:center; justify-content:center;">
+        <div
+            style="background:#111; border:1px solid #333; padding:2rem; width:100%; max-width:600px; border-radius:12px; position:relative;">
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; border-bottom:1px solid #222; padding-bottom:1rem;">
+                <h2 style="font-family:var(--font-display); font-size:1.8rem;">Meus Personagens <span id="charCount"
+                        style="font-size:1rem; color:#666; vertical-align:middle; margin-left:10px;">(0/5)</span></h2>
+                <button onclick="closeCharsModal()"
+                    style="background:transparent; border:none; color:#888; font-size:1.5rem; cursor:pointer;">&times;</button>
+            </div>
+
+            <div id="charList"
+                style="display:flex; flex-direction:column; gap:1rem; max-height:400px; overflow-y:auto; margin-bottom:2rem;">
+                <!-- Injected via JS -->
+            </div>
+
+            <button id="createNewBtn" onclick="window.location.href='create-character.html'"
+                style="width:100%; background:#1a1a1a; border:2px dashed #333; color:#888; padding:1rem; cursor:pointer; font-weight:bold; border-radius:8px; display:flex; align-items:center; justify-content:center; gap:10px; transition:all 0.2s;">
+                <i data-lucide="plus"></i> Criar Novo Personagem
+            </button>
         </div>
+    </div>
 
-        <!-- AMEAÇAS -->
-        <div id="section-threats" class="section">
-            <h1>Ameaças</h1>
-            <div class="unavailable-text">Ainda não disponível</div>
+    <!-- STORY -->
+    <section class="section-padding">
+        <div class="story-container">
+            <div class="story-text">
+                <h4>A HISTÓRIA COMEÇA</h4>
+                <h2>A Era Taisho Aguarda</h2>
+                <p>Mergulhe em um mundo de demônios e espadachins. Forje seu próprio caminho em um Japão fielmente
+                    recriado onde o perigo espreita nas sombras de cada noite. Você dominará a calma da Água, ou
+                    liberará o poder estrondoso do Trovão?</p>
+                <div class="read-more">Ler a História Completa <i data-lucide="arrow-right" style="width:16px;"></i>
+                </div>
+            </div>
+            <div class="story-img-box">
+                <div class="story-placeholder">
+                    <img src="https://images4.alphacoders.com/992/992854.jpg"
+                        style="width:100%; height:100%; object-fit:cover; opacity:0.6;">
+                </div>
+            </div>
         </div>
+    </section>
 
-    </main>
+    <!-- STYLES -->
+    <section class="section-padding styles-section" id="styles">
+        <h2>Domine Sua Técnica</h2>
+        <p class="subtitle">Escolha entre diversos estilos de respiração únicos, cada um com sua árvore de habilidades e
+            formas definitivas.</p>
+
+        <div class="styles-grid">
+            <!-- Water -->
+            <div class="style-card">
+                <div class="style-bg bg-water"></div>
+                <div class="style-content">
+                    <div class="style-icon txt-water"><i data-lucide="droplet"></i></div>
+                    <div class="style-name">Respiração da Água</div>
+                    <div class="style-desc">Fluida e adaptável. Defesa impecável e contra-ataques precisos.</div>
+                    <div class="view-skills txt-water">Ver Habilidades <i data-lucide="arrow-right"
+                            style="width:12px;"></i></div>
+                </div>
+            </div>
+            <!-- Thunder -->
+            <div class="style-card">
+                <div class="style-bg bg-thunder"></div>
+                <div class="style-content">
+                    <div class="style-icon txt-thunder"><i data-lucide="zap"></i></div>
+                    <div class="style-name">Respiração do Trovão</div>
+                    <div class="style-desc">Velocidade e precisão. Ataque como um raio em um piscar de olhos.</div>
+                    <div class="view-skills txt-thunder">Ver Habilidades <i data-lucide="arrow-right"
+                            style="width:12px;"></i></div>
+                </div>
+            </div>
+            <!-- Beast -->
+            <div class="style-card">
+                <div class="style-bg bg-beast"></div>
+                <div class="style-content">
+                    <div class="style-icon txt-beast"><i data-lucide="paw-print"></i></div>
+                    <div class="style-name">Respiração da Fera</div>
+                    <div class="style-desc">Selvagem e imprevisível. Instinto puro e força bruta.</div>
+                    <div class="view-skills txt-beast">Ver Habilidades <i data-lucide="arrow-right"
+                            style="width:12px;"></i></div>
+                </div>
+            </div>
+            <!-- Flame -->
+            <div class="style-card">
+                <div class="style-bg bg-flame"></div>
+                <div class="style-content">
+                    <div class="style-icon txt-flame"><i data-lucide="flame"></i></div>
+                    <div class="style-name">Respiração das Chamas</div>
+                    <div class="style-desc">Paixão ardente que incinera o mal com força avassaladora.</div>
+                    <div class="view-skills txt-flame">Ver Habilidades <i data-lucide="arrow-right"
+                            style="width:12px;"></i></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MECHANICS -->
+    <section class="section-padding mechanics-section" id="mechanics">
+        <div style="max-width:1200px; margin:0 auto;">
+            <div class="mech-header">
+                <h2>Mecânicas de Jogo</h2>
+                <p style="color:#aaa;">Sistemas de RPG profundos projetados para estratégia, progressão e cooperação.
+                </p>
+            </div>
+
+            <div class="mech-grid">
+                <div class="mech-card">
+                    <div class="mech-icon-box"><i data-lucide="medal"></i></div>
+                    <h4>Sistema de Rank</h4>
+                    <p style="color:#888; font-size:0.9rem;">Suba na hierarquia da Corporação. De Mizunoto até o
+                        lendário posto de Hashira.</p>
+                </div>
+                <div class="mech-card">
+                    <div class="mech-icon-box"><i data-lucide="hammer"></i></div>
+                    <h4>Forja & Crafting</h4>
+                    <p style="color:#888; font-size:0.9rem;">Colete minérios e forje sua Lâmina Nichirin definitiva,
+                        mudando de cor conforme sua alma.</p>
+                </div>
+                <div class="mech-card">
+                    <div class="mech-icon-box"><i data-lucide="map"></i></div>
+                    <h4>Mundo Aberto</h4>
+                    <p style="color:#888; font-size:0.9rem;">Explore desde as montanhas nevadas até a Mansão Borboleta e
+                        o Distrito da Luz Vermelha.</p>
+                </div>
+                <div class="mech-card">
+                    <div class="mech-icon-box"><i data-lucide="swords"></i></div>
+                    <h4>Arena PVP</h4>
+                    <p style="color:#888; font-size:0.9rem;">Teste suas habilidades de respiração contra outros
+                        caçadores em duelos rankeados.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER CTA -->
+    <section class="cta-footer">
+        <div class="cta-content">
+            <h2>Pronto para Caçar?</h2>
+            <p>A Corporação Demon Slayer precisa da sua lâmina. Junte-se a milhares de outros jogadores na luta pela
+                humanidade.</p>
+            <div style="display:flex; gap:1rem;">
+                <a href="create-character.html" class="btn-play" style="font-size:1.2rem; padding:1rem 2rem;">Começar
+                    Aventura</a>
+                <a href="#" class="btn-hero-secondary" style="background:rgba(0,0,0,0.5);">Entrar no Discord</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer-links">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <i data-lucide="flame" style="color:var(--accent-red)"></i>
+            <strong>Demon Slayer RPG</strong>
+        </div>
+        <div>
+            <span>© 2025 Demon Slayer RPG Project. Fã-made.</span>
+        </div>
+        <div style="display:flex; gap:20px;">
+            <a href="#">Termos</a>
+            <a href="#">Privacidade</a>
+            <a href="#">Wiki</a>
+        </div>
+    </footer>
 
     <script>
-        // Check for existing character
-        const savedData = localStorage.getItem('demonSlayerChar');
-        if (savedData) {
-            const char = JSON.parse(savedData);
-            const btn = document.getElementById('resume-btn');
-            btn.style.display = 'flex';
-            document.getElementById('char-name').innerText = char.name || "Sem Nome";
-            document.getElementById('char-desc').innerText = `${char.race} • Nível ${char.level}`;
+        lucide.createIcons();
+
+        // CHAR MODAL LOGIC
+        function openCharsModal() {
+            document.getElementById('charsModal').style.display = 'flex';
+            renderCharList();
         }
 
-        // Section Switcher
-        function switchSection(sectionId, btnElement) {
-            // Update Nav
-            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-            btnElement.classList.add('active');
+        function closeCharsModal() {
+            document.getElementById('charsModal').style.display = 'none';
+        }
 
-            // Update Section
-            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        function renderCharList() {
+            const list = document.getElementById('charList');
+            list.innerHTML = '';
 
-            // Short delay for fade out effect if we wanted to be fancy, but direct switch + css transition works
-            const target = document.getElementById(`section-${sectionId}`);
-            if (target) {
-                // We need to hide previous ones fully for position relative to work? 
-                // The CSS "absolute" for inactive handles overlay, but we switch "active" which makes it relative.
-                // This simple toggle works because others go back to absolute/hidden opacity.
-                target.classList.add('active');
+            let allChars = [];
+            try {
+                const stored = localStorage.getItem('demonSlayerAllChars');
+                if (stored) allChars = JSON.parse(stored);
+
+                // MIGRATION: Check if old single char exists but array is empty
+                if (allChars.length === 0) {
+                    const single = localStorage.getItem('demonSlayerChar');
+                    if (single) {
+                        const parsedSingle = JSON.parse(single);
+                        parsedSingle.id = parsedSingle.id || Date.now().toString(); // Assign ID if missing
+                        allChars.push(parsedSingle);
+                        localStorage.setItem('demonSlayerAllChars', JSON.stringify(allChars));
+                    }
+                }
+            } catch (e) { allChars = []; }
+
+            // Update Count
+            document.getElementById('charCount').innerText = `(${allChars.length}/5)`;
+
+            // Toggle Create Button
+            const createBtn = document.getElementById('createNewBtn');
+            if (allChars.length >= 5) {
+                createBtn.onclick = (e) => { e.preventDefault(); alert('Limite de 5 personagens atingido.'); };
+                createBtn.style.opacity = '0.5';
+                createBtn.innerHTML = 'Limite Atingido (5/5)';
+            } else {
+                createBtn.onclick = () => window.location.href = 'create-character.html';
+                createBtn.style.opacity = '1';
+                createBtn.innerHTML = '<i data-lucide="plus"></i> Criar Novo Personagem';
+                if (window.lucide) lucide.createIcons();
             }
+
+            // Render Items
+            if (allChars.length === 0) {
+                list.innerHTML = '<div style="text-align:center; color:#666; padding:2rem;">Nenhum personagem encontrado. Crie o seu primeiro!</div>';
+            } else {
+                allChars.forEach((char, index) => {
+                    const item = document.createElement('div');
+                    item.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#16161c; padding:1rem; border-radius:8px; border:1px solid #2a2a35;";
+
+                    item.innerHTML = `
+                        <div style="display:flex; gap:15px; align-items:center; cursor:pointer; flex:1;" onclick="selectChar('${char.id}')">
+                            <div style="width:50px; height:50px; background:#222; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid ${getColorByRace(char.race)}; color:#fff; font-size:1.5rem;">
+                                ${getIconByRace(char.race)}
+                            </div>
+                            <div>
+                                <h3 style="margin:0; font-size:1.1rem; color:#fff;">${char.name}</h3>
+                                <div style="font-size:0.8rem; color:#888;">Nível ${char.level} • ${char.race} • ${char.breathingStyle ? char.breathingStyle.name : 'Sem Respiração'}</div>
+                            </div>
+                        </div>
+                        <button onclick="deleteChar('${char.id}', event)" style="background:transparent; border:none; color:#d90429; cursor:pointer; padding:5px;"><i data-lucide="trash-2"></i></button>
+                    `;
+                    list.appendChild(item);
+                });
+                if (window.lucide) lucide.createIcons();
+            }
+        }
+
+        function getColorByRace(race) {
+            if (race === 'Marechi') return '#d90429';
+            if (race === 'Tsuyoi') return '#ffb703';
+            return '#00b4d8'; // Human default
+        }
+
+        function getIconByRace(race) {
+            if (race === 'Marechi') return '🩸';
+            if (race === 'Tsuyoi') return '💪';
+            return '👤';
+        }
+
+        function selectChar(id) {
+            // Find char, set as active, go to dashboard
+            const stored = localStorage.getItem('demonSlayerAllChars');
+            if (!stored) return;
+            const allChars = JSON.parse(stored);
+            const selected = allChars.find(c => c.id === id);
+
+            if (selected) {
+                localStorage.setItem('demonSlayerChar', JSON.stringify(selected));
+                window.location.href = 'dashboard.html';
+            }
+        }
+
+        function deleteChar(id, e) {
+            e.stopPropagation(); // prevent selection
+            if (!confirm("Tem certeza que deseja apagar este personagem? Esta ação é irreversível.")) return;
+
+            let allChars = JSON.parse(localStorage.getItem('demonSlayerAllChars') || '[]');
+            allChars = allChars.filter(c => c.id !== id);
+            localStorage.setItem('demonSlayerAllChars', JSON.stringify(allChars));
+
+            // Check if active char was deleted
+            const active = JSON.parse(localStorage.getItem('demonSlayerChar') || '{}');
+            if (active.id === id) {
+                localStorage.removeItem('demonSlayerChar');
+            }
+
+            renderCharList();
         }
     </script>
 </body>
