@@ -283,13 +283,14 @@
         }
 
         .attr-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(0, 0, 0, 0.2) 100%);
+            background: linear-gradient(135deg, rgba(20, 20, 25, 0.9) 0%, rgba(10, 10, 15, 0.9) 100%);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            padding: 1rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 1.5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
-            overflow: hidden;
+            overflow: visible;
+            cursor: pointer;
         }
 
         .attr-card::before {
@@ -298,15 +299,18 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 3px;
+            height: 4px;
             background: linear-gradient(90deg, transparent, currentColor, transparent);
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px 12px 0 0;
         }
 
         .attr-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+            border-color: currentColor;
+            background: linear-gradient(135deg, rgba(30, 30, 35, 0.95) 0%, rgba(15, 15, 20, 0.95) 100%);
         }
 
         .attr-card:hover::before {
@@ -321,37 +325,65 @@
         }
 
         .attr-abbr {
-            font-size: 0.75rem;
+            font-size: 0.85rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             opacity: 0.7;
+            transition: all 0.3s;
+        }
+
+        .attr-card:hover .attr-abbr {
+            opacity: 1;
+            letter-spacing: 2px;
         }
 
         .attr-value {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 800;
             font-family: var(--font-display);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            line-height: 1;
+        }
+
+        .attr-card:hover .attr-value {
+            transform: scale(1.15);
+            text-shadow: 0 0 20px currentColor;
         }
 
         .attr-card-body {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
+            gap: 0.75rem;
         }
 
         .attr-name {
-            font-size: 0.9rem;
+            font-size: 1rem;
             color: #ccc;
-            font-weight: 500;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: visible;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .attr-card:hover .attr-name {
+            color: white;
+            font-weight: 700;
         }
 
         .attr-modifier {
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 4px;
-            background: rgba(255, 255, 255, 0.1);
+            font-family: var(--font-display);
+            white-space: nowrap;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            flex-shrink: 0;
+        }
+
+        .attr-card:hover .attr-modifier {
+            transform: scale(1.2);
         }
 
         /* Individual attribute colors */
@@ -1708,6 +1740,360 @@
             margin-top: 0.5rem;
         }
 
+        /* === ATTACK MODAL === */
+        .attack-modal {
+            background: linear-gradient(135deg, #141419 0%, #0e0e12 100%);
+            border: 1px solid rgba(217, 4, 41, 0.3);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(217, 4, 41, 0.2);
+            animation: modalSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .attack-form {
+            padding: 2rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #ccc;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: white;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent-red);
+            background: rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 15px rgba(217, 4, 41, 0.2);
+        }
+
+        .form-select {
+            cursor: pointer;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-btn-primary,
+        .modal-btn-secondary {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-family: var(--font-main);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: none;
+        }
+
+        .modal-btn-primary {
+            background: linear-gradient(90deg, var(--accent-red), var(--accent-purple));
+            color: white;
+            box-shadow: 0 4px 15px rgba(217, 4, 41, 0.3);
+        }
+
+        .modal-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(217, 4, 41, 0.5);
+        }
+
+        .modal-btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ccc;
+        }
+
+        .modal-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* === PREMIUM ADD BUTTONS === */
+        .add-btn {
+            margin-left: auto;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            color: white;
+            font-family: var(--font-main);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .add-btn:active {
+            transform: translateY(0);
+        }
+
+        .add-btn-combat {
+            background: linear-gradient(90deg, var(--accent-red), #c1121f);
+            box-shadow: 0 4px 15px rgba(217, 4, 41, 0.4);
+        }
+
+        .add-btn-combat:hover {
+            box-shadow: 0 6px 20px rgba(217, 4, 41, 0.6);
+        }
+
+        .add-btn-inventory {
+            background: linear-gradient(90deg, var(--accent-purple), #7b2cbf);
+            box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
+        }
+
+        .add-btn-inventory:hover {
+            box-shadow: 0 6px 20px rgba(157, 78, 221, 0.6);
+        }
+
+        .add-btn-technique {
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan));
+            box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
+        }
+
+        .add-btn-technique:hover {
+            box-shadow: 0 6px 20px rgba(0, 180, 216, 0.6);
+        }
+
+        /* === PREMIUM MODAL SYSTEM (Items & General) === */
+        .premium-modal {
+            background: linear-gradient(135deg, #141419 0%, #0e0e12 100%);
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(157, 78, 221, 0.2);
+            animation: modalSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-close {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(90deg);
+        }
+
+        .modal-content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .modal-search-bar {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 45px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .modal-search-input:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .modal-cats {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .cat-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #888;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: var(--font-main);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .cat-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .cat-btn.active {
+            background: var(--accent-purple);
+            border-color: var(--accent-purple);
+            color: white;
+        }
+
+        .modal-picker {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .picker-item-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .picker-item-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--accent-purple);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(157, 78, 221, 0.3);
+        }
+
+        .picker-item-icon {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .picker-item-name {
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.25rem;
+            text-align: center;
+        }
+
+        .picker-item-stat {
+            color: var(--accent-cyan);
+            font-weight: 700;
+            text-align: center;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .picker-item-desc {
+            color: #888;
+            font-size: 0.75rem;
+            text-align: center;
+        }
+
         /* 6. Grid Layouts */
         .overview-grid {
             display: grid;
@@ -2570,9 +2956,10 @@
             <div class="section-header">
                 <i data-lucide="sword" style="color: var(--accent-red);"></i>
                 <span class="sec-title">Combate</span>
-                <button onclick="openAttackModal()"
-                    style="margin-left: auto; background: #222; border: 1px solid #444; color: white; padding: 5px 10px; border-radius: 4px; cursor: pointer;">+
-                    Ataque</button>
+                <button onclick="openAttackModal()" class="add-btn add-btn-combat">
+                    <i data-lucide="plus" style="width:16px;"></i>
+                    Adicionar Ataque
+                </button>
             </div>
 
             <div id="attacksList"
@@ -2586,9 +2973,10 @@
             <div class="section-header">
                 <i data-lucide="backpack" style="color: var(--accent-red);"></i>
                 <span class="sec-title">Inventário</span>
-                <button onclick="openItemModal()"
-                    style="margin-left: auto; background: var(--accent-purple); border: none; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight:bold;">+
-                    Adicionar Item</button>
+                <button onclick="openItemModal()" class="add-btn add-btn-inventory">
+                    <i data-lucide="plus" style="width:16px;"></i>
+                    Adicionar Item
+                </button>
             </div>
 
             <div class="inv-workspace">
@@ -2799,6 +3187,147 @@
             <button onclick="saveCustomAbility()" style="width:100%; padding:10px;">Salvar</button>
             <button onclick="closeAbilityModal()"
                 style="width:100%; margin-top:5px; background:none; color:#888; border:none; cursor:pointer;">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- PREMIUM ITEM MODAL -->
+    <div id="itemModal" class="modal-overlay" style="display:none;"
+        onclick="if(event.target === this) closeItemModal()">
+        <div class="premium-modal" onclick="event.stopPropagation()">
+            <div class="modal-top">
+                <h3 class="modal-title">
+                    <i data-lucide="package-plus"></i>
+                    Forja & Suprimentos
+                </h3>
+                <button class="modal-close" onclick="closeItemModal()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <div class="modal-content-area">
+                <!-- Search Bar -->
+                <div class="modal-search-bar">
+                    <i data-lucide="search"
+                        style="position:absolute; left:15px; top:50%; transform:translateY(-50%); width:18px; color:#666;"></i>
+                    <input type="text" id="pickerSearch" class="modal-search-input" placeholder="Buscar item..."
+                        oninput="searchModal(this.value)">
+                </div>
+
+                <!-- Categories -->
+                <nav class="modal-cats">
+                    <button class="cat-btn active" onclick="filterModal('all', this)">
+                        <i data-lucide="grid-3x3"></i> Todos
+                    </button>
+                    <button class="cat-btn" onclick="filterModal('weapon', this)">
+                        <i data-lucide="sword"></i> Armas
+                    </button>
+                    <button class="cat-btn" onclick="filterModal('armor', this)">
+                        <i data-lucide="shield"></i> Armaduras
+                    </button>
+                    <button class="cat-btn" onclick="filterModal('consumable', this)">
+                        <i data-lucide="flask-conical"></i> Consumíveis
+                    </button>
+                    <button class="cat-btn" onclick="filterModal('misc', this)">
+                        <i data-lucide="box"></i> Outros
+                    </button>
+                </nav>
+
+                <!-- Items Grid -->
+                <div class="modal-picker" id="pickerGrid">
+                    <!-- Items will be injected here by JS -->
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <span style="font-size:0.85rem; color:#666; margin-right:auto;">
+                    <i data-lucide="info" style="width:14px; vertical-align:middle;"></i>
+                    Clique em um item para adicioná-lo ao inventário
+                </span>
+                <button onclick="closeItemModal()" class="modal-btn-secondary">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PREMIUM ATTACK MODAL -->
+    <div id="attackModal" class="modal-overlay" style="display:none;"
+        onclick="if(event.target === this) closeAttackModal()">
+        <div class="attack-modal" onclick="event.stopPropagation()">
+            <div class="modal-top">
+                <h3 class="modal-title">
+                    <i data-lucide="sword" style="color: var(--accent-red);"></i>
+                    Novo Ataque
+                </h3>
+                <button class="modal-close" onclick="closeAttackModal()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <form id="attackForm" onsubmit="handleAttackSubmit(event)" class="attack-form">
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="attack-name">
+                            <i data-lucide="tag" style="width:14px; vertical-align:middle;"></i>
+                            Nome do Ataque
+                        </label>
+                        <input type="text" id="attack-name" class="form-input" placeholder="Ex: Golpe Rápido" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="attack-bonus">
+                            <i data-lucide="trending-up" style="width:14px; vertical-align:middle;"></i>
+                            Bônus de Ataque
+                        </label>
+                        <input type="text" id="attack-bonus" class="form-input" placeholder="+5" value="+0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="attack-damage">
+                            <i data-lucide="zap" style="width:14px; vertical-align:middle;"></i>
+                            Dano
+                        </label>
+                        <input type="text" id="attack-damage" class="form-input" placeholder="1d6+2" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="attack-type">
+                            <i data-lucide="target" style="width:14px; vertical-align:middle;"></i>
+                            Tipo de Ataque
+                        </label>
+                        <select id="attack-type" class="form-select">
+                            <option value="Corpo a Corpo">Corpo a Corpo</option>
+                            <option value="Distância">Distância</option>
+                            <option value="Mágico">Mágico</option>
+                            <option value="Respiração">Respiração</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="attack-description">
+                            <i data-lucide="file-text" style="width:14px; vertical-align:middle;"></i>
+                            Descrição (Opcional)
+                        </label>
+                        <textarea id="attack-description" class="form-textarea" placeholder="Descreva o ataque..."
+                            rows="3"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" onclick="closeAttackModal()" class="modal-btn-secondary">
+                        <i data-lucide="x" style="width:16px;"></i>
+                        Cancelar
+                    </button>
+                    <button type="submit" class="modal-btn-primary">
+                        <i data-lucide="plus-circle" style="width:16px;"></i>
+                        Adicionar Ataque
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 

@@ -22,16 +22,20 @@ if (typeof charData === 'undefined') {
 // === FUNÇÕES DO MODAL DE ADICIONAR ITEM ===
 
 window.openItemModal = function () {
+    console.log('openItemModal called');
     const modal = document.getElementById('itemModal');
+    console.log('Modal element:', modal);
+
     if (modal) {
         modal.style.display = 'flex';
-        modal.classList.add('open'); // Força display flex via classe também
+        modal.classList.add('open');
         populateItemModal();
         setTimeout(() => {
             if (window.lucide) window.lucide.createIcons();
         }, 100);
     } else {
         console.error("Modal 'itemModal' não encontrado no DOM.");
+        alert("Erro: Modal de itens não encontrado. Verifique o HTML.");
     }
 };
 

@@ -59,20 +59,50 @@ window.renderAttacks = function () {
     if (window.lucide) window.lucide.createIcons();
 };
 
-// === MODAL DE ADICIONAR ATAQUE ===
+// === MODAL DE ADICIONAR ATAQUE (PREMIUM) ===
 window.openAttackModal = function () {
-    const name = prompt('Nome do Ataque:', 'Ataque Básico');
-    if (!name || !name.trim()) return;
+    const modal = document.getElementById('attackModal');
+    if (modal) {
+        // Reset form
+        document.getElementById('attackForm').reset();
+        document.getElementById('attack-bonus').value = '+0';
 
-    const bonus = prompt('Bônus de Ataque (ex: +5):', '+0');
-    const damage = prompt('Dano (ex: 1d6+2, 2d8):', '1d6');
-    const type = prompt('Tipo (Corpo a Corpo, Distância, Mágico):', 'Corpo a Corpo');
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            if (window.lucide) window.lucide.createIcons();
+        }, 100);
+    } else {
+        console.error("Modal 'attackModal' não encontrado no DOM.");
+    }
+};
+
+window.closeAttackModal = function () {
+    const modal = document.getElementById('attackModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+};
+
+window.handleAttackSubmit = function (e) {
+    e.preventDefault();
+
+    const name = document.getElementById('attack-name').value.trim();
+    const bonus = document.getElementById('attack-bonus').value.trim();
+    const damage = document.getElementById('attack-damage').value.trim();
+    const type = document.getElementById('attack-type').value;
+    const description = document.getElementById('attack-description').value.trim();
+
+    if (!name || !damage) {
+        alert('Por favor, preencha o nome e o dano do ataque.');
+        return;
+    }
 
     const newAttack = {
-        name: name.trim(),
-        bonus: bonus ? bonus.trim() : '+0',
-        damage: damage ? damage.trim() : '1d6',
-        type: type ? type.trim() : 'Corpo a Corpo'
+        name,
+        bonus: bonus || '+0',
+        damage,
+        type,
+        description
     };
 
     charData.attacks.push(newAttack);
@@ -80,6 +110,7 @@ window.openAttackModal = function () {
     if (typeof saveState === 'function') saveState();
     renderAttacks();
 
+    closeAttackModal();
     showFlashMessage(`✓ ${newAttack.name} adicionado!`);
 };
 
