@@ -166,29 +166,34 @@
         /* CARDS GRID (Race) */
         .grid-2 {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
         }
 
         .selection-card {
             background: #1a1a20;
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            height: 250px;
+            border-radius: 16px;
+            /* Matched to Index */
+            aspect-ratio: 1 / 1;
+            /* Square */
             position: relative;
             overflow: hidden;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         .selection-card:hover {
-            border-color: #555;
-            transform: translateY(-2px);
+            border-color: var(--accent-red);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
         }
 
         .selection-card.selected {
             border-color: var(--accent-red);
-            box-shadow: 0 0 0 2px var(--accent-red);
+            box-shadow: 0 0 0 2px var(--accent-red), 0 20px 40px rgba(217, 4, 41, 0.2);
+            transform: translateY(-5px);
         }
 
         .card-bg-img {
@@ -198,13 +203,14 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.4;
+            opacity: 0.5;
             transition: 0.5s;
         }
 
         .selection-card:hover .card-bg-img {
-            opacity: 0.6;
+            opacity: 0.7;
             transform: scale(1.05);
+            /* Smooth zoom */
         }
 
         .card-text {
@@ -212,31 +218,92 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            padding: 1.5rem;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+            padding: 2rem;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95), transparent);
         }
 
         .card-text h3 {
             margin: 0 0 5px 0;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
+            /* Larger Title */
             font-family: var(--font-display);
+            text-transform: uppercase;
         }
 
         .card-text p {
             margin: 0;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: #ccc;
+            line-height: 1.4;
         }
 
         .selection-card.locked {
-            opacity: 0.5;
+            opacity: 0.6;
             cursor: not-allowed;
             filter: grayscale(1);
+        }
+
+        .selection-card.locked .card-bg-img {
+            opacity: 0.3;
         }
 
         .selection-card.locked:hover {
             border-color: var(--border-color);
             transform: none;
+            box-shadow: none;
+        }
+
+        /* WIZARD STEPS */
+        .form-step {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        /* NAV BTNS */
+        .step-nav-btns {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .btn-next,
+        .btn-prev {
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+
+        .btn-next {
+            background: var(--accent-red);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-next:hover {
+            background: var(--accent-red-hover);
+            transform: translateX(5px);
+        }
+
+        .btn-prev {
+            background: #333;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-prev:hover {
+            background: #444;
         }
 
         /* COMBAT STYLES (Small Cards) */
@@ -373,6 +440,7 @@
         input[type="range"] {
             flex: 1;
             -webkit-appearance: none;
+            appearance: none;
             height: 6px;
             background: #333;
             border-radius: 3px;
@@ -681,6 +749,52 @@
         .mobile-preview-btn {
             display: none;
         }
+
+        /* Wisteria Particles */
+        .wisteria-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        /* Ensure header has relative pos */
+        .page-header {
+            position: relative;
+        }
+
+        .petal {
+            position: absolute;
+            top: -10px;
+            background: linear-gradient(135deg, #e0aaff, #c77dff);
+            border-radius: 50% 0 50% 0;
+            opacity: 0.8;
+            animation: fall 5s linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0deg) translateX(0);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: translateY(150px) rotate(180deg) translateX(50px);
+            }
+
+            100% {
+                transform: translateY(300px) rotate(360deg) translateX(100px);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 
@@ -710,24 +824,24 @@
         <div class="nav-steps">
             <div
                 style="font-size: 0.8rem; text-transform: uppercase; color: #555; font-weight: 700; margin-bottom: 5px;">
-                Etapas de Criação</div>
+                Etapas de Criação
+            </div>
 
-            <a href="#race" class="nav-item active">
-                <div class="step-icon">1</div>
-                <span>Raça & Origem</span>
-            </a>
-            <a href="#combat" class="nav-item">
-                <div class="step-icon">2</div>
-                <span>Combate & Nichirin</span>
-            </a>
-            <a href="#stats" class="nav-item">
-                <div class="step-icon">3</div>
-                <span>Atributos</span>
-            </a>
-            <a href="#inventory" class="nav-item">
-                <div class="step-icon">4</div>
-                <span>Inventário</span>
-            </a>
+            <div onclick="goToStep(1)" class="nav-item active" id="nav-step-1">
+                <div class="step-icon">1</div> <span>Raça</span>
+            </div>
+            <div onclick="goToStep(2)" class="nav-item" id="nav-step-2">
+                <div class="step-icon">2</div> <span>Estilo de Combate</span>
+            </div>
+            <div onclick="goToStep(3)" class="nav-item" id="nav-step-3">
+                <div class="step-icon">3</div> <span>Antecedente</span>
+            </div>
+            <div onclick="goToStep(4)" class="nav-item" id="nav-step-4">
+                <div class="step-icon">4</div> <span>Atributos</span>
+            </div>
+            <div onclick="goToStep(5)" class="nav-item" id="nav-step-5">
+                <div class="step-icon">5</div> <span>Descrição</span>
+            </div>
 
             <a href="index.html" class="nav-item" style="margin-top: auto; color: #666;">
                 <i data-lucide="arrow-left" size="16"></i> Cancelar
@@ -738,139 +852,328 @@
     <!-- CONTENT AREA -->
     <main class="main-content">
         <header class="page-header">
+            <div class="wisteria-container" id="wisteria"></div>
             <div class="breadcrumbs">Início / Novos Caçadores</div>
             <h1 class="page-title">Forje seu Destino</h1>
             <p class="page-subtitle">Escolha sua linhagem, empunhe sua lâmina e prepare-se para as noites eternas.</p>
         </header>
 
-        <!-- SEC 1: RACE -->
-        <section id="race" class="form-section">
+        <!-- STEP 1: RACE -->
+        <div id="step-1" class="form-step active">
             <div class="section-header">
-                <span class="sec-num">01.</span>
-                <span class="sec-title">Escolha sua Raça</span>
+                <span class="sec-num">01.</span> <span class="sec-title">Escolha sua Raça</span>
             </div>
 
-            <!-- NAME INPUT INTEGRATED -->
-            <div style="margin-bottom: 2rem;">
-                <label style="display:block; color:#888; margin-bottom:5px; font-size:0.9rem;">Nome do
-                    Personagem</label>
-                <input type="text" id="inputName" class="ds-input" placeholder="Ex: Tanjiro Kamado"
-                    style="font-size:1.2rem; padding:15px; width:100%;" oninput="updatePreview()">
-            </div>
-
-            <div class="grid-2">
-                <!-- Human -->
+            <div class="grid-2"
+                style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:2rem;">
+                <!-- Humano -->
                 <div class="selection-card selected" onclick="selectRace('Humano', this)">
-                    <img src="https://images.alphacoders.com/132/1328639.png" class="card-bg-img">
+                    <img src="assets/criação_personagem/Humano-removebg-preview.png" class="card-bg-img"
+                        style="object-position: top;">
                     <div class="card-text">
                         <h3>Humano</h3>
-                        <p>Caçadores determinados que usam a Respiração para superar limites humanos.</p>
+                        <p style="font-size:0.9rem; color:#ccc;">Resiliente e Versátil. <strong>12 HP</strong>.</p>
+                        <ul
+                            style="text-align:left; font-size:0.8rem; color:#aaa; margin-top:0.5rem; padding-left:1.2rem;">
+                            <li>+2 em dois Atributos</li>
+                            <li>2 Perícias Extras + 1 Talento</li>
+                            <li>Nível máx: 100 anos</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Marechi -->
+                <div class="selection-card" onclick="selectRace('Marechi', this)">
+                    <img src="assets/criação_personagem/Sanemi_colored_body-removebg-preview.png" class="card-bg-img"
+                        style="object-position: top;">
+                    <div class="card-text">
+                        <h3>Marechi</h3>
+                        <p style="font-size:0.9rem; color:#ccc;">Sangue Raro e Irresistível. <strong>10 HP</strong>.</p>
+                        <ul
+                            style="text-align:left; font-size:0.8rem; color:#aaa; margin-top:0.5rem; padding-left:1.2rem;">
+                            <li>+2 em dois Atributos</li>
+                            <li>Sangue Atraente e Atordoante</li>
+                            <li>Foco primário dos Demônios</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Tsuyoi -->
+                <div class="selection-card" onclick="selectRace('Tsuyoi', this)">
+                    <img src="assets/criação_personagem/MItsuri-removebg-preview.png" class="card-bg-img"
+                        style="object-position: top;">
+                    <div class="card-text">
+                        <h3>Tsuyoi</h3>
+                        <p style="font-size:0.9rem; color:#ccc;">Força Descomunal e Exótica. <strong>14 HP</strong>.</p>
+                        <ul
+                            style="text-align:left; font-size:0.8rem; color:#aaa; margin-top:0.5rem; padding-left:1.2rem;">
+                            <li>+2 Força, +2 Destreza</li>
+                            <li>Músculos Enrijecidos (Reação)</li>
+                            <li>Aparência "Kawaii" (+Carisma)</li>
+                        </ul>
                     </div>
                 </div>
 
                 <!-- Oni -->
-                <div class="selection-card" onclick="selectRace('Oni', this)">
-                    <img src="https://wallpapers.com/images/hd/demon-slayer-upper-moon-1-kokushibo-4k-8j5v0a2z5z5z5z5z.jpg"
-                        class="card-bg-img">
+                <div class="selection-card" onclick="selectRace('Oni', this)" style="border-color: #d90429;">
+                    <img src="assets/criação_personagem/Oni-removebg-preview.png" class="card-bg-img"
+                        style="object-position: top;">
                     <div class="card-text">
-                        <h3>Oni (Demônio)</h3>
-                        <p>Seres imortais com força sobrenatural e Artes de Sangue devastadoras.</p>
-                    </div>
-                </div>
-
-                <!-- Marechi (Optional Extra based on prompt, let's include as selecteable) -->
-                <div class="selection-card" onclick="selectRace('Marechi', this)">
-                    <img src="https://images5.alphacoders.com/113/1131979.jpg" class="card-bg-img">
-                    <div class="card-text">
-                        <h3>Marechi</h3>
-                        <p>Sangue raro que atrai demônios, mas possui grande poder latente.</p>
-                    </div>
-                </div>
-                <!-- Tsuyoi -->
-                <div class="selection-card" onclick="selectRace('Tsuyoi', this)">
-                    <img src="https://images3.alphacoders.com/107/1070622.jpg" class="card-bg-img">
-                    <div class="card-text">
-                        <h3>Tsuyoi</h3>
-                        <p>Corpos com constituição muscular única e flexibilidade anormal.</p>
+                        <h3 style="color: #ff4d4d;">Oni</h3>
+                        <p style="font-size:0.9rem; color:#ccc;">Abandone a humanidade. <strong>15 HP</strong>.</p>
+                        <ul
+                            style="text-align:left; font-size:0.8rem; color:#aaa; margin-top:0.5rem; padding-left:1.2rem;">
+                            <li>Regeneração Sobrenatural</li>
+                            <li>Kekkijutsu (Artes de Sangue)</li>
+                            <li>Fraqueza ao Sol e Glicínias</li>
+                        </ul>
                     </div>
                 </div>
             </div>
-        </section>
+
+            <div class="step-nav-btns">
+                <div></div> <!-- Empty for spacing -->
+                <button class="btn-next" onclick="goToStep(2)">Próximo <i data-lucide="arrow-right"></i></button>
+            </div>
+        </div>
 
         <!-- SEC 2: COMBAT -->
-        <section id="combat" class="form-section">
+        <!-- STEP 2: COMBAT & NICHIRIN -->
+        <div id="step-2" class="form-step">
             <div class="section-header">
-                <span class="sec-num">02.</span>
-                <span class="sec-title">Estilo de Combate</span>
+                <span class="sec-num">02.</span> <span class="sec-title">Estilo e Lâmina</span>
             </div>
 
-            <div class="grid-4">
-                <div class="style-btn selected" onclick="selectCombat('water', this)">
-                    <div class="style-icon-box" style="color:#00b4d8"><i data-lucide="droplet"></i></div>
-                    <strong>Água</strong>
-                </div>
-                <div class="style-btn locked">
-                    <div class="style-icon-box" style="color:#ffb703"><i data-lucide="zap"></i></div>
-                    <strong>Trovão</strong>
-                    <i data-lucide="lock" size="12" style="margin-top:5px;"></i>
-                </div>
-                <div class="style-btn locked">
-                    <div class="style-icon-box" style="color:#ef233c"><i data-lucide="flame"></i></div>
-                    <strong>Chamas</strong>
-                    <i data-lucide="lock" size="12" style="margin-top:5px;"></i>
-                </div>
-                <div class="style-btn locked">
-                    <div class="style-icon-box" style="color:#888"><i data-lucide="paw-print"></i></div>
-                    <strong>Fera</strong>
-                    <i data-lucide="lock" size="12" style="margin-top:5px;"></i>
-                </div>
-            </div>
-        </section>
-
-        <!-- SEC 3: NICHIRIN -->
-        <section id="nichirin" class="form-section">
-            <div class="section-header">
-                <span class="sec-num">03.</span>
-                <span class="sec-title">Forjar sua Nichirin</span>
-                <span style="font-size:0.9rem; color:#666; margin-left:auto;">Personalize sua lâmina</span>
-            </div>
-
-            <div class="forge-container">
+            <div style="display:flex; flex-direction:column; gap:4rem; margin-bottom:2rem;">
+                <!-- 1. Combat Styles (Square & Big) -->
                 <div>
-                    <label style="color:#aaa; font-size:0.9rem;">Cor da Lâmina</label>
-                    <div class="colors-row">
-                        <div class="color-dot selected" style="background:#00b4d8"
-                            onclick="selectColor('#00b4d8', this)"></div>
-                        <div class="color-dot" style="background:#ffb703" onclick="selectColor('#ffb703', this)"></div>
-                        <div class="color-dot" style="background:#ef233c" onclick="selectColor('#ef233c', this)"></div>
-                        <div class="color-dot" style="background:#2d6a4f" onclick="selectColor('#2d6a4f', this)"></div>
-                        <div class="color-dot" style="background:#000000; border:1px solid #444;"
-                            onclick="selectColor('#000000', this)"></div>
-                    </div>
+                    <h4 style="margin-top:0; color:#ddd; margin-bottom:1.5rem;">Estilo de Combate</h4>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:2rem;">
 
-                    <div style="margin-top:1.5rem;">
-                        <label style="color:#aaa; font-size:0.9rem;">Tipo de Guarda (Tsuba)</label>
-                        <select class="ds-input" style="cursor:pointer;" id="tsubaSelect">
-                            <option>Hexagonal (Água)</option>
-                            <option>Retangular (Névoa)</option>
-                            <option>Circular (Chamas)</option>
-                            <option>Floral (Inseto)</option>
-                        </select>
-                    </div>
+                        <!-- Água (Tanjiro) -->
+                        <div class="style-btn selected" onclick="selectCombat('water', this)"
+                            style="aspect-ratio:1/1; position:relative; overflow:hidden; border-radius:16px; transition:0.3s; background:#1a1a20; border:1px solid #333; height:auto;">
+                            <!-- Image -->
+                            <img src="assets/Respirações/Tanjirou_manga.png"
+                                style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); height:105%; width:auto; opacity:1; transition:0.3s; pointer-events:none; object-fit:contain; z-index:1;">
 
-                    <div style="margin-top:1.5rem;">
-                        <label style="color:#aaa; font-size:0.9rem;">Nome da Espada</label>
-                        <input type="text" class="ds-input" placeholder="Ex: Lâmina do Destino" id="swordName"
-                            oninput="updatePreview()">
+                            <!-- Name (Bottom) -->
+                            <div
+                                style="position:absolute; bottom:0; left:0; width:100%; z-index:2; background:linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.6), transparent); padding:2rem 1rem 1rem 1rem; display:flex; flex-direction:column; align-items:center; justify-content:flex-end;">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <div
+                                        style="background:rgba(0,180,216,0.2); padding:6px; border-radius:50%; box-shadow:0 0 10px rgba(0,180,216,0.3);">
+                                        <i data-lucide="droplet" style="color:#00b4d8; width:20px; height:20px;"></i>
+                                    </div>
+                                    <strong
+                                        style="color:white; font-size:1.4rem; font-family:'Cinzel', serif; letter-spacing:1px;">Água</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Trovão (Zenitsu) -->
+                        <div class="style-btn locked"
+                            style="aspect-ratio:1/1; position:relative; overflow:hidden; border-radius:16px; transition:0.3s; background:#1a1a20; border:1px solid #333; height:auto;">
+                            <img src="assets/Respirações/Zenitsu_colored_body_2 (1).png"
+                                style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); height:110%; width:auto; opacity:0.6; pointer-events:none; object-fit:contain; z-index:1;">
+
+                            <div
+                                style="position:absolute; bottom:0; left:0; width:100%; z-index:2; background:linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.6), transparent); padding:2rem 1rem 1rem 1rem; display:flex; flex-direction:column; align-items:center; justify-content:flex-end;">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <div style="background:rgba(255, 183, 3, 0.2); padding:6px; border-radius:50%;"><i
+                                            data-lucide="zap" style="color:#ffb703; width:20px; height:20px;"></i></div>
+                                    <strong
+                                        style="color:#ccc; font-size:1.4rem; font-family:'Cinzel', serif; letter-spacing:1px;">Trovão</strong>
+                                    <i data-lucide="lock" size="14" style="color:#666;"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chamas -->
+                        <div class="style-btn locked"
+                            style="aspect-ratio:1/1; position:relative; overflow:hidden; border-radius:16px; transition:0.3s; background:#1a1a20; border:1px solid #333; height:auto;">
+                            <img src="assets/Respirações/2d84f34c62e42db96bfedd71671e99c5-removebg-preview.png"
+                                style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); height:110%; width:auto; opacity:0.6; pointer-events:none; object-fit:contain; z-index:1;">
+
+                            <div
+                                style="position:absolute; bottom:0; left:0; width:100%; z-index:2; background:linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.6), transparent); padding:2rem 1rem 1rem 1rem; display:flex; flex-direction:column; align-items:center; justify-content:flex-end;">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <div style="background:rgba(239, 35, 60, 0.2); padding:6px; border-radius:50%;"><i
+                                            data-lucide="flame" style="color:#ef233c; width:20px; height:20px;"></i>
+                                    </div>
+                                    <strong
+                                        style="color:#ccc; font-size:1.4rem; font-family:'Cinzel', serif; letter-spacing:1px;">Chamas</strong>
+                                    <i data-lucide="lock" size="14" style="color:#666;"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fera -->
+                        <div class="style-btn locked"
+                            style="aspect-ratio:1/1; position:relative; overflow:hidden; border-radius:16px; transition:0.3s; background:#1a1a20; border:1px solid #333; height:auto;">
+                            <img src="assets/Respirações/Inosuke3 (1).png"
+                                style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); height:110%; width:auto; opacity:0.6; pointer-events:none; object-fit:contain; z-index:1;">
+
+                            <div
+                                style="position:absolute; bottom:0; left:0; width:100%; z-index:2; background:linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.6), transparent); padding:2rem 1rem 1rem 1rem; display:flex; flex-direction:column; align-items:center; justify-content:flex-end;">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <div style="background:rgba(136, 136, 136, 0.2); padding:6px; border-radius:50%;"><i
+                                            data-lucide="paw-print" style="color:#888; width:20px; height:20px;"></i>
+                                    </div>
+                                    <strong
+                                        style="color:#ccc; font-size:1.4rem; font-family:'Cinzel', serif; letter-spacing:1px;">Fera</strong>
+                                    <i data-lucide="lock" size="14" style="color:#666;"></i>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    <div style="font-size:0.8rem; color:#666; margin-top:15px; text-align:right;">* Outros estilos
+                        disponíveis em níveis superiores.</div>
                 </div>
 
-                <div class="blade-preview-box">
-                    <div class="preview-glow" id="bladeGlow"></div>
-                    <small style="position:absolute; top:10px; right:15px; color:#444;">Preview</small>
+                <!-- 2. Nichirin Forge (Enhanced) -->
+                <div
+                    style="background: rgba(255,255,255,0.03); padding: 2rem; border-radius:16px; border:1px solid #333;">
+                    <h4
+                        style="margin-top:0; color:#ddd; margin-bottom:2rem; display:flex; align-items:center; gap:10px;">
+                        <i data-lucide="hammer" style="color:#aaa;"></i> Forja Nichirin
+                    </h4>
+
+                    <div class="forge-container"
+                        style="display:grid; grid-template-columns: 350px 1fr; gap:4rem; align-items:center;">
+                        <!-- Input Side -->
+                        <div style="display:flex; flex-direction:column; gap:1.5rem;">
+                            <div>
+                                <label style="display:block; color:#888; margin-bottom:8px; font-size:0.9rem;">Nome da
+                                    Lâmina</label>
+                                <input type="text" class="ds-input" id="swordName" placeholder="Ex: Maré Calma"
+                                    oninput="updatePreview()" style="width:100%; text-align:left;">
+                            </div>
+
+                            <div>
+                                <label style="display:block; color:#888; margin-bottom:12px; font-size:0.9rem;">Minério
+                                    da Montanha Yoko</label>
+                                <div class="colors-row" style="justify-content:flex-start; gap:12px;">
+                                    <div class="color-dot selected" style="background:#00b4d8"
+                                        onclick="selectColor('#00b4d8', this)"></div>
+                                    <div class="color-dot" style="background:#ffb703"
+                                        onclick="selectColor('#ffb703', this)"></div>
+                                    <div class="color-dot" style="background:#ef233c"
+                                        onclick="selectColor('#ef233c', this)"></div>
+                                    <div class="color-dot" style="background:#2d6a4f"
+                                        onclick="selectColor('#2d6a4f', this)"></div>
+                                    <div class="color-dot" style="background:#000000; border:1px solid #444;"
+                                        onclick="selectColor('#000000', this)"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Preview Side (Visual Katana) -->
+                        <div style="display:flex; flex-direction:column; align-items:center;">
+                            <label
+                                style="display:block; color:#666; margin-bottom:1rem; font-size:0.8rem; letter-spacing:1px; text-transform:uppercase;">Visualização</label>
+
+                            <!-- Katana Visual -->
+                            <div
+                                style="width:100%; height:120px; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.2); border-radius:12px; border:1px dashed #444;">
+                                <div class="katana-wrapper"
+                                    style="display:flex; align-items:center; filter:drop-shadow(0 10px 15px rgba(0,0,0,0.5)); transform: rotate(-5deg);">
+                                    <!-- Handle (Tsuka) -->
+                                    <div
+                                        style="width:70px; height:16px; background:#1a1a1a; border-radius:2px 0 0 2px; position:relative; border:1px solid #333;">
+                                        <!-- Diamonds Pattern -->
+                                        <div
+                                            style="position:absolute; inset:0; background-image: radial-gradient(#d4af37 1px, transparent 1px); background-size: 8px 8px;">
+                                        </div>
+                                    </div>
+                                    <!-- Guard (Tsuba) -->
+                                    <div
+                                        style="width:12px; height:32px; background:linear-gradient(to right, #bf953f, #fcf6ba, #b38728); border-radius:4px; box-shadow:inset 1px 1px 2px rgba(0,0,0,0.5);">
+                                    </div>
+                                    <!-- Collar (Habaki) -->
+                                    <div style="width:10px; height:16px; background:#c0c0c0;"></div>
+                                    <!-- Blade -->
+                                    <div
+                                        style="width:300px; height:14px; background:linear-gradient(to bottom, #f0f0f0 0%, #dcdcdc 50%, #999 100%); border-radius:0 100% 5% 0; position:relative; overflow:hidden;">
+                                        <!-- The Glow Overlay -->
+                                        <div id="bladeGlow"
+                                            style="position:absolute; inset:0; background:#00b4d8; opacity:0.8; mix-blend-mode:hard-light; transition:0.5s; box-shadow:0 0 20px #00b4d8;">
+                                        </div>
+                                        <!-- Hamon Line -->
+                                        <div
+                                            style="position:absolute; bottom:0; padding-bottom:3px; width:100%; border-bottom: 2px solid rgba(255,255,255,0.4); border-radius: 0 0 80% 0;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </section>
+
+            <div class="step-nav-btns">
+                <button class="btn-prev" onclick="goToStep(1)"><i data-lucide="arrow-left"></i> Voltar</button>
+                <button class="btn-next" onclick="goToStep(3)">Próximo <i data-lucide="arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- STEP 3: ANTECEDENT -->
+        <div id="step-3" class="form-step">
+            <div class="section-header">
+                <span class="sec-num">03.</span> <span class="sec-title">Antecedente</span>
+            </div>
+            <p style="color:#aaa; margin-bottom:1.5rem;">Sua vida antes da espada moldou quem você é. Escolha sua origem
+                para definir perícias.</p>
+
+            <div class="grid-2">
+                <!-- Brigão (Unlocked) -->
+                <div class="selection-card selected" onclick="selectBackground('brigao', this)">
+                    <img src="https://i.pinimg.com/736x/c5/48/85/c5488550d53579044816568395123956.jpg"
+                        class="card-bg-img">
+                    <div class="card-text">
+                        <h3>Brigão de Rua</h3>
+                        <p>Marcado por inúmeras lutas. Perito em <strong>Atletismo</strong> e
+                            <strong>Acrobacia</strong>.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Aristocrata (Locked) -->
+                <div class="selection-card locked">
+                    <img src="https://i.pinimg.com/736x/67/73/07/677307223f03451737e381005ca62788.jpg"
+                        class="card-bg-img">
+                    <div class="card-text">
+                        <h3>Aristocrata <i data-lucide="lock" size="16"></i></h3>
+                        <p>Nascido em berço de ouro. Perito em Persuasão e Intuição.</p>
+                    </div>
+                </div>
+
+                <!-- Camponês (Locked) -->
+                <div class="selection-card locked">
+                    <img src="https://i.pinimg.com/736x/8d/9b/6f/8d9b6f3c151475c75e95738804865183.jpg"
+                        class="card-bg-img">
+                    <div class="card-text">
+                        <h3>Camponês <i data-lucide="lock" size="16"></i></h3>
+                        <p>Vida simples no campo. Perito em Natureza e Lidar com Animais.</p>
+                    </div>
+                </div>
+
+                <!-- Médico (Locked) -->
+                <div class="selection-card locked">
+                    <img src="https://i.pinimg.com/736x/c5/3b/09/c53b092283944605963289053c7c2937.jpg"
+                        class="card-bg-img">
+                    <div class="card-text">
+                        <h3>Médico <i data-lucide="lock" size="16"></i></h3>
+                        <p>Estudioso da medicina. Perito em Medicina e Investigação.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-nav-btns">
+                <button class="btn-prev" onclick="goToStep(2)"><i data-lucide="arrow-left"></i> Voltar</button>
+                <button class="btn-next" onclick="goToStep(4)">Próximo <i data-lucide="arrow-right"></i></button>
+            </div>
+        </div>
 
         <script>
             function togglePreview() {
@@ -886,18 +1189,18 @@
         </script>
 
         <!-- SEC 4: STATS -->
-        <section id="stats" class="form-section">
+        <!-- STEP 4: STATS -->
+        <div id="step-4" class="form-step">
             <div class="section-header">
-                <span class="sec-num">04.</span>
-                <span class="sec-title">Atributos e Perícias</span>
-                <div class="points-box">Pontos Restantes: <span id="pointsRemain">27</span></div>
+                <span class="sec-num">04.</span> <span class="sec-title">Atributos</span>
+                <div class="points-box">Pontos: <span id="pointsRemain">27</span></div>
             </div>
 
             <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap:3rem;">
                 <!-- ATTRIBUTES -->
                 <div>
-                    <h4 style="margin-top:0; color:#ddd; margin-bottom:1.5rem;">Atributos Básicos (Point Buy)</h4>
-
+                    <h4 style="margin-top:0; color:#ddd; margin-bottom:1.5rem;">Defina seus Atributos</h4>
+                    <!-- STR -->
                     <div class="attr-row">
                         <div class="attr-label"><i data-lucide="swords" size="16" style="color:#d90429"></i> Força</div>
                         <div class="attr-input-group">
@@ -906,7 +1209,7 @@
                             <div class="attr-val-box" id="val-str">8</div>
                         </div>
                     </div>
-
+                    <!-- DEX -->
                     <div class="attr-row">
                         <div class="attr-label"><i data-lucide="wind" size="16" style="color:#d90429"></i> Destreza
                         </div>
@@ -915,7 +1218,7 @@
                             <div class="attr-val-box" id="val-dex">8</div>
                         </div>
                     </div>
-
+                    <!-- CON -->
                     <div class="attr-row">
                         <div class="attr-label"><i data-lucide="shield" size="16" style="color:#d90429"></i>
                             Constituição</div>
@@ -924,7 +1227,7 @@
                             <div class="attr-val-box" id="val-con">8</div>
                         </div>
                     </div>
-
+                    <!-- INT -->
                     <div class="attr-row">
                         <div class="attr-label"><i data-lucide="brain" size="16" style="color:#d90429"></i> Inteligência
                         </div>
@@ -933,7 +1236,7 @@
                             <div class="attr-val-box" id="val-int">8</div>
                         </div>
                     </div>
-
+                    <!-- WIS -->
                     <div class="attr-row">
                         <div class="attr-label"><i data-lucide="eye" size="16" style="color:#d90429"></i> Sabedoria
                         </div>
@@ -942,7 +1245,7 @@
                             <div class="attr-val-box" id="val-wis">8</div>
                         </div>
                     </div>
-
+                    <!-- CHA -->
                     <div class="attr-row">
                         <div class="attr-label"><i data-lucide="smile" size="16" style="color:#d90429"></i> Carisma
                         </div>
@@ -953,43 +1256,70 @@
                     </div>
                 </div>
 
-                <!-- SKILLS -->
+                <!-- SKILLS SUMMARY -->
                 <div>
-                    <h4 style="margin-top:0; color:#ddd; margin-bottom:1.5rem;">Perícias Treinadas</h4>
+                    <h4 style="margin-top:0; color:#ddd; margin-bottom:1.5rem;">Perícias</h4>
                     <div class="skills-summary" id="skillsList">
-                        <!-- JS populated -->
-                        <div class="skill-tag"><span>Atletismo (FOR)</span> <span>+2</span></div>
-                        <div class="skill-tag"><span>Acrobacia (DES)</span> <span>+2</span></div>
+                        <!-- Populated by JS -->
+                        <div class="skill-tag" style="opacity:0.5; font-style:italic;">Selecione um antecedente...</div>
                     </div>
                 </div>
             </div>
-        </section>
 
-        <!-- SEC 5: INVENTORY -->
-        <section id="inventory" class="form-section">
+            <div class="step-nav-btns">
+                <button class="btn-prev" onclick="goToStep(3)"><i data-lucide="arrow-left"></i> Voltar</button>
+                <button class="btn-next" onclick="goToStep(5)">Próximo <i data-lucide="arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- STEP 5: DESCRIPTION & FINISH -->
+        <div id="step-5" class="form-step">
             <div class="section-header">
-                <span class="sec-num">05.</span>
-                <span class="sec-title">Inventário Inicial</span>
+                <span class="sec-num">05.</span> <span class="sec-title">Descrição e Identidade</span>
             </div>
 
-            <div style="display:flex; gap:15px;">
-                <div
-                    style="background:#1a1a20; padding:15px; border-radius:8px; width:80px; text-align:center; border:1px solid #333;">
-                    <i data-lucide="backpack" style="margin-bottom:5px;"></i>
-                    <div style="font-size:0.7rem;">Mochila</div>
+            <div style="max-width: 600px; margin: 0 auto;">
+                <div style="margin-bottom: 2rem;">
+                    <label style="display:block; color:#aaa; margin-bottom:10px;">Nome do Caçador</label>
+                    <input type="text" id="inputName" class="ds-input" placeholder="Ex: Tanjiro Kamado"
+                        style="font-size:1.2rem; padding:15px;" oninput="updatePreview()">
                 </div>
-                <div
-                    style="background:#1a1a20; padding:15px; border-radius:8px; width:80px; text-align:center; border:1px solid #333;">
-                    <i data-lucide="coins" style="margin-bottom:5px; color:#ffd700;"></i>
-                    <div style="font-size:0.7rem;">100 Kan</div>
+
+                <div style="margin-bottom: 2rem;">
+                    <label style="display:block; color:#aaa; margin-bottom:10px;">Aparência e História</label>
+                    <textarea class="ds-input" rows="5"
+                        placeholder="Descreva seus olhos, cabelo, cicatrizes e o motivo de se tornar um caçador..."></textarea>
                 </div>
+
+                <!-- INVENTORY SUMMARY -->
                 <div
-                    style="background:#1a1a20; padding:15px; border-radius:8px; width:80px; text-align:center; border:1px solid #333;">
-                    <i data-lucide="bandage" style="margin-bottom:5px; color:#ff6b6b;"></i>
-                    <div style="font-size:0.7rem;">Curativos</div>
+                    style="margin-bottom: 2rem; background: #111; padding: 1.5rem; border-radius: 8px; border: 1px solid #333;">
+                    <h4 style="margin-top:0; color:#ddd; margin-bottom:1rem;">Inventário Inicial</h4>
+                    <div style="display:flex; gap:15px; flex-wrap:wrap;">
+                        <div
+                            style="background:#1a1a20; padding:10px 15px; border-radius:8px; display:flex; gap:8px; align-items:center; border:1px solid #333;">
+                            <i data-lucide="backpack" size="16"></i> <span>Mochila</span>
+                        </div>
+                        <div
+                            style="background:#1a1a20; padding:10px 15px; border-radius:8px; display:flex; gap:8px; align-items:center; border:1px solid #333;">
+                            <i data-lucide="coins" size="16" style="color:#ffd700;"></i> <span>100 Kan</span>
+                        </div>
+                        <div
+                            style="background:#1a1a20; padding:10px 15px; border-radius:8px; display:flex; gap:8px; align-items:center; border:1px solid #333;">
+                            <i data-lucide="bandage" size="16" style="color:#ff6b6b;"></i> <span>Curativos (x5)</span>
+                        </div>
+                    </div>
                 </div>
+
+                <button class="confirm-btn" onclick="finishCreation()">
+                    FINALIZAR CRIAÇÃO
+                </button>
             </div>
-        </section>
+
+            <div class="step-nav-btns">
+                <button class="btn-prev" onclick="goToStep(4)"><i data-lucide="arrow-left"></i> Voltar</button>
+            </div>
+        </div>
 
     </main>
 
@@ -1039,14 +1369,69 @@
         lucide.createIcons();
 
         // STATE
+        // STATE
         const state = {
             race: 'Humano',
             combat: 'water',
+            background: null,
             bladeColor: '#00b4d8',
             stats: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 },
             pointsMax: 27,
             pointsSpent: 0
         };
+
+        // --- NAVIGATION & LOGIC ---
+        function goToStep(stepNum) {
+            // Validate if needed?
+            // Hide all
+            document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
+            // Show target
+            const target = document.getElementById(`step-${stepNum}`);
+            if (target) target.classList.add('active');
+
+            // Nav Highlight
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            const nav = document.getElementById(`nav-step-${stepNum}`);
+            if (nav) nav.classList.add('active');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        window.goToStep = goToStep;
+
+        function selectBackground(bg, element) {
+            document.querySelectorAll('#step-3 .selection-card').forEach(card => card.classList.remove('selected'));
+            element.classList.add('selected');
+            state.background = bg;
+            updateSkillsDisplay();
+        }
+        window.selectBackground = selectBackground;
+
+        function updateSkillsDisplay() {
+            const list = document.getElementById('skillsList');
+            if (!list) return;
+            list.innerHTML = '';
+
+            let skills = [];
+            if (state.background === 'brigao') {
+                skills = [
+                    { name: 'Atletismo', attr: 'FOR', val: '+2' },
+                    { name: 'Acrobacia', attr: 'DES', val: '+2' }
+                ];
+            }
+
+            if (skills.length === 0) {
+                list.innerHTML = '<div class="skill-tag" style="opacity:0.5;">Nenhuma perícia selecionada</div>';
+                return;
+            }
+
+            skills.forEach(s => {
+                const tag = document.createElement('div');
+                tag.className = 'skill-tag';
+                tag.innerHTML = `<span>${s.name} (${s.attr})</span> <span>${s.val}</span>`;
+                list.appendChild(tag);
+            });
+        }
+
 
         const COSTS = { 8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9 };
 
@@ -1080,87 +1465,324 @@
 
         function showOniConfirmation() {
             console.log('Building Oni modal');
-            // Create modal overlay
+
+            // Create modal overlay with dramatic entrance
             const modal = document.createElement('div');
+            modal.id = 'oniTransformationModal';
             modal.style.cssText = `
                 position: fixed;
                 top: 0;
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background: rgba(0, 0, 0, 0.95);
+                background: radial-gradient(circle at center, rgba(139, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.98) 100%);
+                backdrop-filter: blur(10px);
                 z-index: 9999;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                animation: fadeIn 0.3s;
+                animation: oniOverlayFadeIn 0.6s ease-out;
+                overflow: hidden;
             `;
 
             modal.innerHTML = `
-                <div style="
-                    background: linear-gradient(135deg, #1a0a0f 0%, #0a0a0f 100%);
-                    border: 2px solid #d90429;
-                    border-radius: 16px;
-                    padding: 3rem;
-                    max-width: 600px;
-                    text-align: center;
-                    box-shadow: 0 0 50px rgba(217, 4, 41, 0.5);
-                    animation: slideUp 0.3s;
-                ">
-                    <div style="font-size: 4rem; margin-bottom: 1rem;">👹</div>
-                    <h2 style="
-                        font-family: var(--font-display);
-                        font-size: 2.5rem;
-                        color: #d90429;
-                        margin-bottom: 1rem;
-                    ">Tornar-se um Oni</h2>
+                <style>
+                    @keyframes oniOverlayFadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
                     
-                    <p style="
-                        color: rgba(255, 255, 255, 0.8);
-                        line-height: 1.8;
-                        margin-bottom: 2rem;
-                        font-size: 1.1rem;
-                    ">
-                        Você está prestes a abandonar sua humanidade e se transformar em um <strong style="color: #d90429;">demônio</strong>.<br><br>
+                    @keyframes oniModalSlideIn {
+                        from { 
+                            opacity: 0;
+                            transform: scale(0.8) translateY(50px);
+                        }
+                        to { 
+                            opacity: 1;
+                            transform: scale(1) translateY(0);
+                        }
+                    }
+                    
+                    @keyframes oniPulse {
+                        0%, 100% { 
+                            box-shadow: 0 0 30px rgba(217, 4, 41, 0.4),
+                                        0 0 60px rgba(217, 4, 41, 0.2),
+                                        inset 0 0 20px rgba(217, 4, 41, 0.1);
+                        }
+                        50% { 
+                            box-shadow: 0 0 50px rgba(217, 4, 41, 0.6),
+                                        0 0 100px rgba(217, 4, 41, 0.3),
+                                        inset 0 0 30px rgba(217, 4, 41, 0.2);
+                        }
+                    }
+                    
+                    @keyframes oniIconFloat {
+                        0%, 100% { transform: translateY(0px) rotate(0deg); }
+                        50% { transform: translateY(-10px) rotate(5deg); }
+                    }
+                    
+                    @keyframes bloodDrip {
+                        0% { transform: translateY(-100%); opacity: 0; }
+                        50% { opacity: 0.8; }
+                        100% { transform: translateY(100vh); opacity: 0; }
+                    }
+                    
+                    .oni-blood-particle {
+                        position: absolute;
+                        width: 2px;
+                        height: 20px;
+                        background: linear-gradient(to bottom, transparent, #d90429);
+                        animation: bloodDrip 3s linear infinite;
+                    }
+                </style>
+                
+                <!-- Blood particles background -->
+                <div style="position: absolute; inset: 0; overflow: hidden; pointer-events: none;">
+                    ${Array.from({ length: 15 }, (_, i) => `
+                        <div class="oni-blood-particle" style="
+                            left: ${Math.random() * 100}%;
+                            animation-delay: ${Math.random() * 3}s;
+                            animation-duration: ${2 + Math.random() * 2}s;
+                        "></div>
+                    `).join('')}
+                </div>
+                
+                <!-- Main Modal Card -->
+                <div style="
+                    position: relative;
+                    background: linear-gradient(135deg, 
+                        rgba(26, 10, 15, 0.95) 0%, 
+                        rgba(10, 10, 15, 0.98) 50%,
+                        rgba(20, 5, 10, 0.95) 100%);
+                    border: 3px solid #d90429;
+                    border-radius: 24px;
+                    padding: 0;
+                    max-width: 900px;
+                    width: 90%;
+                    text-align: center;
+                    animation: oniModalSlideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), oniPulse 3s ease-in-out infinite;
+                    overflow: hidden;
+                ">
+                    <!-- Top decorative bar -->
+                    <div style="
+                        height: 6px;
+                        background: linear-gradient(90deg, 
+                            transparent 0%, 
+                            #d90429 20%, 
+                            #ff1744 50%, 
+                            #d90429 80%, 
+                            transparent 100%);
+                        box-shadow: 0 0 20px rgba(217, 4, 41, 0.8);
+                    "></div>
+                    
+                    <!-- Content wrapper -->
+                    <div style="padding: 3rem 3rem 2.5rem 3rem;">
+                        <!-- Animated Oni Icon -->
+                        <div style="
+                            font-size: 6rem;
+                            margin-bottom: 1.5rem;
+                            animation: oniIconFloat 3s ease-in-out infinite;
+                            filter: drop-shadow(0 0 20px rgba(217, 4, 41, 0.6));
+                        ">👹</div>
                         
-                        Como Oni, você terá acesso a <strong>Kekkijutsu</strong> (Artes de Sangue) ao invés de Respiração,
-                        poderes sobrenaturais devastadores, mas também <strong>fraquezas mortais</strong> à luz do sol e lâminas Nichirin.<br><br>
+                        <!-- Title -->
+                        <h2 style="
+                            font-family: 'Cinzel', serif;
+                            font-size: 3rem;
+                            background: linear-gradient(90deg, #ff1744, #d90429, #c1121f);
+                            -webkit-background-clip: text;
+                            -webkit-text-fill-color: transparent;
+                            background-clip: text;
+                            margin-bottom: 1rem;
+                            text-transform: uppercase;
+                            letter-spacing: 3px;
+                            text-shadow: 0 0 30px rgba(217, 4, 41, 0.5);
+                        ">Transformação Demoníaca</h2>
                         
-                        <strong style="color: #ffb703;">Tem certeza que deseja seguir este caminho sombrio?</strong>
-                    </p>
-
-                    <div style="display: flex; gap: 1rem; justify-content: center;">
-                        <button onclick="confirmOni()" style="
-                            background: linear-gradient(90deg, #d90429, #c1121f);
-                            color: white;
-                            border: none;
-                            padding: 1rem 2.5rem;
-                            border-radius: 8px;
-                            font-weight: 700;
-                            font-size: 1.1rem;
-                            cursor: pointer;
-                            transition: all 0.3s;
-                            box-shadow: 0 4px 15px rgba(217, 4, 41, 0.4);
-                        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(217, 4, 41, 0.6)';"
-                           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(217, 4, 41, 0.4)';">
-                            🩸 Sim, Tornar-me Oni
-                        </button>
-                        
-                        <button onclick="cancelOni()" style="
-                            background: rgba(255, 255, 255, 0.05);
-                            color: rgba(255, 255, 255, 0.7);
-                            border: 1px solid rgba(255, 255, 255, 0.1);
-                            padding: 1rem 2.5rem;
-                            border-radius: 8px;
+                        <!-- Subtitle -->
+                        <p style="
+                            color: rgba(255, 77, 77, 0.9);
+                            font-size: 1.2rem;
                             font-weight: 600;
-                            font-size: 1.1rem;
-                            cursor: pointer;
-                            transition: all 0.3s;
-                        " onmouseover="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.color='white';"
-                           onmouseout="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.color='rgba(255, 255, 255, 0.7)';">
-                            Cancelar
-                        </button>
+                            margin-bottom: 2rem;
+                            font-family: 'Cinzel', serif;
+                            letter-spacing: 2px;
+                        ">Abandone sua Humanidade</p>
+                        
+                        <!-- Divider -->
+                        <div style="
+                            width: 80%;
+                            height: 2px;
+                            background: linear-gradient(90deg, transparent, #d90429, transparent);
+                            margin: 0 auto 2rem auto;
+                            box-shadow: 0 0 10px rgba(217, 4, 41, 0.5);
+                        "></div>
+                        
+                        <!-- Description Grid -->
+                        <div style="
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            gap: 2rem;
+                            margin-bottom: 2.5rem;
+                            text-align: left;
+                        ">
+                            <!-- Powers Section -->
+                            <div style="
+                                background: rgba(217, 4, 41, 0.1);
+                                border: 1px solid rgba(217, 4, 41, 0.3);
+                                border-radius: 12px;
+                                padding: 1.5rem;
+                            ">
+                                <h3 style="
+                                    color: #ff4d4d;
+                                    font-family: 'Cinzel', serif;
+                                    font-size: 1.3rem;
+                                    margin-bottom: 1rem;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 10px;
+                                ">
+                                    <span style="font-size: 1.5rem;">⚡</span> Poderes
+                                </h3>
+                                <ul style="
+                                    color: rgba(255, 255, 255, 0.85);
+                                    line-height: 1.8;
+                                    font-size: 0.95rem;
+                                    margin: 0;
+                                    padding-left: 1.5rem;
+                                ">
+                                    <li><strong style="color: #ffb703;">Kekkijutsu</strong> - Artes de Sangue Demoníaco</li>
+                                    <li><strong style="color: #ffb703;">Regeneração</strong> - Cura acelerada</li>
+                                    <li><strong style="color: #ffb703;">Força Sobre-humana</strong></li>
+                                    <li><strong style="color: #ffb703;">Imortalidade</strong> (exceto decapitação)</li>
+                                </ul>
+                            </div>
+                            
+                            <!-- Weaknesses Section -->
+                            <div style="
+                                background: rgba(139, 0, 0, 0.15);
+                                border: 1px solid rgba(139, 0, 0, 0.4);
+                                border-radius: 12px;
+                                padding: 1.5rem;
+                            ">
+                                <h3 style="
+                                    color: #ff6b6b;
+                                    font-family: 'Cinzel', serif;
+                                    font-size: 1.3rem;
+                                    margin-bottom: 1rem;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 10px;
+                                ">
+                                    <span style="font-size: 1.5rem;">☀️</span> Fraquezas
+                                </h3>
+                                <ul style="
+                                    color: rgba(255, 255, 255, 0.85);
+                                    line-height: 1.8;
+                                    font-size: 0.95rem;
+                                    margin: 0;
+                                    padding-left: 1.5rem;
+                                ">
+                                    <li><strong style="color: #ff9999;">Luz Solar</strong> - Morte instantânea</li>
+                                    <li><strong style="color: #ff9999;">Glicínias</strong> - Veneno letal</li>
+                                    <li><strong style="color: #ff9999;">Lâminas Nichirin</strong> - Decapitação fatal</li>
+                                    <li><strong style="color: #ff9999;">Fome de Sangue</strong> - Constante</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- Warning Message -->
+                        <div style="
+                            background: rgba(255, 183, 3, 0.1);
+                            border-left: 4px solid #ffb703;
+                            padding: 1rem 1.5rem;
+                            margin-bottom: 2rem;
+                            border-radius: 8px;
+                        ">
+                            <p style="
+                                color: #ffb703;
+                                font-weight: 600;
+                                font-size: 1.1rem;
+                                margin: 0;
+                                text-align: center;
+                            ">
+                                ⚠️ Esta escolha é <strong>PERMANENTE</strong> e mudará completamente seu destino ⚠️
+                            </p>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div style="
+                            display: flex;
+                            gap: 1.5rem;
+                            justify-content: center;
+                            margin-top: 2rem;
+                        ">
+                            <button onclick="confirmOni()" style="
+                                background: linear-gradient(135deg, #d90429 0%, #c1121f 100%);
+                                color: white;
+                                border: 2px solid #ff1744;
+                                padding: 1.2rem 3rem;
+                                border-radius: 12px;
+                                font-weight: 700;
+                                font-size: 1.2rem;
+                                cursor: pointer;
+                                transition: all 0.3s;
+                                box-shadow: 0 8px 25px rgba(217, 4, 41, 0.4);
+                                font-family: 'Cinzel', serif;
+                                letter-spacing: 1px;
+                                text-transform: uppercase;
+                            " onmouseover="
+                                this.style.transform='translateY(-3px) scale(1.05)';
+                                this.style.boxShadow='0 12px 35px rgba(217, 4, 41, 0.6)';
+                                this.style.background='linear-gradient(135deg, #ff1744 0%, #d90429 100%)';
+                            " onmouseout="
+                                this.style.transform='translateY(0) scale(1)';
+                                this.style.boxShadow='0 8px 25px rgba(217, 4, 41, 0.4)';
+                                this.style.background='linear-gradient(135deg, #d90429 0%, #c1121f 100%)';
+                            ">
+                                🩸 Aceitar Transformação
+                            </button>
+                            
+                            <button onclick="cancelOni()" style="
+                                background: rgba(255, 255, 255, 0.05);
+                                color: rgba(255, 255, 255, 0.8);
+                                border: 2px solid rgba(255, 255, 255, 0.2);
+                                padding: 1.2rem 3rem;
+                                border-radius: 12px;
+                                font-weight: 700;
+                                font-size: 1.2rem;
+                                cursor: pointer;
+                                transition: all 0.3s;
+                                font-family: 'Cinzel', serif;
+                                letter-spacing: 1px;
+                                text-transform: uppercase;
+                            " onmouseover="
+                                this.style.background='rgba(255, 255, 255, 0.15)';
+                                this.style.color='white';
+                                this.style.borderColor='rgba(255, 255, 255, 0.4)';
+                                this.style.transform='translateY(-2px)';
+                            " onmouseout="
+                                this.style.background='rgba(255, 255, 255, 0.05)';
+                                this.style.color='rgba(255, 255, 255, 0.8)';
+                                this.style.borderColor='rgba(255, 255, 255, 0.2)';
+                                this.style.transform='translateY(0)';
+                            ">
+                                Permanecer Humano
+                            </button>
+                        </div>
                     </div>
+                    
+                    <!-- Bottom decorative bar -->
+                    <div style="
+                        height: 6px;
+                        background: linear-gradient(90deg, 
+                            transparent 0%, 
+                            #d90429 20%, 
+                            #ff1744 50%, 
+                            #d90429 80%, 
+                            transparent 100%);
+                        box-shadow: 0 0 20px rgba(217, 4, 41, 0.8);
+                    "></div>
                 </div>
             `;
 
@@ -1298,8 +1920,43 @@
         }
 
         // Init
+        if (window.goToStep) window.goToStep(1);
         updatePreview();
+        updateSkillsDisplay();
+
+        // Initial Background Selection (None)
+        // Ensure inputs are valid
+        if (!document.getElementById('inputName')) console.warn('inputName missing');
     </script>
+</body>
+
+<script>
+    lucide.createIcons();
+    initWisteria();
+
+    function initWisteria() {
+        const container = document.getElementById('wisteria');
+        if (!container) return;
+
+        for (let i = 0; i < 20; i++) {
+            const petal = document.createElement('div');
+            petal.className = 'petal';
+
+            const left = Math.random() * 100;
+            const size = Math.random() * 5 + 5;
+            const dur = Math.random() * 3 + 4;
+            const dly = Math.random() * 5;
+
+            petal.style.left = left + '%';
+            petal.style.width = size + 'px';
+            petal.style.height = size + 'px';
+            petal.style.animationDuration = dur + 's';
+            petal.style.animationDelay = dly + 's';
+
+            container.appendChild(petal);
+        }
+    }
+</script>
 </body>
 
 </html>

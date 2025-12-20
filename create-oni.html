@@ -11,11 +11,15 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --bg-dark: #000000;
-            --bg-panel: #0a0a0f;
-            --accent-red: #d90429;
-            --accent-purple: #9d4edd;
-            --accent-blood: #8b0000;
+            --bg-dark: #050505;
+            --bg-sidebar: #0a0a0f;
+            --accent: #d90429;
+            /* Red for Oni */
+            --accent-dim: rgba(217, 4, 41, 0.2);
+            --text-main: #e0e0e0;
+            --text-muted: #888;
+            --border: #333;
+            --card-bg: #141419;
             --font-main: 'Outfit', sans-serif;
             --font-display: 'Cinzel', serif;
         }
@@ -29,786 +33,638 @@
         body {
             font-family: var(--font-main);
             background: var(--bg-dark);
-            color: white;
-            min-height: 100vh;
-            overflow-x: hidden;
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
         }
 
-        .blood-effect {
-            position: fixed;
-            top: 0;
-            left: 0;
+        /* Layout */
+        .layout-container {
+            display: flex;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 50% 50%, rgba(139, 0, 0, 0.1) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 0;
         }
 
-        .container {
-            position: relative;
-            z-index: 1;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 3rem 2rem;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 4rem;
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
             padding: 2rem;
-            background: linear-gradient(135deg, rgba(139, 0, 0, 0.2) 0%, transparent 100%);
-            border: 2px solid var(--accent-red);
-            border-radius: 16px;
+            z-index: 10;
         }
 
-        .header-icon {
-            font-size: 5rem;
-            margin-bottom: 1rem;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.05);
-            }
-        }
-
-        .header h1 {
+        .logo {
             font-family: var(--font-display);
-            font-size: 3rem;
-            background: linear-gradient(90deg, var(--accent-red), #c1121f);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            color: var(--accent);
+            margin-bottom: 3rem;
+            letter-spacing: 2px;
+            text-align: center;
+            text-shadow: 0 0 15px rgba(217, 4, 41, 0.4);
         }
 
-        .header p {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 1.1rem;
+        .nav-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
         }
 
-        .section {
-            margin-bottom: 4rem;
-        }
-
-        .section-title {
-            font-family: var(--font-display);
-            font-size: 2rem;
-            color: var(--accent-red);
-            margin-bottom: 1rem;
+        .nav-item {
             display: flex;
             align-items: center;
+            gap: 12px;
+            padding: 1rem;
+            border-radius: 8px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+            color: #fff;
+        }
+
+        .nav-item.active {
+            background: var(--accent-dim);
+            color: var(--accent);
+            border: 1px solid rgba(217, 4, 41, 0.3);
+        }
+
+        .nav-item.disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        .step-num {
+            font-weight: 800;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            position: relative;
+            overflow-y: auto;
+            padding: 4rem 6rem;
+            background: radial-gradient(circle at top right, #1a0505 0%, #000 60%);
+        }
+
+        /* Form Steps */
+        .form-step {
+            display: none;
+            animation: fadeIn 0.5s ease;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-header {
+            margin-bottom: 3rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+        }
+
+        .sec-num {
+            font-size: 4rem;
+            font-family: var(--font-display);
+            color: rgba(255, 255, 255, 0.05);
+            font-weight: 700;
+            position: absolute;
+            top: -1.5rem;
+            left: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .sec-title {
+            font-size: 2.5rem;
+            font-family: var(--font-display);
+            color: #fff;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Cards & Selection */
+        .selection-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
             gap: 1rem;
         }
 
-        .section-title i {
-            color: var(--accent-red);
+        .selection-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
-        .section-description {
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 2rem;
-            line-height: 1.6;
+        .selection-card.selected {
+            border-color: var(--accent);
+            background: linear-gradient(to bottom, var(--card-bg), #1a0505);
+            box-shadow: 0 0 20px rgba(217, 4, 41, 0.2);
         }
 
-        .paths-grid {
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+
+        .selection-card.selected .card-icon {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        /* Style Grid (Borrowed from Character) */
+        .styles-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
         }
 
-        .path-card {
-            background: linear-gradient(135deg, rgba(20, 20, 25, 0.9) 0%, rgba(10, 10, 15, 0.9) 100%);
-            border: 2px solid rgba(217, 4, 41, 0.3);
-            border-radius: 16px;
-            padding: 2rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
+        /* Buttons */
+        .step-nav-btns {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
         }
 
-        .path-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, var(--accent-red), transparent);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .path-card:hover {
-            transform: translateY(-8px);
-            border-color: var(--accent-red);
-            box-shadow: 0 12px 40px rgba(217, 4, 41, 0.4);
-        }
-
-        .path-card:hover::before {
-            opacity: 1;
-        }
-
-        .path-card.selected {
-            border-color: var(--accent-red);
-            box-shadow: 0 0 30px rgba(217, 4, 41, 0.6);
-        }
-
-        .path-card.selected::before {
-            opacity: 1;
-        }
-
-        .path-header {
+        .btn-next,
+        .btn-prev {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .path-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--accent-red), #c1121f);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .path-title {
-            font-family: var(--font-display);
-            font-size: 1.8rem;
-        }
-
-        .path-description {
-            color: rgba(255, 255, 255, 0.7);
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-        }
-
-        .path-effects {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            gap: 10px;
+            padding: 12px 30px;
             border-radius: 8px;
+            cursor: pointer;
+            font-family: var(--font-main);
+            font-weight: 600;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .btn-prev {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: #888;
+        }
+
+        .btn-prev:hover {
+            border-color: #fff;
+            color: #fff;
+        }
+
+        .btn-next {
+            background: var(--accent);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(217, 4, 41, 0.3);
+        }
+
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(217, 4, 41, 0.5);
+        }
+
+        /* Input */
+        .ds-input {
+            width: 100%;
             padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: white;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            transition: 0.3s;
         }
 
-        .path-effect-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            padding: 0.5rem 0;
-            font-size: 0.9rem;
+        .ds-input:focus {
+            border-color: var(--accent);
+            outline: none;
         }
 
-        .path-effect-item i {
-            color: var(--accent-red);
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        .particularities-grid {
+        /* Particularities Grid */
+        .part-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1.5rem;
         }
 
-        .particularity-card {
-            background: linear-gradient(135deg, rgba(20, 20, 25, 0.9) 0%, rgba(10, 10, 15, 0.9) 100%);
-            border: 2px solid rgba(157, 78, 221, 0.3);
+        .part-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #333;
             border-radius: 12px;
             padding: 1.5rem;
             cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
+            transition: 0.2s;
         }
 
-        .particularity-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--accent-purple);
-            box-shadow: 0 8px 30px rgba(157, 78, 221, 0.3);
+        .part-card:hover {
+            border-color: #666;
+            background: rgba(255, 255, 255, 0.05);
         }
 
-        .particularity-card.selected {
-            border-color: var(--accent-purple);
-            box-shadow: 0 0 20px rgba(157, 78, 221, 0.5);
-            background: linear-gradient(135deg, rgba(157, 78, 221, 0.1) 0%, rgba(10, 10, 15, 0.9) 100%);
+        .part-card.selected {
+            border-color: var(--accent);
+            background: rgba(217, 4, 41, 0.1);
         }
 
-        .particularity-card.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .particularity-header {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
-
-        .particularity-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--accent-purple), #7209b7);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .particularity-name {
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: var(--accent-purple);
-        }
-
-        .particularity-description {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.9rem;
-            line-height: 1.5;
-            margin-bottom: 0.75rem;
-        }
-
-        .particularity-effect {
-            background: rgba(157, 78, 221, 0.1);
-            border: 1px solid rgba(157, 78, 221, 0.3);
-            border-radius: 6px;
-            padding: 0.5rem;
-            font-size: 0.85rem;
-            color: var(--accent-purple);
-            font-weight: 600;
-        }
-
-        .selection-counter {
-            background: rgba(157, 78, 221, 0.2);
-            border: 1px solid var(--accent-purple);
-            border-radius: 8px;
-            padding: 1rem;
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .counter-text {
-            font-size: 1.1rem;
-            color: var(--accent-purple);
-            font-weight: 700;
-        }
-
-        .kekkijutsu-placeholder {
-            background: linear-gradient(135deg, rgba(20, 20, 25, 0.9) 0%, rgba(10, 10, 15, 0.9) 100%);
-            border: 2px dashed rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
-            padding: 3rem;
-            text-align: center;
-        }
-
-        .kekkijutsu-placeholder i {
-            font-size: 4rem;
-            color: rgba(255, 255, 255, 0.3);
-            margin-bottom: 1rem;
-        }
-
-        .kekkijutsu-placeholder h3 {
-            font-family: var(--font-display);
-            font-size: 2rem;
-            color: rgba(255, 255, 255, 0.5);
-            margin-bottom: 0.5rem;
-        }
-
-        .kekkijutsu-placeholder p {
-            color: rgba(255, 255, 255, 0.4);
-        }
-
-        .regeneration-table {
-            background: linear-gradient(135deg, rgba(20, 20, 25, 0.9) 0%, rgba(10, 10, 15, 0.9) 100%);
-            border: 2px solid rgba(0, 180, 216, 0.3);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .table-row {
+        /* Attribute Inputs */
+        .attr-input-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 1rem;
         }
 
-        .table-row:last-child {
-            border-bottom: none;
-        }
-
-        .table-row.header {
-            background: rgba(0, 180, 216, 0.1);
-            font-weight: 700;
-            color: #00b4d8;
-        }
-
-        .table-cell {
-            padding: 1rem 1.5rem;
+        .attr-box input {
             text-align: center;
-        }
-
-        .table-cell:first-child {
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .confirm-btn {
-            width: 100%;
-            max-width: 500px;
-            margin: 3rem auto 0;
-            display: block;
-            background: linear-gradient(90deg, var(--accent-red), #c1121f);
-            color: white;
-            border: none;
-            padding: 1.5rem 2rem;
-            border-radius: 8px;
-            font-family: var(--font-main);
+            font-size: 1.5rem;
             font-weight: 700;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(217, 4, 41, 0.4);
-        }
-
-        .confirm-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(217, 4, 41, 0.6);
-        }
-
-        .confirm-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        @media (max-width: 968px) {
-            .paths-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .particularities-grid {
-                grid-template-columns: 1fr;
-            }
+            color: var(--accent);
         }
     </style>
 </head>
 
 <body>
-    <div class="blood-effect"></div>
 
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="header-icon">👹</div>
-            <h1>Transformação Demoníaca</h1>
-            <p>Configure seu Oni e abrace os poderes das trevas</p>
-        </div>
-
-        <!-- Seção 1: Caminhos -->
-        <section class="section">
-            <h2 class="section-title">
-                <i data-lucide="git-branch" style="width:32px;"></i>
-                Escolha Seu Caminho
-            </h2>
-            <p class="section-description">
-                Como demônio, você deve escolher como manterá sua existência. Cada caminho oferece vantagens e
-                desvantagens únicas.
-            </p>
-
-            <div class="paths-grid">
-                <!-- Caminho da Alimentação por Sangue -->
-                <div class="path-card" onclick="selectPath('blood', this)" id="path-blood">
-                    <div class="path-header">
-                        <div class="path-icon">
-                            <i data-lucide="droplet" style="width:30px; height:30px;"></i>
-                        </div>
-                        <h3 class="path-title">Alimentação por Sangue</h3>
-                    </div>
-                    <p class="path-description">
-                        Você deve consumir até 1 litro de sangue humano por semana para se alimentar.
-                        Isso traz complicações durante o combate, mas permite maior controle sobre suas ações.
-                    </p>
-                    <div class="path-effects">
-                        <div class="path-effect-item">
-                            <i data-lucide="clock" style="width:16px;"></i>
-                            <span>Leva 1 minuto para entrar em modo de combate</span>
-                        </div>
-                        <div class="path-effect-item">
-                            <i data-lucide="shield" style="width:16px;"></i>
-                            <span>Resiste aos instintos assassinos durante o combate</span>
-                        </div>
-                        <div class="path-effect-item">
-                            <i data-lucide="brain" style="width:16px;"></i>
-                            <span>Maior controle sobre suas ações no dia a dia</span>
-                        </div>
-                    </div>
+    <div class="layout-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">DEMON<br>SLAYER</div>
+            <nav class="nav-steps">
+                <div class="nav-item active" id="nav-step-1" onclick="goToStep(1)">
+                    <span class="step-num">01</span>
+                    <span>Caminho</span>
+                    <i data-lucide="git-branch" style="margin-left:auto; width:16px;"></i>
                 </div>
+                <div class="nav-item disabled" id="nav-step-2" onclick="goToStep(2)">
+                    <span class="step-num">02</span>
+                    <span>Kekkijutsu</span>
+                    <i data-lucide="flame" style="margin-left:auto; width:16px;"></i>
+                </div>
+                <div class="nav-item disabled" id="nav-step-3" onclick="goToStep(3)">
+                    <span class="step-num">03</span>
+                    <span>Particularidades</span>
+                    <i data-lucide="zap" style="margin-left:auto; width:16px;"></i>
+                </div>
+                <div class="nav-item disabled" id="nav-step-4" onclick="goToStep(4)">
+                    <span class="step-num">04</span>
+                    <span>Atributos</span>
+                    <i data-lucide="bar-chart-2" style="margin-left:auto; width:16px;"></i>
+                </div>
+                <div class="nav-item disabled" id="nav-step-5" onclick="goToStep(5)">
+                    <span class="step-num">05</span>
+                    <span>Descrição</span>
+                    <i data-lucide="file-text" style="margin-left:auto; width:16px;"></i>
+                </div>
+            </nav>
+        </aside>
 
-                <!-- Caminho da Retenção de Carne -->
-                <div class="path-card" onclick="selectPath('flesh', this)" id="path-flesh">
-                    <div class="path-header">
-                        <div class="path-icon">
-                            <i data-lucide="skull" style="width:30px; height:30px;"></i>
-                        </div>
-                        <h3 class="path-title">Retenção de Carne</h3>
-                    </div>
-                    <p class="path-description">
-                        Você não consome nenhum alimento e pode utilizar suas habilidades normalmente.
-                        Porém, perde controle com maior frequência e sua sanidade se deteriora rapidamente.
-                    </p>
-                    <div class="path-effects">
-                        <div class="path-effect-item">
-                            <i data-lucide="check" style="width:16px;"></i>
-                            <span>Sem restrições de alimentação</span>
-                        </div>
-                        <div class="path-effect-item">
-                            <i data-lucide="trending-down" style="width:16px;"></i>
-                            <span>Sanidade deteriora mais rapidamente</span>
-                        </div>
-                        <div class="path-effect-item">
-                            <i data-lucide="moon" style="width:16px;"></i>
-                            <span>Sono profundo durante viagens</span>
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- STEP 1: PATH (Race Equivalent) -->
+            <div id="step-1" class="form-step active">
+                <div class="section-header">
+                    <span class="sec-num">01.</span> <span class="sec-title">Caminho Demoníaco</span>
+                </div>
+                <p style="color:#aaa; margin-bottom:2rem; font-size:1.1rem;">Como um recém-transformado, como você
+                    lidará com sua sede de sangue? Sua escolha define sua sobrevivência.</p>
+
+                <div class="styles-grid">
+                    <!-- Blood Path (Traditional) -->
+                    <div class="selection-card selected" onclick="selectPath('blood', this)"
+                        style="align-items: flex-start; text-align: left; padding: 0; overflow: hidden; height: 400px; aspect-ratio: 1/1;">
+                        <img src="assets/criação_personagem/Oni-removebg-preview.png"
+                            style="position:absolute; top:0; left:50%; width:auto; height:100%; transform:translateX(-50%); object-fit:contain; opacity:0.8; transition:0.3s; z-index:0;">
+                        <div
+                            style="position:absolute; bottom:0; left:0; width:100%; z-index:2; background:linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.6), transparent); padding:2rem;">
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                                <i data-lucide="droplet" style="color:#d90429; fill:#d90429;"></i>
+                                <h3 style="font-family:'Cinzel'; font-size:1.5rem; color:#fff;">Alimentação por Sangue
+                                </h3>
+                            </div>
+                            <p style="color:#ddd; font-size:0.9rem; line-height:1.5;">Consome carne humana para poder.
+                                Maior controle, mas a fome é constante.</p>
                         </div>
                     </div>
+
+                    <!-- Flesh Retention (Nezuko Style) -->
+                    <div class="selection-card" onclick="selectPath('flesh', this)"
+                        style="align-items: flex-start; text-align: left; padding: 0; overflow: hidden; height: 400px; aspect-ratio: 1/1;">
+                        <img src="assets/NezukoKamado.png"
+                            style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; object-position:top; opacity:0.8; transition:0.3s; z-index:0;">
+                        <div
+                            style="position:absolute; bottom:0; left:0; width:100%; z-index:2; background:linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.6), transparent); padding:2rem;">
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                                <i data-lucide="moon" style="color:#ffb703; fill:#ffb703;"></i>
+                                <h3 style="font-family:'Cinzel'; font-size:1.5rem; color:#fff;">Retenção de Carne</h3>
+                            </div>
+                            <p style="color:#ddd; font-size:0.9rem; line-height:1.5;">Dorme para recuperar energias.
+                                Nega a carne humana, mantendo a humanidade.</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- Seção 2: Particularidades -->
-        <section class="section">
-            <h2 class="section-title">
-                <i data-lucide="zap" style="width:32px;"></i>
-                Particularidades Demoníacas
-            </h2>
-            <p class="section-description">
-                Escolha 2 habilidades únicas que definem seu poder como Oni. Cada particularidade oferece vantagens
-                táticas diferentes.
-            </p>
-
-            <div class="selection-counter">
-                <span class="counter-text">Selecionadas: <span id="selectedCount">0</span>/2</span>
-            </div>
-
-            <div class="particularities-grid" id="particularitiesGrid">
-                <!-- Particularidades serão injetadas aqui -->
-            </div>
-        </section>
-
-        <!-- Seção 3: Kekkijutsu -->
-        <section class="section">
-            <h2 class="section-title">
-                <i data-lucide="flame" style="width:32px;"></i>
-                Kekkijutsu - Artes de Sangue
-            </h2>
-
-            <div class="kekkijutsu-placeholder">
-                <i data-lucide="lock"></i>
-                <h3>Em Breve</h3>
-                <p>Kekkijutsu ainda não estão disponíveis. Serão implementados em breve.</p>
-            </div>
-        </section>
-
-        <!-- Seção 4: HP & Regeneração -->
-        <section class="section">
-            <h2 class="section-title">
-                <i data-lucide="heart" style="width:32px;"></i>
-                HP & Regeneração
-            </h2>
-            <p class="section-description">
-                Como Oni, você possui regeneração natural baseada no seu nível. Você regenera pontos de vida a cada
-                turno.
-            </p>
-
-            <div class="regeneration-table">
-                <div class="table-row header">
-                    <div class="table-cell">Nível</div>
-                    <div class="table-cell">Regeneração por Turno</div>
-                </div>
-                <div class="table-row">
-                    <div class="table-cell">1 - 5</div>
-                    <div class="table-cell">1d10</div>
-                </div>
-                <div class="table-row">
-                    <div class="table-cell">6 - 10</div>
-                    <div class="table-cell">2d10</div>
-                </div>
-                <div class="table-row">
-                    <div class="table-cell">11 - 15</div>
-                    <div class="table-cell">3d10</div>
-                </div>
-                <div class="table-row">
-                    <div class="table-cell">16 - 20</div>
-                    <div class="table-cell">4d10</div>
+                <div class="step-nav-btns" style="justify-content:flex-end;">
+                    <button class="btn-next" onclick="goToStep(2)">Próximo <i data-lucide="arrow-right"></i></button>
                 </div>
             </div>
 
-            <div
-                style="margin-top: 2rem; padding: 1rem; background: rgba(217, 4, 41, 0.1); border: 1px solid rgba(217, 4, 41, 0.3); border-radius: 8px;">
-                <p style="color: rgba(255, 255, 255, 0.7); line-height: 1.6;">
-                    <strong style="color: var(--accent-red);">Nota:</strong> Você começa com <strong>15 HP base</strong>
-                    (vs 10 HP de humanos).
-                    Para morrer permanentemente, você deve estar "Fragilizado" ou ter sua cabeça cortada.
-                </p>
-            </div>
-        </section>
+            <!-- STEP 2: KEKKIJUTSU (Combat Style Equivalent) -->
+            <div id="step-2" class="form-step">
+                <div class="section-header">
+                    <span class="sec-num">02.</span> <span class="sec-title">Kekkijutsu</span>
+                </div>
+                <p style="color:#aaa; margin-bottom:2rem;">Sua Arte de Sangue Demoníaca. Escolha o elemento que
+                    manifestará seu poder.</p>
 
-        <!-- Botão Finalizar -->
-        <button class="confirm-btn" onclick="finishOniCreation()" id="confirmBtn" disabled>
-            <i data-lucide="check-circle" style="width:24px; vertical-align:middle; margin-right:8px;"></i>
-            Finalizar Transformação
-        </button>
+                <div class="styles-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                    <!-- Ice (Douma?) -->
+                    <div class="selection-card selected" onclick="selectKekkijutsu('ice', this)"
+                        style="padding:0; height:350px;">
+                        <div
+                            style="position:absolute; inset:0; background:linear-gradient(45deg, #00b4d8, #0077b6); opacity:0.1;">
+                        </div>
+                        <div
+                            style="z-index:2; padding:2rem; display:flex; flex-direction:column; justify-content:center; height:100%; align-items:center;">
+                            <i data-lucide="snowflake"
+                                style="width:64px; height:64px; color:#90e0ef; margin-bottom:1rem;"></i>
+                            <h3 style="font-family:'Cinzel'; font-size:1.8rem;">Gelo</h3>
+                            <p style="color:#aaa; font-size:0.9rem;">Manipulação criogênica do sangue.</p>
+                        </div>
+                    </div>
+
+                    <!-- Locked placeholders -->
+                    <div class="selection-card disabled"
+                        style="padding:0; height:350px; opacity:0.5; filter:grayscale(1);">
+                        <div
+                            style="z-index:2; padding:2rem; display:flex; flex-direction:column; justify-content:center; height:100%; align-items:center;">
+                            <i data-lucide="lock" style="width:32px; height:32px; color:#666; margin-bottom:1rem;"></i>
+                            <h3 style="font-family:'Cinzel'; font-size:1.8rem; color:#666;">Fios</h3>
+                        </div>
+                    </div>
+                    <div class="selection-card disabled"
+                        style="padding:0; height:350px; opacity:0.5; filter:grayscale(1);">
+                        <div
+                            style="z-index:2; padding:2rem; display:flex; flex-direction:column; justify-content:center; height:100%; align-items:center;">
+                            <i data-lucide="lock" style="width:32px; height:32px; color:#666; margin-bottom:1rem;"></i>
+                            <h3 style="font-family:'Cinzel'; font-size:1.8rem; color:#666;">Pântano</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-nav-btns">
+                    <button class="btn-prev" onclick="goToStep(1)"><i data-lucide="arrow-left"></i> Voltar</button>
+                    <button class="btn-next" onclick="goToStep(3)">Próximo <i data-lucide="arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- STEP 3: PARTICULARITIES -->
+            <div id="step-3" class="form-step">
+                <div class="section-header">
+                    <span class="sec-num">03.</span> <span class="sec-title">Particularidades</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                    <p style="color:#aaa;">Escolha <strong style="color:white;">2</strong> características únicas.</p>
+                    <div
+                        style="background:rgba(217, 4, 41, 0.2); padding:5px 15px; border-radius:20px; color:#d90429; font-weight:700;">
+                        <span id="selectedCount">0</span>/2
+                    </div>
+                </div>
+
+                <div class="part-grid" id="particularitiesGrid">
+                    <!-- JS Injected -->
+                </div>
+
+                <div class="step-nav-btns">
+                    <button class="btn-prev" onclick="goToStep(2)"><i data-lucide="arrow-left"></i> Voltar</button>
+                    <button class="btn-next" onclick="goToStep(4)">Próximo <i data-lucide="arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- STEP 4: ATTRIBUTES -->
+            <div id="step-4" class="form-step">
+                <div class="section-header">
+                    <span class="sec-num">04.</span> <span class="sec-title">Atributos</span>
+                </div>
+
+                <div
+                    style="background:rgba(255,255,255,0.03); padding:2rem; border-radius:12px; border:1px solid #333;">
+                    <div class="attr-input-grid">
+                        <div class="attr-box"><label
+                                style="display:block;color:#888;margin-bottom:5px;">Força</label><input type="number"
+                                id="attr-str" value="12" class="ds-input"></div>
+                        <div class="attr-box"><label
+                                style="display:block;color:#888;margin-bottom:5px;">Destreza</label><input type="number"
+                                id="attr-dex" value="12" class="ds-input"></div>
+                        <div class="attr-box"><label
+                                style="display:block;color:#888;margin-bottom:5px;">Constituição</label><input
+                                type="number" id="attr-con" value="12" class="ds-input"></div>
+                        <div class="attr-box"><label
+                                style="display:block;color:#888;margin-bottom:5px;">Inteligência</label><input
+                                type="number" id="attr-int" value="10" class="ds-input"></div>
+                        <div class="attr-box"><label
+                                style="display:block;color:#888;margin-bottom:5px;">Sabedoria</label><input
+                                type="number" id="attr-wis" value="10" class="ds-input"></div>
+                        <div class="attr-box"><label
+                                style="display:block;color:#888;margin-bottom:5px;">Carisma</label><input type="number"
+                                id="attr-cha" value="10" class="ds-input"></div>
+                    </div>
+                    <p style="color:#666; font-size:0.8rem; margin-top:1rem; text-align:center;">* Onis recebem bônus
+                        naturais em atributos físicos.</p>
+                </div>
+
+                <div class="step-nav-btns">
+                    <button class="btn-prev" onclick="goToStep(3)"><i data-lucide="arrow-left"></i> Voltar</button>
+                    <button class="btn-next" onclick="goToStep(5)">Próximo <i data-lucide="arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- STEP 5: DESCRIPTION -->
+            <div id="step-5" class="form-step">
+                <div class="section-header">
+                    <span class="sec-num">05.</span> <span class="sec-title">Identidade</span>
+                </div>
+
+                <div style="max-width:600px; margin:0 auto; display:flex; flex-direction:column; gap:2rem;">
+                    <div>
+                        <label style="display:block; color:#ddd; margin-bottom:10px;">Nome do Oni (Humano ou
+                            Novo)</label>
+                        <input type="text" id="oniName" class="ds-input" placeholder="Ex: Akaza">
+                    </div>
+                    <div>
+                        <label style="display:block; color:#ddd; margin-bottom:10px;">Aparência / Detalhes</label>
+                        <textarea id="oniDesc" class="ds-input" rows="4"
+                            placeholder="Chifres, marcas, cor da pele..."></textarea>
+                    </div>
+                </div>
+
+                <div class="step-nav-btns">
+                    <button class="btn-prev" onclick="goToStep(4)"><i data-lucide="arrow-left"></i> Voltar</button>
+                    <button class="btn-next" onclick="finishOniCreation()" style="background:#d90429;">Finalizar
+                        Transformação</button>
+                </div>
+            </div>
+
+        </main>
     </div>
 
     <script>
         lucide.createIcons();
 
+        // --- STATE ---
         const state = {
-            path: null,
-            particularities: [],
-            tempData: null
+            step: 1,
+            path: 'blood', // Default
+            kekkijutsu: 'ice', // Default
+            particularities: []
         };
 
-        // Particularidades disponíveis
         const PARTICULARITIES = [
-            {
-                id: 'alteracao_corporal',
-                name: 'Alteração Corporal',
-                icon: 'maximize-2',
-                description: 'Você possui a habilidade de alterar seu tamanho em diversas situações (60cm a 4.5m).',
-                effect: 'Ação para mudar tamanho'
-            },
-            {
-                id: 'aparencia_animalesca',
-                name: 'Aparência Animalesca',
-                icon: 'paw-print',
-                description: 'Você pode assumir características de um animal selvagem e adquirir habilidades relacionadas.',
-                effect: 'Habilidades animais'
-            },
-            {
-                id: 'aparencia_perturbadora',
-                name: 'Aparência Perturbadora',
-                icon: 'eye-off',
-                description: 'Você possui a habilidade de assumir uma forma assustadora que intimida criaturas.',
-                effect: 'Teste de Sabedoria'
-            },
-            {
-                id: 'camuflagem_adaptativa',
-                name: 'Camuflagem Adaptativa',
-                icon: 'eye',
-                description: 'Você é capaz de se adaptar ao ambiente, alterando a textura da sua pele para se misturar.',
-                effect: '+2 Furtividade'
-            },
-            {
-                id: 'extensao_membros',
-                name: 'Extensão de Membros',
-                icon: 'move',
-                description: 'Você pode estender seus membros para alcançar objetos distantes ou aumentar seu alcance.',
-                effect: '+1.5m alcance'
-            },
-            {
-                id: 'forma_enfraquecida',
-                name: 'Forma Enfraquecida',
-                icon: 'smile',
-                description: 'Você pode assumir uma aparência atraente, como uma criança inocente ou velho encantador.',
-                effect: 'Vantagem Persuasão'
-            },
-            {
-                id: 'garras_afiadas',
-                name: 'Garras Afiadas',
-                icon: 'scissors',
-                description: 'Suas garras são afiadas como lâminas, permitindo causar dano cortante.',
-                effect: 'Dano cortante corpo-a-corpo'
-            },
-            {
-                id: 'mimetizacao',
-                name: 'Mimetização',
-                icon: 'mic',
-                description: 'Você possui a habilidade de imitar perfeitamente vozes e sons de outras criaturas.',
-                effect: 'Teste Intuição CD15'
-            },
-            {
-                id: 'multiplos_membros',
-                name: 'Múltiplos Membros',
-                icon: 'git-branch',
-                description: 'Você possui a capacidade de criar braços ou pernas adicionais.',
-                effect: '1d10 dano desarmado'
-            },
-            {
-                id: 'pele_aco',
-                name: 'Pele de Aço',
-                icon: 'shield',
-                description: 'Você possui uma pele extremamente resistente que reduz dano de concussão.',
-                effect: '-2 concussão'
-            }
+            { id: 'alteracao', name: 'Alteração Corporal', icon: 'maximize-2', desc: 'Muda de tamanho (60cm a 4.5m).' },
+            { id: 'animal', name: 'Aparência Animalesca', icon: 'paw-print', desc: 'Garras e sentidos de besta.' },
+            { id: 'sombra', name: 'Manipulação de Sombra', icon: 'moon', desc: 'Furtividade sobrenatural.' },
+            { id: 'regeneracao', name: 'Regeneração Acelerada', icon: 'heart', desc: '+1d10 de cura passiva.' },
+            { id: 'carne', name: 'Armadura de Carne', icon: 'shield', desc: 'Pele rígida como ferro.' },
         ];
 
-        // Carregar dados temporários
-        window.addEventListener('DOMContentLoaded', () => {
-            const tempData = localStorage.getItem('tempCharData');
-            if (tempData) {
-                state.tempData = JSON.parse(tempData);
+        // --- INIT ---
+        window.onload = () => {
+            renderParticularities();
+            goToStep(1);
+        };
+
+        // --- NAVIGATION ---
+        function goToStep(step) {
+            // Validate
+            if (step > state.step + 1) return; // Prevent skipping
+
+            // UI Update
+            document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+            document.getElementById(`step-${step}`).classList.add('active');
+
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const nav = document.getElementById(`nav-step-${step}`);
+            if (nav) nav.classList.add('active');
+
+            // Unlock logic (simple for now)
+            for (let i = 1; i <= step; i++) {
+                document.getElementById(`nav-step-${i}`).classList.remove('disabled');
             }
 
-            renderParticularities();
-        });
+            state.step = step;
+        }
 
-        // Renderizar particularidades
+        // --- SELECTION LOGIC ---
+        function selectPath(path, btn) {
+            state.path = path;
+            // Visual Update
+            btn.parentElement.querySelectorAll('.selection-card').forEach(c => c.classList.remove('selected'));
+            btn.classList.add('selected');
+        }
+
+        function selectKekkijutsu(kekk, btn) {
+            state.kekkijutsu = kekk;
+            btn.parentElement.querySelectorAll('.selection-card').forEach(c => c.classList.remove('selected'));
+            btn.classList.add('selected');
+        }
+
+        function toggleParticularity(id, btn) {
+            if (state.particularities.includes(id)) {
+                state.particularities = state.particularities.filter(p => p !== id);
+                btn.classList.remove('selected');
+            } else {
+                if (state.particularities.length >= 2) return; // Max 2
+                state.particularities.push(id);
+                btn.classList.add('selected');
+            }
+            document.getElementById('selectedCount').innerText = state.particularities.length;
+        }
+
         function renderParticularities() {
             const grid = document.getElementById('particularitiesGrid');
-            grid.innerHTML = '';
-
-            PARTICULARITIES.forEach(p => {
-                const card = document.createElement('div');
-                card.className = 'particularity-card';
-                card.id = `part-${p.id}`;
-                card.onclick = () => toggleParticularity(p.id);
-
-                card.innerHTML = `
-                    <div class="particularity-header">
-                        <div class="particularity-icon">
-                            <i data-lucide="${p.icon}" style="width:20px;"></i>
-                        </div>
-                        <div class="particularity-name">${p.name}</div>
+            grid.innerHTML = PARTICULARITIES.map(p => `
+                <div class="part-card" onclick="toggleParticularity('${p.id}', this)">
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                        <i data-lucide="${p.icon}" style="color:#d90429;"></i>
+                        <strong style="color:#fff;">${p.name}</strong>
                     </div>
-                    <div class="particularity-description">${p.description}</div>
-                    <div class="particularity-effect">
-                        <i data-lucide="zap" style="width:14px; vertical-align:middle;"></i>
-                        ${p.effect}
-                    </div>
-                `;
-
-                grid.appendChild(card);
-            });
-
+                    <p style="color:#888; font-size:0.9rem;">${p.desc}</p>
+                </div>
+            `).join('');
             lucide.createIcons();
         }
 
-        // Selecionar caminho
-        function selectPath(path, element) {
-            document.querySelectorAll('.path-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-
-            element.classList.add('selected');
-            state.path = path;
-
-            checkCompletion();
-        }
-
-        // Toggle particularidade
-        function toggleParticularity(id) {
-            const card = document.getElementById(`part-${id}`);
-            const index = state.particularities.indexOf(id);
-
-            if (index > -1) {
-                // Remover
-                state.particularities.splice(index, 1);
-                card.classList.remove('selected');
-            } else {
-                // Adicionar (máximo 2)
-                if (state.particularities.length >= 2) {
-                    alert('Você já selecionou 2 particularidades. Remova uma para selecionar outra.');
-                    return;
-                }
-                state.particularities.push(id);
-                card.classList.add('selected');
-            }
-
-            // Atualizar contador
-            document.getElementById('selectedCount').textContent = state.particularities.length;
-
-            // Desabilitar/habilitar cards
-            if (state.particularities.length >= 2) {
-                document.querySelectorAll('.particularity-card:not(.selected)').forEach(card => {
-                    card.classList.add('disabled');
-                });
-            } else {
-                document.querySelectorAll('.particularity-card').forEach(card => {
-                    card.classList.remove('disabled');
-                });
-            }
-
-            checkCompletion();
-        }
-
-        // Verificar se pode finalizar
-        function checkCompletion() {
-            const btn = document.getElementById('confirmBtn');
-            if (state.path && state.particularities.length === 2) {
-                btn.disabled = false;
-            } else {
-                btn.disabled = true;
-            }
-        }
-
-        // Finalizar criação
+        // --- FINISH ---
         function finishOniCreation() {
-            if (!state.path || state.particularities.length !== 2) {
-                alert('Por favor, complete todas as seleções.');
-                return;
-            }
-
-            // Obter particularidades selecionadas
-            const selectedParts = state.particularities.map(id => {
-                const p = PARTICULARITIES.find(part => part.id === id);
-                return {
-                    name: p.name,
-                    effect: p.effect
-                };
-            });
-
-            // Criar personagem Oni
-            const oniChar = {
-                id: Date.now().toString(),
-                name: state.tempData?.name || 'Oni sem nome',
+            const char = {
+                name: document.getElementById('oniName').value || 'Oni Desconhecido',
                 race: 'Oni',
+                path: state.path,
+                kekkijutsu: state.kekkijutsu,
+                particularities: state.particularities,
+                stats: {
+                    str: document.getElementById('attr-str').value,
+                    dex: document.getElementById('attr-dex').value,
+                    con: document.getElementById('attr-con').value,
+                },
                 level: 1,
-                hp: 15,
-                currentHP: 15,
-                regeneration: '1d10',
-
-                // Oni específico
-                oniPath: state.path,
-                particularities: selectedParts,
-                kekkijutsu: null,
-
-                // Stats
-                attributes: state.tempData?.stats || { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
-                inventory: [],
-                skills: [],
-
-                // Metadata
-                breathing: null,
-                rank: 'Oni Inferior'
+                hp: 15
             };
 
-            // Salvar
-            let allChars = JSON.parse(localStorage.getItem('demonSlayerAllChars') || '[]');
-            if (allChars.length >= 5) {
-                alert('Limite de personagens atingido.');
-                return;
-            }
+            // Save to LocalStorage
+            const characters = JSON.parse(localStorage.getItem('myCharacters') || '[]');
+            characters.push(char);
+            localStorage.setItem('myCharacters', JSON.stringify(characters));
 
-            allChars.push(oniChar);
-            localStorage.setItem('demonSlayerAllChars', JSON.stringify(allChars));
-            localStorage.setItem('demonSlayerChar', JSON.stringify(oniChar));
+            // Set active
+            localStorage.setItem('activeCharacterIndex', characters.length - 1);
 
-            // Limpar dados temporários
-            localStorage.removeItem('tempCharData');
-
-            // Mensagem de sucesso
-            alert(`👹 Transformação completa!\n\n${oniChar.name} agora é um Oni.\n\nCaminho: ${state.path === 'blood' ? 'Alimentação por Sangue' : 'Retenção de Carne'}\nParticularidades: ${selectedParts.map(p => p.name).join(', ')}`);
-
-            // Redirecionar para dashboard Oni
-            window.location.href = 'oni-dashboard.html';
+            alert('Oni criado com sucesso!');
+            window.location.href = 'dashboard.html';
         }
     </script>
 </body>

@@ -167,12 +167,20 @@ function updateBasicInfo() {
     }
 
     // Nível e XP
-    const levelEl = document.getElementById('levelDisplay');
+    const levelEl = document.getElementById('dispLevel');
     if (levelEl) levelEl.textContent = charData.level || 1;
 
     const xpEl = document.getElementById('xpDisplay');
     if (xpEl) xpEl.textContent = charData.xp || 0;
 }
+
+window.levelUpSlayer = function () {
+    if (!charData) return;
+    charData.level = (charData.level || 1) + 1;
+    updateBasicInfo();
+    saveState();
+    alert(`Nível Aumentado! Agora você é nível ${charData.level}.`);
+};
 
 // Salvar estado atual
 window.saveState = function () {
