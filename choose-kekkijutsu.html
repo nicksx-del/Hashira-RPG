@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kekkijutsu - Demon Slayer RPG</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-panel: #141419;
+            --accent-red: #d90429;
+            --accent-purple: #9d4edd;
+            --accent-cyan: #00b4d8;
+            --font-main: 'Outfit', sans-serif;
+            --font-display: 'Cinzel', serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: #000;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .header h1 {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--accent-red), #c1121f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--accent-red);
+        }
+
+        .paths-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-bottom: 5rem;
+        }
+
+        .path-card {
+            background: linear-gradient(135deg, rgba(20, 20, 25, 0.9) 0%, rgba(10, 10, 15, 0.9) 100%);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .path-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent-red);
+            box-shadow: 0 12px 40px rgba(217, 4, 41, 0.3);
+        }
+
+        .path-card.selected {
+            border-color: var(--accent-red);
+            box-shadow: 0 0 30px rgba(217, 4, 41, 0.5);
+        }
+
+        .path-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .path-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent-red), #c1121f);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .path-title {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+        }
+
+        .path-description {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .path-effects {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .path-effect-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .path-effect-item i {
+            color: var(--accent-red);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .kekkijutsu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .kekkijutsu-card {
+            background: linear-gradient(135deg, rgba(20, 20, 25, 0.9) 0%, rgba(10, 10, 15, 0.9) 100%);
+            border: 2px solid rgba(0, 180, 216, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .kekkijutsu-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 8px 30px rgba(0, 180, 216, 0.3);
+        }
+
+        .kekkijutsu-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .kekkijutsu-name {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            color: var(--accent-cyan);
+            margin-bottom: 0.5rem;
+        }
+
+        .kekkijutsu-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .meta-tag {
+            background: rgba(0, 180, 216, 0.1);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+
+        .kekkijutsu-description {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .kekkijutsu-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: white;
+        }
+
+        .kekkijutsu-levels {
+            background: rgba(157, 78, 221, 0.1);
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .level-title {
+            font-weight: 700;
+            color: var(--accent-purple);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .level-text {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.5;
+        }
+
+        .confirm-btn {
+            width: 100%;
+            max-width: 400px;
+            margin: 3rem auto 0;
+            display: block;
+            background: linear-gradient(90deg, var(--accent-red), #c1121f);
+            color: white;
+            border: none;
+            padding: 1.25rem 2rem;
+            border-radius: 8px;
+            font-family: var(--font-main);
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(217, 4, 41, 0.4);
+        }
+
+        .confirm-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(217, 4, 41, 0.6);
+        }
+
+        .confirm-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 968px) {
+            .paths-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .kekkijutsu-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Kekkijutsu - Artes de Sangue</h1>
+            <p>Escolha seu caminho como demônio e domine técnicas sobrenaturais de sangue demoníaco</p>
+        </div>
+
+        <!-- Caminhos -->
+        <section>
+            <h2 class="section-title">Escolha Seu Caminho</h2>
+            <div class="paths-grid">
+                <!-- Caminho da Alimentação por Sangue -->
+                <div class="path-card" onclick="selectPath('blood', this)" id="path-blood">
+                    <div class="path-header">
+                        <div class="path-icon">
+                            <i data-lucide="droplet" style="width:30px; height:30px;"></i>
+                        </div>
+                        <h3 class="path-title">Alimentação por Sangue</h3>
+                    </div>
+                    <p class="path-description">
+                        Você deve consumir até 1 litro de sangue humano por semana para se alimentar.
+                        Isso traz complicações durante o combate, mas permite maior controle sobre suas ações.
+                    </p>
+                    <div class="path-effects">
+                        <div class="path-effect-item">
+                            <i data-lucide="zap" style="width:16px;"></i>
+                            <span>Leva 1 minuto para entrar em modo de combate</span>
+                        </div>
+                        <div class="path-effect-item">
+                            <i data-lucide="shield" style="width:16px;"></i>
+                            <span>Resiste aos instintos assassinos durante o combate e no dia a dia</span>
+                        </div>
+                        <div class="path-effect-item">
+                            <i data-lucide="brain" style="width:16px;"></i>
+                            <span>Maior controle sobre suas ações</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Caminho da Retenção de Carne -->
+                <div class="path-card" onclick="selectPath('flesh', this)" id="path-flesh">
+                    <div class="path-header">
+                        <div class="path-icon">
+                            <i data-lucide="skull" style="width:30px; height:30px;"></i>
+                        </div>
+                        <h3 class="path-title">Retenção de Carne</h3>
+                    </div>
+                    <p class="path-description">
+                        Você não consome nenhum alimento e pode utilizar suas habilidades normalmente.
+                        Porém, perde controle com maior frequência e sua sanidade se deteriora rapidamente.
+                    </p>
+                    <div class="path-effects">
+                        <div class="path-effect-item">
+                            <i data-lucide="alert-triangle" style="width:16px;"></i>
+                            <span>Sem restrições de alimentação</span>
+                        </div>
+                        <div class="path-effect-item">
+                            <i data-lucide="trending-down" style="width:16px;"></i>
+                            <span>Sanidade deteriora mais rapidamente</span>
+                        </div>
+                        <div class="path-effect-item">
+                            <i data-lucide="moon" style="width:16px;"></i>
+                            <span>Sono profundo durante viagens (apenas momentos de confronto)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Kekkijutsu Frio -->
+        <section>
+            <h2 class="section-title">Kekkijutsu Frio</h2>
+            <p style="color: rgba(255,255,255,0.6); margin-bottom: 2rem;">
+                Técnicas sobrenaturais de gelo que manipulam o sangue demoníaco para criar estruturas congeladas
+                devastadoras.
+            </p>
+
+            <div class="kekkijutsu-grid">
+                <!-- Raio de Gelo -->
+                <div class="kekkijutsu-card">
+                    <div class="kekkijutsu-header">
+                        <h3 class="kekkijutsu-name">Raio de Gelo</h3>
+                        <div class="kekkijutsu-meta">
+                            <span class="meta-tag">Conjuração, Gelo</span>
+                            <span class="meta-tag">1º Círculo</span>
+                        </div>
+                    </div>
+
+                    <p class="kekkijutsu-description">
+                        Um raio de gelo azul clara para parte em direção de uma criatura, dentro do alcance.
+                        Realize um ataque à distância com Kekkijutsu. Se atingir, o alvo sofre 2d8 de dano de frio
+                        e seu deslocamento é reduzido em 3 metros até o começo do seu próximo turno.
+                    </p>
+
+                    <div class="kekkijutsu-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Tempo de Conjuração</div>
+                            <div class="stat-value">Ação</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Alcance</div>
+                            <div class="stat-value">18 metros</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Duração</div>
+                            <div class="stat-value">Instantâneo</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Dano</div>
+                            <div class="stat-value">2d8 Frio</div>
+                        </div>
+                    </div>
+
+                    <div class="kekkijutsu-levels">
+                        <div class="level-title">Em Níveis Superiores</div>
+                        <div class="level-text">
+                            O dano do chi aumenta em 1d8 quando você alcança o 5º nível (2d8),
+                            11º nível (3d8) e 17º nível (4d8).
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Raio Polar -->
+                <div class="kekkijutsu-card">
+                    <div class="kekkijutsu-header">
+                        <h3 class="kekkijutsu-name">Raio Polar</h3>
+                        <div class="kekkijutsu-meta">
+                            <span class="meta-tag">Conjuração, Gelo</span>
+                            <span class="meta-tag">Truque</span>
+                        </div>
+                    </div>
+
+                    <p class="kekkijutsu-description">
+                        Você cria um achando de cristais de gelo ao redor de si mesmo e dispara um feixe
+                        de ar boreal em um inimigo ou objeto à distância. Pode ser usado como modificador
+                        de habilidade para conjurar um globo de água.
+                    </p>
+
+                    <div class="kekkijutsu-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Tempo de Conjuração</div>
+                            <div class="stat-value">Ação</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Alcance</div>
+                            <div class="stat-value">18 metros</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Duração</div>
+                            <div class="stat-value">Instantâneo</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Dano Base</div>
+                            <div class="stat-value">1d8 Frio</div>
+                        </div>
+                    </div>
+
+                    <div class="kekkijutsu-levels">
+                        <div class="level-title">Em Níveis Superiores</div>
+                        <div class="level-text">
+                            O dano aumenta em 1d8 quando você alcança o 5º nível (2d8 mais
+                            o modificador de conjuração) e 17º nível (4d8 mais o modificador de conjuração).
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resistência ao Gelo -->
+                <div class="kekkijutsu-card">
+                    <div class="kekkijutsu-header">
+                        <h3 class="kekkijutsu-name">Resistência ao Gelo</h3>
+                        <div class="kekkijutsu-meta">
+                            <span class="meta-tag">Abjuração</span>
+                            <span class="meta-tag">Chi</span>
+                        </div>
+                    </div>
+
+                    <p class="kekkijutsu-description">
+                        Você toca uma criatura voluntária. Fazendo que a criatura fique protegida contra
+                        o frio e possa resistir ao ataque ou acabar o tempo do kekkijutsu.
+                    </p>
+
+                    <div class="kekkijutsu-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Tempo de Conjuração</div>
+                            <div class="stat-value">Ação</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Alcance</div>
+                            <div class="stat-value">Toque</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Duração</div>
+                            <div class="stat-value">Concentração, 1 minuto</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Efeito</div>
+                            <div class="stat-value">Resistência a Frio</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Criação de Gelo -->
+                <div class="kekkijutsu-card">
+                    <div class="kekkijutsu-header">
+                        <h3 class="kekkijutsu-name">Criação de Gelo</h3>
+                        <div class="kekkijutsu-meta">
+                            <span class="meta-tag">Conjuração, Gelo</span>
+                            <span class="meta-tag">Chi</span>
+                        </div>
+                    </div>
+
+                    <p class="kekkijutsu-description">
+                        Você tem a habilidade de criar uma estrutura de gelo com até 1.5 metros de altura
+                        e largura, em um local que esteja até 6 metros de distância. A estrutura pode
+                        permanecer por 2 minutos ou até ser destruída, possuindo 10 pontos de vida.
+                    </p>
+
+                    <div class="kekkijutsu-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Tempo de Conjuração</div>
+                            <div class="stat-value">Ação</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Alcance</div>
+                            <div class="stat-value">6 metros</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Duração</div>
+                            <div class="stat-value">2 minutos</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">HP da Estrutura</div>
+                            <div class="stat-value">10 pontos</div>
+                        </div>
+                    </div>
+
+                    <div class="kekkijutsu-levels">
+                        <div class="level-title">Em Níveis Superiores</div>
+                        <div class="level-text">
+                            Para cada espaço de kekkijutsu acima do 1º, a estrutura ganha +5 HP.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Toque Frio -->
+                <div class="kekkijutsu-card">
+                    <div class="kekkijutsu-header">
+                        <h3 class="kekkijutsu-name">Toque Frio</h3>
+                        <div class="kekkijutsu-meta">
+                            <span class="meta-tag">Necromancia</span>
+                            <span class="meta-tag">Truque</span>
+                        </div>
+                    </div>
+
+                    <p class="kekkijutsu-description">
+                        Você cria uma mão espectral gélida no espaço de uma criatura dentro do alcance.
+                        Faça um ataque corpo-a-corpo com kekkijutsu contra o alvo. Se acertar, o alvo
+                        sofre 1d8 de dano necrótico e não pode recuperar pontos de vida até o início
+                        do seu próximo turno.
+                    </p>
+
+                    <div class="kekkijutsu-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Tempo de Conjuração</div>
+                            <div class="stat-value">Ação</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Alcance</div>
+                            <div class="stat-value">36 metros</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Duração</div>
+                            <div class="stat-value">1 rodada</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Dano</div>
+                            <div class="stat-value">1d8 Necrótico</div>
+                        </div>
+                    </div>
+
+                    <div class="kekkijutsu-levels">
+                        <div class="level-title">Em Níveis Superiores</div>
+                        <div class="level-text">
+                            O dano aumenta em 1d8 quando você alcança o 5º nível (2d8),
+                            11º nível (3d8) e 17º nível (4d8).
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Snowball -->
+                <div class="kekkijutsu-card">
+                    <div class="kekkijutsu-header">
+                        <h3 class="kekkijutsu-name">Snowball</h3>
+                        <div class="kekkijutsu-meta">
+                            <span class="meta-tag">Conjuração, Gelo</span>
+                            <span class="meta-tag">1º Círculo</span>
+                        </div>
+                    </div>
+
+                    <p class="kekkijutsu-description">
+                        Você conjura uma bola de neve e gelo compactado que você arremessa contra um alvo.
+                        Em caso de acerto, o alvo sofre 2d10 de dano de frio e deve fazer um teste de
+                        resistência de Força. Em caso de falha, o alvo sofre metade desse dano.
+                    </p>
+
+                    <div class="kekkijutsu-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Tempo de Conjuração</div>
+                            <div class="stat-value">Ação</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Alcance</div>
+                            <div class="stat-value">30 metros</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Duração</div>
+                            <div class="stat-value">Instantâneo</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Dano</div>
+                            <div class="stat-value">2d10 Frio</div>
+                        </div>
+                    </div>
+
+                    <div class="kekkijutsu-levels">
+                        <div class="level-title">Em Níveis Superiores</div>
+                        <div class="level-text">
+                            Você conjura esse kekkijutsu usando um espaço de 2º nível ou superior,
+                            o dano aumenta em 1d10 para cada espaço acima do 1º.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nevasca -->
+                <div class="kekkijutsu-card">
+                    <div class="kekkijutsu-header">
+                        <h3 class="kekkijutsu-name">Nevasca</h3>
+                        <div class="kekkijutsu-meta">
+                            <span class="meta-tag">Conjuração, Gelo</span>
+                            <span class="meta-tag">1º Círculo</span>
+                        </div>
+                    </div>
+
+                    <p class="kekkijutsu-description">
+                        Uma tempestade nevada aparece em um cilindro de 4.5 metros de raio, centrada em
+                        um ponto dentro do alcance. Todas as criaturas na área devem fazer um teste de
+                        resistência de Constituição. Em caso de falha, a criatura sofre 1d6 de dano de
+                        frio e tem sua velocidade reduzida em 3 metros até o início do próximo turno.
+                    </p>
+
+                    <div class="kekkijutsu-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Tempo de Conjuração</div>
+                            <div class="stat-value">Ação Bônus</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Alcance</div>
+                            <div class="stat-value">Pessoal</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Duração</div>
+                            <div class="stat-value">Concentração, até 1 minuto</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Área</div>
+                            <div class="stat-value">4.5m raio</div>
+                        </div>
+                    </div>
+
+                    <div class="kekkijutsu-levels">
+                        <div class="level-title">Em Níveis Superiores</div>
+                        <div class="level-text">
+                            O dano aumenta em 1d6 para cada espaço acima do 1º.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Passo Congelante -->
+                <div class="kekkijutsu-card">
+                    <div class="kekkijutsu-header">
+                        <h3 class="kekkijutsu-name">Passo Congelante</h3>
+                        <div class="kekkijutsu-meta">
+                            <span class="meta-tag">Conjuração, Gelo</span>
+                            <span class="meta-tag">1º Círculo</span>
+                        </div>
+                    </div>
+
+                    <p class="kekkijutsu-description">
+                        Você envolve seus pés em gelo, permitindo que você caminhe sobre qualquer
+                        superfície de gelo, neve ou água congelada, sem sofrer penalidades de movimento.
+                        Além disso, você ganha resistência a dano de frio enquanto o kekkijutsu estiver ativo.
+                    </p>
+
+                    <div class="kekkijutsu-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Tempo de Conjuração</div>
+                            <div class="stat-value">Ação Bônus</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Alcance</div>
+                            <div class="stat-value">Pessoal</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Duração</div>
+                            <div class="stat-value">Concentração, até 1 minuto</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Efeito</div>
+                            <div class="stat-value">Movimento + Resistência</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Escudo de Gelo -->
+                <div class="kekkijutsu-card">
+                    <div class="kekkijutsu-header">
+                        <h3 class="kekkijutsu-name">Escudo de Gelo</h3>
+                        <div class="kekkijutsu-meta">
+                            <span class="meta-tag">Abjuração, Gelo</span>
+                            <span class="meta-tag">1º Círculo</span>
+                        </div>
+                    </div>
+
+                    <p class="kekkijutsu-description">
+                        Toque em uma criatura disposta, envolvendo-a com um escudo de gelo denso.
+                        Enquanto o kekkijutsu estiver ativo, o alvo recebe +2 de bônus na Classe de
+                        Resistência, graças à proteção gelada. Em caso de ataque físico, o atacante
+                        sofre logo próximo, essa camada de gelo é desfeita.
+                    </p>
+
+                    <div class="kekkijutsu-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Tempo de Conjuração</div>
+                            <div class="stat-value">Ação</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Alcance</div>
+                            <div class="stat-value">Toque</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Duração</div>
+                            <div class="stat-value">Concentração, até 1 minuto</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Bônus CA</div>
+                            <div class="stat-value">+2</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Confirm Button -->
+        <button class="confirm-btn" onclick="confirmSelection()" id="confirmBtn" disabled>
+            Confirmar Seleção
+        </button>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        let selectedPath = null;
+
+        function selectPath(path, element) {
+            // Remove previous selection
+            document.querySelectorAll('.path-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Add selection
+            element.classList.add('selected');
+            selectedPath = path;
+
+            // Enable confirm button
+            document.getElementById('confirmBtn').disabled = false;
+        }
+
+        function confirmSelection() {
+            if (!selectedPath) {
+                alert('Por favor, selecione um caminho primeiro.');
+                return;
+            }
+
+            // Get character data
+            const charData = JSON.parse(localStorage.getItem('tempCharData') || '{}');
+
+            // Add Oni-specific data
+            charData.oniPath = selectedPath;
+            charData.kekkijutsu = 'Kekkijutsu Frio';
+            charData.kekkijutsuTechniques = [
+                'Raio de Gelo',
+                'Raio Polar',
+                'Resistência ao Gelo'
+            ];
+
+            // Save and redirect
+            localStorage.setItem('tempCharData', JSON.stringify(charData));
+
+            // Show confirmation
+            alert(`✓ Caminho selecionado: ${selectedPath === 'blood' ? 'Alimentação por Sangue' : 'Retenção de Carne'}\n\nKekkijutsu Frio desbloqueado!`);
+
+            // Redirect back to character creation
+            window.location.href = 'create-character.html';
+        }
+    </script>
+</body>
+
+</html>

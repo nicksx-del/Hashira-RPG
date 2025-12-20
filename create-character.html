@@ -769,15 +769,12 @@
                 </div>
 
                 <!-- Oni -->
-                <div class="selection-card locked">
+                <div class="selection-card" onclick="selectRace('Oni', this)">
                     <img src="https://wallpapers.com/images/hd/demon-slayer-upper-moon-1-kokushibo-4k-8j5v0a2z5z5z5z5z.jpg"
-                        class="card-bg-img" style="filter:grayscale(1);">
-                    <div class="card-text" style="display:flex; justify-content:space-between; align-items:end;">
-                        <div>
-                            <h3>Oni (Demônio)</h3>
-                            <p>Seres imortais com força sobrenatural e Artes de Sangue.</p>
-                        </div>
-                        <i data-lucide="lock"></i>
+                        class="card-bg-img">
+                    <div class="card-text">
+                        <h3>Oni (Demônio)</h3>
+                        <p>Seres imortais com força sobrenatural e Artes de Sangue devastadoras.</p>
                     </div>
                 </div>
 
@@ -1053,6 +1050,149 @@
 
         const COSTS = { 8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9 };
 
+        // --- RACE SELECTION ---
+        function selectRace(race, element) {
+            console.log('Selecting race:', race);
+
+            // Remove previous selection
+            document.querySelectorAll('.selection-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Add selection
+            element.classList.add('selected');
+            state.race = race;
+
+            // If Oni selected, show confirmation modal
+            if (race === 'Oni') {
+                console.log('Oni selected, showing confirmation');
+                showOniConfirmation();
+                return;
+            }
+
+            updatePreview();
+        }
+
+        // Ensure global scope access
+        window.selectRace = selectRace;
+        window.confirmOni = confirmOni;
+        window.cancelOni = cancelOni;
+
+        function showOniConfirmation() {
+            console.log('Building Oni modal');
+            // Create modal overlay
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.95);
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                animation: fadeIn 0.3s;
+            `;
+
+            modal.innerHTML = `
+                <div style="
+                    background: linear-gradient(135deg, #1a0a0f 0%, #0a0a0f 100%);
+                    border: 2px solid #d90429;
+                    border-radius: 16px;
+                    padding: 3rem;
+                    max-width: 600px;
+                    text-align: center;
+                    box-shadow: 0 0 50px rgba(217, 4, 41, 0.5);
+                    animation: slideUp 0.3s;
+                ">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">👹</div>
+                    <h2 style="
+                        font-family: var(--font-display);
+                        font-size: 2.5rem;
+                        color: #d90429;
+                        margin-bottom: 1rem;
+                    ">Tornar-se um Oni</h2>
+                    
+                    <p style="
+                        color: rgba(255, 255, 255, 0.8);
+                        line-height: 1.8;
+                        margin-bottom: 2rem;
+                        font-size: 1.1rem;
+                    ">
+                        Você está prestes a abandonar sua humanidade e se transformar em um <strong style="color: #d90429;">demônio</strong>.<br><br>
+                        
+                        Como Oni, você terá acesso a <strong>Kekkijutsu</strong> (Artes de Sangue) ao invés de Respiração,
+                        poderes sobrenaturais devastadores, mas também <strong>fraquezas mortais</strong> à luz do sol e lâminas Nichirin.<br><br>
+                        
+                        <strong style="color: #ffb703;">Tem certeza que deseja seguir este caminho sombrio?</strong>
+                    </p>
+
+                    <div style="display: flex; gap: 1rem; justify-content: center;">
+                        <button onclick="confirmOni()" style="
+                            background: linear-gradient(90deg, #d90429, #c1121f);
+                            color: white;
+                            border: none;
+                            padding: 1rem 2.5rem;
+                            border-radius: 8px;
+                            font-weight: 700;
+                            font-size: 1.1rem;
+                            cursor: pointer;
+                            transition: all 0.3s;
+                            box-shadow: 0 4px 15px rgba(217, 4, 41, 0.4);
+                        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(217, 4, 41, 0.6)';"
+                           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(217, 4, 41, 0.4)';">
+                            🩸 Sim, Tornar-me Oni
+                        </button>
+                        
+                        <button onclick="cancelOni()" style="
+                            background: rgba(255, 255, 255, 0.05);
+                            color: rgba(255, 255, 255, 0.7);
+                            border: 1px solid rgba(255, 255, 255, 0.1);
+                            padding: 1rem 2.5rem;
+                            border-radius: 8px;
+                            font-weight: 600;
+                            font-size: 1.1rem;
+                            cursor: pointer;
+                            transition: all 0.3s;
+                        " onmouseover="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.color='white';"
+                           onmouseout="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.color='rgba(255, 255, 255, 0.7)';">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+        }
+
+        function confirmOni() {
+            // Save current state
+            const tempData = {
+                name: document.getElementById('inputName').value,
+                race: 'Oni',
+                stats: state.stats
+            };
+            localStorage.setItem('tempCharData', JSON.stringify(tempData));
+
+            // Redirect to Oni customization page
+            window.location.href = 'create-oni.html';
+        }
+
+        function cancelOni() {
+            // Remove modal
+            const modal = document.querySelector('div[style*="z-index: 9999"]');
+            if (modal) modal.remove();
+
+            // Reset to Humano
+            state.race = 'Humano';
+            document.querySelectorAll('.selection-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelector('.selection-card[onclick*="Humano"]').classList.add('selected');
+        }
+
         // --- UPDATERS ---
 
         function updatePreview() {
@@ -1065,11 +1205,14 @@
             document.getElementById('displayWeapon').innerText = wName ? `Nichirin (${wName})` : "Nichirin (Padrão)";
 
             // Calc HP (Base 10 + Con Mod + Race Bonus)
-            // Human: 0, Marechi: 0, Tsuyoi: +1?
-            // Level 1 Water: 10 + Con
+            // Human: +1, Marechi: 0, Tsuyoi: +2, Oni: +5
             const conMod = Math.floor((state.stats.con - 10) / 2);
-            const totalHP = 10 + conMod + (state.race === 'Tsuyoi' ? 2 : 0) + (state.race === 'Humano' ? 1 : 0);
-            // Arbitrary race hp bonus for variety logic
+            let raceBonus = 0;
+            if (state.race === 'Humano') raceBonus = 1;
+            else if (state.race === 'Tsuyoi') raceBonus = 2;
+            else if (state.race === 'Oni') raceBonus = 5;
+
+            const totalHP = 10 + conMod + raceBonus;
 
             document.getElementById('displayHP').innerHTML = `${totalHP} <span>/${totalHP}</span>`;
 
@@ -1078,14 +1221,7 @@
             document.getElementById('displayPE').innerHTML = `${totalPE} <span>/${totalPE}</span>`;
         }
 
-        function selectRace(race, el) {
-            state.race = race;
-            // Update UI
-            document.querySelectorAll('#race .selection-card').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
-            document.getElementById('displayRace').innerText = race;
-            updatePreview();
-        }
+
 
         function selectCombat(type, el) {
             // Locked check handled by onClick not being on locked ones usually
