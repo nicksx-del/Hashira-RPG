@@ -1,0 +1,343 @@
+/* --- NICHIRIN FORGE PREMIUM STYLES --- */
+:root {
+    --accent-red: #d90429;
+    --accent-cyan: #00b4d8;
+    --accent-gold: #ffd700;
+}
+
+.nichirin-wrapper {
+    background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a0f 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.nichirin-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('https://www.transparenttextures.com/patterns/dark-matter.png');
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+/* Visualization Area */
+.sword-stage {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Base Sword */
+.sword-container {
+    position: relative;
+    width: 600px;
+    height: 60px;
+    transform: rotate(-5deg);
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+    transition: all 0.5s ease;
+}
+
+.blade {
+    position: absolute;
+    top: 20px;
+    left: 140px;
+    width: 420px;
+    height: 24px;
+    background: #e0e0e0;
+    border-radius: 0 300px 0 0;
+    box-shadow: inset 0 -5px 10px rgba(0, 0, 0, 0.5), inset 0 2px 5px rgba(255, 255, 255, 0.8);
+    z-index: 1;
+    transition: background-color 1.5s ease, box-shadow 1.5s ease, filter 0.2s;
+    overflow: hidden;
+}
+
+/* Hamon Line (Temper line) */
+.blade::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.6) 0%, transparent 100%);
+    border-radius: 0 100px 0 0;
+    opacity: 0.7;
+}
+
+.habaki {
+    position: absolute;
+    top: 20px;
+    left: 130px;
+    width: 15px;
+    height: 26px;
+    background: #d4af37;
+    z-index: 2;
+    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+.tsuba {
+    position: absolute;
+    top: 10px;
+    left: 120px;
+    width: 15px;
+    height: 50px;
+    background: #111;
+    border: 2px solid #333;
+    border-radius: 4px;
+    z-index: 3;
+    transform: rotate(-5deg);
+}
+
+.tsuka {
+    position: absolute;
+    top: 22px;
+    left: 0;
+    width: 125px;
+    height: 20px;
+    background: #222;
+    border-radius: 4px;
+    z-index: 2;
+    background-image: repeating-linear-gradient(60deg, #111 0, #111 10px, #333 10px, #333 20px);
+}
+
+/* FORGE OVERLAY EFFECTS */
+.heat-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 100, 0, 0.4) 0%, transparent 70%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
+    mix-blend-mode: screen;
+}
+
+/* BLADE COLORS - PRESETS */
+.blade.red {
+    background: linear-gradient(90deg, #800, #f00);
+    box-shadow: 0 0 20px #f00, inset 0 -5px 10px rgba(0, 0, 0, 0.8);
+}
+
+.blade.blue {
+    background: linear-gradient(90deg, #005, #00f);
+    box-shadow: 0 0 20px #00f, inset 0 -5px 10px rgba(0, 0, 0, 0.8);
+}
+
+.blade.green {
+    background: linear-gradient(90deg, #050, #0f0);
+    box-shadow: 0 0 20px #0f0, inset 0 -5px 10px rgba(0, 0, 0, 0.8);
+}
+
+.blade.yellow {
+    background: linear-gradient(90deg, #880, #ff0);
+    box-shadow: 0 0 20px #ff0, inset 0 -5px 10px rgba(0, 0, 0, 0.8);
+}
+
+.blade.pink {
+    background: linear-gradient(90deg, #505, #f0f);
+    box-shadow: 0 0 20px #f0f, inset 0 -5px 10px rgba(0, 0, 0, 0.8);
+}
+
+.blade.indigo {
+    background: linear-gradient(90deg, #2c2c54, #474787);
+    box-shadow: 0 0 20px #474787, inset 0 -5px 10px #000;
+}
+
+.blade.black {
+    background: linear-gradient(90deg, #111, #333);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5), inset 0 -5px 10px #000;
+}
+
+/* MASTERY VISUALS (FX) */
+
+/* Thunder FX */
+.blade.yellow.mastered::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("data:image/svg+xml,%3Csvg width='100' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 0 L20 20 L30 0 L40 20' stroke='white' fill='none' stroke-width='2'/%3E%3C/svg%3E");
+    opacity: 0.6;
+    mix-blend-mode: overlay;
+    animation: lightningFlash 0.5s infinite alternate;
+}
+
+/* Flame FX */
+.blade.red.mastered {
+    animation: pulseHeat 2s infinite;
+}
+
+.blade.red.mastered::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 50%;
+    background: linear-gradient(to top, #ffcc00, transparent);
+    opacity: 0.5;
+    animation: flameFlicker 0.2s infinite;
+}
+
+/* Water FX */
+.blade.blue.mastered {
+    box-shadow: 0 0 30px #00f, inset 0 -5px 10px rgba(0, 0, 0, 0.8);
+}
+
+.blade.blue.mastered::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: waterFlow 3s infinite linear;
+}
+
+/* Beast FX (Chipped) */
+.blade.indigo.mastered {
+    background: repeating-linear-gradient(90deg, #2c2c54, #474787 10px, #1a1a1d 12px);
+    box-shadow: 0 0 15px #7b8cde;
+}
+
+/* Keyframes */
+@keyframes lightningFlash {
+    0% {
+        opacity: 0.2;
+    }
+
+    100% {
+        opacity: 0.8;
+    }
+}
+
+@keyframes pulseHeat {
+    0% {
+        box-shadow: 0 0 20px #f00;
+    }
+
+    50% {
+        box-shadow: 0 0 40px #f00;
+    }
+
+    100% {
+        box-shadow: 0 0 20px #f00;
+    }
+}
+
+@keyframes flameFlicker {
+    0% {
+        height: 40%;
+        opacity: 0.4;
+    }
+
+    100% {
+        height: 60%;
+        opacity: 0.6;
+    }
+}
+
+@keyframes waterFlow {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+/* Controls */
+.forge-ui {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    z-index: 10;
+}
+
+/* SPARK ANIMATION */
+.spark {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #fff, 0 0 20px #ffd700;
+    pointer-events: none;
+    z-index: 50;
+}
+
+.shake {
+    animation: shake 0.1s infinite;
+}
+
+@keyframes shake {
+    0% {
+        transform: translate(1px, 1px) rotate(0deg);
+    }
+
+    10% {
+        transform: translate(-1px, -2px) rotate(-1deg);
+    }
+
+    20% {
+        transform: translate(-3px, 0px) rotate(1deg);
+    }
+
+    30% {
+        transform: translate(3px, 2px) rotate(0deg);
+    }
+
+    40% {
+        transform: translate(1px, -1px) rotate(1deg);
+    }
+
+    50% {
+        transform: translate(-1px, 2px) rotate(-1deg);
+    }
+
+    60% {
+        transform: translate(-3px, 1px) rotate(0deg);
+    }
+
+    70% {
+        transform: translate(3px, 1px) rotate(-1deg);
+    }
+
+    80% {
+        transform: translate(-1px, -1px) rotate(1deg);
+    }
+
+    90% {
+        transform: translate(1px, 2px) rotate(0deg);
+    }
+
+    100% {
+        transform: translate(1px, -2px) rotate(-1deg);
+    }
+}

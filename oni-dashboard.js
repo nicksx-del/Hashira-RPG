@@ -24,7 +24,10 @@ const SKILLS_DATA = [
 
 // --- LOAD ---
 window.addEventListener('DOMContentLoaded', () => {
-    const charData = JSON.parse(localStorage.getItem('demonSlayerChar'));
+    // Make charData global for inventory_modules.js
+    window.charData = JSON.parse(localStorage.getItem('demonSlayerChar'));
+    const charData = window.charData; // Local ref for this scope
+
     if (!charData) { window.location.href = 'create-oni.html'; return; }
 
     // Fill Info
@@ -71,9 +74,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Skills
     const skillsGrid = document.getElementById('skillsGrid');
     if (skillsGrid) {
-        // Clear grid first if necessary (though it should be empty on load)
         skillsGrid.innerHTML = '';
-        // Change grid style to block or flex col if strictly needed via JS, but CSS handles it
         skillsGrid.style.display = 'flex';
         skillsGrid.style.flexDirection = 'column';
 
@@ -83,15 +84,10 @@ window.addEventListener('DOMContentLoaded', () => {
             const mod = Math.floor((attrVal - 10) / 2);
             const modStr = mod >= 0 ? `+${mod}` : `${mod}`;
 
-            // Determine Color Class
             const attrColorClass = `attr-${skill.attr}`;
-            // Determine Bonus Color (Green for positive, Red for negative/zero?) or same as attr
-            // Standardizing to attr color for bonus as well for visual cohesion
-            const colorStyle = `var(--accent-${skill.attr === 'str' ? 'red' : 'cyan'})`; // Simple fallback for now, using CSS classes is better
 
             const div = document.createElement('div');
             div.className = 'skill-row';
-            // div.onclick = ... removed, putting it on button
 
             div.innerHTML = `
                 <div class="skill-left">
@@ -130,92 +126,21 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    renderInventory();
+    // Initialize Inventory (from inventory_modules.js)
+    if (typeof renderInventory === 'function') {
+        renderInventory();
+    } else {
+        console.warn("renderInventory from inventory_modules.js not found!");
+    }
+
     if (window.lucide) lucide.createIcons();
 });
 
 // --- INVENTORY ---
-function renderInventory() {
-    const charData = JSON.parse(localStorage.getItem('demonSlayerChar') || '{}');
-    const inventory = charData.inventory || ["Nenhum item"];
-    const body = document.getElementById('inventoryListBody');
-    if (!body) return;
+// The old inventory logic (addItem, renderInventory, consumeItem) was removed to allow usage of inventory_modules.js
+// which provides a more robust system shared between Onis and Humans.
 
-    body.innerHTML = '';
-
-    if (inventory.length === 0 || (inventory.length === 1 && inventory[0] === 'Nenhum item')) {
-        body.innerHTML = '<div style="color:#666; font-style:italic;">Seu inventário está vazio...</div>';
-        return;
-    }
-
-    inventory.forEach((item, index) => {
-        // Determine Custom Image
-        let imgTag = '';
-        const lower = item.toLowerCase();
-
-        // These images should be generated
-        if (lower.includes('carne') || lower.includes('humano')) {
-            imgTag = `<img src="assets/oni_meat.png" style="width:40px; height:40px; object-fit:contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'"> <i data-lucide="bone" size="24" style="display:none"></i>`;
-        } else if (lower.includes('sangue') || lower.includes('poção')) {
-            imgTag = `<img src="assets/oni_blood.png" style="width:40px; height:40px; object-fit:contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'"> <i data-lucide="droplet" size="24" style="display:none"></i>`;
-        } else if (lower.includes('espada') || lower.includes('lâmina') || lower.includes('nichirin')) {
-            imgTag = `<img src="assets/oni_sword.png" style="width:40px; height:40px; object-fit:contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'"> <i data-lucide="sword" size="24" style="display:none"></i>`;
-        } else if (lower.includes('armadura') || lower.includes('traje')) {
-            imgTag = `<img src="assets/oni_shield.png" style="width:40px; height:40px; object-fit:contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'"> <i data-lucide="shield" size="24" style="display:none"></i>`;
-        } else {
-            // Fallback
-            imgTag = `<i data-lucide="box" size="24" color="#bb0a1e"></i>`;
-        }
-
-        body.innerHTML += `
-            <div class="oni-item-card">
-                <div class="item-icon-wrapper">
-                    ${imgTag}
-                </div>
-                <div class="oni-item-name">${item}</div>
-                <div class="oni-item-type">Item Oni</div>
-                <button class="devour-btn" onclick="consumeItem(${index})">
-                    <div class="teeth-top"></div><div class="teeth-bottom"></div>
-                    <span>DEVORAR</span>
-                </button>
-            </div>
-        `;
-    });
-
-    if (window.lucide) lucide.createIcons();
-}
-
-function addItem(name) {
-    if (!name) return;
-    const charData = JSON.parse(localStorage.getItem('demonSlayerChar') || '{}');
-    if (!charData.inventory) charData.inventory = [];
-
-    // Remove 'Nenhum item' if present
-    if (charData.inventory.length === 1 && charData.inventory[0] === 'Nenhum item') {
-        charData.inventory = [];
-    }
-
-    charData.inventory.push(name);
-    localStorage.setItem('demonSlayerChar', JSON.stringify(charData));
-    renderInventory();
-}
-
-function consumeItem(index) {
-    const charData = JSON.parse(localStorage.getItem('demonSlayerChar') || '{}');
-    const item = charData.inventory[index];
-    if (confirm(`Devorar ${item}?`)) {
-        charData.inventory.splice(index, 1);
-        if (charData.inventory.length === 0) charData.inventory.push('Nenhum item');
-        localStorage.setItem('demonSlayerChar', JSON.stringify(charData));
-        renderInventory();
-
-        // Heal Logic
-        startDiceRoll(5, () => {
-            modHP(5);
-            showRollResult('Consumo', 5, 5, 0, false, false);
-        }, 10, 'blood');
-    }
-}
+// If you need specific Oni 'consume' logic, re-implement it using the item objects or as a separate action.
 
 // --- CORE FUNCTIONS (Dice, HP, Level) ---
 function updateHPVisuals(cur, max) {

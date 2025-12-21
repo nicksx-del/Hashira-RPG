@@ -1516,9 +1516,9 @@
                         }
                     }
                     
-                    @keyframes oniIconFloat {
-                        0%, 100% { transform: translateY(0px) rotate(0deg); }
-                        50% { transform: translateY(-10px) rotate(5deg); }
+                    @keyframes oniFloat {
+                        0%, 100% { transform: translateY(0); }
+                        50% { transform: translateY(-10px); }
                     }
                     
                     @keyframes bloodDrip {
@@ -1577,13 +1577,17 @@
                     
                     <!-- Content wrapper -->
                     <div style="padding: 3rem 3rem 2.5rem 3rem;">
-                        <!-- Animated Oni Icon -->
+                        <!-- Animated Oni Image -->
                         <div style="
-                            font-size: 6rem;
-                            margin-bottom: 1.5rem;
-                            animation: oniIconFloat 3s ease-in-out infinite;
-                            filter: drop-shadow(0 0 20px rgba(217, 4, 41, 0.6));
-                        ">👹</div>
+                            margin-bottom: 2rem;
+                            animation: oniFloat 4s ease-in-out infinite;
+                        ">
+                             <img src="assets/criação_personagem/Oni-removebg-preview.png" style="
+                                height: 180px; 
+                                filter: drop-shadow(0 0 20px rgba(217, 4, 41, 0.4));
+                                object-fit: contain;
+                             ">
+                        </div>
                         
                         <!-- Title -->
                         <h2 style="
@@ -1628,85 +1632,114 @@
                         ">
                             <!-- Powers Section -->
                             <div style="
-                                background: rgba(217, 4, 41, 0.1);
-                                border: 1px solid rgba(217, 4, 41, 0.3);
+                                background: rgba(255, 255, 255, 0.02);
+                                border: 1px solid rgba(255, 255, 255, 0.05);
                                 border-radius: 12px;
-                                padding: 1.5rem;
-                            ">
+                                padding: 2rem;
+                                text-align: left;
+                                transition: 0.3s;
+                            " onmouseover="this.style.background='rgba(255, 255, 255, 0.04)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.02)'">
                                 <h3 style="
-                                    color: #ff4d4d;
+                                    color: #ff5c77;
                                     font-family: 'Cinzel', serif;
-                                    font-size: 1.3rem;
-                                    margin-bottom: 1rem;
+                                    font-size: 1.4rem;
+                                    margin-bottom: 1.5rem;
                                     display: flex;
                                     align-items: center;
-                                    gap: 10px;
+                                    gap: 12px;
+                                    border-bottom: 1px solid rgba(255, 92, 119, 0.2);
+                                    padding-bottom: 10px;
                                 ">
-                                    <span style="font-size: 1.5rem;">⚡</span> Poderes
+                                    <i data-lucide="zap" style="width:24px; height:24px;"></i> Poderes
                                 </h3>
                                 <ul style="
-                                    color: rgba(255, 255, 255, 0.85);
-                                    line-height: 1.8;
-                                    font-size: 0.95rem;
+                                    list-style: none;
+                                    padding: 0;
                                     margin: 0;
-                                    padding-left: 1.5rem;
+                                    display: flex;
+                                    flex-direction: column;
+                                    gap: 12px;
                                 ">
-                                    <li><strong style="color: #ffb703;">Kekkijutsu</strong> - Artes de Sangue Demoníaco</li>
-                                    <li><strong style="color: #ffb703;">Regeneração</strong> - Cura acelerada</li>
-                                    <li><strong style="color: #ffb703;">Força Sobre-humana</strong></li>
-                                    <li><strong style="color: #ffb703;">Imortalidade</strong> (exceto decapitação)</li>
+                                    <li style="display: flex; align-items: start; gap: 10px; color: #ddd; font-size: 0.95rem;">
+                                        <i data-lucide="flame" style="width:16px; height:16px; color:#ffb703; margin-top:2px;"></i>
+                                        <span><strong>Kekkijutsu</strong><br><span style="color:#888; font-size:0.85rem">Artes de sangue únicas.</span></span>
+                                    </li>
+                                    <li style="display: flex; align-items: start; gap: 10px; color: #ddd; font-size: 0.95rem;">
+                                        <i data-lucide="activity" style="width:16px; height:16px; color:#ffb703; margin-top:2px;"></i>
+                                        <span><strong>Regeneração</strong><br><span style="color:#888; font-size:0.85rem">Cura quase instantânea.</span></span>
+                                    </li>
+                                    <li style="display: flex; align-items: start; gap: 10px; color: #ddd; font-size: 0.95rem;">
+                                        <i data-lucide="dumbbell" style="width:16px; height:16px; color:#ffb703; margin-top:2px;"></i>
+                                        <span><strong>Vigor Infinito</strong><br><span style="color:#888; font-size:0.85rem">Força sobre-humana.</span></span>
+                                    </li>
                                 </ul>
                             </div>
                             
                             <!-- Weaknesses Section -->
                             <div style="
-                                background: rgba(139, 0, 0, 0.15);
-                                border: 1px solid rgba(139, 0, 0, 0.4);
+                                background: rgba(255, 255, 255, 0.02);
+                                border: 1px solid rgba(255, 255, 255, 0.05);
                                 border-radius: 12px;
-                                padding: 1.5rem;
-                            ">
+                                padding: 2rem;
+                                text-align: left;
+                                transition: 0.3s;
+                            " onmouseover="this.style.background='rgba(255, 255, 255, 0.04)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.02)'">
                                 <h3 style="
-                                    color: #ff6b6b;
+                                    color: #888;
                                     font-family: 'Cinzel', serif;
-                                    font-size: 1.3rem;
-                                    margin-bottom: 1rem;
+                                    font-size: 1.4rem;
+                                    margin-bottom: 1.5rem;
                                     display: flex;
                                     align-items: center;
-                                    gap: 10px;
+                                    gap: 12px;
+                                    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                                    padding-bottom: 10px;
                                 ">
-                                    <span style="font-size: 1.5rem;">☀️</span> Fraquezas
+                                    <i data-lucide="alert-triangle" style="width:24px; height:24px;"></i> Maldições
                                 </h3>
                                 <ul style="
-                                    color: rgba(255, 255, 255, 0.85);
-                                    line-height: 1.8;
-                                    font-size: 0.95rem;
+                                    list-style: none;
+                                    padding: 0;
                                     margin: 0;
-                                    padding-left: 1.5rem;
+                                    display: flex;
+                                    flex-direction: column;
+                                    gap: 12px;
                                 ">
-                                    <li><strong style="color: #ff9999;">Luz Solar</strong> - Morte instantânea</li>
-                                    <li><strong style="color: #ff9999;">Glicínias</strong> - Veneno letal</li>
-                                    <li><strong style="color: #ff9999;">Lâminas Nichirin</strong> - Decapitação fatal</li>
-                                    <li><strong style="color: #ff9999;">Fome de Sangue</strong> - Constante</li>
+                                    <li style="display: flex; align-items: start; gap: 10px; color: #a0a0a0; font-size: 0.95rem;">
+                                        <i data-lucide="sun" style="width:16px; height:16px; color:#666; margin-top:2px;"></i>
+                                        <span><strong>Luz Solar</strong><br><span style="color:#666; font-size:0.85rem">Causa morte instantânea.</span></span>
+                                    </li>
+                                    <li style="display: flex; align-items: start; gap: 10px; color: #a0a0a0; font-size: 0.95rem;">
+                                        <i data-lucide="flower-2" style="width:16px; height:16px; color:#666; margin-top:2px;"></i>
+                                        <span><strong>Glicínias</strong><br><span style="color:#666; font-size:0.85rem">Veneno paralisante.</span></span>
+                                    </li>
+                                    <li style="display: flex; align-items: start; gap: 10px; color: #a0a0a0; font-size: 0.95rem;">
+                                        <i data-lucide="sword" style="width:16px; height:16px; color:#666; margin-top:2px;"></i>
+                                        <span><strong>Nichirin</strong><br><span style="color:#666; font-size:0.85rem">Decapitação letal.</span></span>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
                         
                         <!-- Warning Message -->
                         <div style="
-                            background: rgba(255, 183, 3, 0.1);
-                            border-left: 4px solid #ffb703;
-                            padding: 1rem 1.5rem;
-                            margin-bottom: 2rem;
+                            background: rgba(217, 4, 41, 0.05);
+                            border: 1px dashed rgba(217, 4, 41, 0.3);
+                            padding: 1rem;
+                            margin-bottom: 2.5rem;
                             border-radius: 8px;
+                            display: inline-block;
                         ">
                             <p style="
-                                color: #ffb703;
-                                font-weight: 600;
-                                font-size: 1.1rem;
+                                color: #ff5c77;
+                                font-weight: 500;
+                                font-size: 0.9rem;
                                 margin: 0;
-                                text-align: center;
+                                display: flex;
+                                align-items: center;
+                                gap: 8px;
                             ">
-                                ⚠️ Esta escolha é <strong>PERMANENTE</strong> e mudará completamente seu destino ⚠️
+                                <i data-lucide="skull" style="width:16px;"></i> Decisão Irreversível. Sua alma humana será perdida para sempre.
                             </p>
                         </div>
                         
@@ -1787,6 +1820,7 @@
             `;
 
             document.body.appendChild(modal);
+            lucide.createIcons();
         }
 
         function confirmOni() {
@@ -1909,11 +1943,11 @@
             };
 
             // Save to LocalStorage Array
-            let allChars = JSON.parse(localStorage.getItem('demonSlayerAllChars') || '[]');
+            let allChars = JSON.parse(localStorage.getItem('demonSlayerSaveSlots') || '[]');
             if (allChars.length >= 5) { alert("Limite de personagens atingido."); return; }
 
             allChars.push(finalChar);
-            localStorage.setItem('demonSlayerAllChars', JSON.stringify(allChars));
+            localStorage.setItem('demonSlayerSaveSlots', JSON.stringify(allChars));
             localStorage.setItem('demonSlayerChar', JSON.stringify(finalChar));
 
             window.location.href = 'dashboard.html';

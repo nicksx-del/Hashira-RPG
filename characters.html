@@ -4,779 +4,536 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meus Personagens - Demon Slayer RPG</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Meus Personagens | Demon Slayer RPG</title>
     <link
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Outfit:wght@300;400;600;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700&display=swap"
         rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --bg-dark: #0a0a0f;
-            --bg-card: #141419;
-            --accent-red: #d90429;
-            --accent-gold: #ffd700;
-            --accent-purple: #9d4edd;
-            --accent-cyan: #00b4d8;
-            --border-color: rgba(255, 255, 255, 0.1);
-            --font-display: 'Cinzel', serif;
+            --bg-deep: #050505;
+            --accent-human: #00b4d8;
+            --accent-oni: #d90429;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
             --font-main: 'Outfit', sans-serif;
+            --font-display: 'Cinzel', serif;
         }
 
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
         }
 
         body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg-deep);
+            color: #fff;
             font-family: var(--font-main);
-            background: #000;
-            color: white;
-            min-height: 100vh;
-        }
-
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem 3rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-family: var(--font-display);
-            font-weight: 700;
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
-
-        .logo i {
-            color: var(--accent-red);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .nav-link {
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.2s;
-        }
-
-        .nav-link:hover {
-            color: white;
-        }
-
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent-red), #9d4edd);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 4rem 2rem;
-        }
-
-        .header {
-            margin-bottom: 3rem;
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .header h1 {
-            font-family: var(--font-display);
-            font-size: 2.5rem;
-        }
-
-        .header h1 span {
-            color: var(--accent-red);
-        }
-
-        .char-count {
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.5);
-            margin-left: 1rem;
-        }
-
-        .header p {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 1.1rem;
-        }
-
-        .create-new-btn {
-            background: linear-gradient(90deg, var(--accent-red), #c1121f);
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            font-family: var(--font-main);
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(217, 4, 41, 0.4);
-        }
-
-        .create-new-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(217, 4, 41, 0.6);
-        }
-
-        .characters-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .char-card {
-            background: linear-gradient(135deg, rgba(20, 20, 25, 0.9) 0%, rgba(10, 10, 15, 0.9) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
+            height: 100vh;
             overflow: hidden;
-            transition: all 0.3s;
-            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            /* Demon Slayer themed background */
+            background:
+                radial-gradient(circle at 20% 80%, rgba(157, 78, 221, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 180, 216, 0.1) 0%, transparent 50%),
+                linear-gradient(180deg, #0a0a0f 0%, #050505 50%, #000 100%);
             position: relative;
         }
 
-        .char-card:hover {
-            transform: translateY(-8px);
-            border-color: var(--accent-red);
-            box-shadow: 0 12px 40px rgba(217, 4, 41, 0.3);
-        }
-
-        .char-card.active {
-            border: 2px solid var(--accent-cyan);
-            box-shadow: 0 0 30px rgba(0, 180, 216, 0.3);
-        }
-
-        .char-card.active::before {
-            content: 'ATIVO';
+        /* Wisteria petals effect */
+        body::before {
+            content: '';
             position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: var(--accent-cyan);
-            color: #000;
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(2px 2px at 20% 30%, rgba(224, 170, 255, 0.3), transparent),
+                radial-gradient(2px 2px at 60% 70%, rgba(199, 125, 255, 0.2), transparent),
+                radial-gradient(1px 1px at 50% 50%, rgba(157, 78, 221, 0.2), transparent),
+                radial-gradient(1px 1px at 80% 10%, rgba(224, 170, 255, 0.15), transparent);
+            background-size: 200px 200px, 300px 300px, 150px 150px, 250px 250px;
+            background-position: 0 0, 40px 60px, 130px 270px, 70px 100px;
+            animation: wisteriaFloat 60s linear infinite;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        @keyframes wisteriaFloat {
+            0% {
+                background-position: 0 0, 40px 60px, 130px 270px, 70px 100px;
+            }
+
+            100% {
+                background-position: 200px 200px, 240px 260px, 330px 470px, 270px 300px;
+            }
+        }
+
+        /* --- BACKGROUND FX --- */
+        .bg-fx {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            /* Demon Slayer night sky with wisteria glow */
+            background:
+                radial-gradient(ellipse at top, #1a1a2e 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, #0f0f1a 0%, transparent 50%),
+                radial-gradient(circle at 30% 40%, rgba(157, 78, 221, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 70% 60%, rgba(199, 125, 255, 0.06) 0%, transparent 40%),
+                linear-gradient(180deg, #000814 0%, #001d3d 50%, #000814 100%);
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle, rgba(224, 170, 255, 0.4) 1px, transparent 1px),
+                radial-gradient(circle, rgba(199, 125, 255, 0.3) 1px, transparent 1px),
+                radial-gradient(circle, rgba(157, 78, 221, 0.2) 1px, transparent 1px);
+            background-size: 50px 50px, 80px 80px, 100px 100px;
+            background-position: 0 0, 40px 40px, 80px 80px;
+            animation: wisteriaSparkle 20s linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes wisteriaSparkle {
+            from {
+                background-position: 0 0, 40px 40px, 80px 80px;
+            }
+
+            to {
+                background-position: 50px 50px, 90px 90px, 180px 180px;
+            }
+        }
+
+        /* --- HEADER --- */
+        header {
+            padding: 2rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
             font-weight: 700;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--glass);
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 1px solid var(--border);
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- MAIN CONTENT --- */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            margin-bottom: 3rem;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        /* --- CAROUSEL / GRID --- */
+        .char-grid {
+            display: flex;
+            gap: 30px;
+            perspective: 1000px;
+            animation: fadeInUp 1s ease-out 0.2s backwards;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1400px;
+        }
+
+        /* --- CHARACTER CARD --- */
+        .char-card {
+            width: 280px;
+            height: 420px;
+            background: rgba(15, 15, 20, 0.8);
+            border-radius: 20px;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .char-card:hover {
+            transform: translateY(-15px) rotateX(5deg);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
             z-index: 2;
         }
 
-        .char-header {
-            padding: 2rem;
-            background: linear-gradient(135deg, rgba(217, 4, 41, 0.1) 0%, transparent 100%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        /* Add New Card */
+        .char-card.new-slot {
+            background: transparent;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            transition: 0.3s;
+        }
+
+        .char-card.new-slot:hover {
+            border-color: #fff;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Card Visuals */
+        .card-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.4;
+            transition: 0.5s;
+        }
+
+        .char-card:hover .card-bg {
+            opacity: 0.6;
+            transform: scale(1.1);
+        }
+
+        .card-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(to top, #000, transparent);
+            z-index: 2;
+        }
+
+        .race-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            backdrop-filter: blur(5px);
+            z-index: 2;
+        }
+
+        .human-theme {
+            border-color: rgba(0, 180, 216, 0.3);
+        }
+
+        .human-theme:hover {
+            box-shadow: 0 0 30px rgba(0, 180, 216, 0.2);
+            border-color: var(--accent-human);
+        }
+
+        .human-theme .race-badge {
+            background: rgba(0, 180, 216, 0.2);
+            color: var(--accent-human);
+            border: 1px solid var(--accent-human);
+        }
+
+        .oni-theme {
+            border-color: rgba(217, 4, 41, 0.3);
+        }
+
+        .oni-theme:hover {
+            box-shadow: 0 0 30px rgba(217, 4, 41, 0.2);
+            border-color: var(--accent-oni);
+        }
+
+        .oni-theme .race-badge {
+            background: rgba(217, 4, 41, 0.2);
+            color: var(--accent-oni);
+            border: 1px solid var(--accent-oni);
         }
 
         .char-name {
             font-family: var(--font-display);
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .char-meta {
-            display: flex;
-            gap: 1.5rem;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .char-meta-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .char-body {
-            padding: 2rem;
-        }
-
-        .char-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .stat-box {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 1rem;
-            text-align: center;
-        }
-
-        .stat-label {
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.5);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-value {
             font-size: 1.5rem;
-            font-weight: 800;
-            font-family: var(--font-display);
-            color: var(--accent-cyan);
+            margin: 0;
+            line-height: 1.2;
         }
 
-        .char-breathing {
-            background: rgba(157, 78, 221, 0.1);
-            border: 1px solid rgba(157, 78, 221, 0.3);
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
+        .char-details {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-top: 5px;
+        }
+
+        .char-level {
+            font-weight: bold;
+            color: #fff;
+            font-size: 0.8rem;
+            margin-top: 15px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 5px;
         }
 
-        .char-breathing i {
-            color: var(--accent-purple);
-        }
-
-        .char-breathing-text {
-            flex: 1;
-        }
-
-        .char-breathing-label {
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.5);
+        .play-indicator {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
             text-transform: uppercase;
-        }
-
-        .char-breathing-name {
-            font-weight: 700;
-            color: var(--accent-purple);
-        }
-
-        .char-actions {
+            letter-spacing: 2px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: 0.3s;
+            color: #fff;
             display: flex;
-            gap: 1rem;
+            align-items: center;
+            gap: 5px;
         }
 
-        .char-btn {
-            flex: 1;
-            padding: 0.75rem;
-            border-radius: 8px;
+        .char-card:hover .play-indicator {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- ACTIONS --- */
+        .action-bar {
+            position: absolute;
+            bottom: 30px;
+            display: flex;
+            gap: 20px;
+            animation: fadeIn 1s ease-out 0.5s backwards;
+        }
+
+        .text-btn {
+            background: none;
             border: none;
-            font-family: var(--font-main);
-            font-weight: 600;
-            font-size: 0.9rem;
+            color: #666;
             cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .char-btn-primary {
-            background: var(--accent-red);
-            color: white;
-        }
-
-        .char-btn-primary:hover {
-            background: #ff2a2a;
-            transform: translateY(-2px);
-        }
-
-        .char-btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .char-btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-        }
-
-        .char-btn-danger {
-            background: rgba(217, 4, 41, 0.1);
-            color: var(--accent-red);
-            border: 1px solid rgba(217, 4, 41, 0.3);
-        }
-
-        .char-btn-danger:hover {
-            background: rgba(217, 4, 41, 0.2);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 5rem 2rem;
-        }
-
-        .empty-icon {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 2rem;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .empty-icon i {
-            color: rgba(255, 255, 255, 0.3);
-        }
-
-        .empty-title {
-            font-family: var(--font-display);
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .empty-text {
-            color: rgba(255, 255, 255, 0.4);
-            margin-bottom: 2rem;
-        }
-
-        .limit-warning {
-            background: rgba(255, 215, 0, 0.1);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .limit-warning i {
-            color: var(--accent-gold);
-            flex-shrink: 0;
-        }
-
-        .limit-warning-text {
-            flex: 1;
-        }
-
-        .limit-warning-title {
-            font-weight: 700;
-            margin-bottom: 0.25rem;
-        }
-
-        .limit-warning-desc {
             font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.6);
+            transition: 0.3s;
         }
 
-        .upgrade-link {
-            color: var(--accent-gold);
+        .text-btn:hover {
+            color: #fff;
             text-decoration: underline;
-            cursor: pointer;
         }
 
-        @media (max-width: 768px) {
-            .characters-grid {
-                grid-template-columns: 1fr;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
             }
 
-            .header-top {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
             }
 
-            .char-stats {
-                grid-template-columns: repeat(2, 1fr);
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
     </style>
 </head>
 
 <body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="logo" onclick="window.location.href='index.html'">
-            <i data-lucide="flame" style="width:24px;"></i>
-            Demon Slayer RPG
-        </div>
-        <div class="nav-links">
-            <a href="index.html" class="nav-link">Início</a>
-            <a href="characters.html" class="nav-link" style="color: white;">Personagens</a>
-            <a href="premium.html" class="nav-link">Premium</a>
-            <a href="#" class="nav-link">Ranking</a>
-            <div class="user-avatar">
-                <i data-lucide="user" style="width:20px;"></i>
-            </div>
-        </div>
-    </nav>
 
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="header-top">
-                <div>
-                    <h1>Meus <span>Personagens</span> <span class="char-count" id="charCount">(0/5)</span></h1>
-                    <p>Gerencie seus caçadores de demônios e escolha quem entrará em ação</p>
-                </div>
-                <button class="create-new-btn" onclick="createNewCharacter()" id="createBtn">
-                    <i data-lucide="plus-circle" style="width:20px;"></i>
-                    Criar Novo Personagem
-                </button>
-            </div>
-        </div>
-
-        <!-- Limit Warning -->
-        <div id="limitWarning" style="display: none;"></div>
-
-        <!-- Characters Grid -->
-        <div class="characters-grid" id="charactersGrid">
-            <!-- Characters will be injected here -->
-        </div>
-
-        <!-- Empty State -->
-        <div id="emptyState" style="display: none;">
-            <div class="empty-state">
-                <div class="empty-icon">
-                    <i data-lucide="users" style="width:50px; height:50px;"></i>
-                </div>
-                <h2 class="empty-title">Nenhum Personagem Criado</h2>
-                <p class="empty-text">Comece sua jornada criando seu primeiro caçador de demônios</p>
-                <button class="create-new-btn" onclick="createNewCharacter()">
-                    <i data-lucide="plus-circle" style="width:20px;"></i>
-                    Criar Primeiro Personagem
-                </button>
-            </div>
-        </div>
+    <div class="bg-fx">
+        <div class="particles"></div>
     </div>
 
+    <header>
+        <div class="logo">
+            <i data-lucide="sword" color="#fff"></i>
+            DEMON SLAYER RPG
+        </div>
+        <div class="user-profile">
+            <div class="avatar"><i data-lucide="user" size="16"></i></div>
+            <span style="font-size:0.9rem;">Jogador</span>
+        </div>
+    </header>
+
+    <main>
+        <h1>Escolha seu Destino</h1>
+        <div class="char-grid" id="charGrid">
+            <!-- JS Injection -->
+            <div class="char-card new-slot" onclick="window.location.href='create-character.html'">
+                <div style="text-align:center;">
+                    <i data-lucide="plus" size="40" style="margin-bottom:10px; opacity:0.5;"></i>
+                    <div>NOVO PERSONAGEM</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-bar">
+            <button class="text-btn" onclick="clearData()">Limpar Dados (Debug)</button>
+            <button class="text-btn" onclick="window.location.href='index.html'">Voltar ao Menu</button>
+        </div>
+    </main>
+
     <script>
-        // Initialize Lucide icons
-        lucide.createIcons();
+        // MOCK DATA MIGRATION
+        // If single char exists but no list, create list
+        function migrateData() {
+            const single = localStorage.getItem('demonSlayerChar');
+            let list = JSON.parse(localStorage.getItem('demonSlayerSaveSlots') || '[]');
 
-        // Load characters
-        function loadCharacters() {
-            try {
-                const allChars = JSON.parse(localStorage.getItem('demonSlayerAllChars') || '[]');
-                const activeChar = JSON.parse(localStorage.getItem('demonSlayerChar') || '{}');
-
-                const grid = document.getElementById('charactersGrid');
-                const emptyState = document.getElementById('emptyState');
-                const charCount = document.getElementById('charCount');
-                const createBtn = document.getElementById('createBtn');
-                const limitWarning = document.getElementById('limitWarning');
-
-                // Update count
-                charCount.textContent = `(${allChars.length}/5)`;
-
-                // Check limit
-                if (allChars.length >= 5) {
-                    createBtn.disabled = true;
-                    createBtn.style.opacity = '0.5';
-                    createBtn.style.cursor = 'not-allowed';
-
-                    limitWarning.style.display = 'flex';
-                    limitWarning.innerHTML = `
-                        <i data-lucide="alert-circle" style="width:24px;"></i>
-                        <div class="limit-warning-text">
-                            <div class="limit-warning-title">Limite de Personagens Atingido</div>
-                            <div class="limit-warning-desc">
-                                Você atingiu o limite de 5 personagens. 
-                                <span class="upgrade-link" onclick="window.location.href='premium.html'">
-                                    Faça upgrade para Premium
-                                </span> 
-                                para criar personagens ilimitados!
-                            </div>
-                        </div>
-                    `;
-
-                    if (window.lucide) lucide.createIcons();
+            if (single && list.length === 0) {
+                // Check if the single char is valid
+                const char = JSON.parse(single);
+                if (char.name) {
+                    list.push(char);
+                    localStorage.setItem('demonSlayerSaveSlots', JSON.stringify(list));
                 }
-
-                if (allChars.length === 0) {
-                    grid.style.display = 'none';
-                    emptyState.style.display = 'block';
-                    if (window.lucide) lucide.createIcons();
-                    return;
-                }
-
-                grid.style.display = 'grid';
-                emptyState.style.display = 'none';
-                grid.innerHTML = '';
-
-                allChars.forEach(char => {
-                    const isActive = activeChar.id === char.id;
-                    const card = createCharacterCard(char, isActive);
-                    grid.appendChild(card);
-                });
-
-                if (window.lucide) lucide.createIcons();
-            } catch (err) {
-                console.error('Erro ao carregar personagens:', err);
             }
         }
 
-        function createCharacterCard(char, isActive) {
-            const card = document.createElement('div');
-            card.className = 'char-card' + (isActive ? ' active' : '');
+        function renderChars() {
+            migrateData();
+            const list = JSON.parse(localStorage.getItem('demonSlayerSaveSlots') || '[]');
+            const grid = document.getElementById('charGrid');
 
-            const breathingIcons = {
-                'Água': 'droplet',
-                'Chama': 'flame',
-                'Trovão': 'zap',
-                'Vento': 'wind',
-                'Pedra': 'mountain',
-                'Névoa': 'cloud',
-                'Serpente': 'waves',
-                'Som': 'music',
-                'Inseto': 'bug',
-                'Flor': 'flower-2'
-            };
+            // Keep the "New Slot" card at the end, so remove it temporarily or append before it
+            // Actually let's just clear and rebuild, adding New Slot at end
+            grid.innerHTML = '';
 
-            const breathingIcon = breathingIcons[char.breathing] || 'wind';
-            const isOni = char.race === 'Oni';
+            list.forEach((char, index) => {
+                const el = document.createElement('div');
+                const isOni = char.race === 'Oni';
+                el.className = `char-card ${isOni ? 'oni-theme' : 'human-theme'}`;
 
-            card.innerHTML = `
-                ${isOni ? '<div style="position:absolute; top:1rem; left:1rem; background:linear-gradient(90deg, #d90429, #c1121f); color:white; padding:0.4rem 1rem; border-radius:20px; font-size:0.75rem; font-weight:700; z-index:2; display:flex; align-items:center; gap:6px;"><i data-lucide="skull" style="width:12px;"></i>ONI</div>' : ''}
-                <div class="char-header">
-                    <div class="char-name">${char.name || 'Sem Nome'}</div>
-                    <div class="char-meta">
-                        <div class="char-meta-item">
-                            <i data-lucide="user" style="width:14px;"></i>
-                            <span>${char.race || 'Humano'}</span>
+                // Visuals
+                const bgUrl = isOni
+                    ? 'https://images5.alphacoders.com/109/1099896.jpg' // Dark/Red
+                    : 'https://images2.alphacoders.com/100/1009137.jpg'; // Water/Blue
+
+                const raceLabel = isOni ? 'ONI' : 'CAÇADOR';
+                const subtext = isOni ? (char.kekkijutsu || 'Arte Desconhecida') : (char.breathingStyle ? `Respiração: ${char.breathingStyle}` : 'Semeador');
+
+                el.innerHTML = `
+                    <div class="card-bg" style="background-image: url('${bgUrl}')"></div>
+                    <div class="race-badge">${raceLabel}</div>
+                    <div class="card-content">
+                        <h2 class="char-name">${char.name}</h2>
+                        <div class="char-details">${subtext}</div>
+                        <div class="char-level">
+                            <i data-lucide="chevrons-up" size="14" color="${isOni ? '#d90429' : '#00b4d8'}"></i>
+                            Nível ${char.level}
                         </div>
-                        <div class="char-meta-item">
-                            <i data-lucide="star" style="width:14px;"></i>
-                            <span>Nível ${char.level || 1}</span>
-                        </div>
-                        <div class="char-meta-item">
-                            <i data-lucide="award" style="width:14px;"></i>
-                            <span>${char.rank || 'Mizunoto'}</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="char-body">
-                    <div class="char-stats">
-                        <div class="stat-box">
-                            <div class="stat-label">HP</div>
-                            <div class="stat-value">${char.hp || 0}</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-label">PE</div>
-                            <div class="stat-value">${char.pe || 0}</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-label">XP</div>
-                            <div class="stat-value">${char.xp || 0}</div>
+                        <div class="play-indicator">
+                            JOGAR AGORA <i data-lucide="arrow-right" size="14"></i>
                         </div>
                     </div>
-                    
-                    <div class="char-breathing">
-                        ${isOni ?
-                    '<i data-lucide="flame" style="width:24px;"></i>' :
-                    `<i data-lucide="${breathingIcon}" style="width:24px;"></i>`
-                }
-                        <div class="char-breathing-text">
-                            <div class="char-breathing-label">${isOni ? 'Kekkijutsu' : 'Respiração'}</div>
-                            <div class="char-breathing-name">${isOni ? (char.kekkijutsu || 'Em breve') : (char.breathing || 'Nenhuma')}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="char-actions">
-                        <button class="char-btn char-btn-primary" data-action="select" data-id="${char.id}">
-                            <i data-lucide="play" style="width:16px;"></i>
-                            ${isActive ? 'Continuar' : 'Selecionar'}
-                        </button>
-                        <button class="char-btn char-btn-secondary" data-action="view" data-id="${char.id}">
-                            <i data-lucide="eye" style="width:16px;"></i>
-                            Ver
-                        </button>
-                        <button class="char-btn char-btn-danger" data-action="delete" data-id="${char.id}">
-                            <i data-lucide="trash-2" style="width:16px;"></i>
-                        </button>
-                    </div>
+                `;
+
+                el.onclick = () => selectChar(index);
+
+                // Add delete button (small X)
+                const delBtn = document.createElement('div');
+                delBtn.innerHTML = '&times;';
+                delBtn.style.cssText = 'position:absolute; top:10px; left:10px; width:24px; height:24px; background:rgba(0,0,0,0.5); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#fff; font-size:16px; opacity:0; transition:0.3s; z-index:10;';
+
+                el.onmouseenter = () => delBtn.style.opacity = '1';
+                el.onmouseleave = () => delBtn.style.opacity = '0';
+                delBtn.onclick = (e) => { e.stopPropagation(); deleteChar(index); };
+
+                el.appendChild(delBtn);
+                grid.appendChild(el);
+            });
+
+            // Re-add New Slot
+            const newSlot = document.createElement('div');
+            newSlot.className = 'char-card new-slot';
+            newSlot.onclick = () => window.location.href = 'create-character.html';
+            newSlot.innerHTML = `
+                <div style="text-align:center;">
+                    <i data-lucide="plus" size="40" style="margin-bottom:10px; opacity:0.5;"></i>
+                    <div>NOVO PERSONAGEM</div>
                 </div>
             `;
+            grid.appendChild(newSlot);
 
-            // Add event listeners to buttons
-            const selectBtn = card.querySelector('[data-action="select"]');
-            const viewBtn = card.querySelector('[data-action="view"]');
-            const deleteBtn = card.querySelector('[data-action="delete"]');
-
-            if (selectBtn) {
-                selectBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    selectCharacter(char.id);
-                });
-            }
-
-            if (viewBtn) {
-                viewBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    viewCharacter(char.id);
-                });
-            }
-
-            if (deleteBtn) {
-                deleteBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    deleteCharacter(char.id, char.name);
-                });
-            }
-
-            return card;
+            lucide.createIcons();
         }
 
-        function createNewCharacter() {
-            const allChars = JSON.parse(localStorage.getItem('demonSlayerAllChars') || '[]');
-            if (allChars.length >= 5) {
-                if (confirm('Você atingiu o limite de 5 personagens.\n\nDeseja fazer upgrade para Premium e ter personagens ilimitados?')) {
-                    window.location.href = 'premium.html';
-                }
-                return;
-            }
-            window.location.href = 'create-character.html';
-        }
+        function selectChar(index) {
+            const list = JSON.parse(localStorage.getItem('demonSlayerSaveSlots') || '[]');
+            const char = list[index];
+            if (!char) return;
 
-        function selectCharacter(id) {
-            try {
-                console.log('Selecionando personagem:', id);
-                const allChars = JSON.parse(localStorage.getItem('demonSlayerAllChars') || '[]');
-                const char = allChars.find(c => c.id === id);
+            // Set as active
+            localStorage.setItem('demonSlayerChar', JSON.stringify(char));
 
-                if (char) {
-                    localStorage.setItem('demonSlayerChar', JSON.stringify(char));
-                    console.log('Personagem selecionado:', char.name);
-
-                    // Show feedback
-                    const feedback = document.createElement('div');
-                    const isOni = char.race === 'Oni';
-
-                    feedback.style.cssText = `
-                        position: fixed;
-                        top: 50%;
-                        left: 50%;
-                        transform: translate(-50%, -50%);
-                        background: rgba(0, 0, 0, 0.95);
-                        border: 2px solid ${isOni ? 'var(--accent-red)' : 'var(--accent-cyan)'};
-                        border-radius: 12px;
-                        padding: 2rem;
-                        z-index: 9999;
-                        text-align: center;
-                        color: white;
-                    `;
-                    feedback.innerHTML = `
-                        <div style="font-size: 3rem; margin-bottom: 1rem;">${isOni ? '👹' : '⚔️'}</div>
-                        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">
-                            ${char.name}
-                        </div>
-                        <div style="color: rgba(255,255,255,0.6);">
-                            Entrando no dashboard...
-                        </div>
-                    `;
-                    document.body.appendChild(feedback);
-
-                    setTimeout(() => {
-                        // Redirect to appropriate dashboard
-                        if (isOni) {
-                            window.location.href = 'oni-dashboard.html';
-                        } else {
-                            window.location.href = 'dashboard.html';
-                        }
-                    }, 800);
-                } else {
-                    alert('Erro: Personagem não encontrado');
-                }
-            } catch (err) {
-                console.error('Erro ao selecionar personagem:', err);
-                alert('Erro ao selecionar personagem: ' + err.message);
+            // Redirect
+            if (char.race === 'Oni') {
+                window.location.href = 'oni-dashboard.html';
+            } else {
+                window.location.href = 'dashboard.html';
             }
         }
 
-        function viewCharacter(id) {
-            console.log('Visualizando personagem:', id);
-            selectCharacter(id);
+        function deleteChar(index) {
+            if (!confirm('Tem certeza que deseja apagar este personagem?')) return;
+            const list = JSON.parse(localStorage.getItem('demonSlayerSaveSlots') || '[]');
+            list.splice(index, 1);
+            localStorage.setItem('demonSlayerSaveSlots', JSON.stringify(list));
+            renderChars();
         }
 
-        function deleteCharacter(id, name) {
-            try {
-                console.log('Deletando personagem:', id, name);
-
-                if (!confirm(`⚠️ ATENÇÃO\n\nTem certeza que deseja deletar "${name}"?\n\nEsta ação não pode ser desfeita e você perderá:\n• Todos os itens\n• Todo o progresso\n• Todas as técnicas\n\nDeseja continuar?`)) {
-                    return;
-                }
-
-                const allChars = JSON.parse(localStorage.getItem('demonSlayerAllChars') || '[]');
-                const filtered = allChars.filter(c => c.id !== id);
-                localStorage.setItem('demonSlayerAllChars', JSON.stringify(filtered));
-
-                console.log('Personagem deletado. Restantes:', filtered.length);
-
-                // Check if active char was deleted
-                const active = JSON.parse(localStorage.getItem('demonSlayerChar') || '{}');
-                if (active.id === id) {
-                    localStorage.removeItem('demonSlayerChar');
-                    console.log('Personagem ativo removido');
-                }
-
-                // Show feedback
-                const feedback = document.createElement('div');
-                feedback.style.cssText = `
-                    position: fixed;
-                    top: 2rem;
-                    right: 2rem;
-                    background: rgba(217, 4, 41, 0.95);
-                    border: 1px solid var(--accent-red);
-                    border-radius: 8px;
-                    padding: 1rem 1.5rem;
-                    z-index: 9999;
-                    font-weight: 600;
-                    color: white;
-                `;
-                feedback.textContent = `✓ ${name} foi deletado`;
-                document.body.appendChild(feedback);
-
-                setTimeout(() => {
-                    feedback.remove();
-                }, 3000);
-
-                // Reload characters
-                loadCharacters();
-            } catch (err) {
-                console.error('Erro ao deletar personagem:', err);
-                alert('Erro ao deletar personagem: ' + err.message);
+        function clearData() {
+            if (confirm('Isso apagará TODOS os personagens. Confirmar?')) {
+                localStorage.removeItem('demonSlayerSaveSlots');
+                localStorage.removeItem('demonSlayerChar');
+                renderChars();
             }
         }
 
-        // Load on page load
-        window.addEventListener('DOMContentLoaded', () => {
-            console.log('Página carregada, carregando personagens...');
-            loadCharacters();
-        });
+        window.onload = renderChars;
     </script>
 </body>
 

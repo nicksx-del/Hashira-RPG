@@ -4,23 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demon Slayer RPG - Login</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Login | Demon Slayer RPG</title>
     <link
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Outfit:wght@300;400;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700&display=swap"
         rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --bg-dark: #0a0a0f;
-            --bg-card: #141419;
+            --bg-deep: #000;
+            --accent: #00b4d8;
             --accent-red: #d90429;
-            --accent-purple: #9d4edd;
-            --accent-cyan: #00b4d8;
-            --border-color: rgba(255, 255, 255, 0.1);
-            --font-display: 'Cinzel', serif;
             --font-main: 'Outfit', sans-serif;
+            --font-display: 'Cinzel', serif;
         }
 
         * {
@@ -31,123 +26,67 @@
 
         body {
             font-family: var(--font-main);
-            background: linear-gradient(135deg, #0a0a0f 0%, #1a0a1f 100%);
-            min-height: 100vh;
+            background: radial-gradient(circle at 50% 50%, #0a0a0f 0%, #000 100%);
+            color: #fff;
+            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            position: relative;
             overflow: hidden;
+            position: relative;
         }
 
-        /* Animated Background */
-        body::before {
-            content: '';
+        /* BG FX */
+        .bg-particles {
             position: absolute;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(157, 78, 221, 0.1) 0%, transparent 50%);
-            animation: rotate 20s linear infinite;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
         }
 
-        @keyframes rotate {
-            from {
-                transform: rotate(0deg);
+        .particle {
+            position: absolute;
+            background: rgba(0, 180, 216, 0.3);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0;
             }
 
-            to {
-                transform: rotate(360deg);
+            50% {
+                transform: translate(100px, -200px) scale(1.5);
+                opacity: 0.6;
             }
         }
 
+        /* CONTAINER */
         .login-container {
             position: relative;
-            z-index: 1;
+            z-index: 10;
             width: 90%;
             max-width: 450px;
-            background: linear-gradient(135deg, rgba(20, 20, 25, 0.95) 0%, rgba(10, 10, 15, 0.95) 100%);
-            border: 1px solid rgba(157, 78, 221, 0.3);
-            border-radius: 24px;
-            padding: 3rem 2.5rem;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(157, 78, 221, 0.2);
-            backdrop-filter: blur(10px);
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            animation: slideUp 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        .logo {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .logo-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 1rem;
-            background: linear-gradient(135deg, var(--accent-red), var(--accent-purple));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 30px rgba(157, 78, 221, 0.5);
-        }
-
-        .logo h1 {
-            font-family: var(--font-display);
-            font-size: 2rem;
-            background: linear-gradient(90deg, var(--accent-red), var(--accent-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-        }
-
-        .logo p {
-            color: #888;
-            font-size: 0.9rem;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 0.5rem;
-            border-radius: 12px;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 0.75rem;
-            background: transparent;
-            border: none;
-            color: #888;
-            font-family: var(--font-main);
-            font-weight: 600;
-            font-size: 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .tab.active {
-            background: var(--accent-purple);
-            color: white;
-            box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
-        }
-
-        .form-container {
-            display: none;
-        }
-
-        .form-container.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
+        @keyframes slideUp {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(50px);
             }
 
             to {
@@ -156,364 +95,269 @@
             }
         }
 
+        .logo-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent), #0077b6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px auto;
+            box-shadow: 0 0 30px rgba(0, 180, 216, 0.4);
+        }
+
+        .logo-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+            background: linear-gradient(90deg, #fff, #aaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-subtitle {
+            color: #666;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
         .form-group {
             margin-bottom: 1.5rem;
         }
 
-        .form-group label {
+        label {
             display: block;
-            margin-bottom: 0.5rem;
-            color: #ccc;
+            color: #aaa;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
             font-weight: 600;
-            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .input-wrapper {
-            position: relative;
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #666;
-            width: 20px;
-        }
-
-        .form-input {
+        input {
             width: 100%;
-            padding: 1rem 1rem 1rem 45px;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            color: white;
-            font-family: var(--font-main);
+            color: #fff;
+            padding: 12px 15px;
+            border-radius: 8px;
             font-size: 1rem;
+            font-family: var(--font-main);
             transition: all 0.3s;
         }
 
-        .form-input:focus {
+        input:focus {
             outline: none;
-            border-color: var(--accent-purple);
-            background: rgba(0, 0, 0, 0.6);
-            box-shadow: 0 0 20px rgba(157, 78, 221, 0.2);
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px rgba(0, 180, 216, 0.2);
         }
 
-        .submit-btn {
+        .btn-login {
             width: 100%;
-            padding: 1rem;
-            background: linear-gradient(90deg, var(--accent-red), var(--accent-purple));
+            background: linear-gradient(135deg, var(--accent), #0077b6);
+            color: #fff;
             border: none;
-            border-radius: 12px;
-            color: white;
-            font-family: var(--font-main);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1rem;
             font-weight: 700;
-            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
+            box-shadow: 0 5px 20px rgba(0, 180, 216, 0.3);
+            margin-top: 1rem;
         }
 
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(157, 78, 221, 0.6);
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 180, 216, 0.5);
         }
 
-        .submit-btn:active {
-            transform: translateY(0);
-        }
-
-        .error-message {
-            background: rgba(255, 107, 107, 0.2);
-            border: 1px solid #ff6b6b;
-            border-radius: 8px;
-            padding: 0.75rem;
-            margin-bottom: 1rem;
-            color: #ff6b6b;
-            font-size: 0.9rem;
-            display: none;
-        }
-
-        .error-message.show {
-            display: block;
-            animation: shake 0.5s;
-        }
-
-        @keyframes shake {
-
-            0%,
-            100% {
-                transform: translateX(0);
-            }
-
-            25% {
-                transform: translateX(-10px);
-            }
-
-            75% {
-                transform: translateX(10px);
-            }
-        }
-
-        .success-message {
-            background: rgba(0, 180, 216, 0.2);
-            border: 1px solid var(--accent-cyan);
-            border-radius: 8px;
-            padding: 0.75rem;
-            margin-bottom: 1rem;
-            color: var(--accent-cyan);
-            font-size: 0.9rem;
-            display: none;
-        }
-
-        .success-message.show {
-            display: block;
-            animation: fadeIn 0.3s;
-        }
-
-        .footer-text {
-            text-align: center;
-            margin-top: 1.5rem;
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 2rem 0;
             color: #666;
             font-size: 0.85rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-guest {
+            width: 100%;
+            background: transparent;
+            color: #aaa;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-guest:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .footer-links {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .footer-links a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #fff;
+        }
+
+        .error-msg {
+            background: rgba(217, 4, 41, 0.1);
+            border: 1px solid rgba(217, 4, 41, 0.3);
+            color: #ff5c77;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .success-msg {
+            background: rgba(0, 180, 216, 0.1);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            color: #00b4d8;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            display: none;
         }
     </style>
 </head>
 
 <body>
+
+    <div class="bg-particles" id="particles"></div>
+
     <div class="login-container">
-        <div class="logo">
+        <div class="logo-section">
             <div class="logo-icon">
-                <i data-lucide="flame" style="width:40px; height:40px; color:white;"></i>
+                <i data-lucide="sword" size="32" color="#fff"></i>
             </div>
-            <h1>Demon Slayer RPG</h1>
-            <p>Sistema de Gerenciamento de Personagens</p>
+            <h1 class="logo-title">DEMON SLAYER</h1>
+            <p class="logo-subtitle">Sistema de Acesso</p>
         </div>
 
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('login')">Entrar</button>
-            <button class="tab" onclick="switchTab('register')">Criar Conta</button>
-        </div>
+        <div class="error-msg" id="errorMsg">Credenciais inválidas</div>
+        <div class="success-msg" id="successMsg">Login realizado com sucesso!</div>
 
-        <div id="error-message" class="error-message"></div>
-        <div id="success-message" class="success-message"></div>
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label for="username">Usuário</label>
+                <input type="text" id="username" placeholder="Digite seu usuário" required>
+            </div>
 
-        <!-- Login Form -->
-        <div id="login-form" class="form-container active">
-            <form onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label for="login-username">Usuário</label>
-                    <div class="input-wrapper">
-                        <i data-lucide="user" class="input-icon"></i>
-                        <input type="text" id="login-username" class="form-input" placeholder="Digite seu usuário"
-                            required>
-                    </div>
-                </div>
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" placeholder="Digite sua senha" required>
+            </div>
 
-                <div class="form-group">
-                    <label for="login-password">Senha</label>
-                    <div class="input-wrapper">
-                        <i data-lucide="lock" class="input-icon"></i>
-                        <input type="password" id="login-password" class="form-input" placeholder="Digite sua senha"
-                            required>
-                    </div>
-                </div>
+            <button type="submit" class="btn-login">Entrar</button>
+        </form>
 
-                <button type="submit" class="submit-btn">
-                    <i data-lucide="log-in" style="width:20px; vertical-align:middle; margin-right:8px;"></i>
-                    Entrar
-                </button>
-            </form>
-        </div>
+        <div class="divider">OU</div>
 
-        <!-- Register Form -->
-        <div id="register-form" class="form-container">
-            <form onsubmit="handleRegister(event)">
-                <div class="form-group">
-                    <label for="register-username">Usuário</label>
-                    <div class="input-wrapper">
-                        <i data-lucide="user" class="input-icon"></i>
-                        <input type="text" id="register-username" class="form-input" placeholder="Escolha um usuário"
-                            required minlength="3">
-                    </div>
-                </div>
+        <button class="btn-guest" onclick="guestAccess()">
+            <i data-lucide="user" size="16"></i>
+            Continuar como Convidado
+        </button>
 
-                <div class="form-group">
-                    <label for="register-email">Email</label>
-                    <div class="input-wrapper">
-                        <i data-lucide="mail" class="input-icon"></i>
-                        <input type="email" id="register-email" class="form-input" placeholder="seu@email.com" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="register-password">Senha</label>
-                    <div class="input-wrapper">
-                        <i data-lucide="lock" class="input-icon"></i>
-                        <input type="password" id="register-password" class="form-input"
-                            placeholder="Mínimo 6 caracteres" required minlength="6">
-                    </div>
-                </div>
-
-                <button type="submit" class="submit-btn">
-                    <i data-lucide="user-plus" style="width:20px; vertical-align:middle; margin-right:8px;"></i>
-                    Criar Conta
-                </button>
-            </form>
-        </div>
-
-        <div class="footer-text">
-            © 2024 Demon Slayer RPG. Todos os direitos reservados.
+        <div class="footer-links">
+            <a href="#">Esqueceu a senha?</a> • <a href="#">Criar conta</a>
         </div>
     </div>
 
     <script>
-        // Initialize Lucide icons
         lucide.createIcons();
 
-        // Tab switching
-        function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.form-container').forEach(f => f.classList.remove('active'));
-
-            if (tab === 'login') {
-                document.querySelector('.tab:first-child').classList.add('active');
-                document.getElementById('login-form').classList.add('active');
-            } else {
-                document.querySelector('.tab:last-child').classList.add('active');
-                document.getElementById('register-form').classList.add('active');
+        // Particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.width = Math.random() * 4 + 2 + 'px';
+                p.style.height = p.style.width;
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                p.style.animationDuration = Math.random() * 10 + 10 + 's';
+                p.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(p);
             }
-
-            hideMessages();
         }
+        createParticles();
 
-        // Show error message
-        function showError(message) {
-            const errorEl = document.getElementById('error-message');
-            errorEl.textContent = message;
-            errorEl.classList.add('show');
-            setTimeout(() => errorEl.classList.remove('show'), 5000);
-        }
-
-        // Show success message
-        function showSuccess(message) {
-            const successEl = document.getElementById('success-message');
-            successEl.textContent = message;
-            successEl.classList.add('show');
-            setTimeout(() => successEl.classList.remove('show'), 3000);
-        }
-
-        // Hide messages
-        function hideMessages() {
-            document.getElementById('error-message').classList.remove('show');
-            document.getElementById('success-message').classList.remove('show');
-        }
-
-        // Handle registration
-        function handleRegister(e) {
-            e.preventDefault();
-
-            const username = document.getElementById('register-username').value.trim();
-            const email = document.getElementById('register-email').value.trim();
-            const password = document.getElementById('register-password').value;
-
-            // Get existing users
-            let users = {};
-            try {
-                const stored = localStorage.getItem('demonSlayerUsers');
-                if (stored) users = JSON.parse(stored);
-            } catch (err) {
-                users = {};
-            }
-
-            // Check if user already exists
-            if (users[username]) {
-                showError('Este usuário já existe. Escolha outro nome.');
-                return;
-            }
-
-            // Create new user
-            users[username] = {
-                username,
-                email,
-                password, // Em produção, isso deveria ser hasheado!
-                createdAt: new Date().toISOString(),
-                characters: []
-            };
-
-            // Save users
-            localStorage.setItem('demonSlayerUsers', JSON.stringify(users));
-
-            showSuccess('Conta criada com sucesso! Você pode fazer login agora.');
-
-            // Switch to login tab after 2 seconds
-            setTimeout(() => {
-                switchTab('login');
-                document.getElementById('login-username').value = username;
-            }, 2000);
-        }
-
-        // Handle login
         function handleLogin(e) {
             e.preventDefault();
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
 
-            const username = document.getElementById('login-username').value.trim();
-            const password = document.getElementById('login-password').value;
-
-            // Get existing users
-            let users = {};
-            try {
-                const stored = localStorage.getItem('demonSlayerUsers');
-                if (stored) users = JSON.parse(stored);
-            } catch (err) {
-                showError('Erro ao carregar dados. Tente novamente.');
-                return;
+            // Mock validation (replace with real auth)
+            if (user === 'admin' && pass === 'admin') {
+                showSuccess();
+                setTimeout(() => {
+                    window.location.href = 'characters.html';
+                }, 1000);
+            } else {
+                showError();
             }
-
-            // Check credentials
-            if (!users[username]) {
-                showError('Usuário não encontrado.');
-                return;
-            }
-
-            if (users[username].password !== password) {
-                showError('Senha incorreta.');
-                return;
-            }
-
-            // Login successful
-            const session = {
-                username,
-                email: users[username].email,
-                loginTime: new Date().toISOString()
-            };
-
-            localStorage.setItem('demonSlayerSession', JSON.stringify(session));
-
-            showSuccess('Login realizado com sucesso! Redirecionando...');
-
-            // Redirect to index
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 1500);
         }
 
-        // Check if already logged in
-        window.addEventListener('DOMContentLoaded', () => {
-            try {
-                const session = localStorage.getItem('demonSlayerSession');
-                if (session) {
-                    const sessionData = JSON.parse(session);
-                    showSuccess(`Bem-vindo de volta, ${sessionData.username}!`);
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 1500);
-                }
-            } catch (err) {
-                // No session, continue normally
-            }
-        });
+        function guestAccess() {
+            // Skip login, go straight to characters
+            window.location.href = 'characters.html';
+        }
+
+        function showError() {
+            const err = document.getElementById('errorMsg');
+            err.style.display = 'block';
+            setTimeout(() => err.style.display = 'none', 3000);
+        }
+
+        function showSuccess() {
+            const suc = document.getElementById('successMsg');
+            suc.style.display = 'block';
+        }
     </script>
 </body>
 

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Demoníaco | Demon Slayer RPG</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="oni-dashboard.css">
+</head>
+
+<body>
+
+    <!-- Sidebar Left: Navigation -->
+    <aside class="sidebar-left">
+        <div class="app-logo">
+            <i data-lucide="ghost" color="#bb0a1e"></i>
+            <span>DEMON<br>SLAYER</span>
+        </div>
+
+        <nav class="nav-steps">
+            <div class="nav-item active" id="nav-overview" onclick="showSection('overview')">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Visão Geral</span>
+            </div>
+            <div class="nav-item" id="nav-inventory" onclick="showSection('inventory')">
+                <i data-lucide="backpack"></i>
+                <span>Inventário</span>
+            </div>
+            <div class="nav-item" id="nav-skills" onclick="showSection('skills')">
+                <i data-lucide="swords"></i>
+                <span>Mestre de Habilidades</span>
+            </div>
+            <div class="nav-item" id="nav-kekkijutsu" onclick="showSection('kekkijutsu')">
+                <i data-lucide="flame"></i>
+                <span>Kekkijutsu</span>
+            </div>
+        </nav>
+
+        <div style="margin-top:auto">
+            <button class="devour-btn" onclick="window.location.href='index.html'" style="text-align:center;">
+                <i data-lucide="log-out"></i> SAIR
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- SECTION: OVERVIEW -->
+        <section id="overview" class="dashboard-section active-tab">
+            <div class="section-header">
+                <span class="sec-title">Status Vital</span>
+                <i data-lucide="activity" color="#bb0a1e"></i>
+            </div>
+
+            <div id="pathDisplay"
+                style="margin-bottom: 2rem; background: rgba(255,0,0,0.05); padding: 1rem; border: 1px solid #400; border-radius: 8px; display: flex; gap: 1rem; align-items: center;">
+                <!-- JS Fill -->
+            </div>
+
+            <!-- Attributes Grid -->
+            <h3 style="margin-bottom:1rem; color:#aaa; font-family:'Cinzel';">Atributos</h3>
+            <div class="attributes-grid" id="attrGrid">
+                <!-- JS Fill -->
+            </div>
+
+            <!-- Particularities -->
+            <h3 style="margin-bottom:1rem; color:#aaa; font-family:'Cinzel'; margin-top: 2rem;">Particularidades</h3>
+            <div class="attributes-grid" id="partGrid" style="grid-template-columns: repeat(2, 1fr);">
+                <!-- JS Fill -->
+            </div>
+        </section>
+
+        <!-- SECTION: INVENTORY -->
+        <section id="inventory" class="dashboard-section">
+            <div class="section-header">
+                <span class="sec-title">Inventário & Arsenal</span>
+                <i data-lucide="sword" color="#bb0a1e"></i>
+            </div>
+
+            <div class="inventory-controls">
+                <div style="margin-right:auto; display:flex; flex-direction:column; gap:5px;">
+                    <div style="font-size:0.8rem; color:#888;">CAPACIDADE: <span id="capacityText">0.0 / 0 kg</span>
+                    </div>
+                    <div
+                        style="width:200px; height:6px; background:#222; border-radius:3px; overflow:hidden; border:1px solid #333;">
+                        <div id="capacityBar" style="width:0%; height:100%; background:#666; transition:width 0.5s;">
+                        </div>
+                    </div>
+                </div>
+
+                <button class="devour-btn" style="width:auto; margin:0;" onclick="openItemModal()">
+                    <i data-lucide="plus"></i> Adicionar Item
+                </button>
+            </div>
+
+            <!-- Inventory Layout: List + Details Panel -->
+            <div class="inv-workspace">
+                <div class="inv-list-container" id="inventoryGrid">
+                    <!-- JS Fill -->
+                </div>
+
+                <!-- Helper/Details Panel -->
+                <div id="itemDetailContainer"
+                    style="display:none; flex-direction:column; background:#111; border:1px solid #333; border-radius:8px;">
+                    <!-- Details will be injected here by JS -->
+                </div>
+                <div id="itemDetailEmpty"
+                    style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2rem; color:#444; border:1px solid #222; border-radius:8px;">
+                    <i data-lucide="mouse-pointer-2" style="margin-bottom:1rem;"></i>
+                    Selecione um item
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: SKILLS -->
+        <section id="skills" class="dashboard-section">
+            <div class="section-header">
+                <span class="sec-title">Perícias</span>
+                <i data-lucide="book-open" color="#bb0a1e"></i>
+            </div>
+            <div class="skills-list" id="skillsGrid">
+                <!-- JS Fill -->
+            </div>
+        </section>
+
+        <!-- SECTION: KEKKIJUTSU (Placeholder) -->
+        <section id="kekkijutsu" class="dashboard-section">
+            <div class="section-header">
+                <span class="sec-title">Arvores de Sangue</span>
+                <i data-lucide="git-branch" color="#bb0a1e"></i>
+            </div>
+            <p style="color:#666; text-align:center; padding: 4rem;">Em desenvolvimento...</p>
+        </section>
+
+    </main>
+
+    <!-- Sidebar Right: Vitals -->
+    <aside class="sidebar-right">
+        <div class="char-portrait">
+            <i data-lucide="ghost" size="64" color="#333"></i>
+        </div>
+
+        <div class="char-info-block" style="text-align:center; margin-bottom:2rem;">
+            <h2 id="dispName" style="color:white; font-size:1.5rem;">Nome do Oni</h2>
+            <div style="color:var(--accent-red); font-weight:700;" id="dispRank">Oni Inferior</div>
+            <div style="color:#666; font-size:0.8rem; margin-top:5px;">Nível <span id="dispLevel"
+                    style="color:white;">1</span></div>
+            <button class="devour-btn" style="margin-top:10px;" onclick="levelUp()">+ LEVEL UP</button>
+        </div>
+
+        <!-- HP Bar -->
+        <div class="vital-box">
+            <div class="vital-row">
+                <span>VIDA (HP)</span>
+                <span id="hpText">20 / 20</span>
+            </div>
+            <div class="premium-bar">
+                <div class="premium-fill bar-hp" id="hpBarFill" style="width: 100%;"></div>
+                <div class="bar-btn-group">
+                    <button class="bar-btn" onclick="modHP(-1)">-</button>
+                    <button class="bar-btn" onclick="modHP(1)">+</button>
+                </div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
+                <input type="number" id="hpMaxInput" class="ds-input" style="width:60px;" onchange="updateMaxHP()">
+                <div style="font-size:0.7rem; color:#666; cursor:pointer;" onclick="autoRegen()">
+                    Regen: <span id="regenVal" style="color:#d90429">1d10</span> <i data-lucide="rotate-cw"
+                        size="10"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- PE Bar -->
+        <div class="vital-box">
+            <div class="vital-row">
+                <span>ENERGIA (PE)</span>
+                <span id="peText">5 / 5</span>
+            </div>
+            <div class="premium-bar">
+                <div class="premium-fill bar-pe" id="peBarFill" style="width: 100%;"></div>
+                <div class="bar-btn-group">
+                    <button class="bar-btn" onclick="modPE(-1)">-</button>
+                    <button class="bar-btn" onclick="modPE(1)">+</button>
+                </div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
+                <input type="number" id="peMaxInput" class="ds-input" style="width:60px;" onchange="updateMaxPE()">
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- Dice Modal -->
+    <div id="diceModal" class="dice-modal">
+        <div class="dice-container" style="margin-bottom: 2rem;">
+            <div id="diceCube" class="cube blood">
+                <div class="face front">20</div>
+                <div class="face back">1</div>
+                <div class="face right">5</div>
+                <div class="face left">15</div>
+                <div class="face top">10</div>
+                <div class="face bottom">2</div>
+            </div>
+        </div>
+        <h2 style="color:white; font-family:'Cinzel';" id="rollOverlayText">Rolling...</h2>
+    </div>
+
+    <!-- ITEM PICKER MODAL -->
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Adicionar Item</h2>
+                <span class="close-modal" onclick="closeItemModal()">&times;</span>
+            </div>
+            <div class="picker-controls">
+                <div class="picker-cats">
+                    <button class="cat-btn active" onclick="filterModal('all', this)">Todos</button>
+                    <button class="cat-btn" onclick="filterModal('weapon', this)">Armas</button>
+                    <button class="cat-btn" onclick="filterModal('armor', this)">Armaduras</button>
+                    <button class="cat-btn" onclick="filterModal('consumable', this)">Consumíveis</button>
+                </div>
+                <input type="text" class="ds-input" placeholder="Buscar item..." style="margin-left:auto; width:200px;"
+                    onkeyup="searchModal(this.value)">
+            </div>
+            <div class="picker-grid" id="pickerGrid">
+                <!-- Items injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Roll Log Container -->
+    <div id="rollLog"
+        style="position:fixed; bottom:20px; right:20px; display:flex; flex-direction:column; gap:10px; pointer-events:none;">
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="items_db.js"></script>
+    <script src="inventory_modules.js"></script>
+    <script src="oni-dashboard.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
