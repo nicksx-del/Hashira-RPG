@@ -1,0 +1,2671 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Mestre | Demon Slayer RPG</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="ultra-dice.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --panel-bg: #1a1a24;
+            --border: #2a2a3a;
+            --primary: #9d4edd;
+            --primary-light: #c77dff;
+            --primary-glow: rgba(157, 78, 221, 0.5);
+            --wisteria: #b19cd9;
+            --gold: #ffd60a;
+            --blood-red: #dc143c;
+            --danger: #ef4444;
+            --text-main: #f0f0f5;
+            --text-muted: #9ca3af;
+            --glass-bg: rgba(26, 26, 36, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image:
+                radial-gradient(circle at 20% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.06) 0%, transparent 50%),
+                url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50,20 Q60,30 50,40 Q40,30 50,20 Z' fill='%239333ea' opacity='0.03'/%3E%3Cpath d='M20,50 Q30,60 20,70 Q10,60 20,50 Z' fill='%23ec4899' opacity='0.03'/%3E%3Cpath d='M80,50 Q90,60 80,70 Q70,60 80,50 Z' fill='%239333ea' opacity='0.03'/%3E%3C/svg%3E");
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 280px 1fr 340px;
+            position: relative;
+        }
+
+        /* Blood Moon Glow */
+        body::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: 10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(220, 38, 38, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 1;
+            animation: pulseBloodMoon 8s ease-in-out infinite;
+        }
+
+        @keyframes pulseBloodMoon {
+
+            0%,
+            100% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(1.1);
+            }
+        }
+
+        /* Wisteria Petals Floating */
+        body::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.4) 120%);
+            pointer-events: none;
+            z-index: 9;
+        }
+
+        /* --- COMMON --- */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, rgba(39, 39, 50, 0.9) 0%, rgba(30, 30, 40, 0.8) 100%);
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(157, 78, 221, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(157, 78, 221, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-color: var(--primary-light);
+            box-shadow: 0 4px 12px rgba(157, 78, 221, 0.3);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(157, 78, 221, 0.5);
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, rgba(220, 20, 60, 0.2) 0%, rgba(239, 68, 68, 0.1) 100%);
+            border-color: rgba(220, 20, 60, 0.4);
+            color: var(--blood-red);
+        }
+
+        .btn-danger:hover {
+            border-color: var(--blood-red);
+            box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3);
+        }
+
+        /* --- LEFT: LOG (RESULTADOS) --- */
+        .col-left {
+            background: linear-gradient(to bottom, rgba(10, 10, 15, 0.95) 0%, rgba(15, 15, 20, 0.98) 100%);
+            border-right: 1px solid rgba(157, 78, 221, 0.2);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            backdrop-filter: blur(20px);
+            z-index: 20;
+            /* Elevate above background effects */
+        }
+
+        .col-left::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 1px;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, var(--primary-glow), transparent);
+            opacity: 0.5;
+        }
+
+        .panel-header {
+            padding: 15px;
+            border-bottom: 2px solid;
+            border-image: linear-gradient(90deg, transparent, var(--primary), transparent) 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+
+        .panel-header::before {
+            content: "⚔";
+            position: absolute;
+            left: -5px;
+            color: var(--gold);
+            font-size: 0.7rem;
+            opacity: 0.6;
+        }
+
+        .log-feed {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .log-card {
+            background: linear-gradient(135deg, rgba(24, 24, 27, 0.95) 0%, rgba(39, 39, 42, 0.8) 100%);
+            border: 1px solid #27272a;
+            border-left: 3px solid var(--primary);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .log-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.1), transparent);
+            transition: 0.5s;
+        }
+
+        .log-card:hover::before {
+            left: 100%;
+        }
+
+        .dice-icon {
+            width: 40px;
+            height: 44px;
+            background: #27272a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            color: #fff;
+            font-size: 1.1rem;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            margin-right: 10px;
+        }
+
+        .log-content {
+            flex: 1;
+        }
+
+        .log-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+
+        .log-detail {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .log-total {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-align: right;
+        }
+
+        /* --- CENTER: COMBAT (INICIATIVA) --- */
+        .col-center {
+            display: flex;
+            flex-direction: column;
+            background: radial-gradient(ellipse at top, rgba(157, 78, 221, 0.03) 0%, rgba(0, 0, 0, 0.95) 50%);
+            position: relative;
+            z-index: 20;
+            /* Elevate above background effects */
+        }
+
+        .col-center::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M100,30 L110,50 L130,55 L110,65 L105,85 L100,65 L90,55 L95,45 Z' fill='%239d4edd' opacity='0.02'/%3E%3C/svg%3E");
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        .combat-header {
+            padding: 20px;
+            border-bottom: 2px solid;
+            border-image: linear-gradient(90deg, transparent, var(--primary), var(--wisteria), transparent) 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(26, 26, 36, 0.9) 0%, rgba(20, 20, 30, 0.8) 100%);
+            backdrop-filter: blur(20px);
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .combat-header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary-glow), transparent);
+            filter: blur(4px);
+        }
+
+        .page-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: #fff;
+            margin: 0;
+            text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-title::before {
+            content: "⚔";
+            color: var(--gold);
+            font-size: 1.2rem;
+            animation: glowPulse 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 8px var(--gold));
+        }
+
+        @keyframes glowPulse {
+
+            0%,
+            100% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .combat-list {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .init-row {
+            display: flex;
+            align-items: center;
+            background: linear-gradient(90deg, rgba(24, 24, 27, 0.6) 0%, rgba(18, 18, 21, 0.4) 100%);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 6px;
+            position: relative;
+        }
+
+        /* Oni Marker - Blood Effect */
+        .init-row[data-type="oni"]::after {
+            content: "鬼";
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(220, 38, 38, 0.3);
+            font-size: 2rem;
+            font-weight: bold;
+            pointer-events: none;
+            text-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+        }
+
+        .init-row:hover {
+            background: linear-gradient(90deg, rgba(39, 39, 50, 0.9) 0%, rgba(30, 30, 40, 0.7) 100%);
+            transform: translateX(6px);
+            border-color: rgba(157, 78, 221, 0.5);
+            box-shadow: 0 4px 12px rgba(157, 78, 221, 0.2);
+        }
+
+        .init-row.active-turn {
+            border: 2px solid var(--primary);
+            background: linear-gradient(90deg, rgba(157, 78, 221, 0.15) 0%, rgba(157, 78, 221, 0.05) 100%);
+            box-shadow: 0 0 20px rgba(157, 78, 221, 0.4), inset 0 0 30px rgba(157, 78, 221, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Breathing Animation */
+        .init-row.active-turn::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: translateX(-100%);
+            animation: breathingShine 3s infinite;
+        }
+
+        @keyframes breathingShine {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            50% {
+                transform: translateX(100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .init-row.selected {
+            border-left: 4px solid var(--wisteria);
+            background: linear-gradient(90deg, rgba(177, 156, 217, 0.1) 0%, rgba(177, 156, 217, 0.03) 100%);
+            box-shadow: 0 2px 8px rgba(177, 156, 217, 0.3);
+        }
+
+        .avatar-sm {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            background: #333;
+            margin-right: 15px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .row-info {
+            flex: 1;
+        }
+
+        .row-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #fff;
+        }
+
+        .row-meta {
+            font-size: 0.8rem;
+            color: #71717a;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* --- INITIATIVE INPUT --- */
+        .init-input {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid transparent;
+            border-radius: 4px;
+            color: #a1a1aa;
+            width: 40px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-right: 15px;
+            padding: 4px 0;
+            transition: 0.2s;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .init-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            color: #fff;
+            background: #000;
+        }
+
+        .attack-roll-btn:hover {
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        /* Remove arrows */
+        .init-input::-webkit-outer-spin-button,
+        .init-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .active-turn .init-input {
+            color: #fff;
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        .hp-bar-mini {
+            width: 80px;
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .hp-fill-mini {
+            height: 100%;
+            background: #ef4444;
+            transition: width 0.3s ease;
+        }
+
+
+        /* --- RIGHT: INSPECTOR (DETALHES) --- */
+        .col-right {
+            background: linear-gradient(to bottom, rgba(26, 26, 36, 0.95) 0%, rgba(20, 20, 30, 0.98) 100%);
+            border-left: 1px solid rgba(157, 78, 221, 0.2);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            backdrop-filter: blur(20px);
+            z-index: 20;
+            /* Elevate above background effects */
+        }
+
+        .col-right::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1px;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, var(--primary-glow), transparent);
+            opacity: 0.5;
+        }
+
+        .inspector-content {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* Top Profile */
+        .profile-card {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .profile-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            background: #333;
+            object-fit: cover;
+            border: 1px solid #444;
+        }
+
+        .profile-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .row-vitals {
+            display: flex;
+            align-items: center;
+            font-size: 0.75rem;
+            gap: 4px;
+        }
+
+        .init-display {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-main);
+            min-width: 50px;
+            text-align: right;
+            font-family: 'Cinzel', serif;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .profile-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            font-family: 'Cinzel', serif;
+        }
+
+        .profile-class {
+            font-size: 0.85rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- ORDEM PARANORMAL INSPECTOR STYLE --- */
+        .inspector-header {
+            position: relative;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .ordem-bar-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, rgba(24, 24, 31, 0.95) 0%, rgba(20, 20, 27, 0.9) 100%);
+            border: 1px solid rgba(157, 78, 221, 0.2);
+            margin-bottom: 10px;
+            height: 40px;
+            border-radius: 6px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .ordem-bar-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            border: none;
+            border-right: 1px solid rgba(157, 78, 221, 0.2);
+            width: 35px;
+            height: 100%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 700;
+            transition: all 0.2s;
+            backdrop-filter: blur(5px);
+        }
+
+        .ordem-bar-btn:hover {
+            background: rgba(157, 78, 221, 0.3);
+            color: var(--primary-light);
+            box-shadow: inset 0 0 10px rgba(157, 78, 221, 0.2);
+        }
+
+        .ordem-bar-btn.last {
+            border-right: none;
+            border-left: 1px solid rgba(0, 0, 0, 0.5);
+        }
+
+        .ordem-bar-display {
+            flex: 1;
+            text-align: center;
+            color: #fff;
+            font-weight: 700;
+            font-size: 1rem;
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        .ordem-bar-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            z-index: 0;
+            transition: width 0.3s;
+        }
+
+        .text-overlay {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            gap: 5px;
+        }
+
+        .bar-red {
+            background: #b91c1c;
+        }
+
+        /* Dark Red */
+        .bar-purple {
+            background: #7c3aed;
+        }
+
+        /* Purple/Blue for PE */
+        .bar-orange {
+            background: #c2410c;
+        }
+
+        /* Orange */
+
+        /* Attributes Grid */
+        .attr-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .attr-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .attr-val {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            background: #111;
+        }
+
+        .attr-label {
+            font-size: 0.6rem;
+            color: #71717a;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Secondary Stats */
+        .sec-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            border-top: 1px solid #333;
+            border-bottom: 1px solid #333;
+            padding: 15px 0;
+        }
+
+        .sec-stat-box {
+            text-align: center;
+        }
+
+        .sec-stat-label {
+            font-size: 0.7rem;
+            color: #aaa;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .sec-stat-val {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* Attacks Accordion */
+        .acc-item {
+            background: #27272a;
+            margin-bottom: 6px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .acc-header {
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            background: #1f1f22;
+        }
+
+        .acc-header:hover {
+            background: #2a2a2d;
+        }
+
+        /* --- AGENT GRID VIEW --- */
+        .agent-grid-container {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            overflow-y: auto;
+            flex: 1;
+            display: none;
+            /* Hidden by default */
+        }
+
+        .agent-grid-container.active {
+            display: grid;
+        }
+
+        .agent-card {
+            background: linear-gradient(135deg, rgba(26, 26, 36, 0.95) 0%, rgba(20, 20, 30, 0.9) 100%);
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            backdrop-filter: blur(15px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .agent-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .agent-card:hover {
+            border-color: var(--primary-light);
+            box-shadow: 0 8px 24px rgba(157, 78, 221, 0.3);
+            transform: translateY(-4px);
+        }
+
+        .agent-card:hover::before {
+            opacity: 1;
+        }
+
+        .agent-header {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .agent-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            background: #333;
+            object-fit: cover;
+        }
+
+        .agent-details {
+            flex: 1;
+        }
+
+        .agent-name {
+            font-weight: 700;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .agent-meta {
+            font-size: 0.75rem;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        .agent-bars .ordem-bar-row {
+            height: 28px;
+            margin-bottom: 5px;
+        }
+
+        .agent-bars .ordem-bar-display {
+            font-size: 0.8rem;
+        }
+
+        .agent-bars .text-overlay {
+            font-size: 0.8rem;
+        }
+
+        /* Reuse attr-grid but smaller */
+        .agent-attrs {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 2px;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .agent-attr-val {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .agent-attr-lbl {
+            font-size: 0.6rem;
+            color: #777;
+        }
+
+        .agent-footer {
+            border-top: 1px solid #333;
+            padding-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            text-align: center;
+        }
+
+        .af-box {
+            font-size: 0.7rem;
+            color: #aaa;
+        }
+
+        .af-val {
+            font-size: 1.1rem;
+            color: #fff;
+            font-weight: 700;
+            display: block;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: #71717a;
+            font-weight: 600;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .tab-btn.active {
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        /* --- 3D DICE OVERLAY --- */
+        #diceOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(2px);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            perspective: 1000px;
+        }
+
+        #diceOverlay.active {
+            display: flex;
+        }
+
+        .dice-3d-wrap {
+            width: 100px;
+            height: 100px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: spinDice 1s infinite linear;
+        }
+
+        .dice-3d-wrap.stopping {
+            animation: landDice 0.5s ease-out forwards;
+        }
+
+        /* Approximate D20 shape with CSS is hard, using a spinning cube with "20" faces for "lite" 3d effect 
+           Or simpler: A 3D container rotating wildly that settles. */
+        .d20-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(147, 51, 234, 0.9);
+            border: 2px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #fff;
+            font-weight: 800;
+            backface-visibility: visible;
+        }
+
+        /* Simple cube simulation for "spin" effect */
+        .f1 {
+            transform: rotateY(0deg) translateZ(50px);
+        }
+
+        .f2 {
+            transform: rotateY(90deg) translateZ(50px);
+        }
+
+        .f3 {
+            transform: rotateY(180deg) translateZ(50px);
+        }
+
+        .f4 {
+            transform: rotateY(-90deg) translateZ(50px);
+        }
+
+        .f5 {
+            transform: rotateX(90deg) translateZ(50px);
+        }
+
+        .f6 {
+            transform: rotateX(-90deg) translateZ(50px);
+        }
+
+        @keyframes spinDice {
+            0% {
+                transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+            }
+
+            100% {
+                transform: rotateX(720deg) rotateY(360deg) rotateZ(360deg);
+            }
+        }
+
+        #diceResultDisplay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: #fff;
+            font-weight: 900;
+            text-shadow: 0 0 20px var(--primary);
+            opacity: 0;
+            transform: scale(0.5);
+            transition: 0.3s;
+        }
+
+        #diceResultDisplay.show {
+            opacity: 1;
+            transform: scale(1.5);
+        }
+
+        /* Bestiary List Items */
+        .mob-item {
+            background: #27272a;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .mob-item:hover {
+            border-color: #666;
+            background: #333;
+        }
+
+        .mob-name {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .mob-meta {
+            font-size: 0.75rem;
+            color: #aaa;
+        }
+
+        /* --- CONDITIONS MODAL --- */
+        .cond-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .cond-btn {
+            background: #27272a;
+            border: 1px solid #333;
+            padding: 10px;
+            border-radius: 6px;
+            color: #ccc;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            transition: 0.2s;
+        }
+
+        .cond-btn:hover {
+            background: #3f3f46;
+            border-color: #555;
+        }
+
+        .cond-btn.active {
+            background: rgba(147, 51, 234, 0.2);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        .cond-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .cond-badge {
+            display: inline-flex;
+            width: 18px;
+            height: 18px;
+            background: #333;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            margin-left: 2px;
+            border: 1px solid #555;
+        }
+
+        .cond-badge svg {
+            width: 10px;
+            height: 10px;
+            color: #fff;
+        }
+
+        .d-input {
+            width: 100%;
+            background: #27272a;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 8px;
+            border-radius: 4px;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .d-input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        /* --- TOAST NOTIFICATION --- */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #18181b;
+            border: 1px solid var(--primary);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            opacity: 0;
+            transition: 0.3s;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* --- MODALS --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .modal-box {
+            background: var(--panel-bg);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 0 30px rgba(157, 78, 221, 0.3);
+        }
+
+        /* === PREMIUM D20 DICE OVERLAY === */
+        #diceOverlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at center, rgba(20, 10, 30, 0.95) 0%, rgba(0, 0, 0, 0.98) 100%);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 50000;
+            backdrop-filter: blur(8px);
+            cursor: pointer;
+        }
+
+        #diceOverlay.show {
+            display: flex;
+            animation: overlayFadeIn 0.3s ease-out;
+        }
+
+        @keyframes overlayFadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Floating particles background */
+        #diceOverlay::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, rgba(168, 85, 247, 0.4), transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(139, 92, 246, 0.3), transparent),
+                radial-gradient(3px 3px at 50px 160px, rgba(168, 85, 247, 0.5), transparent),
+                radial-gradient(2px 2px at 90px 40px, rgba(192, 132, 252, 0.4), transparent),
+                radial-gradient(3px 3px at 130px 80px, rgba(168, 85, 247, 0.3), transparent),
+                radial-gradient(2px 2px at 160px 120px, rgba(139, 92, 246, 0.5), transparent);
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            animation: particleFloat 20s linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(-200px);
+            }
+        }
+
+        /* Main dice container */
+        .dice-scene {
+            width: 180px;
+            height: 180px;
+            perspective: 800px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        /* The d20 icosahedron */
+        .dice-d20 {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: diceFloat 3s ease-in-out infinite;
+        }
+
+        .dice-d20.rolling {
+            animation: diceRoll 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        @keyframes diceFloat {
+
+            0%,
+            100% {
+                transform: translateY(0) rotateY(0deg);
+            }
+
+            50% {
+                transform: translateY(-10px) rotateY(5deg);
+            }
+        }
+
+        @keyframes diceRoll {
+            0% {
+                transform: rotateX(0) rotateY(0) rotateZ(0) scale(0.8);
+            }
+
+            20% {
+                transform: rotateX(360deg) rotateY(180deg) rotateZ(90deg) scale(1.1);
+            }
+
+            40% {
+                transform: rotateX(720deg) rotateY(360deg) rotateZ(180deg) scale(1);
+            }
+
+            60% {
+                transform: rotateX(1080deg) rotateY(540deg) rotateZ(270deg) scale(1.05);
+            }
+
+            80% {
+                transform: rotateX(1440deg) rotateY(720deg) rotateZ(360deg) scale(1);
+            }
+
+            100% {
+                transform: rotateX(1800deg) rotateY(900deg) rotateZ(0deg) scale(1);
+            }
+        }
+
+        /* D20 face - simplified cube representation */
+        .dice-face {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Cinzel', serif;
+            font-size: 4rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 30px var(--primary), 0 0 60px var(--primary);
+            background: linear-gradient(145deg,
+                    rgba(88, 28, 135, 0.9) 0%,
+                    rgba(126, 34, 206, 0.8) 50%,
+                    rgba(147, 51, 234, 0.7) 100%);
+            border: 3px solid rgba(168, 85, 247, 0.8);
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+            box-shadow:
+                inset 0 0 40px rgba(168, 85, 247, 0.3),
+                0 0 50px rgba(168, 85, 247, 0.5);
+        }
+
+        .dice-face.front {
+            transform: translateZ(90px);
+        }
+
+        .dice-face.back {
+            transform: rotateY(180deg) translateZ(90px);
+        }
+
+        .dice-face.right {
+            transform: rotateY(90deg) translateZ(90px);
+        }
+
+        .dice-face.left {
+            transform: rotateY(-90deg) translateZ(90px);
+        }
+
+        .dice-face.top {
+            transform: rotateX(90deg) translateZ(90px);
+        }
+
+        .dice-face.bottom {
+            transform: rotateX(-90deg) translateZ(90px);
+        }
+
+        /* Glow ring around dice */
+        .dice-glow {
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, transparent 70%);
+            animation: glowPulse 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes glowPulse {
+
+            0%,
+            100% {
+                opacity: 0.5;
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+        }
+
+        /* Result display */
+        #diceResultDisplay {
+            font-family: 'Cinzel', serif;
+            font-size: 5rem;
+            font-weight: 900;
+            color: transparent;
+            background: linear-gradient(180deg, #fff 0%, #e0aaff 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            text-shadow: 0 0 40px rgba(168, 85, 247, 0.8);
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            z-index: 10;
+        }
+
+        #diceResultDisplay.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        #diceResultDisplay.crit {
+            background: linear-gradient(180deg, #ffd60a 0%, #ff8800 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: critGlow 0.5s ease-in-out infinite alternate;
+        }
+
+        #diceResultDisplay.fail {
+            background: linear-gradient(180deg, #ef4444 0%, #7f1d1d 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        @keyframes critGlow {
+            from {
+                text-shadow: 0 0 30px rgba(255, 214, 10, 0.5);
+            }
+
+            to {
+                text-shadow: 0 0 60px rgba(255, 136, 0, 1);
+            }
+        }
+
+        /* Attack info display */
+        .dice-attack-info {
+            text-align: center;
+            color: #aaa;
+            font-size: 1rem;
+            margin-top: 20px;
+            max-width: 400px;
+        }
+
+        .dice-attack-info .attacker-name {
+            color: var(--primary-light);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .dice-attack-info .damage-display {
+            color: #ef4444;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        .dice-attack-info .breakdown {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        /* Click to close hint */
+        .dice-close-hint {
+            position: absolute;
+            bottom: 30px;
+            color: #555;
+            font-size: 0.8rem;
+            animation: hintPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes hintPulse {
+
+            0%,
+            100% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- TOAST -->
+    <div id="toast"><i data-lucide="check-circle" style="color:var(--primary);"></i><span id="toastMsg">Ação
+            realizada!</span></div>
+
+    <!-- LEFT: LOG -->
+    <div class="col-left">
+        <div class="panel-header">
+            Resultados
+            <button class="btn" style="padding:4px 8px;" onclick="clearLog()"><i data-lucide="trash-2"
+                    size="14"></i></button>
+        </div>
+        <div class="log-feed" id="logFeed">
+            <!-- Log Cards -->
+        </div>
+    </div>
+
+    <!-- CENTER: TRACKER -->
+    <div class="col-center">
+        <div class="combat-header">
+            <div>
+                <button class="tab-btn active" onclick="switchCenterTab('combat')" id="tabCombat">COMBATE</button>
+                <button class="tab-btn" onclick="switchCenterTab('agents')" id="tabAgents">AGENTES</button>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <!-- Agents Tab specific actions -->
+                <button id="btnAddAgent" class="btn" style="display:none;" onclick="openInviteModal()">
+                    <i data-lucide="user-plus" size="14"></i> Add Agente
+                </button>
+                <button id="btnRest" class="btn btn-danger" style="display:none;" onclick="triggerLongRest()">
+                    <i data-lucide="moon" size="14"></i> Descanso
+                </button>
+
+                <!-- Combat Tab specific actions -->
+                <div id="combatActions" style="display:flex; gap:10px;">
+                    <button class="btn btn-primary" onclick="window.CampaignSystem.startCombat(CAMP_ID); loadData();">
+                        Iniciativa
+                    </button>
+                    <button class="btn" onclick="window.CampaignSystem.nextTurn(CAMP_ID); loadData();">
+                        Próximo Turno <i data-lucide="skip-forward" size="14" style="margin-left:5px;"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- View 1: List -->
+        <div class="combat-list" id="combatList">
+            <!-- Rows -->
+        </div>
+
+        <!-- View 2: Grid -->
+        <div class="agent-grid-container" id="agentGrid"></div>
+    </div>
+
+    <!-- RIGHT: INSPECTOR & BESTIARY -->
+    <div class="col-right">
+        <!-- TABS HEADER -->
+        <div style="padding: 10px 20px; border-bottom:1px solid #333; display:flex; gap:15px;">
+            <button class="tab-btn active" id="btnInsp" onclick="switchRightTab('inspector')">INSPETOR</button>
+            <button class="tab-btn" id="btnBest" onclick="switchRightTab('bestiary')">BESTIÁRIO</button>
+        </div>
+
+        <!-- CONDITIONS BUTTON -->
+        <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <button class="btn" style="flex:1; border-style:dashed; opacity:0.8;" onclick="openConditionsModal()">
+                <i data-lucide="sparkles" size="14"></i> Condições
+            </button>
+            <button class="btn" style="flex:1; border-style:dashed; opacity:0.8;" onclick="toggleReaction()">
+                <i data-lucide="shield-alert" size="14"></i> Reação
+            </button>
+        </div>
+
+        <div id="reactionStatus"
+            style="display:none; background:#7f1d1d; color:#fff; padding:5px; text-align:center; border-radius:4px; margin-bottom:10px; font-weight:bold; font-size:0.8rem;">
+            ⚠️ REAÇÃO USADA
+        </div>
+
+        <!-- INSPECTOR CONTENT -->
+        <div id="inspectorPanel" class="inspector-content">
+            <div id="inspector">
+                <div style="text-align:center; color:#555; margin-top:50px;">Selecione um personagem</div>
+            </div>
+        </div>
+
+        <!-- BESTIARY CONTENT -->
+        <div id="bestiaryPanel" class="inspector-content" style="display:none;">
+            <div style="margin-bottom:15px; display:flex; gap:10px;">
+                <input type="text" id="mobSearch" placeholder="Buscar..." class="init-input"
+                    style="width:100%; text-align:left; padding:8px;" onkeyup="renderBestiaryTab()">
+                <button class="btn btn-primary" style="width:50px;" onclick="openCustomMobModal()"
+                    title="Criar Monstro">+</button>
+            </div>
+            <div id="bestiaryList"></div>
+        </div>
+    </div>
+
+    <!-- INVITE MODAL -->
+    <div id="inviteModal"
+        style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9000; display:none; align-items:center; justify-content:center;">
+        <div style="background:#18181b; padding:20px; border-radius:10px; width:400px; border:1px solid #333;">
+            <h3 style="color:#fff; margin-bottom:15px;">Adicionar Agente</h3>
+            <div id="inviteList" style="max-height:300px; overflow-y:auto; margin-bottom:15px;">
+                <!-- List -->
+            </div>
+            <button class="btn" onclick="document.getElementById('inviteModal').style.display='none'"
+                style="width:100%;">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- CONDITIONS MODAL -->
+    <div id="condModal"
+        style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9010; display:none; align-items:center; justify-content:center;">
+        <div
+            style="background:#18181b; padding:20px; border-radius:10px; width:450px; border:1px solid #333; box-shadow:0 0 30px rgba(0,0,0,0.5);">
+            <h3 style="color:#fff; margin-bottom:15px; display:flex; justify-content:space-between;">
+                Condições
+                <span id="condTargetName" style="color:var(--primary); font-size:0.9rem;"></span>
+            </h3>
+            <div class="cond-grid" id="condGrid">
+                <!-- JS will fill -->
+            </div>
+            <div style="margin-top:20px; text-align:right;">
+                <button class="btn" onclick="document.getElementById('condModal').style.display='none'">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CUSTOM MONSTER MODAL -->
+    <div id="customMobModal"
+        style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9020; display:none; align-items:center; justify-content:center;">
+        <div
+            style="background:#18181b; padding:20px; border-radius:10px; width:500px; border:1px solid #333; max-height:80vh; overflow-y:auto;">
+            <h3 style="color:#fff; margin-bottom:15px;">Criar Criatura Customizada</h3>
+
+            <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px; margin-bottom:10px;">
+                <input id="cmName" type="text" placeholder="Nome da Criatura" class="d-input">
+                <input id="cmCR" type="text" placeholder="Rank/ND" class="d-input">
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:10px;">
+                <input id="cmHP" type="number" placeholder="HP Máx" class="d-input">
+                <input id="cmAC" type="number" placeholder="Defesa" class="d-input">
+                <input id="cmInit" type="number" placeholder="Inic. Bonus" class="d-input">
+            </div>
+
+            <h4 style="color:#aaa; font-size:0.8rem; margin:10px 0 5px 0;">ATAQUES</h4>
+            <div id="cmAttacksList">
+                <!-- Dynamic Attacks -->
+            </div>
+            <button class="btn" style="width:100%; margin-bottom:20px; border-style:dashed;"
+                onclick="addCustomAttackRow()">+ Adicionar Ataque</button>
+
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button class="btn"
+                    onclick="document.getElementById('customMobModal').style.display='none'">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveCustomMob()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ULTRA PREMIUM DICE OVERLAY -->
+    <div id="diceOverlay" onclick="closeDiceOverlay()">
+        <div class="dice-scene">
+            <div class="dice-glow"></div>
+            <div class="dice-d20" id="diceCube">
+                <div class="dice-face">?</div>
+            </div>
+        </div>
+        <div id="diceResultDisplay"></div>
+        <div class="dice-attack-info" id="diceAttackInfo"></div>
+        <div class="dice-close-hint">Clique para fechar</div>
+    </div>
+
+    <!-- INVITE AGENT MODAL -->
+    <div id="inviteModal" class="modal-overlay" style="display:none;">
+        <div class="modal-box" style="max-width:400px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3 style="margin:0; color:var(--primary);">Adicionar Agente</h3>
+                <button class="btn" onclick="document.getElementById('inviteModal').style.display='none'">✕</button>
+            </div>
+            <div id="inviteList" style="max-height:300px; overflow-y:auto;">
+                <!-- Personagens serão listados aqui -->
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="bestiary_db.js"></script>
+    <script src="campaign.js"></script>
+    <script>
+        lucide.createIcons();
+        const urlParams = new URLSearchParams(window.location.search);
+        const CAMP_ID = urlParams.get('id');
+        let currentCamp = null;
+        let selectedId = null;
+
+        window.onload = function () {
+            // FIX: Robust initialization
+            if (!CAMP_ID) {
+                // If no ID, create a temp one or grab the first available
+                const campaigns = window.CampaignSystem.getCampaigns();
+                if (campaigns.length > 0) {
+                    window.location.search = `?id=${campaigns[0].id}`;
+                } else {
+                    const newId = window.CampaignSystem.createCampaign("Campanha Exemplo", "Mestre");
+                    window.location.search = `?id=${newId}`;
+                }
+                return;
+            }
+
+            // Verify if campaign exists
+            currentCamp = window.CampaignSystem.getCampaignById(CAMP_ID);
+            if (!currentCamp) {
+                alert("Campanha não encontrada! Criando nova...");
+                const newId = window.CampaignSystem.createCampaign("Nova Campanha", "Mestre");
+                window.location.search = `?id=${newId}`;
+                return;
+            }
+
+            loadData();
+            renderBestiaryTab(); // Initialize bestiary list
+
+            // Auto-refresh slightly slower to avoid race conditions
+            setInterval(updateLog, 2000);
+        };
+
+        let rightTab = 'inspector';
+        function switchRightTab(t) {
+            rightTab = t;
+            document.getElementById('btnInsp').className = t === 'inspector' ? 'tab-btn active' : 'tab-btn';
+            document.getElementById('btnBest').className = t === 'bestiary' ? 'tab-btn active' : 'tab-btn';
+
+            document.getElementById('inspectorPanel').style.display = t === 'inspector' ? 'block' : 'none';
+            document.getElementById('bestiaryPanel').style.display = t === 'bestiary' ? 'block' : 'none';
+        }
+
+        function loadData() {
+            currentCamp = window.CampaignSystem.getCampaignById(CAMP_ID);
+            if (!currentCamp) return;
+
+            const cn = document.getElementById('campaignName');
+            if (cn) cn.innerText = currentCamp.name.toUpperCase();
+
+            renderCombatList();
+            renderAgentGrid(); // Added this line
+
+            // If selection exists, re-render inspector
+            if (selectedId) {
+                const ent = getEntity(selectedId);
+                if (ent) renderInspector(ent);
+            }
+
+            updateLog(); // Initial log render
+            updateReactionStatus(); // Update reaction status on data load
+        }
+
+        // CENTER TAB SWITCH LOGIC UPDATED
+        let activeCenterTab = 'combat';
+        function switchCenterTab(tab) {
+            activeCenterTab = tab;
+            document.getElementById('tabCombat').className = tab === 'combat' ? 'tab-btn active' : 'tab-btn';
+            document.getElementById('tabAgents').className = tab === 'agents' ? 'tab-btn active' : 'tab-btn';
+
+            document.getElementById('combatList').style.display = tab === 'combat' ? 'flex' : 'none';
+            document.getElementById('combatActions').style.display = tab === 'combat' ? 'flex' : 'none';
+
+            document.getElementById('agentGrid').className = tab === 'agents' ? 'agent-grid-container active' : 'agent-grid-container';
+            document.getElementById('btnAddAgent').style.display = tab === 'agents' ? 'block' : 'none';
+            document.getElementById('btnRest').style.display = tab === 'agents' ? 'block' : 'none';
+        }
+
+        function openInviteModal() {
+            const modal = document.getElementById('inviteModal');
+            const list = document.getElementById('inviteList');
+            modal.style.display = 'flex';
+            list.innerHTML = "Carregando...";
+
+            // Get all chars
+            const raw = localStorage.getItem('demonSlayerSaveSlots');
+            const allChars = raw ? JSON.parse(raw) : [];
+
+            // Filter out existing
+            const existingIds = currentCamp.players.map(p => p.charId);
+            const candidates = allChars.filter(c => !existingIds.includes(c.id));
+
+            list.innerHTML = "";
+            if (candidates.length === 0) {
+                list.innerHTML = "<div style='color:#777; text-align:center;'>Nenhum personagem disponível.</div>";
+                return;
+            }
+
+            candidates.forEach(c => {
+                const row = document.createElement('div');
+                row.className = 'mob-item'; // Reuse mob-item class for consistent list style
+                row.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div class="avatar-sm" style="background-image: url('https://ui-avatars.com/api/?name=${c.name}&background=random')"></div>
+                        <div>
+                            <div class="mob-name">${c.name}</div>
+                            <div class="mob-meta">${c.rank || "Mizunoto"} - Nível ${c.level || 1}</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="font-size:0.75rem; padding:4px 8px;">+</button>
+                `;
+
+                row.onclick = () => {
+                    try {
+                        window.CampaignSystem.addPlayerToCampaign(CAMP_ID, c);
+
+                        // Switch to combat tab if combat is active, otherwise Agents
+                        if (currentCamp.combat.active) {
+                            switchCenterTab('combat');
+                        } else {
+                            switchCenterTab('agents');
+                        }
+
+                        loadData();
+                        showToast(`Agente adicionado: ${c.name}`);
+                        document.getElementById('inviteModal').style.display = 'none';
+
+                        // Auto-scroll logic if added to combat
+                        if (currentCamp.combat.active) {
+                            setTimeout(() => {
+                                const cl = document.getElementById('combatList');
+                                if (cl) cl.scrollTop = cl.scrollHeight;
+                            }, 100);
+                        }
+                    } catch (err) {
+                        alert("Erro ao adicionar agente: " + err.message);
+                    }
+                };
+                list.appendChild(row);
+            });
+        }
+
+
+        // --- RENDERERS ---
+
+        function renderCombatList() {
+            const list = document.getElementById('combatList');
+            list.innerHTML = "";
+
+            // Determine order
+            let entities = getAllEntities();
+            if (currentCamp.combat.active && currentCamp.combat.order.length > 0) {
+                // Sort by combat order
+                const ordered = [];
+                currentCamp.combat.order.forEach(id => {
+                    const e = entities.find(x => (x.id === id || x.charId === id));
+                    if (e) ordered.push(e);
+                });
+                // Add any not in order (newly added?)
+                entities.forEach(e => {
+                    if (!ordered.find(x => (x.id || x.charId) === (e.id || e.charId))) ordered.push(e);
+                });
+                entities = ordered;
+            } else {
+                // Sort randomly or by name
+                entities.sort((a, b) => b.initiative - a.initiative);
+            }
+
+            entities.forEach((e, idx) => {
+                const id = e.id || e.charId;
+                const isTurn = currentCamp.combat.active && currentCamp.combat.order[currentCamp.combat.turnIndex] === id;
+                const isSelected = selectedId === id;
+
+                const row = document.createElement('div');
+                row.className = `init-row ${isTurn ? 'active-turn' : ''} ${isSelected ? 'selected' : ''}`;
+                if (e.isNPC) row.setAttribute('data-type', 'oni');
+                row.onclick = () => selectEntity(id);
+
+                const hpPct = (e.currentHP / e.maxHP) * 100;
+                const pePct = e.maxPE ? (e.currentPE / e.maxPE) * 100 : 0;
+
+                row.innerHTML = `
+                    <div class="avatar-sm" style="background-image: url('https://ui-avatars.com/api/?name=${e.name}&background=random')"></div>
+                    <div class="row-info">
+                        <div class="row-name">${e.name} ${renderConditionIcons(e.conditions || [])}</div>
+                        <div class="row-vitals">
+                            <span style="color:#ef4444; font-weight:600; font-size:0.75rem;">${e.currentHP} / ${e.maxHP}</span>
+                            ${e.maxPE ? `<span style="color:#a855f7; font-weight:600; font-size:0.75rem; margin-left:8px;">${e.currentPE} / ${e.maxPE}</span>` : ''}
+                            <span style="color:#999; font-size:0.7rem; margin-left:8px;">CA ${e.ac}</span>
+                        </div>
+                        <div class="hp-bar-mini"><div class="hp-fill-mini" style="width:${hpPct}%"></div></div>
+                    </div>
+                    <input type="number" class="init-input" value="${e.initiative || 0}" 
+                           onclick="event.stopPropagation()" 
+                           onchange="updateInit('${id}', this.value, ${e.isNPC})">
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        function renderInspector(e) {
+            const box = document.getElementById('inspector');
+            if (!box) {
+                console.error("Inspector element not found!");
+                return;
+            }
+            if (!e) {
+                box.innerHTML = '<div style="text-align:center; color:#555; margin-top:50px;">Selecione um personagem</div>';
+                return;
+            }
+
+            console.log("Rendering inspector for:", e.name, e);
+
+            const hpPct = e.maxHP ? (e.currentHP / e.maxHP) * 100 : 0;
+            const pePct = e.maxPE ? (e.currentPE / e.maxPE) * 100 : 0;
+            const id = e.id || e.charId;
+            const isNPC = e.isNPC;
+
+            // Stats defaults
+            const s = e.stats || { str: 0, dex: 0, con: 0, int: 0, wis: 0 };
+            const speed = e.speed || "9m";
+
+            box.innerHTML = `
+                <div class="profile-card">
+                    <img src="https://ui-avatars.com/api/?name=${e.name}&background=random" class="profile-img">
+                    <div class="profile-info">
+                        <div class="profile-name">${e.name}</div>
+                        <div class="profile-class">${isNPC ? e.type || 'Oni' : e.rank}</div>
+                    </div>
+                    ${!isNPC ? `<button class="btn btn-primary" style="margin-left:auto; padding:6px 12px;" onclick="openCharacterSheet('${e.charId}')">
+                        <i data-lucide="external-link" size="14"></i> Ver Ficha
+                    </button>` : ''}
+                </div>
+
+                <!-- ORDEM BARS -->
+                <!-- HP -->
+                <div class="ordem-bar-row" style="border-color: #7f1d1d;">
+                    <div class="ordem-bar-btn" onclick="modStat('${id}', 'hp', -5)"><<</div>
+                    <div class="ordem-bar-btn" onclick="modStat('${id}', 'hp', -1)"><</div>
+                    <div class="ordem-bar-display">
+                        <div class="ordem-bar-fill bar-red" style="width:${hpPct}%"></div>
+                        <div class="text-overlay"><span>${e.currentHP}</span><span style="opacity:0.6">/ ${e.maxHP}</span></div>
+                    </div>
+                    <div class="ordem-bar-btn last" onclick="modStat('${id}', 'hp', 1)">></div>
+                    <div class="ordem-bar-btn last" onclick="modStat('${id}', 'hp', 5)">>></div>
+                </div>
+
+                <!-- PE -->
+                <div class="ordem-bar-row" style="border-color: #5b21b6;">
+                    <div class="ordem-bar-btn" onclick="modStat('${id}', 'pe', -5)"><<</div>
+                    <div class="ordem-bar-btn" onclick="modStat('${id}', 'pe', -1)"><</div>
+                    <div class="ordem-bar-display">
+                        <div class="ordem-bar-fill bar-purple" style="width:${pePct}%"></div>
+                        <div class="text-overlay"><span>${e.currentPE}</span><span style="opacity:0.6">/ ${e.maxPE}</span></div>
+                    </div>
+                    <div class="ordem-bar-btn last" onclick="modStat('${id}', 'pe', 1)">></div>
+                    <div class="ordem-bar-btn last" onclick="modStat('${id}', 'pe', 5)">>></div>
+                </div>
+
+                <!-- TABS (Visual only for now) -->
+                <div class="insp-tabs" style="margin-top:15px;">
+                    <div class="insp-tab" style="color:#aaa;">ATRIBUTOS</div>
+                    <div class="insp-tab active">COMBATE</div>
+                    <div class="insp-tab" style="color:#aaa;">RITUAIS</div>
+                </div>
+
+                <!-- ATTRIBUTES GRID -->
+                <div class="attr-grid">
+                     <div class="attr-box"><div class="attr-val">${s.agi || s.dex || 0}</div><div class="attr-label">AGI</div></div>
+                     <div class="attr-box"><div class="attr-val">${s.str || 0}</div><div class="attr-label">FOR</div></div>
+                     <div class="attr-box"><div class="attr-val">${s.int || 0}</div><div class="attr-label">INT</div></div>
+                     <div class="attr-box"><div class="attr-val">${s.pre || s.wis || 0}</div><div class="attr-label">PRE</div></div>
+                     <div class="attr-box"><div class="attr-val">${s.vig || s.con || 0}</div><div class="attr-label">VIG</div></div>
+                </div>
+
+                <!-- SECONDARY STATS (DEF / SPEED) -->
+                <div class="sec-stats">
+                    <div class="sec-stat-box">
+                        <div class="sec-stat-label">DEFESA</div>
+                        <div class="sec-stat-val">${e.ac}</div>
+                    </div>
+                    <div class="sec-stat-box">
+                        <div class="sec-stat-label">BLOQUEIO</div>
+                        <div class="sec-stat-val">0</div>
+                    </div>
+                    <div class="sec-stat-box">
+                        <div class="sec-stat-label">ESQUIVA</div>
+                        <div class="sec-stat-val">0</div>
+                    </div>
+                    <div class="sec-stat-box">
+                         <div class="sec-stat-label">DESL.</div>
+                         <div class="sec-stat-val" style="font-size:1rem; margin-top:5px;">${speed}</div>
+                    </div>
+                </div>
+
+                <!-- ATTACKS LIST -->
+                <div style="margin-top:10px;">
+                    <div style="font-size:0.8rem; color:#777; margin-bottom:5px;">Ataques e Ações (Clique para Rolar)</div>
+                    <div id="inspectorAttacks"></div>
+                </div>
+                
+                <!-- REMOVE BUTTON -->
+                <div style="margin-top:20px; padding-top:15px; border-top:1px solid #333;">
+                    <button class="btn btn-danger" style="width:100%;" onclick="removeEntityFromCombat('${id}', ${isNPC})">
+                        <i data-lucide="trash-2" size="14"></i> Remover do Combate
+                    </button>
+                </div>
+            `;
+
+            const list = document.getElementById('inspectorAttacks');
+            if (isNPC && e.actions) {
+                e.actions.forEach(act => {
+                    const row = document.createElement('div');
+                    row.className = 'acc-item';
+                    row.innerHTML = `
+                        <div class="acc-header" onclick="performAttack('${e.name}', '${act.name}', ${act.bonus || 0}, '${act.damage}')">
+                            <div style="display:flex; flex-direction:column;">
+                                <span style="font-weight:700; color:#fff;">${act.name}</span>
+                                <span style="font-size:0.75rem; color:#a855f7;">Dano: ${act.damage || "?"}</span>
+                            </div>
+                            <i data-lucide="dices" color="#fff"></i>
+                        </div>
+                    `;
+                    list.appendChild(row);
+                });
+            } else {
+                list.innerHTML = "<div style='font-size:0.8rem; color:#555;'>Ficha de jogador. Ações gerenciadas pelo jogador.</div>";
+            }
+            lucide.createIcons();
+        }
+
+        function renderAgentGrid() {
+            const grid = document.getElementById('agentGrid');
+            grid.innerHTML = "";
+            const entities = getAllEntities(); // or just players? User said "jogadores", usually implies players.
+            // However, let's show only players to match "Analysis General" context usually for Party.
+            const players = entities.filter(e => !e.isNPC);
+
+            players.forEach(p => {
+                const hpPct = (p.currentHP / p.maxHP) * 100;
+                const pePct = (p.currentPE / p.maxPE) * 100;
+                const s = p.stats || { str: 0, dex: 0, con: 0, int: 0, wis: 0 };
+
+                const card = document.createElement('div');
+                card.className = 'agent-card';
+                card.innerHTML = `
+                   <div class="agent-header">
+                       <img src="https://ui-avatars.com/api/?name=${p.name}&background=random" class="agent-avatar">
+                       <div class="agent-details">
+                           <div class="agent-name">${p.name}</div>
+                           <div class="agent-meta">${p.rank} <span style="color:#777">•</span> ${p.breathingStyle || "Respiração"}</div>
+                       </div>
+                   </div>
+                   
+                   <div class="agent-attrs">
+                        <div><div class="agent-attr-val">${s.dex || 0}</div><div class="agent-attr-lbl">AGI</div></div>
+                        <div><div class="agent-attr-val">${s.str || 0}</div><div class="agent-attr-lbl">FOR</div></div>
+                        <div><div class="agent-attr-val">${s.int || 0}</div><div class="agent-attr-lbl">INT</div></div>
+                        <div><div class="agent-attr-val">${s.wis || 0}</div><div class="agent-attr-lbl">PRE</div></div>
+                        <div><div class="agent-attr-val">${s.con || 0}</div><div class="agent-attr-lbl">VIG</div></div>
+                   </div>
+
+                    <div class="row-name">
+                        ${p.name} ${renderConditionIcons(p.conditions)}
+                    </div>
+                    
+                    <div class="agent-bars">
+                        <!-- HP -->
+                        <div style="font-size:0.6rem; color:#aaa; margin-bottom:2px; text-align:center;">VIDA</div>
+                        <div class="ordem-bar-row" style="border-color:#7f1d1d;">
+                             <div class="ordem-bar-display">
+                                <div class="ordem-bar-fill bar-red" style="width:${hpPct}%"></div>
+                                <div class="text-overlay"><span>${p.currentHP}</span><span style="opacity:0.6">/ ${p.maxHP}</span></div>
+                             </div>
+                        </div>
+                        <!-- PE -->
+                        <div style="font-size:0.6rem; color:#aaa; margin-bottom:2px; text-align:center;">SANIDADE/PE</div>
+                         <div class="ordem-bar-row" style="border-color:#5b21b6;">
+                             <div class="ordem-bar-display">
+                                <div class="ordem-bar-fill bar-purple" style="width:${pePct}%"></div>
+                                <div class="text-overlay"><span>${p.currentPE}</span><span style="opacity:0.6">/ ${p.maxPE}</span></div>
+                             </div>
+                        </div>
+                   </div>
+                   
+                   <div class="agent-footer">
+                        <div class="af-box"><span class="af-val">${p.ac}</span> DEFESA</div>
+                        <div class="af-box"><span class="af-val">0</span> BLOQUEIO</div>
+                        <div class="af-box"><span class="af-val">0</span> ESQUIVA</div>
+                        <div class="af-box"><span class="af-val">${p.speed || "9m"}</span> DESL.</div>
+                   </div>
+               `;
+                grid.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        function updateLog() {
+            if (!currentCamp || !currentCamp.log) return;
+            const feed = document.getElementById('logFeed');
+            // Check if log length changed
+            // For simplicity, just wipe and redraw bottom 20
+            feed.innerHTML = "";
+
+            currentCamp.log.slice().reverse().forEach(l => {
+                const card = document.createElement('div');
+                card.className = 'log-card';
+                // Try parse result from msg if it has format "Result: 23"
+                // Or just show text.
+                // Assuming format from performAttack
+
+                let icon = '<div class="dice-icon"><i data-lucide="message-square"></i></div>';
+                let total = "";
+
+                if (l.msg.includes("Rolagem")) {
+                    // Primitive regex to extract total
+                    const match = l.msg.match(/<strong>(\d+)<\/strong>/);
+                    const val = match ? match[1] : "?";
+                    icon = `<div class="dice-icon" style="background:#222; border:1px solid #444;">${val}</div>`;
+                }
+
+                card.innerHTML = `
+                    ${icon}
+                    <div class="log-content">
+                        <div class="log-detail" style="font-size:0.7rem; color:#666;">${l.time}</div>
+                        <div class="log-title" style="font-size:0.8rem; color:#ccc;">${l.msg}</div>
+                    </div>
+                `;
+                feed.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        // --- ACTIONS ---
+        function selectEntity(id) {
+            selectedId = id;
+            console.log("Selected entity:", id);
+
+            // Switch to inspector tab automatically
+            switchRightTab('inspector');
+
+            // Immediately render the inspector for this entity
+            const ent = getEntity(id);
+            if (ent) {
+                renderInspector(ent);
+            }
+
+            // Also refresh the combat list to show selection
+            renderCombatList();
+            lucide.createIcons();
+        }
+
+        function openCharacterSheet(charId) {
+            // Load the character from save slots and set it as active
+            const raw = localStorage.getItem('demonSlayerSaveSlots');
+            if (!raw) {
+                alert('Nenhum personagem encontrado!');
+                return;
+            }
+            const chars = JSON.parse(raw);
+            const char = chars.find(c => c.id === charId);
+            if (!char) {
+                alert('Personagem não encontrado!');
+                return;
+            }
+            // Set as active character for dashboard
+            localStorage.setItem('demonSlayerChar', JSON.stringify(char));
+            window.open('dashboard.html', '_blank');
+        }
+
+        function modStat(id, type, delta) {
+            const ent = getEntity(id);
+            if (!ent) {
+                console.error('modStat: Entity not found', id);
+                return;
+            }
+
+            // Use charId for players, id for monsters
+            const entityId = ent.charId || ent.id;
+
+            let updates = {};
+            if (type === 'hp') {
+                let v = (ent.currentHP || 0) + delta;
+                v = Math.min(Math.max(v, 0), ent.maxHP || 100);
+                updates = { currentHP: v };
+            } else {
+                let v = (ent.currentPE || 0) + delta;
+                v = Math.min(Math.max(v, 0), ent.maxPE || 10);
+                updates = { currentPE: v };
+            }
+
+            console.log('modStat:', entityId, ent.isNPC, updates);
+            window.CampaignSystem.updateEntity(CAMP_ID, entityId, ent.isNPC, updates);
+
+            // Refresh data and re-render inspector
+            currentCamp = window.CampaignSystem.getCampaignById(CAMP_ID);
+            const updatedEnt = getEntity(id);
+            if (updatedEnt) renderInspector(updatedEnt);
+            renderCombatList();
+            lucide.createIcons();
+        }
+
+        function updateInit(id, val, isNPC) {
+            const newVal = parseInt(val) || 0;
+            console.log('updateInit:', id, isNPC, newVal);
+            window.CampaignSystem.updateEntity(CAMP_ID, id, isNPC, { initiative: newVal });
+            // Just update the campaign data without full re-render to keep focus
+            currentCamp = window.CampaignSystem.getCampaignById(CAMP_ID);
+        }
+
+        function removeEntityFromCombat(id, isNPC) {
+            if (!confirm('Remover esta entidade do combate?')) return;
+            window.CampaignSystem.removeEntity(CAMP_ID, id, isNPC);
+            selectedId = null;
+            loadData();
+            showToast('Entidade removida!');
+        }
+
+        function performAttack(attackerName, attackName, bonus, dmgStr) {
+            // Roll the d20
+            const d20 = Math.floor(Math.random() * 20) + 1;
+            const total = d20 + bonus;
+            const isCrit = d20 === 20;
+            const isFail = d20 === 1;
+
+            // Calculate damage
+            let dmgVal = 0;
+            try {
+                const parts = dmgStr.split('+');
+                const dice = parts[0].trim().split('d');
+                const n = parseInt(dice[0]);
+                const s = parseInt(dice[1]);
+                const flat = parts[1] ? parseInt(parts[1]) : 0;
+                for (let i = 0; i < n; i++) dmgVal += Math.floor(Math.random() * s) + 1;
+                dmgVal += flat;
+                if (isCrit) dmgVal *= 2; // Double damage on crit
+            } catch (e) { }
+
+            // Show the premium dice overlay
+            showPremiumDice(d20, total, dmgVal, attackerName, attackName, dmgStr, isCrit, isFail);
+
+            // Log the attack
+            const msg = `${attackerName} usa ${attackName}: <strong>${total}</strong> (Dano: ${dmgVal}${isCrit ? ' CRÍTICO!' : ''})`;
+            window.CampaignSystem.addLog(CAMP_ID, msg);
+            updateLog();
+        }
+
+        function showPremiumDice(roll, total, damage, attackerName, attackName, damageFormula, isCrit, isFail) {
+            const overlay = document.getElementById('diceOverlay');
+            const cube = document.getElementById('diceCube');
+            const result = document.getElementById('diceResultDisplay');
+            const info = document.getElementById('diceAttackInfo');
+
+            // Set all faces to show the roll value
+            document.querySelectorAll('.dice-face').forEach(face => {
+                face.textContent = roll;
+            });
+
+            // Show overlay and start rolling animation
+            overlay.classList.add('show');
+            cube.classList.add('rolling');
+            result.className = '';
+            result.textContent = '';
+            info.innerHTML = '';
+
+            // After rolling animation, show result
+            setTimeout(() => {
+                cube.classList.remove('rolling');
+
+                // Show result with appropriate class
+                result.textContent = total;
+                result.classList.add('show');
+                if (isCrit) result.classList.add('crit');
+                if (isFail) result.classList.add('fail');
+
+                // Show attack info
+                info.innerHTML = `
+                    <div class="attacker-name">${attackerName}</div>
+                    <div>${attackName} • Rolou <span style="color:${isCrit ? '#ffd60a' : isFail ? '#ef4444' : '#a855f7'}">${roll}</span> + ${total - roll}</div>
+                    <div class="damage-display">${damage} de dano${isCrit ? ' 🔥' : ''}</div>
+                    <div class="breakdown">${damageFormula}${isCrit ? ' (x2 Crítico!)' : ''}</div>
+                `;
+            }, 1200);
+        }
+
+        function closeDiceOverlay() {
+            const overlay = document.getElementById('diceOverlay');
+            const cube = document.getElementById('diceCube');
+            const result = document.getElementById('diceResultDisplay');
+
+            overlay.classList.remove('show');
+            cube.classList.remove('rolling');
+            result.className = '';
+        }
+
+        // Legacy functions for compatibility
+        function showDiceAnim(callback) {
+            const overlay = document.getElementById('diceOverlay');
+            const cube = document.getElementById('diceCube');
+
+            overlay.classList.add('show');
+            cube.classList.add('rolling');
+
+            setTimeout(() => {
+                cube.classList.remove('rolling');
+                callback();
+            }, 1200);
+        }
+
+        function showDiceResult(val) {
+            const result = document.getElementById('diceResultDisplay');
+            result.textContent = val;
+            result.classList.add('show');
+        }
+
+        function renderBestiaryTab() {
+            const list = document.getElementById('bestiaryList');
+            list.innerHTML = "";
+            window.BestiaryDB.forEach(m => {
+                const el = document.createElement('div');
+                el.className = 'mob-item';
+                el.innerHTML = `
+                    <div>
+                        <div class="mob-name">${m.name}</div>
+                        <div class="mob-meta">HP ${m.hp} | CR ${m.cr}</div>
+                    </div>
+                    <button class="btn btn-primary" style="padding:4px 8px;" onclick="spawnMobById('${m.id}')">+</button>
+                `;
+                list.appendChild(el);
+            });
+        }
+
+        function spawnMobById(id) {
+            try {
+                // Check custom first
+                const customs = JSON.parse(localStorage.getItem('customBestiary') || "[]");
+                let t = customs.find(x => x.id === id);
+                if (!t && window.BestiaryDB) t = window.BestiaryDB.find(x => x.id === id);
+
+                if (t) {
+                    window.CampaignSystem.addMonster(CAMP_ID, t);
+                    // Force switch to combat tab to see the new monster
+                    switchCenterTab('combat');
+                    loadData();
+                    showToast(`Criatura adicionada: ${t.name}`);
+
+                    // Auto-scroll to bottom of combat list
+                    setTimeout(() => {
+                        const cl = document.getElementById('combatList');
+                        if (cl) cl.scrollTop = cl.scrollHeight;
+                    }, 100);
+                } else {
+                    console.error("Spawn Error: Monster template not found", id);
+                    alert("Erro: Monstro não encontrado na base de dados.");
+                }
+            } catch (err) {
+                console.error("Spawn Error:", err);
+                alert("Erro ao adicionar monstro: " + err.message);
+            }
+        }
+
+        function clearLog() {
+            // Not implemented in campaign.js yet, but harmless
+            currentCamp.log = [];
+            window.CampaignSystem.saveCampaigns(window.CampaignSystem.getCampaigns());
+            updateLog();
+        }
+
+        // --- HELPERS ---
+        function getAllEntities() {
+            if (!currentCamp) return [];
+            const players = currentCamp.players || [];
+            const monsters = currentCamp.monsters || [];
+            return [
+                ...players.map(p => ({ ...p, isNPC: false })),
+                ...monsters.map(m => ({ ...m, isNPC: true }))
+            ];
+        }
+        function getEntity(id) {
+            return getAllEntities().find(e => (e.id === id || e.charId === id));
+        }
+
+        /* --- CUSTOM MOB LOGIC --- */
+        function openCustomMobModal() {
+            document.getElementById('customMobModal').style.display = 'flex';
+            document.getElementById('cmAttacksList').innerHTML = "";
+            addCustomAttackRow(); // Add one by default
+        }
+
+        function addCustomAttackRow() {
+            const div = document.createElement('div');
+            div.style.cssText = "display:grid; grid-template-columns: 2fr 1fr 1fr 30px; gap:5px; margin-bottom:5px;";
+            div.innerHTML = `
+                <input type="text" placeholder="Nome Ataque" class="d-input atk-name">
+                <input type="number" placeholder="Bonus" class="d-input atk-bonus">
+                <input type="text" placeholder="Dano (ex: 1d6+2)" class="d-input atk-dmg">
+                <button class="btn btn-danger" onclick="this.parentElement.remove()">x</button>
+            `;
+            document.getElementById('cmAttacksList').appendChild(div);
+        }
+
+        function saveCustomMob() {
+            const name = document.getElementById('cmName').value;
+            const hp = parseInt(document.getElementById('cmHP').value) || 10;
+            const ac = parseInt(document.getElementById('cmAC').value) || 10;
+            const cr = document.getElementById('cmCR').value || "-";
+
+            if (!name) return alert("Nome é obrigatório!");
+
+            const actions = [];
+            const rows = document.querySelectorAll('#cmAttacksList > div');
+            rows.forEach(r => {
+                const n = r.querySelector('.atk-name').value;
+                const b = parseInt(r.querySelector('.atk-bonus').value) || 0;
+                const d = r.querySelector('.atk-dmg').value;
+                if (n) actions.push({ name: n, bonus: b, damage: d, type: 'melee' });
+            });
+
+            const newMob = {
+                id: 'custom_' + Date.now(),
+                name: name,
+                hp: hp,
+                maxHP: hp,
+                ac: ac,
+                cr: cr,
+                actions: actions,
+                custom: true
+            };
+
+            // Save to localStorage
+            const existing = JSON.parse(localStorage.getItem('customBestiary') || "[]");
+            existing.push(newMob);
+            localStorage.setItem('customBestiary', JSON.stringify(existing));
+
+            document.getElementById('customMobModal').style.display = 'none';
+            renderBestiaryTab(); // Refresh list
+        }
+
+        function renderBestiaryTab() {
+            const list = document.getElementById('bestiaryList');
+            const search = document.getElementById('mobSearch') ? document.getElementById('mobSearch').value.toLowerCase() : "";
+            list.innerHTML = "";
+
+            // Merge Standard DB + Custom DB
+            const customs = JSON.parse(localStorage.getItem('customBestiary') || "[]");
+            const fullDB = [...customs, ...window.BestiaryDB];
+
+            fullDB
+                .filter(m => m.name.toLowerCase().includes(search))
+                .forEach(m => {
+                    const el = document.createElement('div');
+                    el.className = 'mob-item';
+                    if (m.custom) el.style.borderLeft = "2px solid var(--primary)"; // Visually mark custom
+
+                    el.innerHTML = `
+                        <div>
+                            <div class="mob-name">${m.name}</div>
+                            <div class="mob-meta">HP ${m.hp || m.maxHP} | CR ${m.cr}</div>
+                        </div>
+                        <div style="display:flex; gap:5px;">
+                            ${m.custom ? `<button class="btn btn-danger" onclick="deleteCustomMob('${m.id}')" style="padding:4px;"><i data-lucide="trash-2" size="12"></i></button>` : ''}
+                            <button class="btn btn-primary" style="padding:4px 8px;" onclick="spawnMobById('${m.id}')">+</button>
+                        </div>
+                    `;
+                    list.appendChild(el);
+                });
+            lucide.createIcons();
+        }
+
+        function deleteCustomMob(id) {
+            if (!confirm("Deletar criatura customizada?")) return;
+            let customs = JSON.parse(localStorage.getItem('customBestiary') || "[]");
+            customs = customs.filter(x => x.id !== id);
+            localStorage.setItem('customBestiary', JSON.stringify(customs));
+            renderBestiaryTab();
+        }
+
+        /* --- CONDITIONS LOGIC --- */
+        const CONDITIONS_DB = [
+            { id: 'poisoned', name: 'Envenenado', icon: 'droplet', color: '#10b981' },
+            { id: 'stunned', name: 'Atordoado', icon: 'zap', color: '#fbbf24' },
+            { id: 'prone', name: 'Caído', icon: 'arrow-down', color: '#94a3b8' },
+            { id: 'bleeding', name: 'Sangrando', icon: 'cloud-drizzle', color: '#ef4444' },
+            { id: 'blinded', name: 'Cego', icon: 'eye-off', color: '#555' },
+            { id: 'charmed', name: 'Encantado', icon: 'heart', color: '#ec4899' },
+            { id: 'frightened', name: 'Amedrontado', icon: 'ghost', color: '#fff' },
+            { id: 'grappled', name: 'Agarrado', icon: 'anchor', color: '#a855f7' },
+            { id: 'restrained', name: 'Contido', icon: 'lock', color: '#f59e0b' },
+            { id: 'unconscious', name: 'Inconsciente', icon: 'moon', color: '#888' },
+            { id: 'reaction_used', name: 'Reação Usada', icon: 'shield-alert', color: '#b91c1c' }
+        ];
+
+        function openConditionsModal() {
+            if (!selectedId) return alert("Selecione alguém primeiro!");
+            const ent = getEntity(selectedId);
+            if (!ent) return;
+
+            document.getElementById('condTargetName').innerText = ent.name;
+            const grid = document.getElementById('condGrid');
+            grid.innerHTML = "";
+
+            CONDITIONS_DB.filter(c => c.id !== 'reaction_used').forEach(c => {
+                const isActive = ent.conditions && ent.conditions.includes(c.id);
+                const btn = document.createElement('div');
+                btn.className = `cond-btn ${isActive ? 'active' : ''}`;
+                btn.innerHTML = `<i data-lucide="${c.icon}"></i> ${c.name}`;
+                btn.onclick = () => toggleCondition(ent.id || ent.charId, ent.isNPC, c.id);
+                grid.appendChild(btn);
+            });
+
+            document.getElementById('condModal').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        function toggleCondition(id, isNPC, condId) {
+            window.CampaignSystem.toggleCondition(CAMP_ID, id, isNPC, condId);
+            loadData();
+            // Re-render modal only if open
+            if (document.getElementById('condModal').style.display === 'flex') openConditionsModal();
+            // Refresh reaction status
+            updateReactionStatus();
+        }
+
+        function toggleReaction() {
+            if (!selectedId) return alert("Selecione alguém primeiro!");
+            const ent = getEntity(selectedId);
+            if (!ent) return;
+            toggleCondition(ent.id || ent.charId, ent.isNPC, 'reaction_used');
+        }
+
+        function updateReactionStatus() {
+            if (!selectedId) {
+                document.getElementById('reactionStatus').style.display = 'none';
+                return;
+            }
+            const ent = getEntity(selectedId);
+            const used = ent && ent.conditions && ent.conditions.includes('reaction_used');
+            document.getElementById('reactionStatus').style.display = used ? 'block' : 'none';
+        }
+
+        function triggerLongRest() {
+            if (!confirm("Realizar Descanso Longo? (Recupera HP/PE e remove condições)")) return;
+            window.CampaignSystem.longRest(CAMP_ID);
+            loadData();
+        }
+
+        // --- HELPER RENDERERS ---
+        function renderConditionIcons(conds) {
+            if (!conds || conds.length === 0) return "";
+            return conds.map(cid => {
+                const def = CONDITIONS_DB.find(x => x.id === cid);
+                if (!def) return ""; // Reaction used might be hidden or shown differently
+                return `<span class="cond-badge" style="border-color:${def.color}" title="${def.name}"><i data-lucide="${def.icon}" style="color:${def.color}"></i></span>`;
+            }).join("");
+        }
+        // --- ATTACK & DICE SYSTEM ---
+        function performAttack(attackerName, attackName, bonus, damageFormula) {
+            // Roll d20 for attack
+            const roll = Math.floor(Math.random() * 20) + 1;
+            const total = roll + bonus;
+
+            // Parse damage formula (e.g., "2d6+3")
+            const damage = rollDamage(damageFormula);
+
+            // Show 3D dice animation
+            showDiceAnimation(roll, total, attackerName, attackName, damage, damageFormula);
+
+            // Log the attack
+            addToLog({
+                type: 'attack',
+                attacker: attackerName,
+                attack: attackName,
+                roll: roll,
+                total: total,
+                damage: damage,
+                damageFormula: damageFormula
+            });
+        }
+
+        function rollDamage(formula) {
+            if (!formula) return 0;
+            // Parse "XdY+Z" format
+            const match = formula.match(/(\d+)d(\d+)([+-]\d+)?/i);
+            if (!match) return parseInt(formula) || 0;
+
+            const numDice = parseInt(match[1]);
+            const dieSize = parseInt(match[2]);
+            const modifier = parseInt(match[3]) || 0;
+
+            let total = modifier;
+            for (let i = 0; i < numDice; i++) {
+                total += Math.floor(Math.random() * dieSize) + 1;
+            }
+            return total;
+        }
+
+        function showDiceAnimation(roll, total, attackerName, attackName, damage, damageFormula) {
+            const overlay = document.getElementById('diceOverlay');
+            const cube = document.getElementById('diceCube');
+            const result = document.getElementById('diceResultDisplay');
+
+            // Set faces to show the roll
+            document.querySelectorAll('.d20-face').forEach(face => {
+                face.textContent = roll;
+            });
+
+            // Show overlay
+            overlay.classList.add('show');
+
+            // Reset animation
+            cube.style.animation = 'none';
+            cube.offsetHeight; // Trigger reflow
+            cube.style.animation = 'diceRoll 1.5s ease-out';
+
+            // After animation, show result
+            setTimeout(() => {
+                result.innerHTML = `
+                    <div style="font-size:1rem; color:#888; margin-bottom:5px;">${attackerName} usa ${attackName}</div>
+                    <div>Ataque: <span style="color:${roll === 20 ? '#ffd60a' : roll === 1 ? '#ef4444' : 'var(--primary-light)'}">${roll}</span> + ${total - roll} = <span style="color:#fff">${total}</span></div>
+                    <div style="margin-top:10px; font-size:2rem; color:#ef4444;">Dano: ${damage} <span style="font-size:1rem; color:#888">(${damageFormula})</span></div>
+                    ${roll === 20 ? '<div style="color:#ffd60a; margin-top:10px;">⚔️ CRÍTICO! ⚔️</div>' : ''}
+                    ${roll === 1 ? '<div style="color:#ef4444; margin-top:10px;">💀 FALHA CRÍTICA! 💀</div>' : ''}
+                `;
+            }, 1500);
+
+            // Close on click
+            overlay.onclick = () => {
+                overlay.classList.remove('show');
+                result.innerHTML = '';
+            };
+
+            // Auto-close after 5 seconds
+            setTimeout(() => {
+                overlay.classList.remove('show');
+                result.innerHTML = '';
+            }, 5000);
+        }
+
+        function addToLog(entry) {
+            if (!currentCamp.log) currentCamp.log = [];
+            currentCamp.log.unshift({
+                ...entry,
+                timestamp: new Date().toISOString()
+            });
+            // Keep only last 50 entries
+            if (currentCamp.log.length > 50) currentCamp.log.pop();
+            window.CampaignSystem.saveCampaigns(window.CampaignSystem.getCampaigns());
+            updateLog();
+        }
+
+        function updateLog() {
+            const feed = document.getElementById('logFeed');
+            if (!feed || !currentCamp) return;
+
+            feed.innerHTML = '';
+            const log = currentCamp.log || [];
+
+            log.slice(0, 20).forEach(entry => {
+                const card = document.createElement('div');
+                card.className = 'log-card';
+
+                if (entry.type === 'attack') {
+                    const isCrit = entry.roll === 20;
+                    const isFail = entry.roll === 1;
+                    card.innerHTML = `
+                        <div style="font-weight:600; color:${isCrit ? '#ffd60a' : isFail ? '#ef4444' : '#fff'};">
+                            ${entry.attacker}
+                        </div>
+                        <div style="font-size:0.8rem; color:#888;">
+                            ${entry.attack} • Rolou ${entry.roll} (${entry.total})
+                        </div>
+                        <div style="color:#ef4444; font-weight:600;">
+                            ${entry.damage} de dano
+                        </div>
+                    `;
+                } else {
+                    card.innerHTML = `<div style="color:#888;">${JSON.stringify(entry)}</div>`;
+                }
+
+                feed.appendChild(card);
+            });
+        }
+
+        // --- TOAST HELPER ---
+        function showToast(msg) {
+            const el = document.getElementById('toast');
+            const msgEl = document.getElementById('toastMsg');
+            if (!el || !msgEl) {
+                console.log("Toast:", msg);
+                return;
+            }
+            msgEl.innerText = msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 3000);
+        }
+    </script>
+
+</html>

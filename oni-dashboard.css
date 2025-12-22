@@ -885,3 +885,105 @@ body {
     color: #00ff00;
     text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
 }
+
+/* --- Skill Tree Styles --- */
+.tree-node {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #111;
+    border: 2px solid #444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 5;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    color: #666;
+}
+
+.tree-node:hover {
+    transform: scale(1.15);
+    z-index: 10;
+    border-color: #aaa;
+    color: white;
+}
+
+.tree-node.locked {
+    background: #0a0a0a;
+    border-color: #333;
+    opacity: 0.6;
+    filter: grayscale(100%);
+}
+
+.tree-node.reachable {
+    border-color: #00b4d8;
+    background: rgba(0, 180, 216, 0.05);
+    color: #00b4d8;
+    animation: pulseReachable 2s infinite;
+}
+
+.tree-node.unlocked {
+    background: radial-gradient(circle at 30% 30%, #48cae4, #0077b6);
+    border-color: #90e0ef;
+    color: #111;
+    box-shadow: 0 0 20px rgba(0, 180, 216, 0.4);
+}
+
+.node-label {
+    position: absolute;
+    top: 65px;
+    width: 140px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    font-size: 0.75rem;
+    color: #888;
+    pointer-events: none;
+    text-shadow: 0 1px 2px black;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 4px;
+    padding: 2px 6px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 20;
+}
+
+.tree-node:hover .node-label {
+    opacity: 1;
+}
+
+.tree-node.unlocked .node-label {
+    color: #caf0f8;
+    font-weight: 600;
+}
+
+.tree-ring {
+    position: absolute;
+    border: 1px dashed rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    pointer-events: none;
+    top: 50%;
+    left: 50%;
+    z-index: 1;
+}
+
+.tree-ring:nth-child(even) {
+    border-color: rgba(255, 255, 255, 0.04);
+}
+
+@keyframes pulseReachable {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 180, 216, 0.3);
+    }
+
+    70% {
+        box-shadow: 0 0 0 15px rgba(0, 180, 216, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 180, 216, 0);
+    }
+}

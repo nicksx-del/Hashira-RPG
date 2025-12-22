@@ -128,13 +128,38 @@
             </div>
         </section>
 
-        <!-- SECTION: KEKKIJUTSU (Placeholder) -->
-        <section id="kekkijutsu" class="dashboard-section">
+        <!-- SECTION: KEKKIJUTSU -->
+        <section id="kekkijutsu" class="dashboard-section" style="overflow: hidden; position: relative;">
             <div class="section-header">
-                <span class="sec-title">Arvores de Sangue</span>
+                <span class="sec-title">Arvores de Sangue (Kekkijutsu)</span>
                 <i data-lucide="git-branch" color="#bb0a1e"></i>
             </div>
-            <p style="color:#666; text-align:center; padding: 4rem;">Em desenvolvimento...</p>
+
+            <div id="treeControls"
+                style="position: absolute; top: 100px; right: 20px; z-index: 10; display: flex; flex-direction: column; gap: 10px;">
+                <div style="background: rgba(0,0,0,0.8); padding: 10px; border-radius: 8px; border: 1px solid #444; color: white; display: none;"
+                    id="treePointsDisplay">
+                    Pontos de Kekkijutsu: <span id="kkPoints" style="color: #00b4d8; font-weight: bold;">0</span>
+                </div>
+            </div>
+
+            <!-- Full Screen Zoomable/Pannable Container -->
+            <div id="skillTreeWrapper"
+                style="width: 100%; height: 600px; border: 1px solid #333; background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%); position: relative; overflow: hidden; cursor: grab; border-radius: 12px;">
+                <div id="skillTreeContainer"
+                    style="position: absolute; top: 50%; left: 50%; width: 0; height: 0; transform-origin: center;">
+                    <!-- Nodes will be injected here via JS -->
+                    <!-- Background Rings -->
+                    <div class="tree-ring ring-1"></div>
+                    <div class="tree-ring ring-2"></div>
+                    <div class="tree-ring ring-3"></div>
+                    <div class="tree-ring ring-4"></div>
+                </div>
+            </div>
+
+            <div style="margin-top: 10px; font-size: 0.8rem; color: #666; text-align: center;">
+                Arraste para mover • Scroll para zoom • Clique para ver detalhes
+            </div>
         </section>
 
     </main>
@@ -233,6 +258,43 @@
         </div>
     </div>
 
+    </div>
+
+    <!-- Skill Detail Modal -->
+    <div id="skillDetailModal" class="modal">
+        <div class="modal-content" style="border-color: #00b4d8; max-width: 500px;">
+            <div class="modal-header">
+                <h2 id="sdName" style="color: #00b4d8;">Skill Name</h2>
+                <span class="close-modal" onclick="closeSkillModal()">&times;</span>
+            </div>
+            <div style="padding: 1rem;">
+                <div style="margin-bottom: 10px; font-size: 0.9rem; color: #aaa;">
+                    <span id="sdType">Tipo</span> • <span id="sdCost">Custo</span>
+                </div>
+                <p id="sdDesc" style="color: #ddd; line-height: 1.6;">Descrição...</p>
+
+                <div class="stats-box"
+                    style="margin-top: 15px; background: rgba(0, 180, 216, 0.1); border: 1px solid #00b4d8; padding: 10px; border-radius: 6px;">
+                    <div style="display: flex; justify-content: space-between;"><span>Dano:</span> <span id="sdDmg"
+                            style="color: white;">-</span></div>
+                    <div style="display: flex; justify-content: space-between;"><span>Alcance:</span> <span id="sdRange"
+                            style="color: white;">-</span></div>
+                    <div style="display: flex; justify-content: space-between;"><span>Duração:</span> <span id="sdDur"
+                            style="color: white;">-</span></div>
+                </div>
+
+                <div id="reqWarning" style="color: red; margin-top: 10px; display: none;">Requisito: Nível anterior
+                    incompleto.</div>
+
+                <button id="learnSkillBtn" class="devour-btn"
+                    style="width: 100%; margin-top: 20px; border-color: #00b4d8; color: #00b4d8;"
+                    onclick="learnSelectedSkill()">
+                    APRENDER
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Roll Log Container -->
     <div id="rollLog"
         style="position:fixed; bottom:20px; right:20px; display:flex; flex-direction:column; gap:10px; pointer-events:none;">
@@ -242,6 +304,8 @@
     <script src="items_db.js"></script>
     <script src="inventory_modules.js"></script>
     <script src="oni-dashboard.js"></script>
+    <script src="kekkijutsu_db.js"></script>
+    <script src="oni_skill_tree.js"></script>
     <script>
         lucide.createIcons();
     </script>

@@ -206,11 +206,81 @@
                 <i data-lucide="activity" color="#00b4d8"></i>
             </div>
 
-            <div
-                style="background: rgba(0,180,216,0.1); border: 1px solid #00b4d8; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
-                <h2 style="margin:0; font-size:1.2rem; color: #00b4d8;">Bem-vindo, Caçador.</h2>
-                <p style="margin:0.5rem 0 0 0; font-size:0.9rem; color: #ccc;">Sua jornada para destruir os onis começa
-                    aqui.</p>
+            <!-- CHARACTER HEADER -->
+            <div class="char-header-panel"
+                style="background: #16161a; border: 1px solid #333; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 15px;">
+
+                <!-- TOP ROW: Name, Rank, Level -->
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 15px;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div class="avatar-circle"
+                            style="width: 60px; height: 60px; background: #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--accent-primary);">
+                            <i data-lucide="user" size="32" color="#fff"></i>
+                        </div>
+                        <div>
+                            <h2 id="dispName" contenteditable="true" onblur="updateCharName(this.innerText)"
+                                style="margin: 0; font-size: 1.5rem; color: #fff; cursor: text; border-bottom: 1px dashed #444;"
+                                title="Clique para editar">Caçador</h2>
+                            <span id="dispRank"
+                                style="font-size: 0.85rem; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">MIZUNOTO</span>
+                        </div>
+                    </div>
+
+                    <div style="position: relative;">
+                        <div style="text-align: right; cursor: pointer;" onclick="toggleLevelSelector()">
+                            <span
+                                style="display: block; font-size: 0.75rem; color: #666; font-weight: 600;">NÍVEL</span>
+                            <span id="dispLevel"
+                                style="font-size: 2.5rem; color: var(--accent-primary); font-weight: 800; line-height: 1;">1</span>
+                        </div>
+                        <!-- Level Dropdown (Hidden) -->
+                        <div id="levelSelector"
+                            style="display: none; position: absolute; top: 100%; right: 0; background: #111; border: 1px solid #444; border-radius: 8px; max-height: 200px; overflow-y: auto; z-index: 100; padding: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+                            <!-- JS Generated 1-20 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTTOM ROW: Vitals (HP & PE) -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <!-- HP -->
+                    <div class="vital-box">
+                        <div
+                            style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.85rem; font-weight: 600; align-items: center;">
+                            <span style="color: #ff595e;">VIDA (HP)</span>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <button onclick="changeHP(-1)" class="vital-btn" style="color: #ff595e;">-</button>
+                                <span id="hpDisplayWrapper"><span id="currHP">20</span> / <span
+                                        id="maxHP">20</span></span>
+                                <button onclick="changeHP(1)" class="vital-btn" style="color: #ff595e;">+</button>
+                            </div>
+                        </div>
+                        <div
+                            style="background: #333; height: 10px; border-radius: 5px; overflow: hidden; position: relative;">
+                            <div class="bar-hp"
+                                style="width: 100%; background: #ff595e; height: 100%; transition: width 0.3s;"></div>
+                        </div>
+                    </div>
+
+                    <!-- PE -->
+                    <div class="vital-box">
+                        <div
+                            style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.85rem; font-weight: 600; align-items: center;">
+                            <span style="color: #4cc9f0;">ESFORÇO (PE)</span>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <button onclick="changePE(-1)" class="vital-btn" style="color: #4cc9f0;">-</button>
+                                <span id="peDisplay">1 / 1</span>
+                                <button onclick="changePE(1)" class="vital-btn" style="color: #4cc9f0;">+</button>
+                            </div>
+                        </div>
+                        <div
+                            style="background: #333; height: 10px; border-radius: 5px; overflow: hidden; position: relative;">
+                            <div class="bar-pe"
+                                style="width: 100%; background: #4cc9f0; height: 100%; transition: width 0.3s;"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="attributes-grid" id="attrGrid"></div>
@@ -329,6 +399,91 @@
         </section>
 
     </main>
+
+    <!-- RIGHT SIDEBAR: CLASS FEATURES -->
+    <aside class="sidebar-right">
+        <div class="sidebar-header">
+            <span class="sec-title" style="font-size:1rem; color:#ffd700;">Habilidades de Classe</span>
+            <i data-lucide="sparkles" color="#ffd700" size="18"></i>
+        </div>
+        <div id="featListContent" class="feat-list-container">
+            <!-- JS Injected -->
+        </div>
+    </aside>
+
+    <style>
+        /* LAYOUT ADJUSTMENTS */
+        body {
+            display: flex;
+            flex-direction: row;
+            overflow: hidden;
+        }
+
+        .sidebar-left {
+            width: 250px;
+            flex-shrink: 0;
+            background: rgba(0, 0, 0, 0.6);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            z-index: 10;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px 40px;
+            /* Reduced side padding */
+            overflow-y: auto;
+            position: relative;
+            z-index: 5;
+        }
+
+        .sidebar-right {
+            width: 300px;
+            flex-shrink: 0;
+            background: rgba(0, 0, 0, 0.6);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            z-index: 10;
+            height: 100vh;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 15px;
+        }
+
+        .feat-list-container {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding-right: 5px;
+            /* Scrollbar space */
+        }
+
+        /* Scrollbar styling */
+        .feat-list-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .feat-list-container::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+
+        .feat-list-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
 
     <div id="toastContainer"
         style="position:fixed; bottom:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:10px;">

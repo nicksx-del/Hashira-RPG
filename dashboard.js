@@ -87,12 +87,17 @@ function updateVitalsUI() {
 
     if (window.HunterSystem) {
         // calc hooks
+        // In future can use HunterSystem.calculateMaxPE(humanData.level)
     }
 
     humanData.maxHP = maxHP;
     humanData.maxPE = maxPE;
     if (!humanData.currentHP) humanData.currentHP = maxHP;
+    // Ensure currentHP doesnt exceed max
+    if (humanData.currentHP > maxHP) humanData.currentHP = maxHP;
+
     if (humanData.currentPE === undefined) humanData.currentPE = maxPE;
+    if (humanData.currentPE > maxPE) humanData.currentPE = maxPE;
 
     const hpPct = (humanData.currentHP / maxHP) * 100;
     const pePct = (humanData.currentPE / maxPE) * 100;
@@ -103,40 +108,148 @@ function updateVitalsUI() {
     const peBar = document.querySelector('.bar-pe');
     if (peBar) peBar.style.width = pePct + "%";
 
+    // Update Text
+    const currHPEl = document.getElementById('currHP');
+    const maxHPEl = document.getElementById('maxHP');
+    if (currHPEl) currHPEl.textContent = humanData.currentHP;
+    if (maxHPEl) maxHPEl.textContent = maxHP;
+
     const peDisp = document.getElementById('peDisplay');
     if (peDisp) peDisp.textContent = humanData.currentPE + " / " + maxPE;
-
-    const peDispSidebar = document.getElementById('peDisplaySidebar');
-    if (peDispSidebar) peDispSidebar.textContent = humanData.currentPE + " / " + maxPE;
 }
 
 function changeLevel(delta) {
     let newLvl = humanData.level + delta;
+    updateLevel(newLvl);
+}
+
+function setLevel(lvl) {
+    updateLevel(lvl);
+    toggleLevelSelector(); // Close dropdown
+}
+
+function updateLevel(newLvl) {
     if (newLvl < 1) newLvl = 1;
     if (newLvl > 20) newLvl = 20;
 
     if (newLvl !== humanData.level) {
         humanData.level = newLvl;
-        if (delta > 0) {
-            showToast(`Nível UP! Agora você é nível ${newLvl}`, "success");
+        showToast(`Nível alterado para ${newLvl}`, "success");
 
-            if (window.HunterSystem) {
-                const feats = window.HunterSystem.getLevelData(newLvl).features;
-                feats.forEach(f => {
-                    const exists = humanData.inventory.find(i => i.name === f && i.category === 'feature');
-                    if (!exists) {
-                        humanData.inventory.push({
-                            name: f, type: 'feature', category: 'feature',
-                            desc: window.HunterSystem.FEAT_DESCRIPTIONS[f] || "Habilidade",
-                            image: 'star'
-                        });
-                        showToast("Nova Habilidade: " + f, "info");
-                    }
-                });
-            }
+        // Add Feats Logic
+        if (window.HunterSystem) {
+            const feats = window.HunterSystem.getFeaturesUpTo(newLvl);
+            feats.forEach(f => {
+                const exists = humanData.inventory.find(i => i.name === f && i.category === 'feature');
+                if (!exists) {
+                    humanData.inventory.push({
+                        name: f, type: 'feature', category: 'feature',
+                        desc: window.HunterSystem.FEAT_DESCRIPTIONS[f] || "Habilidade de Classe",
+                        image: 'star'
+                    });
+                    // Only toast new ones if leveling up linearly, but here we might jump
+                }
+            });
         }
+
         saveHuman();
         initDashboard();
+
+        // Update Form Unlocks if needed
+        if (window.renderBreathing) renderBreathing(currentBreathingStyle);
+    }
+}
+
+// Header Interactions
+function changeHP(delta) {
+    if (!humanData.currentHP) humanData.currentHP = humanData.maxHP;
+    humanData.currentHP += delta;
+    if (humanData.currentHP < 0) humanData.currentHP = 0;
+    if (humanData.currentHP > humanData.maxHP) humanData.currentHP = humanData.maxHP;
+
+    saveHuman();
+    updateVitalsUI();
+}
+
+function changePE(delta) {
+    if (humanData.currentPE === undefined) humanData.currentPE = humanData.maxPE;
+    humanData.currentPE += delta;
+    if (humanData.currentPE < 0) humanData.currentPE = 0;
+    if (humanData.currentPE > humanData.maxPE) humanData.currentPE = humanData.maxPE;
+
+    saveHuman();
+    updateVitalsUI();
+}
+
+function toggleLevelSelector() {
+    const selector = document.getElementById('levelSelector');
+    if (!selector) return;
+
+    if (selector.style.display === 'none') {
+        selector.style.display = 'block';
+        // Populate if empty
+        if (!selector.hasChildNodes() || selector.childElementCount < 20) {
+            selector.innerHTML = "";
+            for (let i = 1; i <= 20; i++) {
+                const opt = document.createElement('div');
+                opt.innerText = i;
+                opt.style.padding = "8px 15px";
+                opt.style.cursor = "pointer";
+                opt.style.color = "#fff";
+                opt.style.borderBottom = "1px solid #333";
+                opt.className = "lvl-opt";
+                opt.onmouseover = () => { opt.style.background = "#333"; };
+                opt.onmouseout = () => { opt.style.background = "transparent"; };
+                opt.onclick = () => setLevel(i);
+                selector.appendChild(opt);
+            }
+        }
+    } else {
+        selector.style.display = 'none';
+    }
+}
+
+function updateCharName(newName) {
+    humanData.name = newName.trim();
+    saveHuman();
+}
+
+// --- RENDER CLASS FEATURES (SIDEBAR) ---
+function renderClassFeatures() {
+    const list = document.getElementById('featListContent');
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    if (!window.HunterSystem) return;
+
+    const feats = window.HunterSystem.getFeaturesUpTo(humanData.level);
+    // Deduplicate
+    const uniqueFeats = [...new Set(feats)];
+
+    // Reverse to show newest first? Or standard order? User images top->bottom.
+    // Let's standard order.
+
+    uniqueFeats.forEach(f => {
+        const item = document.createElement('div');
+        item.style.background = "#222";
+        item.style.padding = "10px";
+        item.style.borderRadius = "6px";
+        item.style.border = "1px solid #444";
+        item.style.fontSize = "0.85rem";
+
+        const desc = window.HunterSystem.FEAT_DESCRIPTIONS[f] || "Habilidade Especial";
+
+        item.innerHTML = `
+            <div style="font-weight:700; color:#fff; margin-bottom:4px;">${f}</div>
+            <div style="color:#aaa; line-height:1.4;">${desc}</div>
+        `;
+        list.appendChild(item);
+    });
+
+    // Empty state if none (Lv 0?)
+    if (uniqueFeats.length === 0) {
+        list.innerHTML = `<div style="text-align:center; color:#555; padding:20px;">Nenhuma habilidade desbloqueada.</div>`;
     }
 }
 
@@ -144,6 +257,9 @@ function changeLevel(delta) {
 function renderAttributes() {
     const grid = document.getElementById('attrGrid');
     if (!grid) return;
+
+    renderClassFeatures(); // Update sidebar too
+
     grid.innerHTML = "";
 
     const stats = humanData.stats;
@@ -265,12 +381,34 @@ function renderBreathing(forceStyleId = null) {
 
     // Available Styles from DB
     const db = window.BreathingDB || {};
-    const stylesList = [
+
+    // Ensure unlockedStyles exists
+    if (!humanData.breathingStyle) humanData.breathingStyle = 'water';
+    if (!humanData.unlockedStyles) humanData.unlockedStyles = [humanData.breathingStyle];
+
+    // If current style isn't unlocked (data migration), unlock it
+    if (!humanData.unlockedStyles.includes(humanData.breathingStyle)) {
+        humanData.unlockedStyles.push(humanData.breathingStyle);
+    }
+
+    if (forceStyleId && humanData.unlockedStyles.includes(forceStyleId)) {
+        currentBreathingStyle = forceStyleId;
+    } else {
+        // If current is not unlocked, switch to first unlocked
+        if (!humanData.unlockedStyles.includes(currentBreathingStyle)) {
+            currentBreathingStyle = humanData.unlockedStyles[0];
+        }
+    }
+
+    const allStyles = [
         { id: 'water', name: 'Água', icon: 'droplets', color: '#00b4d8' },
         { id: 'thunder', name: 'Trovão', icon: 'zap', color: '#ffd700' },
         { id: 'beast', name: 'Fera', icon: 'skull', color: '#7b8cde' },
         { id: 'flame', name: 'Chamas', icon: 'flame', color: '#ff4d00' }
     ];
+
+    // Filter displayed styles
+    const stylesList = allStyles.filter(s => humanData.unlockedStyles.includes(s.id));
 
     // Build Layout HTML
     const layout = document.createElement('div');
@@ -293,10 +431,26 @@ function renderBreathing(forceStyleId = null) {
         `;
 
         item.onclick = () => {
+            currentBreathingStyle = s.id;
+            // update main unlocked style pointer if needed? No, just view.
             renderBreathing(s.id);
         };
         sidebar.appendChild(item);
     });
+
+    // SECRET ADD BUTTON
+    const addBtn = document.createElement('div');
+    addBtn.className = 'style-item';
+    addBtn.style.opacity = '0.5';
+    addBtn.style.border = '1px dashed #444';
+    addBtn.innerHTML = `
+        <div class="style-icon"><i data-lucide="plus" color="#666"></i></div>
+        <span class="style-name">Novo Estilo</span>
+    `;
+    addBtn.onclick = () => unlockNewStyle();
+    sidebar.appendChild(addBtn);
+
+    layout.appendChild(sidebar);
     layout.appendChild(sidebar);
 
     // 2. CONTENT AREA
@@ -344,6 +498,32 @@ function renderBreathing(forceStyleId = null) {
     if (window.lucide) lucide.createIcons();
 }
 
+// Unlock New Style
+function unlockNewStyle() {
+    const styleId = prompt("Digite o ID do estilo para desbloquear (water, thunder, beast, flame):");
+    if (!styleId) return;
+
+    const validStyles = ['water', 'thunder', 'beast', 'flame'];
+    const s = styleId.toLowerCase().trim();
+
+    if (!validStyles.includes(s)) {
+        showToast("Estilo não encontrado ou inválido.", "error");
+        return;
+    }
+
+    if (!humanData.unlockedStyles) humanData.unlockedStyles = [];
+
+    if (humanData.unlockedStyles.includes(s)) {
+        showToast("Você já possui este estilo.", "info");
+        return;
+    }
+
+    humanData.unlockedStyles.push(s);
+    saveHuman();
+    showToast("Novo Estilo Desbloqueado!", "success");
+    renderBreathing(s);
+}
+
 function renderFormsToGrid(grid, styleData) {
     if (!grid || !styleData) return;
 
@@ -364,7 +544,10 @@ function renderFormsToGrid(grid, styleData) {
         let evoText = "";
         let isEvolved = false;
 
-        if (evoIndex >= 0 && f.evolutions && f.evolutions[evoIndex]) {
+        // Check Lock
+        const isLocked = f.reqLevel && humanData.level < f.reqLevel;
+
+        if (!isLocked && evoIndex >= 0 && f.evolutions && f.evolutions[evoIndex]) {
             const evoString = f.evolutions[evoIndex];
             isEvolved = true;
             const tiers = ["I", "II", "III", "IV"];
@@ -376,37 +559,50 @@ function renderFormsToGrid(grid, styleData) {
             currentDesc = `<span style="opacity:0.5; text-decoration:line-through; font-size:0.8rem;">${f.desc}</span><div style="color:#fff; margin-top:4px; font-weight:600;">${evoString}</div>`;
         }
 
-        c.innerHTML = `
-            <div class="form-header-bg">
-                <div style="display:flex; flex-direction:column;">
-                    <span class="form-name">${f.name}</span>
-                    ${isEvolved ? `<span style="font-size:0.65rem; color:#ffd700; font-weight:700; letter-spacing:1px; margin-top:4px; display:flex; align-items:center; gap:4px;"><i data-lucide="sparkles" size="10"></i> ${evoText}</span>` : ''}
+        if (isLocked) {
+            c.style.opacity = "0.7";
+            c.style.border = "1px solid #333";
+            c.style.background = "#111"; // Darker
+            c.innerHTML = `
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:#666; padding:20px; text-align:center;">
+                    <i data-lucide="lock" size="32" style="margin-bottom:10px;"></i>
+                    <div style="font-weight:bold; color:#888;">${f.name}</div>
+                    <div style="font-size:0.8rem; margin-top:5px;">Bloqueado até Nível ${f.reqLevel}</div>
                 </div>
-                <div class="form-cost-badge">
-                   ${f.cost} <span>PE</span>
+             `;
+        } else {
+            c.innerHTML = `
+                <div class="form-header-bg">
+                    <div style="display:flex; flex-direction:column;">
+                        <span class="form-name">${f.name}</span>
+                        ${isEvolved ? `<span style="font-size:0.65rem; color:#ffd700; font-weight:700; letter-spacing:1px; margin-top:4px; display:flex; align-items:center; gap:4px;"><i data-lucide="sparkles" size="10"></i> ${evoText}</span>` : ''}
+                    </div>
+                    <div class="form-cost-badge">
+                    ${f.cost} <span>PE</span>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="form-body">
-                <div class="form-stats-grid">
-                     <div class="stat-box">
-                        <span class="stat-label">Dano</span>
-                        <span class="stat-value"><i data-lucide="sword" size="14"></i> ${currentDmg}</span>
-                     </div>
-                     <div class="stat-box">
-                        <span class="stat-label">Alcance</span>
-                        <span class="stat-value"><i data-lucide="maximize" size="14"></i> ${f.range || 'Toque'}</span>
-                     </div>
+                
+                <div class="form-body">
+                    <div class="form-stats-grid">
+                        <div class="stat-box">
+                            <span class="stat-label">Dano</span>
+                            <span class="stat-value"><i data-lucide="sword" size="14"></i> ${currentDmg}</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">Alcance</span>
+                            <span class="stat-value"><i data-lucide="maximize" size="14"></i> ${f.range || 'Toque'}</span>
+                        </div>
+                    </div>
+                    <div class="form-desc">${currentDesc}</div>
                 </div>
-                <div class="form-desc">${currentDesc}</div>
-            </div>
 
-            <div class="form-actions">
-                <button class="form-use-btn" onclick="useBreathing(${f.cost}, '${f.name.replace(/'/g, "\\'")}', '${currentDmg.replace(/<[^>]*>/g, '')}')">
-                    <i data-lucide="waves"></i> EXECUTAR
-                </button>
-            </div>
-        `;
+                <div class="form-actions">
+                    <button class="form-use-btn" onclick="useBreathing(${f.cost}, '${f.name.replace(/'/g, "\\'")}', '${currentDmg.replace(/<[^>]*>/g, '')}')">
+                        <i data-lucide="waves"></i> EXECUTAR
+                    </button>
+                </div>
+            `;
+        }
         grid.appendChild(c);
     });
 }

@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campanhas | Demon Slayer RPG</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --accent-primary: #00b4d8;
+            --accent-secondary: #d90429;
+            --bg-dark: #050505;
+            --glass-bg: rgba(20, 20, 20, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Wisteria Background */
+        #wisteria-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(157, 78, 221, 0.1), transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 180, 216, 0.1), transparent 50%);
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            background: linear-gradient(to right, #fff, #ccc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 10px 20px;
+            border-radius: 50px;
+            color: #ccc;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-color: #fff;
+        }
+
+        /* Grid */
+        .campaign-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        /* Cards */
+        .camp-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 220px;
+        }
+
+        .camp-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            opacity: 0.7;
+        }
+
+        .camp-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .camp-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .camp-dm {
+            color: #888;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: auto;
+        }
+
+        .camp-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-enter {
+            background: linear-gradient(135deg, #222, #333);
+            color: white;
+            border: 1px solid #444;
+        }
+
+        .btn-enter:hover {
+            background: #444;
+            border-color: #666;
+        }
+
+        .btn-invite {
+            background: transparent;
+            border: 1px solid var(--accent-primary);
+            color: var(--accent-primary);
+            width: 40px;
+            flex: none;
+            /* Icon only */
+        }
+
+        .btn-invite:hover {
+            background: var(--accent-primary);
+            color: #000;
+        }
+
+        .new-camp-card {
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            background: transparent;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .new-camp-card:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            background: rgba(0, 180, 216, 0.05);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .modal-box {
+            background: #111;
+            border: 1px solid #333;
+            padding: 2.5rem;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            transform: scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-open .modal-overlay {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-open .modal-box {
+            transform: scale(1);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            background: #222;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-family: inherit;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .btn-main {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-secondary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(217, 4, 41, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        .btn-main:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(217, 4, 41, 0.5);
+        }
+
+        /* Char Select Grid */
+        .char-select-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .char-select-item:hover {
+            border-color: var(--accent-primary);
+            background: #222;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wisteria-bg"></div>
+
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1 class="page-title">Campanhas</h1>
+                <p style="color:#888; margin:0;">Hub central de aventuras</p>
+            </div>
+            <a href="index.html" class="btn-back">
+                <i data-lucide="arrow-left"></i> Voltar ao Menu
+            </a>
+        </div>
+
+        <div class="campaign-grid" id="campGrid">
+            <!-- JS Injected -->
+        </div>
+    </div>
+
+    <!-- CREATE MODAL -->
+    <div id="createModalWrapper" class="modal-overlay">
+        <div class="modal-box">
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                <h2 style="margin:0; font-family:'Cinzel', serif;">Nova Aventura</h2>
+                <i data-lucide="x" style="cursor:pointer; color:#666;"
+                    onclick="toggleModal('createModalWrapper', false)"></i>
+            </div>
+
+            <label>Nome da Campanha</label>
+            <input type="text" id="campNameInput" class="input-field" placeholder="Ex: Fortaleza do Infinito">
+
+            <label>Mestre (Nome de Exibição)</label>
+            <input type="text" id="dmNameInput" class="input-field" placeholder="Ex: Kagaya Ubuyashiki">
+
+            <button class="btn-main" onclick="confirmCreate()">Criar Sala</button>
+        </div>
+    </div>
+
+    <!-- JOIN MODAL -->
+    <div id="joinModalWrapper" class="modal-overlay">
+        <div class="modal-box">
+            <h2 style="margin-top:0; color:var(--accent-primary);">Entrar na Campanha</h2>
+            <p style="color:#888; font-size:0.9rem; margin-bottom:20px;">
+                Você foi convidado! Escolha com qual personagem deseja participar desta aventura.
+            </p>
+
+            <div id="charSelectGrid" style="max-height:250px; overflow-y:auto; padding-right:5px;">
+                <!-- List -->
+            </div>
+
+            <button class="btn-main" style="margin-top:20px; background:#333;"
+                onclick="toggleModal('joinModalWrapper', false)">Cancelar</button>
+        </div>
+    </div>
+
+    <div id="toastContainer"
+        style="position:fixed; bottom:20px; right:20px; z-index:999; display:flex; flex-direction:column; gap:10px;">
+    </div>
+
+    <script src="campaign.js"></script>
+    <script>
+        lucide.createIcons();
+        let selectedCampId = null;
+
+        // Initialize
+        window.onload = function () {
+            renderCampaigns();
+            checkInvite();
+        };
+
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.style.padding = '12px 20px';
+            t.style.background = '#111';
+            t.style.border = '1px solid #333';
+            t.style.color = '#fff';
+            t.style.borderRadius = '8px';
+            t.style.boxShadow = '0 5px 20px rgba(0,0,0,0.5)';
+            t.style.animation = 'fadeIn 0.3s ease';
+            t.innerText = msg;
+            document.getElementById('toastContainer').appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        }
+
+        function checkInvite() {
+            const params = new URLSearchParams(window.location.search);
+            const joinId = params.get('join');
+            if (joinId) {
+                const camp = window.CampaignSystem.getCampaignById(joinId);
+                if (camp) {
+                    openJoinModal(joinId);
+                } else {
+                    showToast("Campanha inválida ou inexistente.");
+                }
+            }
+        }
+
+        function renderCampaigns() {
+            const grid = document.getElementById('campGrid');
+            grid.innerHTML = "";
+            const list = window.CampaignSystem.getCampaigns();
+
+            // Existing
+            list.forEach(c => {
+                const card = document.createElement('div');
+                card.className = 'camp-card';
+
+                // Players Avatars
+                let playerCircles = "";
+                c.players.slice(0, 4).forEach(p => {
+                    playerCircles += `<div style="width:24px; height:24px; background:#333; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; border:1px solid #555;">${p.name[0]}</div>`;
+                });
+                if (c.players.length > 4) playerCircles += `<div style="font-size:10px; color:#888;">+${c.players.length - 4}</div>`;
+
+                card.innerHTML = `
+                    <div class="camp-name">${c.name}</div>
+                    <div class="camp-dm">
+                        <i data-lucide="crown" size="14" style="color:#ffd700;"></i> 
+                        ${c.dmName}
+                    </div>
+                    
+                    <div style="margin-top:auto; display:flex; gap:5px; align-items:center;">
+                        ${playerCircles || '<span style="font-size:0.8rem; color:#444;">Nenhum jogador</span>'}
+                    </div>
+
+                    <div class="camp-actions">
+                         <button class="action-btn btn-enter" onclick="window.location.href='dm-panel.html?id=${c.id}'">
+                            Entrar
+                         </button>
+                         <button class="action-btn btn-invite" title="Copiar Convite" onclick="copyInvite('${c.id}')">
+                            <i data-lucide="link"></i>
+                         </button>
+                    </div>
+                `;
+
+                // Implementing "Join" via a small text button
+                const selfJoin = document.createElement('div');
+                selfJoin.innerHTML = '<i data-lucide="user-plus" size="16"></i>';
+                selfJoin.style.position = 'absolute'; selfJoin.style.top = '15px'; selfJoin.style.right = '15px';
+                selfJoin.style.cursor = 'pointer'; selfJoin.style.color = '#666';
+                selfJoin.onclick = (e) => { e.stopPropagation(); openJoinModal(c.id); };
+                selfJoin.title = "Adicionar Personagem Local";
+                card.appendChild(selfJoin);
+
+                grid.appendChild(card);
+            });
+
+            // New
+            const newCard = document.createElement('div');
+            newCard.className = 'camp-card new-camp-card';
+            newCard.innerHTML = `
+                <i data-lucide="plus-circle" size="40" style="margin-bottom:10px; opacity:0.7;"></i>
+                <div style="font-weight:600;">Nova Campanha</div>
+            `;
+            newCard.onclick = () => toggleModal('createModalWrapper', true);
+            grid.appendChild(newCard);
+
+            lucide.createIcons();
+        }
+
+        function toggleModal(id, show) {
+            const el = document.getElementById(id);
+            if (show) {
+                el.classList.add('modal-open');
+                el.style.display = 'flex'; // Ensure generic fallback
+                setTimeout(() => el.style.opacity = '1', 10);
+            } else {
+                el.classList.remove('modal-open');
+                el.style.opacity = '0';
+                setTimeout(() => el.style.display = 'none', 300);
+            }
+        }
+
+        function confirmCreate() {
+            const name = document.getElementById('campNameInput').value;
+            const dm = document.getElementById('dmNameInput').value;
+            if (!name) return showToast("Nome obrigatório!");
+
+            window.CampaignSystem.createCampaign(name, dm);
+            toggleModal('createModalWrapper', false);
+            renderCampaigns();
+            showToast("Campanha criada com sucesso!");
+        }
+
+        function copyInvite(id) {
+            // Construct URL
+            const url = window.location.origin + window.location.pathname + '?join=' + id;
+            navigator.clipboard.writeText(url).then(() => {
+                showToast("Link de convite copiado!");
+            });
+        }
+
+        function openJoinModal(id) {
+            selectedCampId = id;
+            const grid = document.getElementById('charSelectGrid');
+            grid.innerHTML = "";
+
+            const raw = localStorage.getItem('demonSlayerSaveSlots');
+            const chars = raw ? JSON.parse(raw) : [];
+
+            if (chars.length === 0) {
+                grid.innerHTML = "<div style='color:#666; padding:20px; text-align:center;'>Nenhum personagem encontrado. Crie um primeiro!</div>";
+            }
+
+            chars.forEach(char => {
+                const d = document.createElement('div');
+                d.className = 'char-select-item';
+                d.innerHTML = `
+                    <span style="font-weight:600; color:#fff;">${char.name}</span>
+                    <span style="color:#666; font-size:0.8rem;">Nv ${char.level}</span>
+                `;
+                d.onclick = () => {
+                    const success = window.CampaignSystem.addPlayerToCampaign(selectedCampId, char);
+                    if (success) {
+                        showToast("Personagem adicionado!");
+                        toggleModal('joinModalWrapper', false);
+                        renderCampaigns();
+                        // Clear URL param if present
+                        if (window.location.search.includes('join=')) {
+                            window.history.pushState({}, document.title, window.location.pathname);
+                        }
+                    } else {
+                        showToast("Personagem já está na campanha!");
+                    }
+                };
+                grid.appendChild(d);
+            });
+
+            toggleModal('joinModalWrapper', true);
+        }
+
+    </script>
+</body>
+
+</html>
