@@ -1,25 +1,30 @@
-/* --- NICHIRIN FORGE PREMIUM STYLES --- */
+/* --- NICHIRIN FORGE ULTIMATE VISUALS --- */
 :root {
     --accent-red: #d90429;
     --accent-cyan: #00b4d8;
     --accent-gold: #ffd700;
+    --metal-dark: #1a1a1d;
+    --metal-light: #e0e0e0;
 }
 
 .nichirin-wrapper {
-    background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a0f 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    padding: 3rem;
+    background: radial-gradient(circle at center, #1a1a2e 0%, #050505 100%);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 24px;
+    padding: 2rem;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), inset 0 0 100px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
     align-items: center;
     max-width: 900px;
     margin: 0 auto;
+    min-height: 550px;
+    justify-content: flex-start;
 }
 
+/* Cinematic Overlay */
 .nichirin-wrapper::before {
     content: '';
     position: absolute;
@@ -28,11 +33,12 @@
     width: 100%;
     height: 100%;
     background: url('https://www.transparenttextures.com/patterns/dark-matter.png');
-    opacity: 0.3;
+    opacity: 0.15;
     pointer-events: none;
+    z-index: 0;
 }
 
-/* Visualization Area */
+/* --- THE STAGE --- */
 .sword-stage {
     position: relative;
     width: 100%;
@@ -41,303 +47,414 @@
     align-items: center;
     justify-content: center;
     margin-bottom: 2rem;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    z-index: 10;
+    perspective: 1000px;
 }
 
-/* Base Sword */
+/* VFX Container */
+.vfx-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 50;
+    overflow: hidden;
+}
+
 .sword-container {
     position: relative;
     width: 600px;
-    height: 60px;
-    transform: rotate(-5deg);
-    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
-    transition: all 0.5s ease;
+    height: 70px;
+    transform: rotate(0deg) translateZ(0);
+    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.7));
+    transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transform-style: preserve-3d;
+}
+
+/* --- BLADE GEOMETRY --- */
+.blade-group {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
 }
 
 .blade {
     position: absolute;
-    top: 20px;
+    top: 22px;
     left: 140px;
-    width: 420px;
-    height: 24px;
-    background: #e0e0e0;
-    border-radius: 0 300px 0 0;
-    box-shadow: inset 0 -5px 10px rgba(0, 0, 0, 0.5), inset 0 2px 5px rgba(255, 255, 255, 0.8);
-    z-index: 1;
-    transition: background-color 1.5s ease, box-shadow 1.5s ease, filter 0.2s;
+    width: 440px;
+    height: 28px;
+    background: linear-gradient(180deg, #fff 0%, #aaa 10%, #666 40%, #fff 60%, #888 100%);
+    /* The gradient above simulates a metallic reflection "Hamon" style base */
+    border-radius: 0 400px 0 0;
     overflow: hidden;
+    box-shadow: inset 0 -2px 5px rgba(0, 0, 0, 0.8), inset 0 2px 5px rgba(255, 255, 255, 0.7);
+    transition: all 0.5s ease;
 }
 
-/* Hamon Line (Temper line) */
-.blade::after {
-    content: '';
+/* COLOR LAYER - THE SOUL OF THE SWORD */
+.blade-color-layer {
     position: absolute;
-    bottom: 2px;
+    top: 0;
+    left: 0;
+    width: 0%;
+    /* Animates to 100% */
+    height: 100%;
+    background: transparent;
+    z-index: 5;
+    mix-blend-mode: overlay;
+    /* Blends color onto the metal texture */
+    transition: width 0.1s linear;
+    /* Quick fill handled by JS frames for more control, or CSS */
+    opacity: 0;
+}
+
+/* Aura Glow (External) */
+.blade-aura {
+    position: absolute;
+    top: 15px;
+    left: 135px;
+    width: 450px;
+    height: 42px;
+    border-radius: 0 400px 0 0;
+    background: transparent;
+    z-index: 1;
+    /* Behind blade */
+    opacity: 0;
+    filter: blur(8px);
+    transition: opacity 1s ease;
+}
+
+/* Hamon (Pattern) */
+.hamon {
+    position: absolute;
+    bottom: 0px;
     left: 0;
     width: 100%;
-    height: 8px;
-    background: linear-gradient(to top, rgba(255, 255, 255, 0.6) 0%, transparent 100%);
-    border-radius: 0 100px 0 0;
-    opacity: 0.7;
+    height: 12px;
+    background: repeating-linear-gradient(90deg,
+            transparent 0px,
+            rgba(255, 255, 255, 0.4) 10px,
+            transparent 20px);
+    opacity: 0.3;
+    mix-blend-mode: color-dodge;
+    z-index: 6;
 }
 
+/* Engraving */
+.engraving {
+    position: absolute;
+    top: 50%;
+    right: 50px;
+    transform: translateY(-50%) scaleX(-1);
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 3px;
+    font-weight: 800;
+    text-shadow: 0 0 5px currentColor;
+    writing-mode: vertical-rl;
+    height: auto;
+    opacity: 0;
+    transition: opacity 2s ease;
+    z-index: 20;
+    mix-blend-mode: plus-lighter;
+}
+
+/* --- FITTINGS --- */
 .habaki {
     position: absolute;
-    top: 20px;
+    top: 21px;
     left: 130px;
-    width: 15px;
-    height: 26px;
-    background: #d4af37;
-    z-index: 2;
-    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.5);
+    width: 14px;
+    height: 30px;
+    background: linear-gradient(90deg, #b8860b, #ffd700, #b8860b);
+    z-index: 15;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
 }
 
 .tsuba {
+    /* Guard */
     position: absolute;
-    top: 10px;
-    left: 120px;
-    width: 15px;
-    height: 50px;
+    top: 8px;
+    left: 124px;
+    width: 12px;
+    height: 56px;
     background: #111;
-    border: 2px solid #333;
+    border: 1px solid #444;
     border-radius: 4px;
-    z-index: 3;
-    transform: rotate(-5deg);
+    z-index: 20;
+    box-shadow: 4px 0 8px rgba(0, 0, 0, 0.8);
+    background-image: radial-gradient(circle at center, #333 1px, transparent 1px);
+    background-size: 4px 4px;
 }
 
 .tsuka {
+    /* Handle */
     position: absolute;
-    top: 22px;
+    top: 24px;
     left: 0;
-    width: 125px;
-    height: 20px;
-    background: #222;
+    width: 128px;
+    height: 24px;
+    background: #fff;
+    /* Ray skin */
     border-radius: 4px;
-    z-index: 2;
-    background-image: repeating-linear-gradient(60deg, #111 0, #111 10px, #333 10px, #333 20px);
+    z-index: 10;
+    overflow: hidden;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
-/* FORGE OVERLAY EFFECTS */
-.heat-glow {
-    position: absolute;
-    top: 0;
-    left: 0;
+.samegawa {
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle, rgba(255, 100, 0, 0.4) 0%, transparent 70%);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.5s;
-    mix-blend-mode: screen;
-}
-
-/* BLADE COLORS - PRESETS */
-.blade.red {
-    background: linear-gradient(90deg, #800, #f00);
-    box-shadow: 0 0 20px #f00, inset 0 -5px 10px rgba(0, 0, 0, 0.8);
-}
-
-.blade.blue {
-    background: linear-gradient(90deg, #005, #00f);
-    box-shadow: 0 0 20px #00f, inset 0 -5px 10px rgba(0, 0, 0, 0.8);
-}
-
-.blade.green {
-    background: linear-gradient(90deg, #050, #0f0);
-    box-shadow: 0 0 20px #0f0, inset 0 -5px 10px rgba(0, 0, 0, 0.8);
-}
-
-.blade.yellow {
-    background: linear-gradient(90deg, #880, #ff0);
-    box-shadow: 0 0 20px #ff0, inset 0 -5px 10px rgba(0, 0, 0, 0.8);
-}
-
-.blade.pink {
-    background: linear-gradient(90deg, #505, #f0f);
-    box-shadow: 0 0 20px #f0f, inset 0 -5px 10px rgba(0, 0, 0, 0.8);
-}
-
-.blade.indigo {
-    background: linear-gradient(90deg, #2c2c54, #474787);
-    box-shadow: 0 0 20px #474787, inset 0 -5px 10px #000;
-}
-
-.blade.black {
-    background: linear-gradient(90deg, #111, #333);
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5), inset 0 -5px 10px #000;
-}
-
-/* MASTERY VISUALS (FX) */
-
-/* Thunder FX */
-.blade.yellow.mastered::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url("data:image/svg+xml,%3Csvg width='100' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 0 L20 20 L30 0 L40 20' stroke='white' fill='none' stroke-width='2'/%3E%3C/svg%3E");
+    background-image: radial-gradient(#999 2px, transparent 2.5px);
+    background-size: 6px 6px;
     opacity: 0.6;
-    mix-blend-mode: overlay;
-    animation: lightningFlash 0.5s infinite alternate;
 }
 
-/* Flame FX */
-.blade.red.mastered {
-    animation: pulseHeat 2s infinite;
-}
-
-.blade.red.mastered::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 50%;
-    background: linear-gradient(to top, #ffcc00, transparent);
-    opacity: 0.5;
-    animation: flameFlicker 0.2s infinite;
-}
-
-/* Water FX */
-.blade.blue.mastered {
-    box-shadow: 0 0 30px #00f, inset 0 -5px 10px rgba(0, 0, 0, 0.8);
-}
-
-.blade.blue.mastered::before {
-    content: '';
+.tsuka-ito {
     position: absolute;
     top: 0;
     left: 0;
-    width: 200%;
+    width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-    animation: waterFlow 3s infinite linear;
+    background: repeating-linear-gradient(45deg,
+            rgba(20, 20, 20, 0.95) 0px,
+            rgba(20, 20, 20, 0.95) 8px,
+            transparent 8px,
+            transparent 14px);
+    z-index: 2;
+    box-shadow: inset 0 0 5px #000;
 }
 
-/* Beast FX (Chipped) */
-.blade.indigo.mastered {
-    background: repeating-linear-gradient(90deg, #2c2c54, #474787 10px, #1a1a1d 12px);
-    box-shadow: 0 0 15px #7b8cde;
+.kashira {
+    position: absolute;
+    top: 24px;
+    left: -6px;
+    width: 10px;
+    height: 24px;
+    background: linear-gradient(to bottom, #b8860b, #ffd700);
+    border-radius: 4px 0 0 4px;
+    z-index: 11;
 }
 
-/* Keyframes */
-@keyframes lightningFlash {
+/* --- ELEMENTAL FX CLASSES (Applied via JS) --- */
+
+/* FLAME */
+.blade.fx-flame .blade-color-layer {
+    background: linear-gradient(90deg, #ff0000, #ff7b00, #ffcc00);
+    opacity: 1;
+}
+
+.blade.fx-flame .blade-aura {
+    background: radial-gradient(ellipse at center, rgba(255, 100, 0, 0.8) 0%, transparent 70%);
+    opacity: 0.8;
+    animation: pulseFlame 2s infinite alternate;
+}
+
+@keyframes pulseFlame {
+    0% {
+        filter: blur(8px) brightness(1);
+        transform: scale(1);
+    }
+
+    100% {
+        filter: blur(12px) brightness(1.3);
+        transform: scale(1.02);
+    }
+}
+
+/* WATER */
+.blade.fx-water .blade-color-layer {
+    background: linear-gradient(90deg, #023e8a, #0077b6, #48cae4);
+    opacity: 0.9;
+}
+
+.blade.fx-water .blade-aura {
+    background: linear-gradient(90deg, transparent, rgba(0, 180, 216, 0.6), transparent);
+    opacity: 0.7;
+    filter: blur(6px);
+    animation: flowWater 3s linear infinite;
+}
+
+@keyframes flowWater {
+    0% {
+        background-position: 0% 50%;
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 0.9;
+    }
+
+    100% {
+        background-position: 100% 50%;
+        opacity: 0.5;
+    }
+}
+
+/* THUNDER */
+.blade.fx-thunder .blade-color-layer {
+    background: linear-gradient(90deg, #ffd60a, #fff, #ffd60a);
+    opacity: 1;
+    mix-blend-mode: hard-light;
+}
+
+.blade.fx-thunder .blade-aura {
+    background: radial-gradient(circle, rgba(255, 214, 10, 0.6) 0%, transparent 60%);
+    opacity: 0.5;
+    animation: flashThunder 0.2s infinite alternate;
+}
+
+@keyframes flashThunder {
     0% {
         opacity: 0.2;
+        transform: scale(0.95);
     }
 
     100% {
-        opacity: 0.8;
+        opacity: 0.9;
+        transform: scale(1.05);
+        filter: blur(4px) drop-shadow(0 0 10px #fff);
     }
 }
 
-@keyframes pulseHeat {
-    0% {
-        box-shadow: 0 0 20px #f00;
-    }
-
-    50% {
-        box-shadow: 0 0 40px #f00;
-    }
-
-    100% {
-        box-shadow: 0 0 20px #f00;
-    }
+/* SUN (BLACK) */
+.blade.fx-sun .blade-color-layer {
+    background: linear-gradient(90deg, #000, #1a1a1d);
+    opacity: 0.95;
+    mix-blend-mode: multiply;
 }
 
-@keyframes flameFlicker {
-    0% {
-        height: 40%;
-        opacity: 0.4;
-    }
-
-    100% {
-        height: 60%;
-        opacity: 0.6;
-    }
+.blade.fx-sun .blade-aura {
+    box-shadow: 0 0 30px rgba(255, 70, 0, 0.5);
+    /* Hinokami Kagura hint */
+    opacity: 0.4;
 }
 
-@keyframes waterFlow {
-    0% {
-        transform: translateX(0);
-    }
-
-    100% {
-        transform: translateX(-50%);
-    }
-}
-
-/* Controls */
+/* --- UI COMPONENTS --- */
 .forge-ui {
     width: 100%;
+    z-index: 100;
+}
+
+.forge-step {
+    animation: uiEnter 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes uiEnter {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.mode-cards {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-    z-index: 10;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 1rem;
 }
 
-/* SPARK ANIMATION */
-.spark {
+.mode-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2.5rem;
+    border-radius: 16px;
+    width: 220px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    backdrop-filter: blur(10px);
+}
+
+.mode-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-8px);
+    border-color: var(--accent-cyan);
+    box-shadow: 0 10px 30px rgba(0, 180, 216, 0.15);
+}
+
+.mode-card h4 {
+    color: #fff;
+    margin: 15px 0 5px;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1px;
+}
+
+/* Cinematic Result Text */
+#forgeResult h2 {
+    font-size: 2.5rem;
+    letter-spacing: 2px;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    background: linear-gradient(to bottom, #fff, #999);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+/* Buttons */
+.forge-btn {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #111, #222);
+    border: 1px solid #444;
+    color: #fff;
+    font-weight: bold;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-radius: 4px;
+}
+
+.forge-btn:hover {
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+/* --- PARTICLES --- */
+.particle {
     position: absolute;
-    width: 4px;
-    height: 4px;
-    background: #fff;
-    border-radius: 50%;
-    box-shadow: 0 0 10px #fff, 0 0 20px #ffd700;
     pointer-events: none;
-    z-index: 50;
+    background: white;
+    border-radius: 50%;
+    opacity: 0;
 }
 
-.shake {
-    animation: shake 0.1s infinite;
+.particle.rise {
+    animation: partRise 2s ease-out forwards;
 }
 
-@keyframes shake {
+@keyframes partRise {
     0% {
-        transform: translate(1px, 1px) rotate(0deg);
-    }
-
-    10% {
-        transform: translate(-1px, -2px) rotate(-1deg);
-    }
-
-    20% {
-        transform: translate(-3px, 0px) rotate(1deg);
-    }
-
-    30% {
-        transform: translate(3px, 2px) rotate(0deg);
-    }
-
-    40% {
-        transform: translate(1px, -1px) rotate(1deg);
-    }
-
-    50% {
-        transform: translate(-1px, 2px) rotate(-1deg);
-    }
-
-    60% {
-        transform: translate(-3px, 1px) rotate(0deg);
-    }
-
-    70% {
-        transform: translate(3px, 1px) rotate(-1deg);
-    }
-
-    80% {
-        transform: translate(-1px, -1px) rotate(1deg);
-    }
-
-    90% {
-        transform: translate(1px, 2px) rotate(0deg);
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
     }
 
     100% {
-        transform: translate(1px, -2px) rotate(-1deg);
+        opacity: 0;
+        transform: translate(var(--dx), -100px) scale(0);
     }
+}
+
+.screen-flash {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: white;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 2s;
 }
