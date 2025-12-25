@@ -178,6 +178,29 @@ window.renderInventory = function () {
 
     container.innerHTML = '';
 
+    // Ensure Yen Exists
+    if (typeof charData.yen === 'undefined') charData.yen = 0;
+
+    // YEN DISPLAY
+    const yenDisplay = document.createElement('div');
+    yenDisplay.style.gridColumn = '1 / -1';
+    yenDisplay.style.background = 'linear-gradient(90deg, #1a1a2e, #16213e)';
+    yenDisplay.style.padding = '10px 20px';
+    yenDisplay.style.borderRadius = '8px';
+    yenDisplay.style.display = 'flex';
+    yenDisplay.style.justifyContent = 'space-between';
+    yenDisplay.style.alignItems = 'center';
+    yenDisplay.style.marginBottom = '15px';
+    yenDisplay.style.border = '1px solid #333';
+    yenDisplay.innerHTML = `
+        <div style="display:flex; align-items:center; gap:10px;">
+            <i data-lucide="coins" color="#ffd700"></i>
+            <span style="font-weight:bold; color:#ffd700; font-family:var(--font-display);">Riqueza</span>
+        </div>
+        <div style="font-size:1.2rem; font-weight:800; color:#fff;">${charData.yen.toLocaleString()} <span style="font-size:0.8rem; color:#888;">Ienes</span></div>
+    `;
+    container.appendChild(yenDisplay);
+
     // Calcular peso total
     let totalWeight = 0;
     const maxWeight = (charData.attributes && charData.attributes.str ? charData.attributes.str : 10) * 15;
@@ -199,13 +222,15 @@ window.renderInventory = function () {
 
     // Renderizar itens
     if (filtered.length === 0) {
-        container.innerHTML = `
+        const empty = document.createElement('div');
+        empty.innerHTML = `
             <div style="text-align:center; padding:3rem; color:#666; grid-column: 1/-1;">
                 <i data-lucide="package-x" style="width:48px; height:48px; margin:0 auto 1rem; display:block;"></i>
                 <div style="font-size:1.1rem; margin-bottom:0.5rem;">Vazio</div>
                 <div style="font-size:0.85rem;">Adicione itens pelo botão acima</div>
             </div>
         `;
+        container.appendChild(empty);
     } else {
         filtered.forEach((item, idx) => {
             // Find real index in main array to ensure actions target correct item
@@ -266,12 +291,16 @@ function createInventoryCard(item, index) {
             <div style="margin-bottom:10px; color:#aaa; font-style:italic;">${item.props || 'Sem propriedades'}</div>
             <div style="margin-bottom:15px; color:#ccc;">${item.desc || 'Sem descrição'}</div>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                ${item.type !== 'consumable' ? `
+                ${item.type === 'consumable' ? `
+                     <button class="inv-action-btn" style="background:#20bf6b; color:#fff; border:none;" onclick="event.stopPropagation(); useItem(${index})">
+                        <i data-lucide="sparkles" style="width:14px;"></i> Usar/Abrir
+                    </button>
+                ` : `
                     <button class="inv-action-btn ${item.equipped ? 'equipped' : ''}" onclick="event.stopPropagation(); toggleEquip(${index})">
                         <i data-lucide="${item.equipped ? 'x-circle' : 'check-circle'}" style="width:14px;"></i>
                         ${item.equipped ? 'Desequipar' : 'Equipar'}
                     </button>
-                ` : ''}
+                `}
                 <button class="inv-action-btn" onclick="event.stopPropagation(); editItem(${index})">
                     <i data-lucide="pencil" style="width:14px;"></i> Editar
                 </button>
@@ -429,4 +458,106 @@ function updateCapacity(current, max) {
         else if (percent > 70) barEl.style.background = 'linear-gradient(90deg, #ffaa00, #ff8800)';
         else barEl.style.background = 'linear-gradient(90deg, #555, #888)';
     }
+}
+
+// === FUNÇÃO DE USO DE ITENS (CONSUMÍVEIS) ===
+window.useItem = function (index) {
+    const item = charData.inventory[index];
+    if (!item) return;
+
+    // 1. Check for SPECIAL Effect Properties (Money)
+    // We expect money bags to have something like "3d6 x 1000" in name or props, or a special 'effect' tag.
+    // Let's rely on 'effect_money' prop or regex on name/desc/props if we can't be strict.
+    // The user will add "Bolsa de Ienes" etc.
+
+    // Pattern Match for Money: "3d6 x 1000" or similar
+    // We will look for a custom property `money_roll` if set, or parse from Props/Desc
+
+    const moneyMatch = (item.props || '').match(/(\d+d\d+)\s*[xX*]\s*(\d+)/);
+
+    if (moneyMatch || item.name.toLowerCase().includes('ienes') || item.money_roll) {
+        const formula = item.money_roll || (moneyMatch ? moneyMatch[1] : null);
+        const mult = item.money_mult || (moneyMatch ? parseInt(moneyMatch[2]) : 1);
+
+        if (formula) {
+            // Dice Roll
+            // We can use the parseAndRoll from dashboard.js if available, or simple regex here.
+            // Let's do simple regex here to be safe and independent.
+            const rollParts = formula.match(/(\d+)d(\d+)/);
+            let total = 0;
+            if (rollParts) {
+                const count = parseInt(rollParts[1]);
+                const sides = parseInt(rollParts[2]);
+                for (let i = 0; i < count; i++) total += Math.floor(Math.random() * sides) + 1;
+            } else {
+                total = parseInt(formula) || 0;
+            }
+
+            const finalValue = total * mult;
+
+            if (confirm(`Abrir ${item.name}?\nVocê obteve: ${finalValue.toLocaleString()} Ienes!`)) {
+                // Add Money
+                charData.yen = (charData.yen || 0) + finalValue;
+
+                // Remove Item
+                charData.inventory.splice(index, 1);
+
+                // Save & Render
+                if (typeof saveState === 'function') saveState(); // This calls saveHuman usually
+                else if (typeof saveHuman === 'function') saveHuman();
+
+                renderInventory();
+                showFlashMessage(`+${finalValue} Ienes`);
+            }
+        }
+        else if (item.value) {
+            // Fixed value
+            const val = parseInt(String(item.value).replace(/\D/g, ''));
+            if (val) {
+                if (confirm(`Usar ${item.name} para obter ${val} Ienes?`)) {
+                    charData.yen = (charData.yen || 0) + val;
+                    charData.inventory.splice(index, 1);
+                    if (typeof saveHuman === 'function') saveHuman();
+                    renderInventory();
+                    showFlashMessage(`+${val} Ienes`);
+                }
+            }
+        }
+        else {
+            alert("Este item parece valioso, mas não consegui determinar o valor exato.");
+        }
+        return;
+    }
+
+    // Generic Consumable (Healing etc)
+    // Check for "Cura" or dice in Desc
+    if (item.name.includes("Poção") || (item.desc && item.desc.includes("cura"))) {
+        // Simple generic healing logic
+        const healMatch = (item.dmg || item.props || '').match(/(\d+)d(\d+)(\+(\d+))?/);
+        if (healMatch) {
+            const count = parseInt(healMatch[1]);
+            const sides = parseInt(healMatch[2]);
+            const bonus = healMatch[4] ? parseInt(healMatch[4]) : 0;
+
+            let heal = bonus;
+            for (let i = 0; i < count; i++) heal += Math.floor(Math.random() * sides) + 1;
+
+            if (confirm(`Beber ${item.name}?\nCura estimada: ${heal} PV`)) {
+                // Heal
+                if (typeof changeHP === 'function') changeHP(heal);
+
+                // Remove
+                charData.inventory.splice(index, 1);
+                if (typeof saveHuman === 'function') saveHuman();
+                renderInventory();
+                showFlashMessage(`Curado: +${heal} PV`);
+            }
+            return;
+        }
+    }
+
+    alert(`Você usa ${item.name}. (Funcionalidade genérica - O item foi consumido)`);
+    charData.inventory.splice(index, 1);
+    if (typeof saveHuman === 'function') saveHuman();
+    renderInventory();
 }

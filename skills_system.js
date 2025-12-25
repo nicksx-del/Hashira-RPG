@@ -48,9 +48,16 @@ window.renderSkills = function () {
 
     SKILLS_LIST.forEach((skill, index) => {
         const isProficient = charData.skillProficiencies.includes(skill.name);
-        const attrValue = charData.attributes && charData.attributes[skill.attr] ? charData.attributes[skill.attr] : 10;
+
+        // Try 'stats' first (Dashboard default), then 'attributes' (Creation default), then 10
+        const attrValue = (charData.stats && charData.stats[skill.attr]) || (charData.attributes && charData.attributes[skill.attr]) || 10;
+
         const modifier = Math.floor((attrValue - 10) / 2);
-        const profBonus = charData.profBonus || 2;
+        // Prof Bonus: Use global hunter system or default 2
+        const profBonus = (window.HunterSystem && typeof window.HunterSystem.calculateProficiency === 'function')
+            ? window.HunterSystem.calculateProficiency(charData.level || 1)
+            : 2;
+
         const totalBonus = modifier + (isProficient ? profBonus : 0);
         const bonusText = totalBonus >= 0 ? `+${totalBonus}` : `${totalBonus}`;
 

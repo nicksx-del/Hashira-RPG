@@ -938,10 +938,10 @@
         </div>
 
         <!-- SEC 2: COMBAT -->
-        <!-- STEP 2: COMBAT & NICHIRIN -->
+        <!-- STEP 2: COMBAT -->
         <div id="step-2" class="form-step">
             <div class="section-header">
-                <span class="sec-num">02.</span> <span class="sec-title">Estilo e Lâmina</span>
+                <span class="sec-num">02.</span> <span class="sec-title">Estilo de Combate</span>
             </div>
 
             <div style="display:flex; flex-direction:column; gap:4rem; margin-bottom:2rem;">
@@ -951,8 +951,8 @@
                     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:2rem;">
 
                         <!-- Água (Tanjiro) -->
-                        <div class="style-btn selected" onclick="selectCombat('water', this)"
-                            style="aspect-ratio:1/1; position:relative; overflow:hidden; border-radius:16px; transition:0.3s; background:#1a1a20; border:1px solid #333; height:auto;">
+                        <div class="style-btn selected" onclick="selectCombatStyle('water', this)"
+                            style="aspect-ratio:1/1; position:relative; overflow:hidden; border-radius:16px; transition:0.3s; background:#1a1a20; border:1px solid #00b4d8; height:auto; box-shadow:0 0 15px rgba(0,180,216,0.3); transform:scale(1.05);">
                             <!-- Image -->
                             <img src="assets/Respirações/Tanjirou_manga.png"
                                 style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); height:105%; width:auto; opacity:1; transition:0.3s; pointer-events:none; object-fit:contain; z-index:1;">
@@ -972,10 +972,10 @@
                         </div>
 
                         <!-- Trovão (Zenitsu) -->
-                        <div class="style-btn locked"
+                        <div class="style-btn" onclick="selectCombatStyle('thunder', this)"
                             style="aspect-ratio:1/1; position:relative; overflow:hidden; border-radius:16px; transition:0.3s; background:#1a1a20; border:1px solid #333; height:auto;">
                             <img src="assets/Respirações/Zenitsu_colored_body_2 (1).png"
-                                style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); height:110%; width:auto; opacity:0.6; pointer-events:none; object-fit:contain; z-index:1;">
+                                style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); height:110%; width:auto; opacity:1; pointer-events:none; object-fit:contain; z-index:1;">
 
                             <div
                                 style="position:absolute; bottom:0; left:0; width:100%; z-index:2; background:linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.6), transparent); padding:2rem 1rem 1rem 1rem; display:flex; flex-direction:column; align-items:center; justify-content:flex-end;">
@@ -983,17 +983,16 @@
                                     <div style="background:rgba(255, 183, 3, 0.2); padding:6px; border-radius:50%;"><i
                                             data-lucide="zap" style="color:#ffb703; width:20px; height:20px;"></i></div>
                                     <strong
-                                        style="color:#ccc; font-size:1.4rem; font-family:'Cinzel', serif; letter-spacing:1px;">Trovão</strong>
-                                    <i data-lucide="lock" size="14" style="color:#666;"></i>
+                                        style="color:white; font-size:1.4rem; font-family:'Cinzel', serif; letter-spacing:1px;">Trovão</strong>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Chamas -->
-                        <div class="style-btn locked"
+                        <div class="style-btn" onclick="selectCombatStyle('flame', this)"
                             style="aspect-ratio:1/1; position:relative; overflow:hidden; border-radius:16px; transition:0.3s; background:#1a1a20; border:1px solid #333; height:auto;">
                             <img src="assets/Respirações/2d84f34c62e42db96bfedd71671e99c5-removebg-preview.png"
-                                style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); height:110%; width:auto; opacity:0.6; pointer-events:none; object-fit:contain; z-index:1;">
+                                style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); height:110%; width:auto; opacity:1; pointer-events:none; object-fit:contain; z-index:1;">
 
                             <div
                                 style="position:absolute; bottom:0; left:0; width:100%; z-index:2; background:linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.6), transparent); padding:2rem 1rem 1rem 1rem; display:flex; flex-direction:column; align-items:center; justify-content:flex-end;">
@@ -1002,17 +1001,16 @@
                                             data-lucide="flame" style="color:#ef233c; width:20px; height:20px;"></i>
                                     </div>
                                     <strong
-                                        style="color:#ccc; font-size:1.4rem; font-family:'Cinzel', serif; letter-spacing:1px;">Chamas</strong>
-                                    <i data-lucide="lock" size="14" style="color:#666;"></i>
+                                        style="color:white; font-size:1.4rem; font-family:'Cinzel', serif; letter-spacing:1px;">Chamas</strong>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Fera -->
-                        <div class="style-btn locked"
+                        <div class="style-btn" onclick="selectCombatStyle('beast', this)"
                             style="aspect-ratio:1/1; position:relative; overflow:hidden; border-radius:16px; transition:0.3s; background:#1a1a20; border:1px solid #333; height:auto;">
                             <img src="assets/Respirações/Inosuke3 (1).png"
-                                style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); height:110%; width:auto; opacity:0.6; pointer-events:none; object-fit:contain; z-index:1;">
+                                style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); height:110%; width:auto; opacity:1; pointer-events:none; object-fit:contain; z-index:1;">
 
                             <div
                                 style="position:absolute; bottom:0; left:0; width:100%; z-index:2; background:linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.6), transparent); padding:2rem 1rem 1rem 1rem; display:flex; flex-direction:column; align-items:center; justify-content:flex-end;">
@@ -1021,8 +1019,7 @@
                                             data-lucide="paw-print" style="color:#888; width:20px; height:20px;"></i>
                                     </div>
                                     <strong
-                                        style="color:#ccc; font-size:1.4rem; font-family:'Cinzel', serif; letter-spacing:1px;">Fera</strong>
-                                    <i data-lucide="lock" size="14" style="color:#666;"></i>
+                                        style="color:white; font-size:1.4rem; font-family:'Cinzel', serif; letter-spacing:1px;">Fera</strong>
                                 </div>
                             </div>
                         </div>
@@ -1031,84 +1028,6 @@
                         disponíveis em níveis superiores.</div>
                 </div>
 
-                <!-- 2. Nichirin Forge (Enhanced) -->
-                <div
-                    style="background: rgba(255,255,255,0.03); padding: 2rem; border-radius:16px; border:1px solid #333;">
-                    <h4
-                        style="margin-top:0; color:#ddd; margin-bottom:2rem; display:flex; align-items:center; gap:10px;">
-                        <i data-lucide="hammer" style="color:#aaa;"></i> Forja Nichirin
-                    </h4>
-
-                    <div class="forge-container"
-                        style="display:grid; grid-template-columns: 350px 1fr; gap:4rem; align-items:center;">
-                        <!-- Input Side -->
-                        <div style="display:flex; flex-direction:column; gap:1.5rem;">
-                            <div>
-                                <label style="display:block; color:#888; margin-bottom:8px; font-size:0.9rem;">Nome da
-                                    Lâmina</label>
-                                <input type="text" class="ds-input" id="swordName" placeholder="Ex: Maré Calma"
-                                    oninput="updatePreview()" style="width:100%; text-align:left;">
-                            </div>
-
-                            <div>
-                                <label style="display:block; color:#888; margin-bottom:12px; font-size:0.9rem;">Minério
-                                    da Montanha Yoko</label>
-                                <div class="colors-row" style="justify-content:flex-start; gap:12px;">
-                                    <div class="color-dot selected" style="background:#00b4d8"
-                                        onclick="selectColor('#00b4d8', this)"></div>
-                                    <div class="color-dot" style="background:#ffb703"
-                                        onclick="selectColor('#ffb703', this)"></div>
-                                    <div class="color-dot" style="background:#ef233c"
-                                        onclick="selectColor('#ef233c', this)"></div>
-                                    <div class="color-dot" style="background:#2d6a4f"
-                                        onclick="selectColor('#2d6a4f', this)"></div>
-                                    <div class="color-dot" style="background:#000000; border:1px solid #444;"
-                                        onclick="selectColor('#000000', this)"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Preview Side (Visual Katana) -->
-                        <div style="display:flex; flex-direction:column; align-items:center;">
-                            <label
-                                style="display:block; color:#666; margin-bottom:1rem; font-size:0.8rem; letter-spacing:1px; text-transform:uppercase;">Visualização</label>
-
-                            <!-- Katana Visual -->
-                            <div
-                                style="width:100%; height:120px; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.2); border-radius:12px; border:1px dashed #444;">
-                                <div class="katana-wrapper"
-                                    style="display:flex; align-items:center; filter:drop-shadow(0 10px 15px rgba(0,0,0,0.5)); transform: rotate(-5deg);">
-                                    <!-- Handle (Tsuka) -->
-                                    <div
-                                        style="width:70px; height:16px; background:#1a1a1a; border-radius:2px 0 0 2px; position:relative; border:1px solid #333;">
-                                        <!-- Diamonds Pattern -->
-                                        <div
-                                            style="position:absolute; inset:0; background-image: radial-gradient(#d4af37 1px, transparent 1px); background-size: 8px 8px;">
-                                        </div>
-                                    </div>
-                                    <!-- Guard (Tsuba) -->
-                                    <div
-                                        style="width:12px; height:32px; background:linear-gradient(to right, #bf953f, #fcf6ba, #b38728); border-radius:4px; box-shadow:inset 1px 1px 2px rgba(0,0,0,0.5);">
-                                    </div>
-                                    <!-- Collar (Habaki) -->
-                                    <div style="width:10px; height:16px; background:#c0c0c0;"></div>
-                                    <!-- Blade -->
-                                    <div
-                                        style="width:300px; height:14px; background:linear-gradient(to bottom, #f0f0f0 0%, #dcdcdc 50%, #999 100%); border-radius:0 100% 5% 0; position:relative; overflow:hidden;">
-                                        <!-- The Glow Overlay -->
-                                        <div id="bladeGlow"
-                                            style="position:absolute; inset:0; background:#00b4d8; opacity:0.8; mix-blend-mode:hard-light; transition:0.5s; box-shadow:0 0 20px #00b4d8;">
-                                        </div>
-                                        <!-- Hamon Line -->
-                                        <div
-                                            style="position:absolute; bottom:0; padding-bottom:3px; width:100%; border-bottom: 2px solid rgba(255,255,255,0.4); border-radius: 0 0 80% 0;">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <div class="step-nav-btns">
@@ -1126,45 +1045,138 @@
                 para definir perícias.</p>
 
             <div class="grid-2">
-                <!-- Brigão (Unlocked) -->
-                <div class="selection-card selected" onclick="selectBackground('brigao', this)">
-                    <img src="https://i.pinimg.com/736x/c5/48/85/c5488550d53579044816568395123956.jpg"
-                        class="card-bg-img">
+                <!-- Artista -->
+                <div class="selection-card" onclick="selectBackground('artista', this)">
+                    <img src="assets/backgrounds/bg_artista.png" class="card-bg-img">
                     <div class="card-text">
-                        <h3>Brigão de Rua</h3>
-                        <p>Marcado por inúmeras lutas. Perito em <strong>Atletismo</strong> e
-                            <strong>Acrobacia</strong>.
-                        </p>
+                        <h3>Artista</h3>
+                        <p>Beleza e Emoção. <strong>Atuação</strong> e <strong>Persuasão</strong>.</p>
                     </div>
                 </div>
 
-                <!-- Aristocrata (Locked) -->
-                <div class="selection-card locked">
-                    <img src="https://i.pinimg.com/736x/67/73/07/677307223f03451737e381005ca62788.jpg"
-                        class="card-bg-img">
+                <!-- Brigão -->
+                <div class="selection-card" onclick="selectBackground('brigao', this)">
+                    <img src="assets/backgrounds/bg_brigao.png" class="card-bg-img">
                     <div class="card-text">
-                        <h3>Aristocrata <i data-lucide="lock" size="16"></i></h3>
-                        <p>Nascido em berço de ouro. Perito em Persuasão e Intuição.</p>
+                        <h3>Brigão</h3>
+                        <p>Vida nas ruas. <strong>Atletismo</strong> e <strong>Intimidação</strong>.</p>
                     </div>
                 </div>
 
-                <!-- Camponês (Locked) -->
-                <div class="selection-card locked">
-                    <img src="https://i.pinimg.com/736x/8d/9b/6f/8d9b6f3c151475c75e95738804865183.jpg"
-                        class="card-bg-img">
+                <!-- Costureiro -->
+                <div class="selection-card" onclick="selectBackground('costureiro', this)">
+                    <img src="assets/backgrounds/bg_costureiro.png" class="card-bg-img">
                     <div class="card-text">
-                        <h3>Camponês <i data-lucide="lock" size="16"></i></h3>
-                        <p>Vida simples no campo. Perito em Natureza e Lidar com Animais.</p>
+                        <h3>Costureiro</h3>
+                        <p>Mestre dos tecidos. <strong>Enganação</strong> e <strong>Furtividade</strong>.</p>
                     </div>
                 </div>
 
-                <!-- Médico (Locked) -->
-                <div class="selection-card locked">
-                    <img src="https://i.pinimg.com/736x/c5/3b/09/c53b092283944605963289053c7c2937.jpg"
-                        class="card-bg-img">
+                <!-- Cozinheiro -->
+                <div class="selection-card" onclick="selectBackground('cozinheiro', this)">
+                    <img src="assets/backgrounds/bg_cozinheiro.png" class="card-bg-img">
                     <div class="card-text">
-                        <h3>Médico <i data-lucide="lock" size="16"></i></h3>
-                        <p>Estudioso da medicina. Perito em Medicina e Investigação.</p>
+                        <h3>Cozinheiro</h3>
+                        <p>Sabores que curam. <strong>História</strong> e <strong>Persuasão</strong>.</p>
+                    </div>
+                </div>
+
+                <!-- Estudioso -->
+                <div class="selection-card" onclick="selectBackground('estudioso', this)">
+                    <img src="assets/backgrounds/bg_estudioso.png" class="card-bg-img">
+                    <div class="card-text">
+                        <h3>Estudioso</h3>
+                        <p>Busca pelo saber. <strong>História</strong> e <strong>Intuição</strong>.</p>
+                    </div>
+                </div>
+
+                <!-- Ferreiro -->
+                <div class="selection-card" onclick="selectBackground('ferreiro', this)">
+                    <img src="assets/backgrounds/bg_ferreiro.png" class="card-bg-img">
+                    <div class="card-text">
+                        <h3>Ferreiro</h3>
+                        <p>Mestre da forja. <strong>História</strong> e <strong>Percepção</strong>.</p>
+                    </div>
+                </div>
+
+                <!-- Ladrão -->
+                <div class="selection-card" onclick="selectBackground('ladrao', this)">
+                    <img src="assets/backgrounds/bg_ladrao.png" class="card-bg-img">
+                    <div class="card-text">
+                        <h3>Ladrão</h3>
+                        <p>Vida nas sombras. <strong>Enganação</strong> e <strong>Furtividade</strong>.</p>
+                    </div>
+                </div>
+
+                <!-- Médico -->
+                <div class="selection-card" onclick="selectBackground('medico', this)">
+                    <img src="assets/backgrounds/bg_medico.png" class="card-bg-img">
+                    <div class="card-text">
+                        <h3>Médico</h3>
+                        <p>Dedicação à cura. <strong>Medicina</strong> e <strong>Natureza</strong>.</p>
+                    </div>
+                </div>
+
+                <!-- Ninja -->
+                <div class="selection-card" onclick="selectBackground('ninja', this)">
+                    <img src="assets/backgrounds/bg_ninja.png" class="card-bg-img">
+                    <div class="card-text">
+                        <h3>Ninja</h3>
+                        <p>Guerreiro Shinobi. <strong>Acrobacia</strong> e <strong>Furtividade</strong>.</p>
+                    </div>
+                </div>
+
+                <!-- Órfão -->
+                <div class="selection-card" onclick="selectBackground('orfao', this)">
+                    <img src="assets/backgrounds/bg_orfao.png" class="card-bg-img">
+                    <div class="card-text">
+                        <h3>Órfão</h3>
+                        <p>Sobrevivente urbano. <strong>Natureza</strong> e <strong>Sobrevivência</strong>.</p>
+                    </div>
+                </div>
+
+                <!-- Policial -->
+                <div class="selection-card" onclick="selectBackground('policial', this)">
+                    <img src="assets/backgrounds/bg_policial.png" class="card-bg-img">
+                    <div class="card-text">
+                        <h3>Policial</h3>
+                        <p>Defensor da lei. <strong>Intuição</strong> e <strong>Investigação</strong>.</p>
+                    </div>
+                </div>
+
+                <!-- Religioso -->
+                <div class="selection-card" onclick="selectBackground('religioso', this)">
+                    <img src="assets/backgrounds/bg_religioso.png" class="card-bg-img">
+                    <div class="card-text">
+                        <h3>Religioso</h3>
+                        <p>Luz divina. <strong>História</strong> e <strong>Intuição</strong>.</p>
+                    </div>
+                </div>
+
+                <!-- Selvagem -->
+                <div class="selection-card" onclick="selectBackground('selvagem', this)">
+                    <img src="assets/backgrounds/bg_selvagem.png" class="card-bg-img">
+                    <div class="card-text">
+                        <h3>Selvagem</h3>
+                        <p>Filho da natureza. <strong>Sobrevivência</strong> e <strong>Natureza</strong>.</p>
+                    </div>
+                </div>
+
+                <!-- Herdeiro (Legacy) -->
+                <div class="selection-card" onclick="selectBackground('herdeiro', this)">
+                    <div style="background:#222; width:100%; height:100%; position:absolute;"></div>
+                    <div class="card-text">
+                        <h3>Herdeiro</h3>
+                        <p>Berço de ouro. <strong>Persuasão</strong> e <strong>História</strong>.</p>
+                    </div>
+                </div>
+
+                <!-- Sobrevivente (Legacy) -->
+                <div class="selection-card" onclick="selectBackground('sobrevivente', this)">
+                    <div style="background:#222; width:100%; height:100%; position:absolute;"></div>
+                    <div class="card-text">
+                        <h3>Sobrevivente</h3>
+                        <p>Único restante. <strong>Sobrevivência</strong> e <strong>Furtividade</strong>.</p>
                     </div>
                 </div>
             </div>
@@ -1198,13 +1210,14 @@
 
             <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap:3rem;">
                 <!-- ATTRIBUTES -->
+                <!-- ATTRIBUTES -->
                 <div>
                     <h4 style="margin-top:0; color:#ddd; margin-bottom:1.5rem;">Defina seus Atributos</h4>
                     <!-- STR -->
                     <div class="attr-row">
                         <div class="attr-label"><i data-lucide="swords" size="16" style="color:#d90429"></i> Força</div>
                         <div class="attr-input-group">
-                            <input type="range" min="8" max="15" value="8" style="--val:0%"
+                            <input type="range" min="6" max="16" step="2" value="8" style="--val:0%"
                                 oninput="updateStat('str', this.value)">
                             <div class="attr-val-box" id="val-str">8</div>
                         </div>
@@ -1214,7 +1227,8 @@
                         <div class="attr-label"><i data-lucide="wind" size="16" style="color:#d90429"></i> Destreza
                         </div>
                         <div class="attr-input-group">
-                            <input type="range" min="8" max="15" value="8" oninput="updateStat('dex', this.value)">
+                            <input type="range" min="6" max="16" step="2" value="8"
+                                oninput="updateStat('dex', this.value)">
                             <div class="attr-val-box" id="val-dex">8</div>
                         </div>
                     </div>
@@ -1223,7 +1237,8 @@
                         <div class="attr-label"><i data-lucide="shield" size="16" style="color:#d90429"></i>
                             Constituição</div>
                         <div class="attr-input-group">
-                            <input type="range" min="8" max="15" value="8" oninput="updateStat('con', this.value)">
+                            <input type="range" min="6" max="16" step="2" value="8"
+                                oninput="updateStat('con', this.value)">
                             <div class="attr-val-box" id="val-con">8</div>
                         </div>
                     </div>
@@ -1232,7 +1247,8 @@
                         <div class="attr-label"><i data-lucide="brain" size="16" style="color:#d90429"></i> Inteligência
                         </div>
                         <div class="attr-input-group">
-                            <input type="range" min="8" max="15" value="8" oninput="updateStat('int', this.value)">
+                            <input type="range" min="6" max="16" step="2" value="8"
+                                oninput="updateStat('int', this.value)">
                             <div class="attr-val-box" id="val-int">8</div>
                         </div>
                     </div>
@@ -1241,7 +1257,8 @@
                         <div class="attr-label"><i data-lucide="eye" size="16" style="color:#d90429"></i> Sabedoria
                         </div>
                         <div class="attr-input-group">
-                            <input type="range" min="8" max="15" value="8" oninput="updateStat('wis', this.value)">
+                            <input type="range" min="6" max="16" step="2" value="8"
+                                oninput="updateStat('wis', this.value)">
                             <div class="attr-val-box" id="val-wis">8</div>
                         </div>
                     </div>
@@ -1250,7 +1267,8 @@
                         <div class="attr-label"><i data-lucide="smile" size="16" style="color:#d90429"></i> Carisma
                         </div>
                         <div class="attr-input-group">
-                            <input type="range" min="8" max="15" value="8" oninput="updateStat('cha', this.value)">
+                            <input type="range" min="6" max="16" step="2" value="8"
+                                oninput="updateStat('cha', this.value)">
                             <div class="attr-val-box" id="val-cha">8</div>
                         </div>
                     </div>
@@ -1380,6 +1398,281 @@
             pointsSpent: 0
         };
 
+        const backgroundData = {
+            artista: {
+                title: "Artista",
+                skills: [
+                    { name: "Atuação", attr: "CHA", val: "+2" },
+                    { name: "Persuasão", attr: "CHA", val: "+2" }
+                ],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d6 x 1000", desc: "Ienes obtidos com sua arte.", weight: "0.5 kg" },
+                    { name: "Pincel e Tintas", type: "item", desc: "Ferramentas de pintura.", weight: "1 kg" },
+                    { name: "Roupa de Artista", type: "armor", ac: "11 + Des", props: "Leve", weight: "2 kg" },
+                    { name: "Kit de Disfarce", type: "item", weight: "1.5 kg" },
+                    { name: "Instrumento Musical", type: "item", weight: "2 kg" }
+                ],
+                abilities: [
+                    { name: "Intuição Estética", desc: "Sabe diferenciar obras originais de falsas." },
+                    { name: "Despertar Emocional", desc: "Pode inspirar emoções específicas através da arte." },
+                    { name: "Criatividade Inspirada", desc: "Usa Intuição para criar soluções criativas." },
+                    { name: "Arte Contagiante", desc: "+1 em testes para aliados por 1 hora após performance." }
+                ],
+                description: "Dedicado à beleza e emoção. Visão única do mundo e capacidade de inspirar."
+            },
+            brigao: {
+                title: "Brigão",
+                skills: [
+                    { name: "Atletismo", attr: "STR", val: "+2" },
+                    { name: "Intimidação", attr: "CHA", val: "+2" }
+                ],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Dinheiro de apostas.", weight: "0.5 kg" },
+                    { name: "Porrete", type: "weapon", dmg: "1d4 concussão", props: "Simples, Leve", weight: "1 kg" }
+                ],
+                abilities: [
+                    { name: "Combate Desarmado", desc: "Punhos causam 1d8 de dano." },
+                    { name: "Rastreamento de Combate", desc: "Percepção para revelar vulnerabilidades." },
+                    { name: "Intimidação Feroz", desc: "Vantagem em testes de Intimidação." },
+                    { name: "Conhecimento das Ruas", desc: "Sabe identificar perigos urbanos." }
+                ],
+                description: "Nascido na rua ou arenas. Mestre em combate desarmado."
+            },
+            costureiro: {
+                title: "Costureiro",
+                skills: [
+                    { name: "Enganação", attr: "CHA", val: "+2" },
+                    { name: "Furtividade", attr: "DEX", val: "+2" }
+                ],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Economias.", weight: "0.5 kg" },
+                    { name: "Ferramentas de Costura", type: "item", desc: "Agulhas e linhas.", weight: "1 kg" },
+                    { name: "Roupa de Costureiro", type: "armor", ac: "11 + Des", props: "Leve", weight: "2 kg" }
+                ],
+                abilities: [
+                    { name: "Domínio Têxtil", desc: "Identifica origem e qualidade de tecidos." },
+                    { name: "Alfaiataria de Caçador", desc: "Cria uniformes e mantos especiais." },
+                    { name: "Reparos e Ajustes", desc: "Conserta e aprimora roupas." },
+                    { name: "Disfarce Hábil", desc: "Cria trajes para disfarce (Vantagem)." }
+                ],
+                description: "Paixão por tecidos e moda. Cria uniformes e disfarces."
+            },
+            cozinheiro: {
+                title: "Cozinheiro",
+                skills: [
+                    { name: "História", attr: "INT", val: "+2" },
+                    { name: "Persuasão", attr: "CHA", val: "+2" }
+                ],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d12 x 1000", desc: "Lucros.", weight: "0.5 kg" },
+                    { name: "Utensílios de Cozinheiro", type: "item", desc: "Panelas e facas.", weight: "2 kg" },
+                    { name: "Roupa de Cozinheiro", type: "armor", ac: "10 + Des", props: "Leve", weight: "2 kg" }
+                ],
+                abilities: [
+                    { name: "Conhecimento de Ingredientes", desc: "Identifica ingredientes e cria refeições nutritivas." },
+                    { name: "Improvisação Culinária", desc: "Cozinha com recursos escassos." },
+                    { name: "Culinária Curativa", desc: "Refeição cura +10 PV ou 20 PV Temp." },
+                    { name: "Sabores Persuasivos", desc: "Usa comida para ganhar vantagens sociais." }
+                ],
+                description: "Mestre dos sabores. Suas refeições curam e abrem portas."
+            },
+            estudioso: {
+                title: "Estudioso",
+                skills: [
+                    { name: "História", attr: "INT", val: "+2" },
+                    { name: "Intuição", attr: "WIS", val: "+2" }
+                ],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d12 x 1000", desc: "Fundos.", weight: "0.5 kg" },
+                    { name: "Livros de Pesquisa", type: "item", desc: "Conhecimento.", weight: "3 kg" },
+                    { name: "Kit de Falsificação", type: "item", weight: "1 kg" },
+                    { name: "Roupa de Estudioso", type: "armor", ac: "10 + Des", props: "Leve", weight: "2 kg" }
+                ],
+                abilities: [
+                    { name: "Erudição", desc: "Proficiente em conoscenze gerais." },
+                    { name: "Perícia em Livros", desc: "Detecta textos falsos e ocultos." },
+                    { name: "Raciocínio Lógico", desc: "Vantagem em enigmas." },
+                    { name: "Estudos Avançados", desc: "Ajuda em pesquisas e descobre fraquezas." }
+                ],
+                description: "Busca incansável pelo saber. Resolve enigmas."
+            },
+            ferreiro: {
+                title: "Ferreiro",
+                skills: [
+                    { name: "História", attr: "INT", val: "+2" },
+                    { name: "Percepção", attr: "WIS", val: "+2" }
+                ],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Dinheiro do ofício.", weight: "0.5 kg" },
+                    { name: "Ferramentas de Ferreiro", type: "item", weight: "5 kg" },
+                    { name: "Roupa de Ferreiro", type: "armor", ac: "11 + Des", props: "Leve, Resistente", weight: "3 kg" }
+                ],
+                abilities: [
+                    { name: "Maestria em Forja", desc: "Cria armas com metade do custo e tempo." },
+                    { name: "Reparo Rápido", desc: "Restaura armas em descanso curto." },
+                    { name: "Recuperação de Metal", desc: "Recicla metais de itens destruídos." },
+                    { name: "Armamento Personalizado", desc: "Pode aprimorar armas (+1/+2/+3) com tempo." }
+                ],
+                description: "Mestre do metal e forja. Cria e repara as melhores lâminas."
+            },
+            ladrao: {
+                title: "Ladrão",
+                skills: [
+                    { name: "Enganação", attr: "CHA", val: "+2" },
+                    { name: "Furtividade", attr: "DEX", val: "+2" }
+                ],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d12 x 1000", desc: "Dinheiro 'encontrado'.", weight: "0.5 kg" },
+                    { name: "Ferramentas de Ladrão", type: "item", weight: "1 kg" },
+                    { name: "Roupa de Ladrão", type: "armor", ac: "11 + Des", props: "Leve, Discreta", weight: "2 kg" }
+                ],
+                abilities: [
+                    { name: "Ladinagem", desc: "Abrir fechaduras e desarmar armadilhas." },
+                    { name: "Olho de Avaliação", desc: "Avalia valor real de itens instantaneamente." },
+                    { name: "Gíria de Ladrão", desc: "Comunica-se em códigos secretos." },
+                    { name: "Lábia Ardilosa", desc: "Cria mentiras convincentes e manipula percepção." }
+                ],
+                description: "Vive nas sombras. Mestre do engano e da apropriação."
+            },
+            medico: {
+                title: "Médico",
+                skills: [
+                    { name: "Medicina", attr: "WIS", val: "+2" },
+                    { name: "Natureza", attr: "INT", val: "+2" }
+                ],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Pagamentos.", weight: "0.5 kg" },
+                    { name: "Kit de Primeiros Socorros (x2)", type: "consumable", props: "1d8+4", weight: "1 kg" },
+                    { name: "Kit de Herbalismo", type: "item", weight: "1 kg" },
+                    { name: "Roupa de Médico", type: "armor", ac: "10 + Des", props: "Leve", weight: "2 kg" }
+                ],
+                abilities: [
+                    { name: "Diagnóstico", desc: "Identifica doenças e causas com precisão." },
+                    { name: "Habilidades Curativas", desc: "Ação bônus para estabilizar ou curar com Kit." },
+                    { name: "Conhecimento Medicinal", desc: "Cria antídotos e remédios." },
+                    { name: "Criação de Poções", desc: "Em níveis altos, cria poções potentes." }
+                ],
+                description: "Dedicação à cura. Salva vidas onde outros falham."
+            },
+            ninja: {
+                title: "Ninja",
+                skills: [
+                    { name: "Acrobacia", attr: "DEX", val: "+2" },
+                    { name: "Furtividade", attr: "DEX", val: "+2" }
+                ],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Pagamento de missões.", weight: "0.5 kg" },
+                    { name: "Kunai (x5)", type: "weapon", dmg: "1d4 perfurante", props: "Arremesso, Leve" },
+                    { name: "Shuriken (x5)", type: "weapon", dmg: "1d4 cortante", props: "Arremesso, Leve" },
+                    { name: "Bomba de Fumaça (x5)", type: "consumable", desc: "Cria área de escuridão.", props: "Efeito" },
+                    { name: "Roupa Ninja", type: "armor", ac: "11 + Des", props: "Leve, Silenciosa", weight: "2 kg" }
+                ],
+                abilities: [
+                    { name: "Movimento Acrobático", desc: "Dobro de proficiência em testes de Acrobacia." },
+                    { name: "Furtividade Aprimorada", desc: "Se move em silêncio absoluto." },
+                    { name: "Resistência a Veneno", desc: "Vantagem contra venenos." },
+                    { name: "Armas Envenenadas", desc: "Ação bônus para aplicar veneno (+2 dano)." }
+                ],
+                description: "Guerreiro das sombras. Mestre em infiltração e assassinato."
+            },
+            orfao: {
+                title: "Órfão",
+                skills: [
+                    { name: "Natureza", attr: "INT", val: "+2" },
+                    { name: "Sobrevivência", attr: "WIS", val: "+2" }
+                ],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Esmolas e achados.", weight: "0.5 kg" },
+                    { name: "Adaga Velha", type: "weapon", dmg: "1d4 perfurante", props: "Leve, Simples" },
+                    { name: "Funda", type: "weapon", dmg: "1d4 concussão", props: "Distância" },
+                    { name: "Kit de Primeiros Socorros", type: "consumable", props: "1d4", weight: "0.5 kg" },
+                    { name: "Roupas Gastas", type: "armor", ac: "10 + Des", props: "Leve", weight: "1 kg" }
+                ],
+                abilities: [
+                    { name: "Sobrevivência Urbana", desc: "Encontra abrigo e comida facilmente em cidades." },
+                    { name: "Resiliência Emocional", desc: "Vantagem em testes de resistência emocional." },
+                    { name: "Furtividade em Multidões", desc: "Se esconde facilmente entre pessoas." },
+                    { name: "Natureza de Cimento", desc: "Nunca se perde em ambientes urbanos." }
+                ],
+                description: "Criado nas ruas frias. Resiliente e adaptável."
+            },
+            policial: {
+                title: "Policial",
+                skills: [
+                    { name: "Intuição", attr: "WIS", val: "+2" },
+                    { name: "Investigação", attr: "INT", val: "+2" }
+                ],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Salário.", weight: "0.5 kg" },
+                    { name: "Distintivo", type: "item", desc: "Identificação policial." },
+                    { name: "Roupa de Policial", type: "armor", ac: "11 + Des", props: "Leve, Uniforme", weight: "2 kg" },
+                    { name: "Kit de Primeiros Socorros", type: "consumable", props: "1d4", weight: "0.5 kg" },
+                    { name: "Pistola", type: "weapon", dmg: "1d10 perfurante", props: "Distância, Recarga", weight: "1.5 kg" },
+                    { name: "Munição de Chumbo (x20)", type: "item", weight: "0.5 kg" }
+                ],
+                abilities: [
+                    { name: "Investigação Aprofundada", desc: "Vantagem em Investigação. Mestre revela detalhes extras." },
+                    { name: "Rede de Contatos", desc: "Conexões com informantes e comunidade." },
+                    { name: "Perfil do Caçador", desc: "Analisa padrões de comportamento de demônios." },
+                    { name: "Sempre em Guarda", desc: "Pode dormir e manter vigilância (não sofre surpresa)." }
+                ],
+                description: "Defensor da lei. Investigativo e vigilante."
+            },
+            religioso: {
+                title: "Religioso",
+                skills: [
+                    { name: "Intuição", attr: "WIS", val: "+2" },
+                    { name: "História", attr: "INT", val: "+2" }
+                ],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d12 x 1000", desc: "Doações.", weight: "0.5 kg" },
+                    { name: "Símbolo Sagrado", type: "item", desc: "Amuleto de fé." },
+                    { name: "Livro de Preces", type: "item" },
+                    { name: "Roupa de Religioso", type: "armor", ac: "10 + Des", props: "Leve, Cerimonial", weight: "2 kg" }
+                ],
+                abilities: [
+                    { name: "Conhecimento Religioso", desc: "Vantagem em História sobre mitos e dogmas." },
+                    { name: "Discernimento Espiritual", desc: "Intuição para detectar bondade ou maldade." },
+                    { name: "Inspirar Fé", desc: "Proficiência em Persuasão ao falar de fé." },
+                    { name: "Coragem Renovada", desc: "Ação: Inspira aliados, dando vantagem contra medo." }
+                ],
+                description: "Guiado pela fé. Luz divina contra as trevas."
+            },
+            selvagem: {
+                title: "Selvagem",
+                skills: [
+                    { name: "Sobrevivência", attr: "WIS", val: "+2" },
+                    { name: "Natureza", attr: "INT", val: "+2" },
+                    { name: "Lidar com Animais", attr: "WIS", val: "+2" }
+                ],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d12 x 1000", desc: "Tesouros naturais.", weight: "0.5 kg" },
+                    { name: "Roupa de Selvagem", type: "armor", ac: "11 + Des", props: "Leve, Peles", weight: "2 kg" }
+                ],
+                abilities: [
+                    { name: "Sobrevivência Instintiva", desc: "Encontra dobro de comida. Não se perde na natureza." },
+                    { name: "Rastreamento", desc: "Vantagem para rastrear em ambiente natural." },
+                    { name: "Memória Selvagem", desc: "Lembra perfeitamente de caminhos e rotas." },
+                    { name: "Técnicas de Camuflagem", desc: "Pode se esconder facilmente na natureza (Vantagem)." }
+                ],
+                description: "Filho da natureza. Resiliente e instintivo."
+            },
+            herdeiro: {
+                title: "Herdeiro",
+                skills: [{ name: "Persuasão", attr: "CHA", val: "+2" }],
+                items: [],
+                abilities: [],
+                description: "Berço de ouro."
+            },
+            sobrevivente: {
+                title: "Sobrevivente",
+                skills: [{ name: "Sobrevivência", attr: "WIS", val: "+2" }],
+                items: [],
+                abilities: [],
+                description: "Sobrevivente."
+            }
+        };
+
         // --- NAVIGATION & LOGIC ---
         function goToStep(stepNum) {
             // Validate if needed?
@@ -1411,13 +1704,8 @@
             if (!list) return;
             list.innerHTML = '';
 
-            let skills = [];
-            if (state.background === 'brigao') {
-                skills = [
-                    { name: 'Atletismo', attr: 'FOR', val: '+2' },
-                    { name: 'Acrobacia', attr: 'DES', val: '+2' }
-                ];
-            }
+            const bgData = backgroundData[state.background];
+            let skills = bgData ? bgData.skills : [];
 
             if (skills.length === 0) {
                 list.innerHTML = '<div class="skill-tag" style="opacity:0.5;">Nenhuma perícia selecionada</div>';
@@ -1427,13 +1715,13 @@
             skills.forEach(s => {
                 const tag = document.createElement('div');
                 tag.className = 'skill-tag';
-                tag.innerHTML = `<span>${s.name} (${s.attr})</span> <span>${s.val}</span>`;
+                tag.innerHTML = `<span>${s.name} (${s.attr || '-'})</span> <span>${s.val || '+2'}</span>`;
                 list.appendChild(tag);
             });
         }
 
 
-        const COSTS = { 8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9 };
+        const COSTS = { 6: -2, 8: 0, 10: 2, 12: 4, 14: 7, 16: 12 };
 
         // --- RACE SELECTION ---
         function selectRace(race, element) {
@@ -1895,24 +2183,37 @@
 
         function updateStat(stat, val) {
             val = parseInt(val);
-            const currentCost = COSTS[val];
 
-            // Calculate total cost of ALL stats to enforce limit
+            // Calculate total cost with PROPOSED value
             let totalCost = 0;
             ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach(k => {
                 const sVal = k === stat ? val : state.stats[k];
-                totalCost += COSTS[sVal];
+                totalCost += (typeof COSTS !== 'undefined' ? COSTS[sVal] : 0);
             });
 
             const remaining = state.pointsMax - totalCost;
-            document.getElementById('pointsRemain').innerText = remaining;
 
             if (remaining < 0) {
-                // Revert visual if over budget (simplistic handling)
-                document.getElementById('pointsRemain').style.color = 'red';
-                // Ideally prevent input, but for now just visual warning
-            } else {
-                document.getElementById('pointsRemain').style.color = 'var(--accent-red)';
+                // Revert to current saved value
+                const inputEl = document.getElementById(`val-${stat}`).previousElementSibling;
+                if (inputEl) inputEl.value = state.stats[stat];
+
+                // Show warning
+                const ptBox = document.getElementById('pointsRemain');
+                if (ptBox) {
+                    ptBox.innerText = state.pointsMax - (totalCost - (COSTS[val] || 0) + (COSTS[state.stats[stat]] || 0)); // Re-calc remaining for old value? No, just keep old text.
+                    // Actually if we revert, we don't need to update text because it wasn't updated yet.
+                    ptBox.style.color = 'red';
+                    setTimeout(() => ptBox.style.color = 'var(--accent-red)', 500);
+                }
+                return; // Block update
+            }
+
+            // Update UI
+            const ptBox = document.getElementById('pointsRemain');
+            if (ptBox) {
+                ptBox.innerText = remaining;
+                ptBox.style.color = 'var(--accent-red)';
             }
 
             state.stats[stat] = val;
@@ -1920,10 +2221,60 @@
             updatePreview();
         }
 
+        let selectedCombatStyle = 'water';
+
+        function selectCombatStyle(id, element) {
+            selectedCombatStyle = id;
+
+            // UI Update
+            document.querySelectorAll('.style-btn').forEach(btn => {
+                btn.classList.remove('selected');
+                btn.style.borderColor = '#333';
+                btn.style.transform = 'scale(1)';
+            });
+
+            if (element) {
+                element.classList.add('selected');
+                element.style.borderColor = (id === 'thunder' ? '#ffd700' : id === 'flame' ? '#ff4d00' : id === 'beast' ? '#7b8cde' : '#00b4d8');
+                element.style.transform = 'scale(1.05)';
+            }
+        }
+
         function finishCreation() {
             // Validation
             const name = document.getElementById('inputName').value;
             if (!name) { alert("Por favor, dê um nome ao seu caçador."); return; }
+
+            // Get Selected Background Data
+            const bgData = backgroundData[state.background];
+
+            // Build Inventory (Default + Background)
+            const defaultItems = [
+                { name: "Mochila", type: "item", weight: "1 kg", desc: "Mochila padrão de caçador." },
+                { name: "100 Kan", type: "item", weight: "0.1 kg", desc: "Moedas miúdas para despesas iniciais." },
+                { name: "Curativos (x5)", type: "consumable", weight: "0.5 kg", props: "1d4+2", desc: "Kit básico de primeiros socorros." },
+                { name: "Nichirin Padrão", type: "weapon", dmg: "1d8 cortante", weight: "1.5 kg", props: "Versátil (1d10), Decepadora" }
+            ];
+
+            let finalInventory = JSON.parse(JSON.stringify(defaultItems));
+
+            if (bgData && bgData.items) {
+                // Add background items
+                bgData.items.forEach(item => {
+                    finalInventory.push(JSON.parse(JSON.stringify(item)));
+                });
+            }
+
+            // Skills
+            let finalSkills = bgData ? bgData.skills.map(s => s.name) : ["Atletismo", "Acrobacia"];
+
+            // Breathing Names
+            const styleMap = {
+                'water': "Respiração da Água",
+                'thunder': "Respiração do Trovão",
+                'beast': "Respiração da Fera",
+                'flame': "Respiração das Chamas"
+            };
 
             // Build Object
             const finalChar = {
@@ -1931,25 +2282,34 @@
                 name: name,
                 race: state.race,
                 level: 1,
-                hp: parseInt(document.getElementById('displayHP').innerText),
-                currentHP: parseInt(document.getElementById('displayHP').innerText),
-                pe: parseInt(document.getElementById('displayPE').innerText),
+                hp: parseInt(document.getElementById('displayHP').innerText) || 10,
+                currentHP: parseInt(document.getElementById('displayHP').innerText) || 10,
+                pe: parseInt(document.getElementById('displayPE').innerText) || 1,
                 attributes: state.stats,
                 breathingStyle: {
-                    id: 'water', name: "Respiração da Água", icon: "🌊"
+                    id: selectedCombatStyle,
+                    name: styleMap[selectedCombatStyle] || "Respiração da Água",
+                    icon: "⚔️"
                 },
-                inventory: ["Mochila", "100 Kan", "Curativos", "Nichirin"],
-                skills: ["Atletismo", "Acrobacia"]
+                inventory: finalInventory,
+                skills: finalSkills,
+                background: bgData ? {
+                    id: state.background,
+                    name: bgData.title,
+                    description: bgData.description,
+                    abilities: bgData.abilities, // Crucial for Antecedente Tab
+                    skills: finalSkills
+                } : null,
+                yen: 0 // Initialize Wallet
             };
 
             // Save to LocalStorage Array
             let allChars = JSON.parse(localStorage.getItem('demonSlayerSaveSlots') || '[]');
-            if (allChars.length >= 5) { alert("Limite de personagens atingido."); return; }
+            if (allChars.length >= 5) { alert("Limite de personagens atingido (Máx 5)."); return; }
 
             allChars.push(finalChar);
             localStorage.setItem('demonSlayerSaveSlots', JSON.stringify(allChars));
             localStorage.setItem('demonSlayerChar', JSON.stringify(finalChar));
-
             window.location.href = 'dashboard.html';
         }
 

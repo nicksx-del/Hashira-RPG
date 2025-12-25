@@ -22,11 +22,14 @@ function loadHuman() {
     const raw = localStorage.getItem('demonSlayerChar');
     if (raw) {
         humanData = JSON.parse(raw);
-        if (!humanData.level) humanData.level = 1;
-        if (!humanData.xp) humanData.xp = 0;
-        if (!humanData.attacks) humanData.attacks = [];
-        if (!humanData.inventory) humanData.inventory = [];
+        // Normalize attributes -> stats (Creation uses .attributes, Dashboard uses .stats)
+        if (humanData.attributes && !humanData.stats) {
+            humanData.stats = humanData.attributes;
+        }
+        // Ensure stats exist
         if (!humanData.stats) humanData.stats = { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 };
+
+        if (!humanData.level) humanData.level = 1;
     } else {
         humanData = {
             name: "Caçador",
@@ -37,7 +40,7 @@ function loadHuman() {
             inventory: []
         };
     }
-    window.charData = humanData;
+    window.charData = humanData; // Link for skills_system.js
 }
 
 function initDashboard() {
@@ -58,15 +61,32 @@ function initDashboard() {
 
     updateVitalsUI();
     renderAttributes();
+    renderProficiencies(); // NEW
     renderBreathing();
+    renderBackgroundSkills();
+    if (window.renderClassFeaturesInGrimoire) window.renderClassFeaturesInGrimoire(); // NEW TAB
     renderAttacks();
     renderStore();
 
-    if (window.renderInventory) window.renderInventory();
+    // Inventory Fix: Ensure it loads
+    if (window.renderInventory) {
+        window.renderInventory();
+    } else {
+        // Retry shortly in case script load order lag
+        setTimeout(() => { if (window.renderInventory) window.renderInventory(); }, 500);
+    }
+
     if (window.lucide) lucide.createIcons();
 
     updateNichirinVisuals();
     populateForgeUI();
+
+    // Starting Gear Check
+    if (!humanData.startingGearSelected) {
+        if (window.BREATHING_CLASS_DB && typeof showGearSelectionModal === 'function') {
+            setTimeout(showGearSelectionModal, 800);
+        }
+    }
 }
 
 function getRankName(lvl) {
@@ -82,18 +102,44 @@ function getRankName(lvl) {
 }
 
 function updateVitalsUI() {
-    let maxHP = 20 + ((humanData.level - 1) * 5);
+    let maxHP = 20;
     let maxPE = humanData.level;
 
-    if (window.HunterSystem) {
-        // calc hooks
-        // In future can use HunterSystem.calculateMaxPE(humanData.level)
+    // New Calculation based on Breathing Class
+    const db = window.BREATHING_CLASS_DB;
+    const style = humanData.breathingStyle || 'water';
+    const classData = db ? db[style] : null;
+
+    if (classData) {
+        // Con Mod
+        const conScore = (humanData.stats ? humanData.stats.con : 10);
+        const conMod = Math.floor((conScore - 10) / 2);
+
+        // HP Calc
+        // Level 1: Base + Con
+        const hpLvl1 = classData.baseHP + conMod;
+
+        // Level > 1: (Avg + Con) per level
+        const hpPerLvl = classData.hitDieavg + conMod;
+
+        if (humanData.level === 1) {
+            maxHP = hpLvl1;
+        } else {
+            maxHP = hpLvl1 + ((humanData.level - 1) * hpPerLvl);
+        }
+
+        // PE Calc
+        maxPE = humanData.level;
+    } else {
+        // Fallback
+        maxHP = 20 + ((humanData.level - 1) * 5);
     }
 
     humanData.maxHP = maxHP;
     humanData.maxPE = maxPE;
-    if (!humanData.currentHP) humanData.currentHP = maxHP;
-    // Ensure currentHP doesnt exceed max
+
+    // Bounds Check
+    if (!humanData.currentHP && humanData.currentHP !== 0) humanData.currentHP = maxHP;
     if (humanData.currentHP > maxHP) humanData.currentHP = maxHP;
 
     if (humanData.currentPE === undefined) humanData.currentPE = maxPE;
@@ -113,6 +159,12 @@ function updateVitalsUI() {
     const maxHPEl = document.getElementById('maxHP');
     if (currHPEl) currHPEl.textContent = humanData.currentHP;
     if (maxHPEl) maxHPEl.textContent = maxHP;
+
+    // Hit Die Display
+    const hdDisplay = document.getElementById('hitDieInfo');
+    if (hdDisplay && classData) {
+        hdDisplay.innerHTML = `<span style="color:#aaa; font-size:0.8rem;">Vida: 1d${classData.hitDie} + CON por nível</span>`;
+    }
 
     const peDisp = document.getElementById('peDisplay');
     if (peDisp) peDisp.textContent = humanData.currentPE + " / " + maxPE;
@@ -221,36 +273,48 @@ function renderClassFeatures() {
 
     list.innerHTML = "";
 
-    if (!window.HunterSystem) return;
+    const db = window.BREATHING_CLASS_DB;
+    const style = humanData.breathingStyle || 'water';
+    const classData = db ? db[style] : null;
 
-    const feats = window.HunterSystem.getFeaturesUpTo(humanData.level);
-    // Deduplicate
-    const uniqueFeats = [...new Set(feats)];
+    if (!classData || !classData.levels) {
+        list.innerHTML = `<div style="text-align:center; color:#555; padding:20px;">Nenhuma habilidade desbloqueada.</div>`;
+        return;
+    }
 
-    // Reverse to show newest first? Or standard order? User images top->bottom.
-    // Let's standard order.
+    let features = [];
+    for (let l = 1; l <= humanData.level; l++) {
+        if (classData.levels[l] && classData.levels[l].features) {
+            features = [...features, ...classData.levels[l].features];
+        }
+    }
 
-    uniqueFeats.forEach(f => {
+    if (features.length === 0) {
+        list.innerHTML = `<div style="text-align:center; color:#555; padding:20px;">Nenhuma habilidade desbloqueada.</div>`;
+        return;
+    }
+
+    features.forEach(fStr => {
         const item = document.createElement('div');
         item.style.background = "#222";
         item.style.padding = "10px";
         item.style.borderRadius = "6px";
         item.style.border = "1px solid #444";
         item.style.fontSize = "0.85rem";
+        item.style.marginBottom = "8px";
 
-        const desc = window.HunterSystem.FEAT_DESCRIPTIONS[f] || "Habilidade Especial";
+        let desc = "Habilidade da Respiração.";
+        // Legacy Hook
+        if (window.HunterSystem && window.HunterSystem.FEAT_DESCRIPTIONS && window.HunterSystem.FEAT_DESCRIPTIONS[fStr]) {
+            desc = window.HunterSystem.FEAT_DESCRIPTIONS[fStr];
+        }
 
         item.innerHTML = `
-            <div style="font-weight:700; color:#fff; margin-bottom:4px;">${f}</div>
+            <div style="font-weight:700; color:#fff; margin-bottom:4px;">${fStr}</div>
             <div style="color:#aaa; line-height:1.4;">${desc}</div>
         `;
         list.appendChild(item);
     });
-
-    // Empty state if none (Lv 0?)
-    if (uniqueFeats.length === 0) {
-        list.innerHTML = `<div style="text-align:center; color:#555; padding:20px;">Nenhuma habilidade desbloqueada.</div>`;
-    }
 }
 
 // --- NEW ATTRIBUTE RENDER WITH SKILLS ---
@@ -999,3 +1063,355 @@ function finishForging(color) {
 
     showToast("Forja Completa!", "success");
 }
+
+// --- SKILL & BACKGROUND TABS ---
+window.switchSkillTab = function (tab) {
+    // Update Buttons
+    document.querySelectorAll('.skill-tab-btn').forEach(b => {
+        b.classList.remove('active');
+        b.style.color = '#666';
+        b.style.borderBottom = 'none';
+    });
+
+    const activeBtn = document.getElementById('tab-btn-' + tab);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+        activeBtn.style.color = '#fff';
+        activeBtn.style.borderBottom = '2px solid var(--accent-primary)';
+    }
+
+    // Update Content Visibility
+    document.querySelectorAll('.skill-tab-content').forEach(c => c.style.display = 'none');
+    const activeContent = document.getElementById('tab-' + tab);
+    if (activeContent) {
+        activeContent.style.display = 'block';
+        // Animation
+        activeContent.style.animation = 'fadeIn 0.3s ease-out';
+    }
+
+    if (tab === 'features' && typeof window.renderClassFeaturesInGrimoire === 'function') {
+        window.renderClassFeaturesInGrimoire();
+    }
+}
+
+window.renderBackgroundSkills = function () {
+    const container = document.getElementById('backgroundContent');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    // Safety check
+    const bg = humanData.background;
+
+    if (!bg) {
+        container.innerHTML = `
+            <div style="text-align:center; padding:3rem; border:1px dashed #333; border-radius:10px;">
+                <i data-lucide="help-circle" size="48" color="#666" style="margin-bottom:10px;"></i>
+                <p style="color:#888;">Nenhum antecedente registrado para este caçador.</p>
+            </div>
+        `;
+        if (window.lucide) lucide.createIcons();
+        return;
+    }
+
+    // 1. Header with Info
+    const header = document.createElement('div');
+    header.style.marginBottom = '25px';
+    header.style.borderBottom = '1px solid #333';
+    header.style.paddingBottom = '15px';
+    header.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+            <div>
+                <div style="font-size:0.8rem; text-transform:uppercase; letter-spacing:2px; color:#888; margin-bottom:5px;">Antecedente</div>
+                <h2 style="margin:0; font-family:'Cinzel', serif; font-size:2rem; color:#fff;">${bg.name || 'Desconhecido'}</h2>
+            </div>
+            <div class="race-badge" style="background:#222; border:1px solid #444; padding:5px 15px; border-radius:20px; font-size:0.8rem; color:#aaa;">
+                História de Origem
+            </div>
+        </div>
+        ${bg.description ? `<p style="color:#aaa; margin-top:10px; font-style:italic;">"${bg.description}"</p>` : ''}
+    `;
+    container.appendChild(header);
+
+    // 2. Abilities List
+    const titleAbil = document.createElement('h4');
+    titleAbil.innerText = "Habilidades de Antecedente";
+    titleAbil.style.color = "var(--accent-primary)";
+    titleAbil.style.marginBottom = "15px";
+    container.appendChild(titleAbil);
+
+    const grid = document.createElement('div');
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(300px, 1fr))';
+    grid.style.gap = '15px';
+
+    if (bg.abilities && bg.abilities.length > 0) {
+        bg.abilities.forEach(ab => {
+            const card = document.createElement('div');
+            card.className = 'form-card';
+            card.style.borderLeft = '3px solid var(--accent-primary)';
+            card.innerHTML = `
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                    <i data-lucide="sparkles" size="18" color="var(--accent-primary)"></i>
+                    <span style="font-weight:bold; color:#fff; font-size:1.05rem;">${ab.name}</span>
+                </div>
+                <div style="color:#ccc; font-size:0.9rem; line-height:1.5;">${ab.desc}</div>
+            `;
+            grid.appendChild(card);
+        });
+    } else {
+        grid.innerHTML = `<div style="color:#666; font-style:italic;">Este antecedente não fornece habilidades passivas especiais.</div>`;
+    }
+
+    container.appendChild(grid);
+
+    // 3. Proficiencies (Optional, since they are in attributes, but helpful to see list)
+    if (bg.skills && bg.skills.length > 0) {
+        const profSection = document.createElement('div');
+        profSection.style.marginTop = '25px';
+        profSection.innerHTML = `
+            <h4 style="color:#aaa; margin-bottom:10px;">Perícias Treinadas</h4>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                ${bg.skills.map(s => `<span style="background:#222; border:1px solid #444; padding:4px 10px; border-radius:4px; font-size:0.85rem; color:#ddd;">${s}</span>`).join('')}
+            </div>
+        `;
+        container.appendChild(profSection);
+    }
+
+    if (window.lucide) lucide.createIcons();
+}
+
+window.renderClassFeaturesInGrimoire = function () {
+    const container = document.getElementById('featuresContent');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // Safety check for style ID
+    let styleId = 'water';
+    if (humanData.breathingStyle) {
+        styleId = typeof humanData.breathingStyle === 'object' ? humanData.breathingStyle.id : humanData.breathingStyle;
+    }
+
+    const db = window.BREATHING_CLASS_DB;
+    const descDB = window.FEATURE_DESCRIPTIONS || {};
+    const classData = db ? db[styleId] : null;
+
+    if (!classData || !classData.levels) {
+        container.innerHTML = '<div style="color:#666; font-style:italic;">Nenhuma habilidade de classe encontrada.</div>';
+        return;
+    }
+
+    // Loop 1 to Current Level
+    let found = false;
+    for (let i = 1; i <= humanData.level; i++) {
+        const lvlData = classData.levels[i];
+        if (lvlData && lvlData.features && lvlData.features.length > 0) {
+            found = true;
+
+            // Level Header
+            const levelHeader = document.createElement('div');
+            levelHeader.style.fontSize = '0.75rem';
+            levelHeader.style.color = 'var(--accent-primary)';
+            levelHeader.style.marginTop = '10px';
+            levelHeader.style.marginBottom = '5px';
+            levelHeader.style.textTransform = 'uppercase';
+            levelHeader.style.fontWeight = 'bold';
+            levelHeader.style.letterSpacing = '1px';
+            levelHeader.innerText = `Nível ${i}`;
+            container.appendChild(levelHeader);
+
+            // Features List
+            lvlData.features.forEach(featName => {
+                const featDiv = document.createElement('div');
+                featDiv.style.background = 'rgba(255,255,255,0.05)';
+                featDiv.style.marginBottom = '5px';
+                featDiv.style.borderRadius = '6px';
+                featDiv.style.overflow = 'hidden';
+                featDiv.style.border = '1px solid rgba(255,255,255,0.05)';
+                featDiv.style.transition = 'background 0.2s';
+
+                // Header (Clickable)
+                const header = document.createElement('div');
+                header.style.padding = '12px';
+                header.style.cursor = 'pointer';
+                header.style.display = 'flex';
+                header.style.justifyContent = 'space-between';
+                header.style.alignItems = 'center';
+
+                header.onmouseover = () => featDiv.style.background = 'rgba(255,255,255,0.08)';
+                header.onmouseout = () => featDiv.style.background = 'rgba(255,255,255,0.05)';
+
+                header.innerHTML = `
+                    <span style="font-weight:bold; color:#eee; font-size:0.95rem;">${featName}</span> 
+                    <i data-lucide="chevron-down" size="16" style="color:#666"></i>
+                `;
+
+                // Description (Hidden)
+                const desc = document.createElement('div');
+                desc.style.display = 'none';
+                desc.style.padding = '0 12px 12px 12px';
+                desc.style.color = '#ccc';
+                desc.style.fontSize = '0.9rem';
+                desc.style.lineHeight = '1.5';
+
+                const descText = descDB[featName];
+                const cleanDesc = descText ? descText : "Sem descrição disponível.";
+
+                desc.innerText = cleanDesc;
+
+                // Toggle Logic
+                header.onclick = () => {
+                    const isHidden = desc.style.display === 'none';
+                    desc.style.display = isHidden ? 'block' : 'none';
+                    const icon = header.querySelector('i');
+                    if (icon) {
+                        icon.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+                        icon.style.transition = 'transform 0.3s';
+                    }
+                };
+
+                featDiv.appendChild(header);
+                featDiv.appendChild(desc);
+                container.appendChild(featDiv);
+            });
+        }
+    }
+
+    if (!found) {
+        container.innerHTML = '<div style="color:#666; font-style:italic;">Nenhuma habilidade desbloqueada ainda.</div>';
+    }
+
+    if (window.lucide) lucide.createIcons();
+}
+
+// --- PROFICIENCIES RENDER ---
+function renderProficiencies() {
+    const container = document.getElementById('profList');
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    const db = window.BREATHING_CLASS_DB;
+    const style = humanData.breathingStyle || 'water';
+    const classData = db ? db[style] : null;
+
+    if (!classData) return;
+
+    // Weapons
+    if (classData.proficiencies && classData.proficiencies.weapons) {
+        classData.proficiencies.weapons.forEach(w => {
+            const tag = document.createElement('span');
+            tag.style.background = "rgba(217, 4, 41, 0.2)";
+            tag.style.border = "1px solid rgba(217, 4, 41, 0.4)";
+            tag.style.color = "#ffbdc3";
+            tag.style.padding = "2px 8px";
+            tag.style.borderRadius = "4px";
+            tag.innerText = w;
+            container.appendChild(tag);
+        });
+    }
+
+    // Armor
+    if (classData.proficiencies && classData.proficiencies.armor) {
+        classData.proficiencies.armor.forEach(w => {
+            const tag = document.createElement('span');
+            tag.style.background = "rgba(0, 180, 216, 0.2)";
+            tag.style.border = "1px solid rgba(0, 180, 216, 0.4)";
+            tag.style.color = "#caf0f8";
+            tag.style.padding = "2px 8px";
+            tag.style.borderRadius = "4px";
+            tag.innerText = w;
+            container.appendChild(tag);
+        });
+    }
+}
+
+// --- GEAR SELECTION MODAL ---
+function showGearSelectionModal() {
+    const modal = document.getElementById('gearSelectionModal');
+    if (!modal) return;
+
+    const container = document.getElementById('gearOptionsContainer');
+    container.innerHTML = "";
+
+    const db = window.BREATHING_CLASS_DB;
+    const style = humanData.breathingStyle || 'water';
+    const classData = db ? db[style] : null;
+
+    if (!classData || !classData.equipment) {
+        // No auto equipment, just close
+        humanData.startingGearSelected = true;
+        saveHuman();
+        return;
+    }
+
+    // Weapons Choice
+    const weapDiv = document.createElement('div');
+    weapDiv.innerHTML = `<h4 style="color:#ddd; margin-bottom:10px;">Escolha sua Arma Principal</h4>`;
+    classData.equipment.weapons.forEach((opt, idx) => {
+        weapDiv.innerHTML += `
+            <label style="display:flex; align-items:center; gap:10px; margin-bottom:8px; cursor:pointer;">
+                <input type="radio" name="startWeapon" value="${opt}" ${idx === 0 ? 'checked' : ''}>
+                <span style="color:#aaa;">${opt}</span>
+            </label>
+        `;
+    });
+    container.appendChild(weapDiv);
+
+    // Armor Choice (if any)
+    if (classData.equipment.armor && classData.equipment.armor.length > 0) {
+        const armorDiv = document.createElement('div');
+        armorDiv.innerHTML = `<h4 style="color:#ddd; margin-bottom:10px; margin-top:20px;">Escolha seu Uniforme</h4>`;
+        classData.equipment.armor.forEach((opt, idx) => {
+            armorDiv.innerHTML += `
+                <label style="display:flex; align-items:center; gap:10px; margin-bottom:8px; cursor:pointer;">
+                    <input type="radio" name="startArmor" value="${opt}" ${idx === 0 ? 'checked' : ''}>
+                    <span style="color:#aaa;">${opt}</span>
+                </label>
+            `;
+        });
+        container.appendChild(armorDiv);
+    }
+
+    modal.style.display = 'flex';
+}
+
+function confirmStartingGear() {
+    // Read selections
+    const weaponOpt = document.querySelector('input[name="startWeapon"]:checked');
+    const armorOpt = document.querySelector('input[name="startArmor"]:checked');
+
+    let weaponName = weaponOpt ? weaponOpt.value : "Katana Padrão";
+    let armorName = armorOpt ? armorOpt.value : "Uniforme Leve";
+
+    // Add to Inventory
+    // Add Weapon
+    humanData.inventory.push({
+        name: weaponName,
+        type: 'weapon',
+        desc: 'Equipamento Inicial da Respiração',
+        weight: '1.0 kg'
+    });
+
+    // Add Armor
+    humanData.inventory.push({
+        name: armorName,
+        type: 'armor',
+        desc: 'Uniforme Padrão de Caçador',
+        weight: '2.0 kg'
+    });
+
+    // Flag as selected
+    humanData.startingGearSelected = true;
+    saveHuman();
+
+    // Close Modal
+    document.getElementById('gearSelectionModal').style.display = 'none';
+
+    // Show Toast
+    if (typeof showToast === 'function') showToast("Equipamento recebido!", "success");
+
+    // Refresh Inventory View if open
+    if (window.renderInventory) window.renderInventory();
+}
+window.confirmStartingGear = confirmStartingGear;

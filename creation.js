@@ -1,6 +1,7 @@
 // STATE MANAGEMENT
 let selectedRace = null;
 let selectedBackground = null;
+let selectedCombatStyle = 'water'; // Default
 const state = {
     pool: [], // Array of rolled values
     assignments: { str: null, dex: null, con: null, int: null, wis: null, cha: null },
@@ -21,42 +22,255 @@ const raceSelectionData = {
 
 // Background Data
 const backgroundData = {
+    // --- NOVOS ANTECEDENTES (PHASE 1) ---
+    artista: {
+        title: "Artista",
+        skills: ["Atuação", "Persuasão"],
+        items: [
+            { name: "Bolsa de Ienes", type: "consumable", props: "3d6 x 1000", desc: "Ienes obtidos com sua arte." },
+            { name: "Pincel e Tintas", type: "item", desc: "Ferramentas de pintura." },
+            { name: "Roupa de Artista", type: "armor", ac: "11 + Des", props: "Leve", weight: "2 kg" },
+            { name: "Kit de Disfarce", type: "item" },
+            { name: "Instrumento Musical", type: "item" }
+        ],
+        abilities: [
+            { name: "Intuição Estética", desc: "Sabe diferenciar obras originais de falsas." },
+            { name: "Despertar Emocional", desc: "Pode inspirar emoções específicas através da arte." },
+            { name: "Criatividade Inspirada", desc: "Usa Intuição para criar soluções criativas." },
+            { name: "Arte Contagiante", desc: "+1 em testes para aliados por 1 hora após performance." }
+        ],
+        description: "Dedicado à beleza e emoção. Visão única do mundo e capacidade de inspirar."
+    },
     brigao: {
         title: "Brigão",
         skills: ["Atletismo", "Intimidação"],
         items: [
-            { name: "Porrete", dmg: "1d6 contundente", type: "weapon" },
-            { name: "Cicatriz de Batalha", type: "item" }
+            { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Dinheiro de apostas e lutas." },
+            { name: "Porrete", type: "weapon", dmg: "1d4 concussão", props: "Simples, Leve" }
         ],
         abilities: [
-            { name: "Combate Desarmado", desc: "Dano desarmado aumenta para 1d8." }
+            { name: "Combate Desarmado", desc: "Seus punhos causam 1d8 de dano contundente." },
+            { name: "Rastreamento de Combate", desc: "Percepção para revelar vulnerabilidades." },
+            { name: "Intimidação Feroz", desc: "Vantagem em testes de Intimidação." },
+            { name: "Conhecimento das Ruas", desc: "Sabe identificar perigos urbanos." }
         ],
-        html: "<strong>Vida Dura:</strong> Nascido na rua. +Atletismo, +Intimidação e sabe brigar."
+        description: "Nascido na rua ou arenas. Mestre em combate desarmado e sobrevivência urbana."
     },
+    costureiro: {
+        title: "Costureiro",
+        skills: ["Enganação", "Furtividade"],
+        items: [
+            { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Economias do ofício." },
+            { name: "Ferramentas de Costura", type: "item", desc: "Agulhas, linhas e tesouras." },
+            { name: "Roupa de Costureiro", type: "armor", ac: "11 + Des", props: "Leve e estilosa", weight: "2 kg" }
+        ],
+        abilities: [
+            { name: "Domínio Têxtil", desc: "Identifica origem e qualidade de tecidos." },
+            { name: "Alfaiataria de Caçador", desc: "Pode criar uniformes de caçador e mantos." },
+            { name: "Reparos e Ajustes", desc: "Conserta rasgos e aprimora roupas." },
+            { name: "Disfarce Hábil", desc: "Cria trajes para se passar por outra pessoa." }
+        ],
+        description: "Paixão por tecidos e moda. Cria uniformes, disfarces e faz reparos essenciais."
+    },
+    cozinheiro: {
+        title: "Cozinheiro",
+        skills: ["História", "Persuasão"],
+        items: [
+            { name: "Bolsa de Ienes", type: "consumable", props: "3d12 x 1000", desc: "Lucros de pratos deliciosos." },
+            { name: "Utensílios de Cozinheiro", type: "item", desc: "Panelas e facas de chef." },
+            { name: "Roupa de Cozinheiro", type: "armor", ac: "10 + Des", props: "Leve", weight: "2 kg" }
+        ],
+        abilities: [
+            { name: "Conhecimento de Ingredientes", desc: "Identifica ervas e cria refeições nutritivas." },
+            { name: "Improvisação Culinária", desc: "Cria pratos deliciosos com ingredientes escassos." },
+            { name: "Culinária Curativa", desc: "Refeição cura +10 PV ou concede 20 PV Temporários." },
+            { name: "Sabores Persuasivos", desc: "Pode usar comida para ganhar vantagens sociais." }
+        ],
+        description: "Mestre dos sabores. Suas refeições curam, fortalecem e abrem portas."
+    },
+    estudioso: {
+        title: "Estudioso",
+        skills: ["História", "Intuição"],
+        items: [
+            { name: "Bolsa de Ienes", type: "consumable", props: "3d12 x 1000", desc: "Fundos de pesquisa." },
+            { name: "Livros de Pesquisa", type: "item", desc: "Conhecimento." },
+            { name: "Kit de Falsificação", type: "item" },
+            { name: "Roupa de Estudioso", type: "armor", ac: "10 + Des", props: "Leve", weight: "2 kg" }
+        ],
+        abilities: [
+            { name: "Erudição", desc: "Proficiente em conhecimentos gerais." },
+            { name: "Perícia em Livros", desc: "Detecta textos falsos e informações ocultas." },
+            { name: "Raciocínio Lógico", desc: "Vantagem para resolver enigmas." },
+            { name: "Estudos Avançados", desc: "Ajuda aliados em pesquisas e descobre fraquezas." }
+        ],
+        description: "Busca incansável pelo saber. Resolve enigmas e descobre segredos ocultos."
+    },
+
+    // --- NOVOS ANTECEDENTES (PHASE 2 & 3) ---
+    ferreiro: {
+        title: "Ferreiro",
+        skills: ["História", "Percepção"],
+        items: [
+            { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Dinheiro do ofício." },
+            { name: "Ferramentas de Ferreiro", type: "item" },
+            { name: "Roupa de Ferreiro", type: "armor", ac: "11 + Des", props: "Leve, Resistente", weight: "3 kg" }
+        ],
+        abilities: [
+            { name: "Maestria em Forja", desc: "Cria armas com metade do custo e tempo." },
+            { name: "Reparo Rápido", desc: "Restaura armas em descanso curto." },
+            { name: "Recuperação de Metal", desc: "Recicla metais de itens destruídos." },
+            { name: "Armamento Personalizado", desc: "Pode aprimorar armas (+1/+2/+3) com tempo." }
+        ],
+        description: "Mestre do metal e forja. Cria e repara as melhores lâminas."
+    },
+    ladrao: {
+        title: "Ladrão",
+        skills: ["Enganação", "Furtividade"],
+        items: [
+            { name: "Bolsa de Ienes", type: "consumable", props: "3d12 x 1000", desc: "Dinheiro 'encontrado'." },
+            { name: "Ferramentas de Ladrão", type: "item" },
+            { name: "Roupa de Ladrão", type: "armor", ac: "11 + Des", props: "Leve, Discreta", weight: "2 kg" }
+        ],
+        abilities: [
+            { name: "Ladinagem", desc: "Abrir fechaduras e desarmar armadilhas." },
+            { name: "Olho de Avaliação", desc: "Avalia valor real de itens instantaneamente." },
+            { name: "Gíria de Ladrão", desc: "Comunica-se em códigos secretos." },
+            { name: "Lábia Ardilosa", desc: "Cria mentiras convincentes e manipula percepção." }
+        ],
+        description: "Vive nas sombras. Mestre do engano e da apropriação."
+    },
+    medico: {
+        title: "Médico",
+        skills: ["Medicina", "Natureza"],
+        items: [
+            { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Pagamentos." },
+            { name: "Kit de Primeiros Socorros (x2)", type: "consumable", props: "1d8+4" },
+            { name: "Kit de Herbalismo", type: "item" },
+            { name: "Roupa de Médico", type: "armor", ac: "10 + Des", props: "Leve", weight: "2 kg" }
+        ],
+        abilities: [
+            { name: "Diagnóstico", desc: "Identifica doenças e causas com precisão." },
+            { name: "Habilidades Curativas", desc: "Ação bônus para estabilizar ou curar com Kit." },
+            { name: "Conhecimento Medicinal", desc: "Cria antídotos e remédios." },
+            { name: "Criação de Poções", desc: "Em níveis altos, cria poções potentes." }
+        ],
+        description: "Dedicação à cura. Salva vidas onde outros falham."
+    },
+    ninja: {
+        title: "Ninja",
+        skills: ["Acrobacia", "Furtividade"],
+        items: [
+            { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Pagamento de missões." },
+            { name: "Kunai (x5)", type: "weapon", dmg: "1d4 perfurante", props: "Arremesso, Leve" },
+            { name: "Shuriken (x5)", type: "weapon", dmg: "1d4 cortante", props: "Arremesso, Leve" },
+            { name: "Bomba de Fumaça (x5)", type: "consumable", desc: "Cria área de escuridão." },
+            { name: "Roupa Ninja", type: "armor", ac: "11 + Des", props: "Leve, Silenciosa", weight: "2 kg" }
+        ],
+        abilities: [
+            { name: "Movimento Acrobático", desc: "Dobro de proficiência em testes de Acrobacia." },
+            { name: "Furtividade Aprimorada", desc: "Se move em silêncio absoluto." },
+            { name: "Resistência a Veneno", desc: "Vantagem contra venenos." },
+            { name: "Armas Envenenadas", desc: "Ação bônus para aplicar veneno (+2 dano)." }
+        ],
+        description: "Guerreiro das sombras. Mestre em infiltração e assassinato."
+    },
+    orfao: {
+        title: "Órfão",
+        skills: ["Natureza", "Sobrevivência"],
+        items: [
+            { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Esmolas e achados." },
+            { name: "Adaga Velha", type: "weapon", dmg: "1d4 perfurante", props: "Leve, Simples" },
+            { name: "Funda", type: "weapon", dmg: "1d4 concussão", props: "Distância" },
+            { name: "Kit de Primeiros Socorros", type: "consumable", props: "1d4" },
+            { name: "Roupas Gastas", type: "armor", ac: "10 + Des", props: "Leve", weight: "1 kg" }
+        ],
+        abilities: [
+            { name: "Sobrevivência Urbana", desc: "Encontra abrigo e comida facilmente em cidades." },
+            { name: "Resiliência Emocional", desc: "Vantagem em testes de resistência emocional." },
+            { name: "Furtividade em Multidões", desc: "Se esconde facilmente entre pessoas." },
+            { name: "Natureza de Cimento", desc: "Nunca se perde em ambientes urbanos." }
+        ],
+        description: "Criado nas ruas frias. Resiliente e adaptável."
+    },
+    policial: {
+        title: "Policial",
+        skills: ["Intuição", "Investigação"],
+        items: [
+            { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Salário." },
+            { name: "Distintivo", type: "item", desc: "Identificação policial." },
+            { name: "Roupa de Policial", type: "armor", ac: "11 + Des", props: "Leve, Uniforme", weight: "2 kg" },
+            { name: "Kit de Primeiros Socorros", type: "consumable", props: "1d4" },
+            { name: "Pistola", type: "weapon", dmg: "1d10 perfurante", props: "Distância, Recarga", weight: "1.5 kg" },
+            { name: "Munição de Chumbo (x20)", type: "item" }
+        ],
+        abilities: [
+            { name: "Investigação Aprofundada", desc: "Vantagem em Investigação. Mestre revela detalhes extras." },
+            { name: "Rede de Contatos", desc: "Conexões com informantes e comunidade." },
+            { name: "Perfil do Caçador", desc: "Analisa padrões de comportamento de demônios." },
+            { name: "Sempre em Guarda", desc: "Pode dormir e manter vigilância (não sofre surpresa)." }
+        ],
+        description: "Defensor da lei. Investigativo e vigilante."
+    },
+    religioso: {
+        title: "Religioso",
+        skills: ["Intuição", "História"],
+        items: [
+            { name: "Bolsa de Ienes", type: "consumable", props: "3d12 x 1000", desc: "Doações." },
+            { name: "Símbolo Sagrado", type: "item", desc: "Amuleto de fé." },
+            { name: "Livro de Preces", type: "item" },
+            { name: "Roupa de Religioso", type: "armor", ac: "10 + Des", props: "Leve, Cerimonial", weight: "2 kg" }
+        ],
+        abilities: [
+            { name: "Conhecimento Religioso", desc: "Vantagem em História sobre mitos e dogmas." },
+            { name: "Discernimento Espiritual", desc: "Intuição para detectar bondade ou maldade." },
+            { name: "Inspirar Fé", desc: "Proficiência em Persuasão ao falar de fé." },
+            { name: "Coragem Renovada", desc: "Ação: Inspira aliados, dando vantagem contra medo." }
+        ],
+        description: "Guiado pela fé. Luz divina contra as trevas."
+    },
+    selvagem: {
+        title: "Selvagem",
+        skills: ["Sobrevivência", "Natureza", "Lidar com Animais"],
+        items: [
+            { name: "Bolsa de Ienes", type: "consumable", props: "3d12 x 1000", desc: "Tesouros naturais." },
+            { name: "Roupa de Selvagem", type: "armor", ac: "11 + Des", props: "Leve, Peles", weight: "2 kg" }
+        ],
+        abilities: [
+            { name: "Sobrevivência Instintiva", desc: "Encontra dobro de comida. Não se perde na natureza." },
+            { name: "Rastreamento", desc: "Vantagem para rastrear em ambiente natural." },
+            { name: "Memória Selvagem", desc: "Lembra perfeitamente de caminhos e rotas." },
+            { name: "Técnicas de Camuflagem", desc: "Pode se esconder facilmente na natureza (Vantagem)." }
+        ],
+        description: "Filho da natureza. Resiliente e instintivo."
+    },
+
+
+    // --- LEGADO ---
     herdeiro: {
         title: "Herdeiro",
         skills: ["Persuasão", "História"],
         items: [
             { name: "Katana Ornamental", dmg: "1d6 cortante", type: "weapon" },
-            { name: "Bolsa de Moedas (Cheia)", type: "item" },
+            { name: "Bolsa de Ienes", type: "consumable", props: "4d6 x 1000", desc: "Herança de família." },
             { name: "Selo da Família", type: "item" }
         ],
         abilities: [
             { name: "Educação Refinada", desc: "Vantagem em testes sociais com a elite." }
         ],
-        html: "<strong>Berço de Ouro:</strong> Família rica ou nobre. +Persuasão, +História e mais recursos iniciais."
+        html: "<strong>Berço de Ouro:</strong> Família rica ou nobre. Recursos iniciais abundantes."
     },
     sobrevivente: {
         title: "Sobrevivente",
         skills: ["Sobrevivência", "Furtividade"],
         items: [
             { name: "Faca de Caça", dmg: "1d4 perfurante", type: "weapon" },
+            { name: "Bolsa de Ienes", type: "consumable", props: "2d6 x 1000", desc: "O que sobrou." },
             { name: "Amuleto da Sorte", type: "item" }
         ],
         abilities: [
             { name: "Instinto de Preservação", desc: "Pode rerolar 1 teste de resistência por dia." }
         ],
-        html: "<strong>Tragédia:</strong> Único sobrevivente de um ataque. +Sobrevivência, +Furtividade e instintos aguçados."
+        html: "<strong>Tragédia:</strong> Único sobrevivente. Instintos aguçados pela dor."
     }
 };
 
@@ -465,6 +679,7 @@ function goToNextPage() {
         background: {
             id: selectedBackground,
             name: bgInfo.title,
+            description: bgInfo.html.replace(/<[^>]*>?/gm, ''), // Strip HTML for cleaner description
             skills: bgInfo.skills,
             abilities: bgInfo.abilities
         },

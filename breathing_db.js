@@ -173,7 +173,76 @@ const BREATHING_THUNDER = {
     name: 'Trovão',
     description: 'Focada em velocidade extrema e ataques explosivos, a Respiração do Trovão canaliza poder nas pernas.',
     forms: [
-        { id: 'thunder_1', name: "Primeira Forma: Hekireki Issen", cost: 1, damage: "3d8 Elétrico", range: "Linha 9m", desc: "Avanço instantâneo.", evolutions: ["Dano 4d8, 12m.", "Dano 5d8, 15m.", "Seis Dobras (6d8).", "Oito Dobras (8d8)."] },
+        {
+            id: 'thunder_1',
+            name: "Primeira Forma: Hekireki Issen",
+            cost: 1,
+            damage: "2d10 Elétrico",
+            range: "Linha (Movimento)",
+            desc: "Avanço instantâneo em linha reta. Acerta todos no caminho. Se fragilizado: acerta pescoço (+2 CD Const). Ação Bônus: Crítico 18-20.",
+            evolutions: [
+                "Dano aumenta para 3d10.",
+                "Dano aumenta para 4d10.",
+                "Dano aumenta para 5d10.",
+                "Dano 6d10. Inimigo fragilizado: +3 na CD de Constituição."
+            ]
+        },
+        {
+            id: 'thunder_3',
+            name: "Terceira Forma: Shiubun Serai",
+            cost: 1,
+            damage: "2d12 Elétrico",
+            range: "Toque",
+            desc: "Série de golpes em arco criando vários raios. Ação Bônus: Crítico 19-20.",
+            evolutions: [
+                "Dano aumenta para 3d12.",
+                "Dano aumenta para 4d12.",
+                "Dano aumenta para 5d12.",
+                "Dano 6d12. Técnica atinge todas as criaturas em volta (3m) com 4d6 dano."
+            ]
+        },
+        {
+            id: 'thunder_4',
+            name: "Quarta Forma: Enrai",
+            cost: 1,
+            damage: "2d6 Elétrico",
+            range: "Cone 3m",
+            desc: "Golpes de trovão à distância. Teste de Destreza (metade). Ação Bônus: Crítico 19-20.",
+            evolutions: [
+                "Dano 3d6, alcance 6m.",
+                "Dano 4d6, alcance 6m.",
+                "Dano 5d6, alcance 9m.",
+                "Dano 6d6, alcance 12m."
+            ]
+        },
+        {
+            id: 'thunder_5',
+            name: "Quinta Forma: Retsu Kairai",
+            cost: 1,
+            damage: "2d12 Elétrico",
+            range: "Linha 9m",
+            desc: "Poderoso raio em linha reta. Ação Bônus: Crítico 19-20.",
+            evolutions: [
+                "Dano aumenta para 3d12.",
+                "Dano aumenta para 4d12.",
+                "Dano aumenta para 5d12.",
+                "Dano 6d12. Se errar, pode redirecionar para outra criatura a 3m (novo ataque)."
+            ]
+        },
+        {
+            id: 'thunder_6',
+            name: "Sexta Forma: Dengou Raigou",
+            cost: 1,
+            damage: "2d12 Elétrico",
+            range: "Toque",
+            desc: "Versão mais forte da quarta forma, focada em uma criatura. Ação Bônus: Crítico 19-20.",
+            evolutions: [
+                "Dano aumenta para 3d12.",
+                "Dano aumenta para 4d12.",
+                "Dano aumenta para 5d12.",
+                "Dano 6d12. Foca no pescoço. Se fragilizada: acerto automático e +1 na CD Const."
+            ]
+        },
         { id: 'thunder_7', name: "Sétima Forma: Honoikazuchi no Kami", cost: 3, damage: "10d6 Elétrico", range: "Linha 30m", desc: "Dragão de raio azul. Morte instantânea (CD 30). (Nível 20)", isSpecial: true, reqLevel: 20, evolutions: [] }
     ]
 };
