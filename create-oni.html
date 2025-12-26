@@ -743,15 +743,170 @@
 
         // --- LOGIC ---
         let currentStep = 1;
-        const totalSteps = 5;
+        const totalSteps = 6;
         const state = {
             path: 'blood',
             kekkijutsu: 'ice',
             particularities: [],
+            background: 'criminal', // default
             stats: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 }
         };
 
-        const COSTS = { 8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9 };
+        const backgroundData = {
+            artista: {
+                title: "Artista", icon: "palette",
+                skills: ["Atuação", "Persuasão"],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d6 x 1000", desc: "Ienes obtidos com sua arte.", weight: "0.5 kg" },
+                    { name: "Pincel e Tintas", type: "item", desc: "Ferramentas de pintura.", weight: "1 kg" },
+                    { name: "Roupa de Artista", type: "armor", ac: "11 + Des", props: "Leve", weight: "2 kg" },
+                    { name: "Kit de Disfarce", type: "item", weight: "1.5 kg" }
+                ],
+                desc: "Dedicado à beleza e emoção. Visão única do mundo."
+            },
+            brigao: {
+                title: "Brigão", icon: "skull",
+                skills: ["Atletismo", "Intimidação"],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Dinheiro de apostas.", weight: "0.5 kg" },
+                    { name: "Porrete", type: "weapon", dmg: "1d4 concussão", props: "Simples, Leve", weight: "1 kg" }
+                ],
+                desc: "Nascido na rua ou arenas. Mestre em combate desarmado."
+            },
+            costureiro: {
+                title: "Costureiro", icon: "scissors",
+                skills: ["Enganação", "Furtividade"],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Economias.", weight: "0.5 kg" },
+                    { name: "Ferramentas de Costura", type: "item", desc: "Agulhas e linhas.", weight: "1 kg" },
+                    { name: "Roupa de Costureiro", type: "armor", ac: "11 + Des", props: "Leve", weight: "2 kg" }
+                ],
+                desc: "Paixão por tecidos e moda. Cria uniformes e disfarces."
+            },
+            cozinheiro: {
+                title: "Cozinheiro", icon: "utensils",
+                skills: ["História", "Persuasão"],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d12 x 1000", desc: "Lucros.", weight: "0.5 kg" },
+                    { name: "Utensílios de Cozinheiro", type: "item", desc: "Panelas e facas.", weight: "2 kg" }
+                ],
+                desc: "Mestre dos sabores. Suas refeições curam e abrem portas."
+            },
+            estudioso: {
+                title: "Estudioso", icon: "book",
+                skills: ["História", "Intuição"],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d12 x 1000", desc: "Fundos.", weight: "0.5 kg" },
+                    { name: "Livros de Pesquisa", type: "item", desc: "Conhecimento.", weight: "3 kg" }
+                ],
+                desc: "Busca incansável pelo saber. Resolve enigmas."
+            },
+            ferreiro: {
+                title: "Ferreiro", icon: "hammer",
+                skills: ["História", "Percepção"],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Dinheiro do ofício.", weight: "0.5 kg" },
+                    { name: "Ferramentas de Ferreiro", type: "item", weight: "5 kg" }
+                ],
+                desc: "Mestre do metal e forja. Cria e repara as melhores lâminas."
+            },
+            ladrao: {
+                title: "Ladrão", icon: "footprints",
+                skills: ["Enganação", "Furtividade"],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d12 x 1000", desc: "Dinheiro 'encontrado'.", weight: "0.5 kg" },
+                    { name: "Ferramentas de Ladrão", type: "item", weight: "1 kg" }
+                ],
+                desc: "Vive nas sombras. Mestre do engano e da apropriação."
+            },
+            medico: {
+                title: "Médico", icon: "activity",
+                skills: ["Medicina", "Natureza"],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Pagamentos.", weight: "0.5 kg" },
+                    { name: "Kit de Primeiros Socorros", type: "consumable", props: "1d8+4", weight: "1 kg" },
+                    { name: "Kit de Herbalismo", type: "item", weight: "1 kg" }
+                ],
+                desc: "Dedicação à cura. Salva vidas onde outros falham."
+            },
+            ninja: {
+                title: "Ninja", icon: "ghost",
+                skills: ["Acrobacia", "Furtividade"],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Pagamento.", weight: "0.5 kg" },
+                    { name: "Kunai (x5)", type: "weapon", dmg: "1d4 perfurante", props: "Arremesso" },
+                    { name: "Bomba de Fumaça (x2)", type: "consumable", desc: "Escuridão." }
+                ],
+                desc: "Guerreiro das sombras. Mestre em infiltração."
+            },
+            orfao: {
+                title: "Órfão", icon: "user",
+                skills: ["Natureza", "Sobrevivência"],
+                items: [
+                    { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Esmolas.", weight: "0.5 kg" },
+                    { name: "Adaga Velha", type: "weapon", dmg: "1d4 perfurante", props: "Leve" }
+                ],
+                desc: "Criado nas ruas frias. Resiliente e adaptável."
+            },
+            policial: {
+                title: "Policial", icon: "shield",
+                skills: ["Intuição", "Investigação"],
+                items: [
+                    { name: "Distintivo", type: "item", desc: "Identificação." },
+                    { name: "Pistola", type: "weapon", dmg: "1d10 perfurante", props: "Distância" }
+                ],
+                desc: "Defensor da lei. Investigador nato."
+            },
+            religioso: {
+                title: "Religioso", icon: "sun",
+                skills: ["História", "Intuição"],
+                items: [
+                    { name: "Símbolo Sagrado", type: "item" },
+                    { name: "Água Benta (x2)", type: "consumable" }
+                ],
+                desc: "Guiado pela fé e luz divina."
+            },
+            selvagem: {
+                title: "Selvagem", icon: "tent",
+                skills: ["Sobrevivência", "Natureza"],
+                items: [
+                    { name: "Armadilha de Urso", type: "item" },
+                    { name: "Pele de Animal", type: "item" }
+                ],
+                desc: "Filho da natureza. Caçador primitivo."
+            }
+        };
+
+        // Init Backgrounds
+        const bgGrid = document.getElementById('bgGrid');
+        Object.keys(backgroundData).forEach(key => {
+            const bg = backgroundData[key];
+            const el = document.createElement('div');
+            el.className = `bg-card ${state.background === key ? 'selected' : ''}`;
+            el.onclick = () => selectBg(key, el);
+            el.innerHTML = `
+                <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:2rem; text-align:center;">
+                    <i data-lucide="${bg.icon}" size="48" style="color:var(--blood-bright); margin-bottom:1rem;"></i>
+                    <h3 style="color:white; font-family:var(--font-display); margin-bottom:0.5rem;">${bg.title}</h3>
+                    <p style="color:#aaa; font-size:0.9rem; margin-bottom:1rem;">${bg.desc}</p>
+                    <div style="font-size:0.8rem; color:#666;">
+                        <div><strong>Perícias:</strong> ${bg.skills.join(', ')}</div>
+                    </div>
+                </div>
+            `;
+            bgGrid.appendChild(el);
+        });
+
+        function selectBg(id, el) {
+            state.background = id;
+            document.querySelectorAll('#bgGrid .bg-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+
+        // ... REST OF LOGIC ...
+
+        // Oni Point Buy Costs (6=-2, 8=0, 10=2, 12=4, 14=7, 16=11, 18=16)
+        const COSTS = { 6: -2, 8: 0, 10: 2, 12: 4, 14: 7, 16: 11, 18: 16 };
 
         function updateStat(stat, val) {
             val = parseInt(val);
@@ -760,37 +915,47 @@
             let usedPoints = 0;
             for (let key in state.stats) {
                 if (key !== stat) {
-                    usedPoints += COSTS[state.stats[key]];
+                    usedPoints += COSTS[state.stats[key]] || 0;
                 }
             }
 
-            // Check if new value fits
-            if (usedPoints + COSTS[val] > 27) {
-                // Revert input
-                // Since we don't have direct reference to 'this', we find it
-                // But this runs on 'oninput', so the value is already changed in the DOM element
-                // We force it back
+            // Check if new value fits in 27 budget
+            const cost = COSTS[val] !== undefined ? COSTS[val] : 0;
+            const newCost = usedPoints + cost;
+
+            if (newCost > 27) {
+                // Revert input via DOM
                 const input = document.querySelector(`input[oninput*="'${stat}'"]`);
                 if (input) input.value = state.stats[stat];
+                if (window.alert) window.alert("Pontos insuficientes!");
                 return;
             }
 
             // Valid update
             state.stats[stat] = val;
             document.getElementById(`val-${stat}`).innerText = val;
-            document.getElementById('pointsRemain').innerText = 27 - (usedPoints + COSTS[val]);
+            document.getElementById('pointsRemain').innerText = 27 - newCost;
         }
 
         const PARTS = [
-            { id: 'regen', name: 'Regeneração Superior', icon: 'heart', desc: '+5 HP/Turno passivo.' },
-            { id: 'skin', name: 'Pele de Ferro', icon: 'shield', desc: '+2 CA natural.' },
-            { id: 'senses', name: 'Sentidos Aguçados', icon: 'eye', desc: 'Visão no escuro e faro.' },
-            { id: 'claws', name: 'Garras Retráteis', icon: 'scissors', desc: 'Golpes desarmados 1d6 cortante.' },
-            { id: 'size', name: 'Controle de Tamanho', icon: 'maximize', desc: 'Alterar tamanho P a G.' }
+            { id: 'size', name: 'Alteração Corporal', icon: 'maximize', desc: 'Ação para diminuir (15cm) ou aumentar (5m). Ganha furtividade/agilidade ou força/intimidação.' },
+            { id: 'animal', name: 'Aparência Animalesca', icon: 'cat', desc: 'Adquire características de um animal (ex: teias de aranha). Requer aprovação do Mestre.' },
+            { id: 'disturbing', name: 'Aparência Perturbadora', icon: 'ghost', desc: 'Vantagem em testes de Intimidação contra qualquer criatura.' },
+            { id: 'camo', name: 'Camuflagem Adaptativa', icon: 'eye-off', desc: 'Mistura-se ao ambiente. +2 em testes de Furtividade.' },
+            { id: 'extend', name: 'Extensão de Membros', icon: 'chevrons-up', desc: 'Estica braços/pernas. Aumenta alcance de ataque corpo-a-corpo em 1,5m.' },
+            { id: 'charming', name: 'Forma Cativante', icon: 'heart', desc: 'Aparência inocente ou encantadora. Vantagem em testes de Persuasão.' },
+            { id: 'claws', name: 'Garra Laminada', icon: 'scissors', desc: 'Garras afiadas. Seus ataques desarmados causam dano cortante.' },
+            { id: 'mimicry', name: 'Mimetismo', icon: 'mic', desc: 'Imita vozes e sons perfeitamente. CD 15 de Intuição para distinguir.' },
+            { id: 'limbs', name: 'Múltiplos Membros', icon: 'users', desc: 'Braços ou pernas extras. Aumenta dano desarmado para 1d10.' },
+            { id: 'steel_skin', name: 'Pele de Aço', icon: 'shield', desc: 'Reduz dano cortante e concussão recebido em -2.' },
+            { id: 'human_form', name: 'Transformação Humana', icon: 'user', desc: 'Pode se transformar em humano indistinguível (exceto por sentidos aguçados).' },
+            { id: 'water_breath', name: 'Respiração Aquática', icon: 'droplet', desc: 'Pode respirar na água e na superfície sem restrições.' },
+            { id: 'darkvision', name: 'Visão Noturna', icon: 'eye', desc: 'Enxerga perfeitamente na escuridão (preto e branco).' }
         ];
 
         // Init Parts
         const pContainer = document.getElementById('particularitiesRef');
+        pContainer.innerHTML = ''; // Clear existing
         PARTS.forEach(p => {
             const el = document.createElement('div');
             el.className = 'part-item';
@@ -879,6 +1044,10 @@
         }
 
         function finishCreation() {
+            const selectedBg = state.background ? backgroundData[state.background] : null;
+            const initialItems = selectedBg && selectedBg.items ? selectedBg.items.map(i => ({ ...i, id: Date.now() + Math.random() })) : [];
+            const initialSkills = selectedBg ? selectedBg.skills : [];
+
             const char = {
                 name: document.getElementById('oniName').value || 'Oni Desconhecido',
                 race: 'Oni',
@@ -886,12 +1055,14 @@
                 kekkijutsu: state.kekkijutsu,
                 particularities: PARTS.filter(p => state.particularities.includes(p.id)).map(p => ({ name: p.name, effect: p.desc })),
                 attributes: state.stats,
+                background: selectedBg ? selectedBg.title : 'Desconhecido',
+                proficiencies: initialSkills,
                 level: 1,
                 hp: 15 + Math.floor((state.stats.con - 10) / 2),
                 currentHP: 15 + Math.floor((state.stats.con - 10) / 2),
-                maxPE: 1 + Math.max(0, Math.floor((state.stats.wis - 10) / 2)),
-                currentPE: 1 + Math.max(0, Math.floor((state.stats.wis - 10) / 2)),
-                inventory: ['Nenhum item'],
+                maxPE: 1, // Fixed for Level 1
+                currentPE: 1,
+                inventory: initialItems.length > 0 ? initialItems : [], // Empty array if no items
                 rank: 'Oni Inferior'
             };
 

@@ -88,7 +88,39 @@ function initDashboard() {
             setTimeout(showGearSelectionModal, 800);
         }
     }
+
+    // Load Details
+    if (humanData.details) {
+        if (document.getElementById('detailName')) document.getElementById('detailName').value = humanData.details.name || humanData.name || "";
+        if (document.getElementById('detailSex')) document.getElementById('detailSex').value = humanData.details.sex || "";
+        if (document.getElementById('detailHeight')) document.getElementById('detailHeight').value = humanData.details.height || "";
+        if (document.getElementById('detailWeight')) document.getElementById('detailWeight').value = humanData.details.weight || "";
+        if (document.getElementById('detailPhysical')) document.getElementById('detailPhysical').value = humanData.details.physical || "";
+        if (document.getElementById('detailPersonality')) document.getElementById('detailPersonality').value = humanData.details.personality || "";
+        if (document.getElementById('detailIdeals')) document.getElementById('detailIdeals').value = humanData.details.ideals || "";
+        if (document.getElementById('detailFlaws')) document.getElementById('detailFlaws').value = humanData.details.flaws || "";
+    } else {
+        // Init if empty
+        humanData.details = {};
+        if (document.getElementById('detailName')) document.getElementById('detailName').value = humanData.name || "";
+    }
 }
+
+window.updateCharDetail = function (field, value) {
+    if (!humanData.details) humanData.details = {};
+    humanData.details[field] = value;
+
+    // Special case for name sync
+    if (field === 'name') {
+        humanData.name = value;
+        const nameEl = document.getElementById('dispName');
+        if (nameEl) nameEl.textContent = value;
+        const nameDisplay = document.getElementById('charNameDisplay');
+        if (nameDisplay) nameDisplay.textContent = value;
+    }
+
+    saveHuman();
+};
 
 function getRankName(lvl) {
     if (lvl <= 2) return "Mizunoto";
@@ -130,10 +162,11 @@ function updateVitalsUI() {
         }
 
         // PE Calc
-        maxPE = humanData.level;
+        maxPE = parseInt(humanData.level) || 1; // PE always equals Level (Int)
     } else {
         // Fallback
         maxHP = 20 + ((humanData.level - 1) * 5);
+        maxPE = humanData.level;
     }
 
     humanData.maxHP = maxHP;
@@ -141,18 +174,29 @@ function updateVitalsUI() {
 
     // Bounds Check
     if (!humanData.currentHP && humanData.currentHP !== 0) humanData.currentHP = maxHP;
-    if (humanData.currentHP > maxHP) humanData.currentHP = maxHP;
+    // REMOVED HP CAP to allow Temporary HP
+    // if (humanData.currentHP > maxHP) humanData.currentHP = maxHP; 
 
     if (humanData.currentPE === undefined) humanData.currentPE = maxPE;
+    // PE Logic: If Max increases, we don't automatically refill, but we should cap if level drops?
+    // Actually, let's strictly cap PE Max for now, but allow it to be lower.
     if (humanData.currentPE > maxPE) humanData.currentPE = maxPE;
 
-    const hpPct = (humanData.currentHP / maxHP) * 100;
-    const pePct = (humanData.currentPE / maxPE) * 100;
+    // Auto-fill PE if it was equal to old Max? Difficult to know old max.
+    // For now, let's just ensure the display is correct.
+    // Update: If we just leveled up, maxPE changed. currentPE stays.
+    // "1/1" reported bug implies maxPE is 1. ensuring classData load works.
 
-    const hpBar = document.querySelector('.bar-hp');
+    // Calculate Percentages
+    const hpPct = Math.max(0, Math.min(100, (humanData.currentHP / maxHP) * 100));
+    const pePct = Math.max(0, Math.min(100, (humanData.currentPE / maxPE) * 100));
+
+    // Update Bars (Using class selectors matching HTML structure)
+    // Note: In HTML it is .vital-bar-fill.hp/pe inside .vital-bar-container
+    const hpBar = document.querySelector('.vital-bar-fill.hp');
     if (hpBar) hpBar.style.width = hpPct + "%";
 
-    const peBar = document.querySelector('.bar-pe');
+    const peBar = document.querySelector('.vital-bar-fill.pe');
     if (peBar) peBar.style.width = pePct + "%";
 
     // Update Text
@@ -167,8 +211,29 @@ function updateVitalsUI() {
         hdDisplay.innerHTML = `<span style="color:#aaa; font-size:0.8rem;">Vida: 1d${classData.hitDie} + CON por nível</span>`;
     }
 
+    // PE Display (Breathing Tab)
     const peDisp = document.getElementById('peDisplay');
     if (peDisp) peDisp.textContent = humanData.currentPE + " / " + maxPE;
+
+    // PE Display (Vitals Card)
+    const currPEEl = document.getElementById('currPE');
+    const maxPEEl = document.getElementById('maxPE'); // This targets the span with id="maxPE"
+    if (currPEEl) currPEEl.textContent = humanData.currentPE;
+    if (maxPEEl) maxPEEl.textContent = maxPE;
+
+    // DYING STATE CHECK
+    const dyingUI = document.getElementById('dyingStateUI');
+    const normalUI = document.getElementById('hpNormalState');
+
+    if (humanData.currentHP <= 0) {
+        if (dyingUI) dyingUI.style.display = 'flex';
+        if (normalUI) normalUI.style.display = 'none';
+
+        // Auto-check failure if hit? (Complex rule, let's leave for manual)
+    } else {
+        if (dyingUI) dyingUI.style.display = 'none';
+        if (normalUI) normalUI.style.display = 'block';
+    }
 
     // Also update Stats if present
     updateStatsUI();
@@ -250,22 +315,24 @@ function updateStatsUI() {
     }
 
     // Combat Mods
-    if (combatState.block) ac += 2; // Defensive stance bonus?
+    if (combatState.block) ac += 2;
+    if (combatState.dodge) ac += dexMod;
 
     // 2. Speed
-    let speed = 9;
-    // Heavy armor w/ low Str reduces speed? (Optional rule)
+    let speed = humanData.manualSpeed || 9;
 
     // Update DOM
     const acEl = document.getElementById('dispAC');
     if (acEl) acEl.textContent = ac;
 
     // Visual cue for temp AC
-    if (combatState.block) {
-        if (acEl) acEl.style.color = '#00b4d8';
-        if (acEl) acEl.innerText = ac + "*";
-    } else {
-        if (acEl) acEl.style.color = '#fff';
+    if (acEl) {
+        if (combatState.block || combatState.dodge) {
+            acEl.style.color = combatState.dodge ? '#20bf6b' : '#00b4d8';
+            acEl.innerText = ac + "*";
+        } else {
+            acEl.style.color = '#fff';
+        }
     }
 
     const spdEl = document.getElementById('dispSpeed');
@@ -397,6 +464,106 @@ function updateCharName(newName) {
     saveHuman();
 }
 
+// --- VITALS ACTIONS ---
+window.editVital = function (type) {
+    const isHP = type === 'hp';
+    const currentMax = isHP ? humanData.maxHP : humanData.maxPE;
+    const currentVal = isHP ? humanData.currentHP : humanData.currentPE;
+
+    // Simple prompt for now, could be a modal
+    const newVal = prompt(`Definir novo valor para ${isHP ? 'VIDA' : 'ENERGIA'} (Atual/Máximo):\nFormato: Valor ou Valor/Max`, `${currentVal}/${currentMax}`);
+
+    if (newVal) {
+        if (newVal.includes('/')) {
+            const parts = newVal.split('/');
+            const v = parseInt(parts[0]);
+            const m = parseInt(parts[1]);
+            if (!isNaN(v)) {
+                if (isHP) humanData.currentHP = v;
+                else humanData.currentPE = v;
+            }
+            if (!isNaN(m)) {
+                // If max changes, we might want to override the auto-calc or just set a "bonus" property.
+                // For simplicity, let's set a temporary override or just update the base if manual mode.
+                // But typically Max is derived. Let's assume this is a "manual override" mode.
+                if (isHP) humanData.maxHP = m; // This might be overwritten by updateVitalsUI if not careful.
+                else humanData.maxPE = m;
+
+                // Set a flag to stop auto-calc from overwriting logic if needed, 
+                // OR we update the constitution/level to match? No, that's too complex.
+                // Let's just say we trust the user.
+                // NOTE: updateVitalsUI() recalculates Max usually. We need to handle that.
+                // Let's add a `manualMaxHP` property.
+                if (isHP) humanData.manualMaxHP = m;
+                else humanData.manualMaxPE = m;
+            }
+        } else {
+            const v = parseInt(newVal);
+            if (!isNaN(v)) {
+                if (isHP) humanData.currentHP = v;
+                else humanData.currentPE = v;
+            }
+        }
+        saveHuman();
+        updateVitalsUI();
+    }
+};
+
+// Regen function removed per user request (Humans don't regen)
+
+window.editSpeed = function () {
+    const current = humanData.manualSpeed || 9;
+    const newVal = prompt("Definir Deslocamento (em metros):", current);
+    if (newVal !== null) {
+        const parsed = parseInt(newVal);
+        if (!isNaN(parsed)) {
+            humanData.manualSpeed = parsed;
+            saveHuman();
+            updateStatsUI();
+        }
+    }
+};
+
+window.revivePlayer = function () {
+    humanData.currentHP = 1;
+    saveHuman();
+    updateVitalsUI();
+
+    // Optional: Reset death saves visually
+    document.querySelectorAll('.death-save').forEach(c => c.checked = false);
+    showToast("Você recobrou a consciência!", "success");
+};
+
+// --- EQUIPMENT SYNC ---
+window.syncCombatValues = function () {
+    // 1. Update Defense (AC) - This calls updateStatsUI which handles AC logic
+    updateStatsUI();
+
+    // 2. Update Attacks based on Weapons
+    const inv = humanData.inventory || [];
+    const equippedWeapons = inv.filter(i => i.type === 'weapon' && i.equipped);
+
+    // Remove old auto-generated attacks
+    if (humanData.attacks) {
+        humanData.attacks = humanData.attacks.filter(a => !a.source || a.source !== 'equipment');
+    } else {
+        humanData.attacks = [];
+    }
+
+    // Add new attacks
+    equippedWeapons.forEach(w => {
+        humanData.attacks.push({
+            name: w.name,
+            damage: w.dmg || '1d6',
+            type: w.props || 'Comum',
+            source: 'equipment' // Flag to identify auto-added attacks
+        });
+    });
+
+    saveHuman();
+    renderAttacks();
+};
+
 // --- RENDER CLASS FEATURES (SIDEBAR) ---
 function renderClassFeatures() {
     const list = document.getElementById('featListContent');
@@ -467,12 +634,195 @@ window.editProficiencyBonus = function (skillName, e) {
     }
 };
 
+// --- RANK & ORGANIZATION LOGIC ---
+function getRankData(lvl) {
+    // Table from User Image
+    if (lvl <= 2) return { name: "Mizunoto", salary: 200000, mission: "D" };
+    if (lvl <= 4) return { name: "Mizunoe", salary: 230000, mission: "D" };
+    if (lvl <= 6) return { name: "Kanoto", salary: 260000, mission: "C" };
+    if (lvl <= 8) return { name: "Kanoe", salary: 290000, mission: "C" };
+    if (lvl <= 10) return { name: "Tsuchinoto", salary: 320000, mission: "B" };
+    if (lvl <= 12) return { name: "Tsuchinoe", salary: 350000, mission: "B" };
+    if (lvl <= 14) return { name: "Hinoto", salary: 380000, mission: "A" };
+    if (lvl <= 16) return { name: "Hinoe", salary: 410000, mission: "A" };
+    if (lvl <= 18) return { name: "Kinoto", salary: 440000, mission: "S" };
+
+    // Level 19-20 defaults to Kinoe, unless Hashira
+    return { name: "Kinoe", salary: 470000, mission: "S" };
+}
+
+function getRankName(lvl) {
+    if (humanData.isHashira) return "Hashira";
+    return getRankData(lvl).name;
+}
+
+function renderHunterOrganization() {
+    const rankEl = document.getElementById('sideRankDisplay');
+    const lvlEl = document.getElementById('sideLevelDisplay');
+    const salaryEl = document.getElementById('salaryDisplay');
+    const missionEl = document.getElementById('missionLevelDisplay');
+    const hashiraBtn = document.getElementById('btnBecomeHashira');
+
+    if (!rankEl) return;
+
+    // Determine current state
+    const data = getRankData(humanData.level);
+    let rankName = data.name;
+    let salary = data.salary;
+    let missionRank = data.mission;
+
+    // Hashira Override
+    if (humanData.isHashira) {
+        rankName = "Hashira";
+        salary = "∞"; // Or a massive number, usually Hashiras name their price or have massive resources
+        missionRank = "SS";
+    }
+
+    // Display Updates
+    rankEl.textContent = rankName;
+    lvlEl.textContent = humanData.level;
+    salaryEl.textContent = typeof salary === 'number' ? salary.toLocaleString('pt-BR') : salary;
+
+    // Mission Rank styling
+    missionEl.textContent = `Rank ${missionRank}`;
+    if (missionEl.nextElementSibling) {
+        if (missionRank === 'S' || missionRank === 'SS') missionEl.nextElementSibling.textContent = "Missões de extermínio de Luas e ameaças catastróficas.";
+        else if (missionRank === 'A') missionEl.nextElementSibling.textContent = "Missões de alto risco e liderança de esquadrões.";
+        else if (missionRank === 'B') missionEl.nextElementSibling.textContent = "Combate a onis com kekkijutsu e investigações.";
+        else if (missionRank === 'C') missionEl.nextElementSibling.textContent = "Missões de suporte e combate a onis experientes.";
+        else missionEl.nextElementSibling.textContent = "Patrulhas e extermínio de onis recém-transformados.";
+    }
+
+    // Hashira Button Logic (Hidden unless Kinoe Lvl 19+)
+    if (hashiraBtn) {
+        if (!humanData.isHashira && humanData.level >= 19) {
+            hashiraBtn.style.display = 'block';
+        } else {
+            hashiraBtn.style.display = 'none';
+        }
+    }
+}
+
+window.becomeHashira = function () {
+    if (humanData.level < 10) {
+        showToast("Você ainda não está pronto... (Nível 10+ Requerido)", "error");
+        return;
+    }
+
+    const confirmed = confirm(
+        "⚡ CAMINHO DOS HASHIRA ⚡\n\n" +
+        "Requisitos:\n" +
+        "1. Nível 10 (Mínimo)\n" +
+        "2. Derrotar 50 demônios como Kinoe/Elite.\n" +
+        "OU\n" +
+        "3. Derrotar um membro das Doze Luas.\n\n" +
+        "Você realizou esses feitos e deseja reivindicar seu título?"
+    );
+
+    if (confirmed) {
+        humanData.isHashira = true;
+        saveHuman();
+        renderHunterOrganization();
+        // Visual flairs
+        showToast("Você se tornou um HASHIRA! ⚔️🔥", "success");
+        // Play sound or effect?
+        const blade = document.getElementById('swordBlade');
+        if (blade) blade.classList.add('mastered'); // Ensure glowing
+    }
+};
+
+window.completeMission = function () {
+    // 1. Get current salary
+    const rankData = getRankData(humanData.level);
+    let salary = rankData.salary;
+
+    // Safety for Hashira/Legendary "Infinite"
+    if (typeof salary !== 'number') {
+        salary = 1000000; // Arbitrary 1M for Hashira "Infinite" per mission/month context
+    }
+
+    // 2. Add to Wealth
+    if (!humanData.yen) humanData.yen = 0;
+    humanData.yen += salary;
+
+    // 3. Save
+    saveHuman();
+
+    // 4. Update UI
+    // If Inventory is open, update visible Yen. If not, next render will handle.
+    // We can assume inventory_modules.js handles rendering, but we can force text update if element exists
+    const yenDisplay = document.getElementById('yenDisplay');
+    if (yenDisplay) yenDisplay.textContent = humanData.yen.toLocaleString('pt-BR');
+
+    // 5. Feedback
+    showToast(`Missão Completa! +${salary.toLocaleString('pt-BR')} Kan recebidos.`, "success");
+};
+
+// --- NEW PROFICIENCY RENDER ---
+function renderProficiencies() {
+    const container = document.getElementById('profList');
+    if (!container) return;
+    container.innerHTML = "";
+
+    // Get Proficiencies from Breathing Class
+    const db = window.BREATHING_CLASS_DB;
+    if (!db) {
+        // DB not loaded?
+        container.innerHTML = "<em>Carregando dados...</em>";
+        return;
+    }
+    const style = humanData.breathingStyle || 'water';
+    const classData = db[style];
+
+    if (!classData || !classData.proficiencies) {
+        container.innerHTML = "<em>Nenhuma proficiência listada.</em>";
+        return;
+    }
+
+    const { savingThrows, skillsList, armor, weapons } = classData.proficiencies;
+
+    // Helper to create tag
+    const createTag = (text, colorClass) => {
+        const tag = document.createElement('span');
+        tag.textContent = text;
+        tag.style.background = 'rgba(255,255,255,0.1)';
+        tag.style.padding = '2px 8px';
+        tag.style.borderRadius = '4px';
+        tag.style.fontSize = '0.75rem';
+        tag.style.marginRight = '5px';
+        tag.style.marginBottom = '5px';
+        tag.style.border = '1px solid rgba(255,255,255,0.2)';
+
+        if (colorClass === 'save') {
+            tag.style.borderColor = '#00b4d8';
+            tag.style.color = '#caf0f8';
+        }
+        return tag;
+    };
+
+    // Saving Throws
+    if (savingThrows) {
+        savingThrows.forEach(st => {
+            container.appendChild(createTag(`T.Resist: ${st.toUpperCase()}`, 'save'));
+        });
+    }
+
+    // Skills
+    if (skillsList) {
+        skillsList.forEach(sk => container.appendChild(createTag(sk)));
+    }
+
+    // Armor/Weapons (Optional, simpler display)
+    if (armor) container.appendChild(createTag(`Arm: ${armor.join(', ')}`));
+    if (weapons) container.appendChild(createTag(`Armas: ${weapons.join(', ')}`));
+}
+
 // --- NEW ATTRIBUTE RENDER WITH SKILLS ---
 function renderAttributes() {
     const grid = document.getElementById('attrGrid');
     if (!grid) return;
 
-    renderClassFeatures(); // Update sidebar too
+    renderHunterOrganization(); // Update sidebar too
 
     grid.innerHTML = "";
 
@@ -604,6 +954,24 @@ function rollCheck(label, mod) {
         isAttack: false
     });
 }
+
+// --- NEW PROFICIENCY LOGIC ---
+window.toggleProficiency = function (skillName) {
+    if (!humanData.proficiencies) humanData.proficiencies = {};
+    if (!humanData.proficiencies[skillName]) humanData.proficiencies[skillName] = { trained: false };
+
+    // Toggle
+    humanData.proficiencies[skillName].trained = !humanData.proficiencies[skillName].trained;
+
+    // Clean up if empty
+    if (!humanData.proficiencies[skillName].trained && !humanData.proficiencies[skillName].customBonus) {
+        delete humanData.proficiencies[skillName];
+    }
+
+    saveHuman();
+    renderAttributes();
+    if (typeof showToast === 'function') showToast(humanData.proficiencies[skillName]?.trained ? `Proficiência em ${skillName} adicionada!` : `Proficiência em ${skillName} removida.`);
+};
 // ----------------------------------------
 
 function renderBreathing(forceStyleId = null) {
@@ -1596,4 +1964,22 @@ function confirmStartingGear() {
     // Refresh Inventory View if open
     if (window.renderInventory) window.renderInventory();
 }
-window.confirmStartingGear = confirmStartingGear;
+window.setAttackPreset = function (type) {
+    const nameEl = document.getElementById('atkNameInput');
+    const dmgEl = document.getElementById('atkDmgInput');
+    const typeEl = document.getElementById('atkTypeInput');
+
+    if (type === 'katana') {
+        nameEl.value = "Espada Nichirin";
+        dmgEl.value = "1d8+2";
+        typeEl.value = "Cortante";
+    } else if (type === 'unarmed') {
+        nameEl.value = "Golpe Desarmado";
+        dmgEl.value = "1d4+2";
+        typeEl.value = "Contundente";
+    } else if (type === 'bow') {
+        nameEl.value = "Disparo de Arco";
+        dmgEl.value = "1d8+2";
+        typeEl.value = "Perfurante";
+    }
+};

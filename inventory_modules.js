@@ -11,8 +11,8 @@ let currentModalFilter = 'all';
 let currentModalSearch = '';
 
 // Garante que charData existe se dashboard.js falhar
-if (typeof charData === 'undefined') {
-    console.warn("charData não encontrado, inicializando fallback.");
+if (typeof window.charData === 'undefined') {
+    // console.warn("charData não encontrado, inicializando fallback.");
     window.charData = {
         inventory: [],
         attributes: { str: 10 }
@@ -330,16 +330,17 @@ function addItemToInventory(item) {
     newItem.equipped = false;
     delete newItem.category; // Remove temporary category field
 
-    if (!charData.inventory) charData.inventory = [];
-    charData.inventory.push(newItem);
+    const char = window.charData; // Use global
+    if (!char.inventory) char.inventory = [];
+    char.inventory.push(newItem);
 
     if (typeof saveState === 'function') saveState();
+    else if (typeof saveHuman === 'function') saveHuman(); // Fallback to saveHuman if saveState not found
+
     renderInventory();
 
     // Visual feedback
     showFlashMessage(`✓ ${item.name} adicionado!`);
-
-    // Opcional: Fechar modal após adicionar? Não, usuário pode querer adicionar mais.
 }
 
 function showFlashMessage(msg) {
@@ -365,14 +366,27 @@ function showFlashMessage(msg) {
 
 // === RENDERIZAÇÃO DO INVENTÁRIO ===
 
+window.editYen = function () {
+    const newVal = prompt("Nova quantidade de Ienes:", charData.yen || 0);
+    if (newVal !== null) {
+        const parsed = parseInt(newVal.replace(/\D/g, ''));
+        if (!isNaN(parsed)) {
+            charData.yen = parsed;
+            if (typeof saveState === 'function') saveState();
+            renderInventory();
+        }
+    }
+};
+
 window.renderInventory = function () {
     const container = document.getElementById('inventoryGrid');
     if (!container) return;
 
     container.innerHTML = '';
+    const char = window.charData; // Explicit Reference
 
     // Ensure Yen Exists
-    if (typeof charData.yen === 'undefined') charData.yen = 0;
+    if (typeof char.yen === 'undefined') char.yen = 0;
 
     // YEN DISPLAY
     const yenDisplay = document.createElement('div');
@@ -385,27 +399,30 @@ window.renderInventory = function () {
     yenDisplay.style.alignItems = 'center';
     yenDisplay.style.marginBottom = '15px';
     yenDisplay.style.border = '1px solid #333';
+    yenDisplay.style.cursor = 'pointer'; // Visual cue
+    yenDisplay.onclick = window.editYen; // Link to global edit function
+    yenDisplay.title = "Clique para editar";
     yenDisplay.innerHTML = `
         <div style="display:flex; align-items:center; gap:10px;">
             <i data-lucide="coins" color="#ffd700"></i>
             <span style="font-weight:bold; color:#ffd700; font-family:var(--font-display);">Riqueza</span>
         </div>
-        <div style="font-size:1.2rem; font-weight:800; color:#fff;">${charData.yen.toLocaleString()} <span style="font-size:0.8rem; color:#888;">Ienes</span></div>
+        <div style="font-size:1.2rem; font-weight:800; color:#fff;" id="yenDisplay">${char.yen.toLocaleString()} <span style="font-size:0.8rem; color:#888;">Ienes</span></div>
     `;
     container.appendChild(yenDisplay);
 
     // Calcular peso total
     let totalWeight = 0;
-    const maxWeight = (charData.attributes && charData.attributes.str ? charData.attributes.str : 10) * 15;
+    const maxWeight = (char.attributes && char.attributes.str ? char.attributes.str : (char.stats ? char.stats.str : 10)) * 15;
 
     // Valid Types that should appear in inventory
     const VALID_TYPES = ['weapon', 'armor', 'consumable', 'adventure', 'misc'];
 
     // Filtrar itens
-    const filtered = (charData.inventory || []).filter(item => {
+    const filtered = (char.inventory || []).filter(item => {
         if (!item) return false;
 
-        // Safety Clean: If item has no type or invalid type, hide it (likely a skill/ability that got mixed in)
+        // Safety Clean: If item has no type or invalid type, hide it
         if (!VALID_TYPES.includes(item.type)) return false;
 
         // Filtro de categoria do inventário principal
@@ -432,8 +449,8 @@ window.renderInventory = function () {
         container.appendChild(empty);
     } else {
         filtered.forEach((item, idx) => {
-            // Find real index in main array to ensure actions target correct item
-            const realIndex = charData.inventory.indexOf(item);
+            // Find real index in main array
+            const realIndex = char.inventory.indexOf(item);
 
             const weight = parseFloat(String(item.weight || '0').replace(/[^\d.]/g, '')) || 0;
             totalWeight += weight;
@@ -515,12 +532,7 @@ function createInventoryCard(item, index) {
 
 window.selectItem = function (index) {
     const details = document.getElementById(`inv-det-${index}`);
-    if (details) {
-        // Close others? Optional.
-        // document.querySelectorAll('.inv-details').forEach(d => d.classList.remove('expanded'));
-        details.classList.toggle('expanded');
-    }
-
+    if (details) details.classList.toggle('expanded');
     selectedItemIndex = selectedItemIndex === index ? null : index;
     showItemDetails(index);
 };
@@ -589,7 +601,8 @@ window.toggleEquip = function (index) {
 
     if (typeof saveState === 'function') saveState();
     renderInventory();
-    if (typeof calcDefense === 'function') calcDefense();
+    if (typeof window.syncCombatValues === 'function') window.syncCombatValues();
+    else if (typeof calcDefense === 'function') calcDefense();
 };
 
 window.removeInvItem = function (index) {
@@ -609,7 +622,10 @@ window.removeInvItem = function (index) {
 
         if (typeof saveState === 'function') saveState();
         renderInventory();
-        if (typeof calcDefense === 'function') calcDefense();
+        if (typeof saveState === 'function') saveState();
+        renderInventory();
+        if (typeof window.syncCombatValues === 'function') window.syncCombatValues();
+        else if (typeof calcDefense === 'function') calcDefense();
     }
 };
 

@@ -1162,29 +1162,13 @@
                     </div>
                 </div>
 
-                <!-- Herdeiro (Legacy) -->
-                <div class="selection-card" onclick="selectBackground('herdeiro', this)">
-                    <div style="background:#222; width:100%; height:100%; position:absolute;"></div>
-                    <div class="card-text">
-                        <h3>Herdeiro</h3>
-                        <p>Berço de ouro. <strong>Persuasão</strong> e <strong>História</strong>.</p>
-                    </div>
-                </div>
-
-                <!-- Sobrevivente (Legacy) -->
-                <div class="selection-card" onclick="selectBackground('sobrevivente', this)">
-                    <div style="background:#222; width:100%; height:100%; position:absolute;"></div>
-                    <div class="card-text">
-                        <h3>Sobrevivente</h3>
-                        <p>Único restante. <strong>Sobrevivência</strong> e <strong>Furtividade</strong>.</p>
-                    </div>
-                </div>
             </div>
+        </div>
 
-            <div class="step-nav-btns">
-                <button class="btn-prev" onclick="goToStep(2)"><i data-lucide="arrow-left"></i> Voltar</button>
-                <button class="btn-next" onclick="goToStep(4)">Próximo <i data-lucide="arrow-right"></i></button>
-            </div>
+        <div class="step-nav-btns">
+            <button class="btn-prev" onclick="goToStep(2)"><i data-lucide="arrow-left"></i> Voltar</button>
+            <button class="btn-next" onclick="goToStep(4)">Próximo <i data-lucide="arrow-right"></i></button>
+        </div>
         </div>
 
         <script>
@@ -1217,7 +1201,7 @@
                     <div class="attr-row">
                         <div class="attr-label"><i data-lucide="swords" size="16" style="color:#d90429"></i> Força</div>
                         <div class="attr-input-group">
-                            <input type="range" min="6" max="16" step="2" value="8" style="--val:0%"
+                            <input type="range" min="6" max="18" step="2" value="8" style="--val:0%"
                                 oninput="updateStat('str', this.value)">
                             <div class="attr-val-box" id="val-str">8</div>
                         </div>
@@ -1227,7 +1211,7 @@
                         <div class="attr-label"><i data-lucide="wind" size="16" style="color:#d90429"></i> Destreza
                         </div>
                         <div class="attr-input-group">
-                            <input type="range" min="6" max="16" step="2" value="8"
+                            <input type="range" min="6" max="18" step="2" value="8"
                                 oninput="updateStat('dex', this.value)">
                             <div class="attr-val-box" id="val-dex">8</div>
                         </div>
@@ -1237,7 +1221,7 @@
                         <div class="attr-label"><i data-lucide="shield" size="16" style="color:#d90429"></i>
                             Constituição</div>
                         <div class="attr-input-group">
-                            <input type="range" min="6" max="16" step="2" value="8"
+                            <input type="range" min="6" max="18" step="2" value="8"
                                 oninput="updateStat('con', this.value)">
                             <div class="attr-val-box" id="val-con">8</div>
                         </div>
@@ -1247,7 +1231,7 @@
                         <div class="attr-label"><i data-lucide="brain" size="16" style="color:#d90429"></i> Inteligência
                         </div>
                         <div class="attr-input-group">
-                            <input type="range" min="6" max="16" step="2" value="8"
+                            <input type="range" min="6" max="18" step="2" value="8"
                                 oninput="updateStat('int', this.value)">
                             <div class="attr-val-box" id="val-int">8</div>
                         </div>
@@ -1257,7 +1241,7 @@
                         <div class="attr-label"><i data-lucide="eye" size="16" style="color:#d90429"></i> Sabedoria
                         </div>
                         <div class="attr-input-group">
-                            <input type="range" min="6" max="16" step="2" value="8"
+                            <input type="range" min="6" max="18" step="2" value="8"
                                 oninput="updateStat('wis', this.value)">
                             <div class="attr-val-box" id="val-wis">8</div>
                         </div>
@@ -1267,7 +1251,7 @@
                         <div class="attr-label"><i data-lucide="smile" size="16" style="color:#d90429"></i> Carisma
                         </div>
                         <div class="attr-input-group">
-                            <input type="range" min="6" max="16" step="2" value="8"
+                            <input type="range" min="6" max="18" step="2" value="8"
                                 oninput="updateStat('cha', this.value)">
                             <div class="attr-val-box" id="val-cha">8</div>
                         </div>
@@ -1721,7 +1705,7 @@
         }
 
 
-        const COSTS = { 6: -2, 8: 0, 10: 2, 12: 4, 14: 7, 16: 12 };
+        const COSTS = { 6: -2, 8: 0, 10: 2, 12: 4, 14: 7, 16: 12, 18: 17 };
 
         // --- RACE SELECTION ---
         function selectRace(race, element) {
@@ -2223,10 +2207,13 @@
 
         let selectedCombatStyle = 'water';
 
-        function selectCombatStyle(id, element) {
-            selectedCombatStyle = id;
+        if (window.goToStep) window.goToStep(1);
+        updatePreview();
+        updateSkillsDisplay();
 
-            // UI Update
+        // --- THUNDER BREATHING MODAL LOGIC ---
+        function selectCombatStyle(id, element) {
+            // Unselect others visual
             document.querySelectorAll('.style-btn').forEach(btn => {
                 btn.classList.remove('selected');
                 btn.style.borderColor = '#333';
@@ -2234,21 +2221,49 @@
             });
 
             if (element) {
+                // If Thunder, don't auto-select yet, show modal
+                if (id === 'thunder') {
+                    // Visual select just for feedback or wait?
+                    // Let's show modal immediately
+                    document.getElementById('thunderWizardModal').style.display = 'flex';
+                    return;
+                }
+
+                selectedCombatStyle = id;
                 element.classList.add('selected');
                 element.style.borderColor = (id === 'thunder' ? '#ffd700' : id === 'flame' ? '#ff4d00' : id === 'beast' ? '#7b8cde' : '#00b4d8');
                 element.style.transform = 'scale(1.05)';
             }
         }
 
+        function confirmThunderWizard(subType) {
+            // Find Thunder Element to visually select it
+            const thunderBtn = document.querySelector('.style-btn[onclick*="thunder"]');
+
+            selectedCombatStyle = 'thunder';
+            if (thunderBtn) {
+                thunderBtn.classList.add('selected');
+                thunderBtn.style.borderColor = '#ffd700';
+                thunderBtn.style.transform = 'scale(1.05)';
+            }
+
+            // Save subtype preference
+            state.thunderMastery = subType; // 'specialist' or 'versed'
+
+            // Close Modal
+            document.getElementById('thunderWizardModal').style.display = 'none';
+        }
+
+        // --- FINISH CREATION UPDATE ---
         function finishCreation() {
             // Validation
             const name = document.getElementById('inputName').value;
             if (!name) { alert("Por favor, dê um nome ao seu caçador."); return; }
 
-            // Get Selected Background Data
+            // ... (Rest of logic) ...
             const bgData = backgroundData[state.background];
 
-            // Build Inventory (Default + Background)
+            // Build Inventory
             const defaultItems = [
                 { name: "Mochila", type: "item", weight: "1 kg", desc: "Mochila padrão de caçador." },
                 { name: "100 Kan", type: "item", weight: "0.1 kg", desc: "Moedas miúdas para despesas iniciais." },
@@ -2259,9 +2274,15 @@
             let finalInventory = JSON.parse(JSON.stringify(defaultItems));
 
             if (bgData && bgData.items) {
-                // Add background items
-                bgData.items.forEach(item => {
-                    finalInventory.push(JSON.parse(JSON.stringify(item)));
+                bgData.items.forEach(item => finalInventory.push(JSON.parse(JSON.stringify(item))));
+            }
+
+            // Add Thunder Special Feature if applicable
+            if (selectedCombatStyle === 'thunder' && state.thunderMastery === 'specialist') {
+                finalInventory.push({
+                    name: "Mestre da Primeira Forma",
+                    type: "feature",
+                    desc: "Focado exclusivamente no Hekireki Issen. Custo de PE reduzido para Trovão I."
                 });
             }
 
@@ -2276,7 +2297,6 @@
                 'flame': "Respiração das Chamas"
             };
 
-            // Build Object
             const finalChar = {
                 id: Date.now().toString(),
                 name: name,
@@ -2289,18 +2309,13 @@
                 breathingStyle: {
                     id: selectedCombatStyle,
                     name: styleMap[selectedCombatStyle] || "Respiração da Água",
-                    icon: "⚔️"
+                    icon: "⚔️",
+                    mastery: state.thunderMastery // Save Mastery
                 },
                 inventory: finalInventory,
                 skills: finalSkills,
-                background: bgData ? {
-                    id: state.background,
-                    name: bgData.title,
-                    description: bgData.description,
-                    abilities: bgData.abilities, // Crucial for Antecedente Tab
-                    skills: finalSkills
-                } : null,
-                yen: 0 // Initialize Wallet
+                background: bgData ? bgData : null,
+                yen: 0
             };
 
             // Save to LocalStorage Array
@@ -2313,15 +2328,76 @@
             window.location.href = 'dashboard.html';
         }
 
-        // Init
-        if (window.goToStep) window.goToStep(1);
-        updatePreview();
-        updateSkillsDisplay();
-
         // Initial Background Selection (None)
-        // Ensure inputs are valid
         if (!document.getElementById('inputName')) console.warn('inputName missing');
     </script>
+
+    <!-- THUNDER WIZARD MODAL -->
+    <div id="thunderWizardModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:2000; align-items:center; justify-content:center; overflow-y:auto;">
+        <div
+            style="background:#111; padding:2rem; border-radius:12px; border:1px solid #ffd700; max-width:900px; width:95%; text-align:center; max-height:90vh; overflow-y:auto; position:relative;">
+
+            <i data-lucide="zap" size="48" style="color:#ffd700; margin-bottom:0.5rem;"></i>
+            <h2 style="font-family:'Cinzel', serif; color:white; margin-bottom:0.5rem;">Caminho do Trovão "Única"</h2>
+            <p style="color:#ccc; margin-bottom:1.5rem; font-size:0.9rem;">A partir do 3º nível, sua jornada se bifurca.
+                Como sua técnica se manifesta?</p>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; text-align:left;">
+
+                <!-- SPECIALIST -->
+                <div
+                    style="background:rgba(255, 215, 0, 0.05); border:1px solid rgba(255, 215, 0, 0.2); padding:1.5rem; border-radius:8px; display:flex; flex-direction:column;">
+                    <h3
+                        style="color:#ffd700; margin-top:0; border-bottom:1px solid #555; padding-bottom:10px; margin-bottom:15px;">
+                        Especializado na Primeira Forma</h3>
+                    <p style="font-size:0.85rem; color:#aaa; margin-bottom:15px; font-style:italic;">
+                        Você domina exclusivamente o **Hekireki Issen** e suas variantes.
+                    </p>
+                    <ul
+                        style="color:#ccc; font-size:0.8rem; padding-left:1.2rem; flex:1; display:flex; flex-direction:column; gap:8px;">
+                        <li><strong>Foco Absoluto:</strong> Realiza APENAS a Primeira Forma.</li>
+                        <li><strong>Impulso de Dano:</strong> Ação bônus para fortificar. +1d6 dano para cada 3m movidos
+                            em linha reta (max 3d6). Aumenta para 1d8 no nv12.</li>
+                        <li><strong>Velocidade Letal:</strong> Mover 6m em linha reta concede <strong>Vantagem</strong>
+                            no ataque.</li>
+                    </ul>
+                    <button onclick="confirmThunderWizard('specialist')"
+                        style="margin-top:20px; padding:1rem; background:#ffd700; color:black; border:none; border-radius:6px; font-weight:bold; cursor:pointer; width:100%;">
+                        ESCOLHER ESPECIALISTA
+                    </button>
+                </div>
+
+                <!-- VERSED -->
+                <div
+                    style="background:rgba(255, 255, 255, 0.05); border:1px solid rgba(255, 255, 255, 0.2); padding:1.5rem; border-radius:8px; display:flex; flex-direction:column;">
+                    <h3
+                        style="color:white; margin-top:0; border-bottom:1px solid #555; padding-bottom:10px; margin-bottom:15px;">
+                        Versado em todas as Formas</h3>
+                    <p style="font-size:0.85rem; color:#aaa; margin-bottom:15px; font-style:italic;">
+                        Você controla todas as formas, **EXCETO** a primeira.
+                    </p>
+                    <ul
+                        style="color:#ccc; font-size:0.8rem; padding-left:1.2rem; flex:1; display:flex; flex-direction:column; gap:8px;">
+                        <li><strong>Defesa Aprimorada:</strong> +1 na CA e +1 no Acerto.</li>
+                        <li><strong>Contra-Ataque Relâmpago:</strong> Reação para atacar inimigo que errou um ataque
+                            corpo-a-corpo contra você.</li>
+                        <li><strong>Carga Estática:</strong> +1d4 de dano elétrico em ataques.</li>
+                        <li><strong>Teleporte Trovão:</strong> Mover-se instantaneamente para ponto visível (1x/turno).
+                        </li>
+                    </ul>
+                    <button onclick="confirmThunderWizard('versed')"
+                        style="margin-top:20px; padding:1rem; background:#333; color:white; border:1px solid #777; border-radius:6px; font-weight:bold; cursor:pointer; width:100%;">
+                        ESCOLHER VERSADO
+                    </button>
+                </div>
+
+            </div>
+
+            <button onclick="document.getElementById('thunderWizardModal').style.display='none'"
+                style="margin-top:20px; background:none; border:none; color:#888; cursor:pointer; text-decoration:underline;">Cancelar</button>
+        </div>
+    </div>
 </body>
 
 <script>

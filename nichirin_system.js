@@ -1,417 +1,573 @@
-// --- NICHIRIN SYSTEM V3: ULTIMATE EDITION ---
+// ============================================
+// NICHIRIN FORGE SYSTEM - ULTIMATE EDITION
+// ============================================
 
-// --- DATA: QUIZ STRATEGY ---
+const NICHIRIN_ELEMENTS = {
+    water: {
+        name: 'Água (Mizu)',
+        color: '#0077b6',
+        glow: 'rgba(0, 119, 182, 0.8)',
+        class: 'fx-water',
+        buffName: 'Fluidez',
+        buffDesc: '+1 na CA quando usar "Esquivar".',
+        desc: 'Calmo, adaptável, racional e defensor.'
+    },
+    flame: {
+        name: 'Chamas (En)',
+        color: '#ff0000',  // Pure Red for UI text/borders
+        glow: 'rgba(255, 0, 0, 0.9)',
+        class: 'fx-flame',
+        buffName: 'Alma Ardente',
+        buffDesc: '+1 dano de Fogo na primeira rolagem do turno.',
+        desc: 'Apaixonado, espírito forte, líder natural.'
+    },
+    thunder: {
+        name: 'Trovão (Kaminari)',
+        color: '#ffd60a',
+        glow: 'rgba(255, 214, 10, 0.8)',
+        class: 'fx-thunder',
+        buffName: 'Velocidade Relâmpago',
+        buffDesc: '+2 em rolagens de Iniciativa.',
+        desc: 'Explosivo, impaciente, intenso.'
+    },
+    wind: {
+        name: 'Vento (Kaze)',
+        color: '#3e8914',
+        glow: 'rgba(62, 137, 20, 0.8)',
+        class: 'fx-wind',
+        buffName: 'Cortador de Vendavais',
+        buffDesc: '+1 acerto com armas de corte.',
+        desc: 'Agressivo, brusco, fúria contida.'
+    },
+    stone: {
+        name: 'Pedra (Iwa)',
+        color: '#6c757d',
+        glow: 'rgba(108, 117, 125, 0.8)',
+        class: 'fx-stone',
+        buffName: 'Robustez',
+        buffDesc: '+1 PV máximo por nível (retroativo).',
+        desc: 'Estoico, piedoso, protetor, forte.'
+    },
+    // DERIVADAS
+    flower: {
+        name: 'Flor (Hana)',
+        color: '#ffb7b2',
+        glow: 'rgba(255, 183, 178, 0.8)',
+        class: 'fx-flower',
+        buffName: 'Olhos de Lótus',
+        buffDesc: 'Vantagem em Percepção (Visão).',
+        desc: 'Gracioso, observador, delicado.'
+    },
+    love: {
+        name: 'Amor (Koi)',
+        color: '#ff4d6d',
+        glow: 'rgba(255, 77, 109, 0.8)',
+        class: 'fx-love',
+        buffName: 'Alcance do Afeto',
+        buffDesc: '+1,5m de alcance em ataques corpo-a-corpo.',
+        desc: 'Emotivo, gentil, busca conexões.'
+    },
+    mist: {
+        name: 'Névoa (Kasumi)',
+        color: '#e0fbfc',
+        glow: 'rgba(224, 251, 252, 0.8)',
+        class: 'fx-mist',
+        buffName: 'Ocultação',
+        buffDesc: 'Vantagem em Furtividade na penumbra.',
+        desc: 'Distante, focado, lógico, indiferente.'
+    },
+    insect: {
+        name: 'Inseto (Mushi)',
+        color: '#90e0ef',
+        glow: 'rgba(144, 224, 239, 0.8)',
+        class: 'fx-insect',
+        buffName: 'Ferrão',
+        buffDesc: 'Aumenta a CD dos seus venenos em +1.',
+        desc: 'Inteligente, técnico, sádico com onis.'
+    },
+    serpent: {
+        name: 'Serpente (Hebi)',
+        color: '#7b2cbf',
+        glow: 'rgba(123, 44, 191, 0.8)',
+        class: 'fx-serpent',
+        buffName: 'Precisão da Víbora',
+        buffDesc: 'Reação para rolar ataque errado novamente (1/descanso).',
+        desc: 'Calculista, desconfiado, preciso.'
+    },
+    sound: {
+        name: 'Som (Oto)',
+        color: '#fb5607',
+        glow: 'rgba(251, 86, 7, 0.8)',
+        class: 'fx-sound',
+        buffName: 'Ressonância',
+        buffDesc: '1d4 dano extra em estruturas/objetos.',
+        desc: 'Extravagante, barulhento, confiante.'
+    },
+    beast: {
+        name: 'Besta (Kedamono)',
+        color: '#4361ee',
+        glow: 'rgba(67, 97, 238, 0.8)',
+        class: 'fx-beast',
+        buffName: 'Instinto Primitivo',
+        buffDesc: 'Vantagem em Sobrevivência para rastrear.',
+        desc: 'Selvagem, instintivo, impaciente.'
+    },
+    moon: {
+        name: 'Lua (Tsuki)',
+        color: '#3c096c',
+        glow: 'rgba(60, 9, 108, 0.8)',
+        class: 'fx-moon',
+        buffName: 'Lâmina Crescente',
+        buffDesc: 'Crítico no 19-20 (apenas à noite).',
+        desc: 'Misterioso, mortal, antigo.'
+    },
+    sun: {
+        name: 'Sol (Hi)',
+        color: '#000000',
+        glow: 'rgba(255, 0, 0, 0.8)',
+        class: 'fx-sun',
+        buffName: 'Calor Solar',
+        buffDesc: '+1d4 dano extra contra Onis.',
+        desc: 'Determinado, destino trágico, raro.'
+    }
+};
+
+// "SOUL RESONANCE" QUIZ
+// Expanded to 7 questions to handle diversity
 const QUIZ_QUESTIONS = [
     {
-        q: "Em um duelo mortal, o que guia sua lâmina?",
-        opts: [
-            { txt: "A fúria ardente do momento", type: 'flame', score: 3 },
-            { txt: "A calma e o fluxo do combate", type: 'water', score: 3 },
-            { txt: "A proteção dos inocentes", type: 'love', score: 2 },
-            { txt: "A eliminação rápida e eficiente", type: 'wind', score: 3 }
+        text: "Diante de um inimigo superior, o que guia sua lâmina?",
+        options: [
+            { text: "A proteção dos fracos", element: 'stone', points: 3 },
+            { text: "A eliminação rápida", element: 'thunder', points: 3 },
+            { text: "A adaptação constante", element: 'water', points: 3 },
+            { text: "A fúria de vencer", element: 'wind', points: 3 }
         ]
     },
     {
-        q: "Qual é o seu maior trunfo em batalha?",
-        opts: [
-            { txt: "Velocidade pura", type: 'thunder', score: 3 },
-            { txt: "Força bruta implacável", type: 'stone', score: 3 },
-            { txt: "Estratégia e astúcia", type: 'serpent', score: 3 },
-            { txt: "Sentidos aguçados", type: 'beast', score: 3 }
+        text: "Como seus amigos descreveriam sua personalidade?",
+        options: [
+            { text: "Extravagante e barulhento", element: 'sound', points: 5 },
+            { text: "Quieto e observador", element: 'mist', points: 4 },
+            { text: "Apaixonado e direto", element: 'flame', points: 4 },
+            { text: "Gentil e carinhoso", element: 'love', points: 5 }
         ]
     },
     {
-        q: "Diante de um demônio Lua Superior, você...",
-        opts: [
-            { txt: "Ataca de frente, sem medo", type: 'flame', score: 2 },
-            { txt: "Mantém a distância e analisa", type: 'mist', score: 3 },
-            { txt: "Busca uma abertura fatal", type: 'water', score: 2 },
-            { txt: "Usa o terreno a seu favor", type: 'wind', score: 2 }
+        text: "Qual é sua abordagem tática preferida?",
+        options: [
+            { text: "Uso de venenos e armadilhas", element: 'insect', points: 5 },
+            { text: "Ataques selvagens e imprevisíveis", element: 'beast', points: 5 },
+            { text: "Precisão cirúrgica", element: 'serpent', points: 4 },
+            { text: "Observação de detalhes", element: 'flower', points: 4 }
         ]
     },
     {
-        q: "O que define um verdadeiro Caçador?",
-        opts: [
-            { txt: "A determinação inabalável", type: 'sun', score: 5 },
-            { txt: "A maestria técnica", type: 'water', score: 1 },
-            { txt: "A coragem de morrer lutando", type: 'flame', score: 1 },
-            { txt: "A frieza para matar", type: 'wind', score: 1 }
+        text: "O que você sente ao olhar para a lua?",
+        options: [
+            { text: "Um mistério antigo", element: 'moon', points: 6 },
+            { text: "Solidão e foco", element: 'mist', points: 3 },
+            { text: "A beleza da noite", element: 'flower', points: 3 },
+            { text: "Nada, prefiro o sol", element: 'sun', points: 2 }
         ]
     },
     {
-        q: "Escolha um elemento da natureza que lhe atrai:",
-        opts: [
-            { txt: "O rugido do trovão", type: 'thunder', score: 5 },
-            { txt: "A vastidão do oceano", type: 'water', score: 5 },
-            { txt: "O calor do sol", type: 'sun', score: 2 },
-            { txt: "O mistério da neblina", type: 'mist', score: 5 }
+        text: "Qual é sua maior falha?",
+        options: [
+            { text: "Sou teimoso demais", element: 'wind', points: 3 },
+            { text: "Sou impaciente", element: 'thunder', points: 3 },
+            { text: "Sou desconfiado", element: 'serpent', points: 4 },
+            { text: "Sou muito emotivo", element: 'love', points: 3 }
+        ]
+    },
+    {
+        text: "Em um grupo, você é...",
+        options: [
+            { text: "O líder inspirador", element: 'flame', points: 4 },
+            { text: "O pilar de suporte", element: 'stone', points: 4 },
+            { text: "O estrategista silencioso", element: 'water', points: 3 },
+            { text: "O lobo solitário", element: 'beast', points: 4 }
+        ]
+    },
+    {
+        text: "Por que você luta?",
+        options: [
+            { text: "Para erradicar todos os onis", element: 'sun', points: 6 },
+            { text: "Para proteger minha beleza/arte", element: 'sound', points: 4 },
+            { text: "Para vingar os que perdi", element: 'insect', points: 3 },
+            { text: "Porque é minha natureza", element: 'moon', points: 4 }
         ]
     }
 ];
 
-// Map Types to Visual properties (Using specific CSS classes now)
-const BLADE_TYPES = {
-    'sun': { name: 'Lâmina Negra', class: 'fx-sun', desc: "Uma lâmina de escuridão profunda, absorvendo toda a luz ao redor.", feeling: "Vazio" },
-    'water': { name: 'Lâmina Azul', class: 'fx-water', desc: "Uma cor serena e profunda, refletindo a tranquilidade das águas.", feeling: "Serenidade" },
-    'flame': { name: 'Lâmina Vermelha', class: 'fx-flame', desc: "Brilha com uma intensidade carmesim vibrante.", feeling: "Paixão" },
-    'wind': {
-        name: 'Lâmina Verde', class: 'fx-wind',
-        style: { col: '#2b9348', glow: '#4cc9f0' },
-        desc: "Um verde pálido e cortante, evocando a força dos vendavais.", feeling: "Fúria"
-    },
-    'thunder': { name: 'Lâmina Amarela', class: 'fx-thunder', desc: "Raiada com padrões de ouro e eletricidade estática.", feeling: "Estrondo" },
-    'stone': {
-        name: 'Lâmina Cinza', class: 'fx-stone',
-        style: { col: '#6c757d', glow: '#adb5bd' },
-        desc: "Sólida e imponente, com o peso de uma montanha.", feeling: "Inabalável"
-    },
-    'mist': {
-        name: 'Lâmina Branca', class: 'fx-mist',
-        style: { col: '#e0fbfc', glow: '#fff' },
-        desc: "Pura e nebulosa, escondendo seu verdadeiro alcance.", feeling: "Ilusão"
-    },
-    'serpent': {
-        name: 'Lâmina Roxa', class: 'fx-serpent',
-        style: { col: '#7209b7', glow: '#b5179e' },
-        desc: "Sinuosa, com um tom violeta hipnotizante.", feeling: "Mistério"
-    },
-    'love': {
-        name: 'Lâmina Rosa', class: 'fx-love',
-        style: { col: '#ff006e', glow: '#ff5c8a' },
-        desc: "Vibrante e flexível, irradiando uma luz suave.", feeling: "Afeto"
-    },
-    'beast': {
-        name: 'Lâmina Índigo', class: 'fx-beast',
-        style: { col: '#3a0ca3', glow: '#4361ee' },
-        desc: "Um azul escuro e selvagem, com arestas lascadas.", feeling: "Instinto"
-    }
-};
-
-// --- STATE MANAGER ---
 let forgeState = {
-    mode: null,
-    quizIndex: 0,
+    phase: 'select',
+    currentQuestion: 0,
     scores: {},
-    manualSettings: { hue: 0, text: '', tsuba: 'regular' },
-    finalResult: null
+    hammerClicks: 0,
+    finalElement: null
 };
 
-// --- INIT ---
-document.addEventListener('DOMContentLoaded', () => {
-    // Tsuba Selector Init
-    const tSelector = document.getElementById('tsubaSelector');
-    if (tSelector) {
-        ['regular', 'circle', 'flame', 'flower'].forEach(t => {
-            const div = document.createElement('div');
-            div.className = `tsuba-option ${t === 'regular' ? 'selected' : ''}`;
-            div.innerText = t.charAt(0).toUpperCase();
-            div.onclick = () => selectTsuba(t, div);
-            tSelector.appendChild(div);
-        });
-    }
-});
+// ============================================
+// CORE FUNCTIONS
+// ============================================
 
-function selectForgeMode(mode) {
-    forgeState.mode = mode;
-    document.querySelectorAll('.forge-step').forEach(el => el.style.display = 'none');
+function initForge() {
+    forgeState = {
+        phase: 'select',
+        currentQuestion: 0,
+        scores: {},
+        hammerClicks: 0,
+        finalElement: null
+    };
+    Object.keys(NICHIRIN_ELEMENTS).forEach(elem => forgeState.scores[elem] = 0);
 
-    if (mode === 'destiny') {
-        document.getElementById('forgeDestiny').style.display = 'block';
-        resetQuiz();
-    } else {
-        document.getElementById('forgeManual').style.display = 'block';
+    // UI Reset
+    const modeSelect = document.getElementById('forgeModeSelect');
+    if (modeSelect) modeSelect.style.display = 'block';
+
+    document.getElementById('forgeQuizUI').innerHTML = '';
+    document.getElementById('forgeHammerUI').innerHTML = '';
+    document.getElementById('forgeResultUI').innerHTML = '';
+
+    // Blade Reset
+    const blade = document.getElementById('swordBlade');
+    if (blade) {
+        blade.className = 'blade';
+        adjustBladeVisuals('reset');
     }
 }
 
-// --- QUIZ LOGIC ---
-function resetQuiz() {
-    forgeState.quizIndex = 0;
-    forgeState.scores = {};
+function selectForgeMode(mode) {
+    const modeSelect = document.getElementById('forgeModeSelect');
+    if (mode) {
+        if (modeSelect) modeSelect.style.display = 'none';
+    }
+
+    if (mode === 'destiny') {
+        startQuiz();
+    } else if (mode === 'blacksmith') {
+        startBlacksmithMode();
+    }
+}
+
+// ============================================
+// FASE 1B: MANUAL SELECTION (BLACKSMITH)
+// ============================================
+
+function startBlacksmithMode() {
+    forgeState.phase = 'manual';
+    const ui = document.getElementById('forgeQuizUI'); // Reuse Quiz container
+
+    // Filter out 'sun' (Black) as it is exclusive/rare
+    const availableElements = Object.entries(NICHIRIN_ELEMENTS)
+        .filter(([key, val]) => key !== 'sun');
+
+    ui.innerHTML = `
+        <div class="destiny-quiz-card" style="max-width:800px;">
+            <h2 class="destiny-question" style="margin-bottom:10px;">Escolha seu Estilo de Respiração</h2>
+            <p style="color:#aaa; marginBottom:20px;">Como ferreiro, você molda o metal com sua intenção.</p>
+            
+            <div class="destiny-options" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:15px; max-height:400px; overflow-y:auto; padding-right:5px;">
+                ${availableElements.map(([key, val]) => `
+                    <button class="destiny-option" onclick="handleManualSelection('${key}')" 
+                        style="border-left: 4px solid ${val.color}; display:flex; flex-direction:column; align-items:flex-start; gap:5px;">
+                        <span style="color:#fff; font-weight:bold; font-size:1.1rem;">${val.name}</span>
+                        <span style="font-size:0.8rem; color:${val.color};">${val.buffName}</span>
+                    </button>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function handleManualSelection(element) {
+    forgeState.finalElement = element;
+    startHammering();
+}
+
+// ============================================
+// FASE 1: QUIZ
+// ============================================
+
+function startQuiz() {
+    forgeState.phase = 'quiz';
     renderQuestion();
-    updateQuizProgress();
 }
 
 function renderQuestion() {
-    const qData = QUIZ_QUESTIONS[forgeState.quizIndex];
-    document.getElementById('quizQuestion').innerText = `Pergunta ${forgeState.quizIndex + 1}/${QUIZ_QUESTIONS.length}`;
-    document.getElementById('quizText').innerText = qData.q;
+    const q = QUIZ_QUESTIONS[forgeState.currentQuestion];
+    const ui = document.getElementById('forgeQuizUI');
+    const total = QUIZ_QUESTIONS.length;
 
-    const optsDiv = document.getElementById('quizOptions');
-    optsDiv.innerHTML = '';
-
-    qData.opts.forEach(opt => {
-        const btn = document.createElement('div');
-        btn.className = 'quiz-btn';
-        btn.innerText = opt.txt;
-        btn.onclick = () => handleAnswer(opt);
-        optsDiv.appendChild(btn);
-    });
+    ui.innerHTML = `
+        <div class="destiny-quiz-card">
+            <div class="destiny-progress">PERGUNTA ${forgeState.currentQuestion + 1} / ${total}</div>
+            <h2 class="destiny-question">${q.text}</h2>
+            <div class="destiny-options">
+                ${q.options.map((opt, i) => `
+                    <button class="destiny-option" onclick="handleOptionClick(${i})">
+                        ${opt.text}
+                    </button>
+                `).join('')}
+            </div>
+        </div>
+    `;
 }
 
-function handleAnswer(opt) {
-    if (!forgeState.scores[opt.type]) forgeState.scores[opt.type] = 0;
-    forgeState.scores[opt.type] += opt.score;
+function handleOptionClick(index) {
+    const q = QUIZ_QUESTIONS[forgeState.currentQuestion];
+    const opt = q.options[index];
 
-    forgeState.quizIndex++;
-    updateQuizProgress();
+    // Add points
+    if (opt.element && forgeState.scores[opt.element] !== undefined) {
+        forgeState.scores[opt.element] += opt.points;
+    }
 
-    if (forgeState.quizIndex >= QUIZ_QUESTIONS.length) {
-        calculateDestinyResult();
-        startForgingProcess();
-    } else {
+    forgeState.currentQuestion++;
+
+    if (forgeState.currentQuestion < QUIZ_QUESTIONS.length) {
         renderQuestion();
-    }
-}
-
-function updateQuizProgress() {
-    const pct = (forgeState.quizIndex / QUIZ_QUESTIONS.length) * 100;
-    document.getElementById('quizProgress').style.width = `${pct}%`;
-}
-
-function calculateDestinyResult() {
-    let maxScore = -1;
-    let winner = 'water';
-    for (const [type, score] of Object.entries(forgeState.scores)) {
-        if (score > maxScore) {
-            maxScore = score;
-            winner = type;
-        } else if (score === maxScore) {
-            if (Math.random() > 0.5) winner = type;
-        }
-    }
-    forgeState.finalResult = { type: 'preset', id: winner, ...BLADE_TYPES[winner], mode: 'destiny' };
-}
-
-// --- MANUAL LOGIC ---
-function updateManualBlade(val) {
-    forgeState.manualSettings.hue = val;
-    // For manual, we just tint the layer via inline style during preview
-    const layer = document.getElementById('swordColorLayer');
-    layer.style.width = '100%';
-    layer.style.opacity = '0.5';
-    layer.style.background = `hsl(${val}, 100%, 50%)`;
-    // Add mix blend to make it look like tint
-    layer.style.mixBlendMode = 'overlay';
-}
-
-function updateEngraving(text) {
-    forgeState.manualSettings.text = text;
-    document.getElementById('bladeEngraving').style.opacity = 1;
-    document.getElementById('bladeEngraving').innerText = text;
-}
-
-function selectTsuba(type, el) {
-    forgeState.manualSettings.tsuba = type;
-    document.querySelectorAll('.tsuba-option').forEach(d => d.classList.remove('selected'));
-    el.classList.add('selected');
-    document.getElementById('swordTsuba').className = 'tsuba ' + type;
-}
-
-function finalizeManualForge() {
-    forgeState.finalResult = {
-        name: 'Nichirin Personalizada',
-        type: 'custom',
-        hue: forgeState.manualSettings.hue,
-        desc: `Forjada manualmente. Inscrição: "${forgeState.manualSettings.text}"`,
-        feeling: forgeState.manualSettings.text || "Alma"
-    };
-    startForgingProcess();
-}
-
-// --- FORGING PROCESS ---
-function startForgingProcess() {
-    document.querySelectorAll('.forge-step').forEach(el => el.style.display = 'none');
-    document.getElementById('forgeProcess').style.display = 'block'; // Or keep hidden for surprise?
-    // Let's show the progress bar for immersion
-
-    // PREPARE BLADE FOR REVEAL:
-    const blade = document.getElementById('swordBlade');
-    const layer = document.getElementById('swordColorLayer');
-    const aura = document.getElementById('bladeAura');
-    const engraving = document.getElementById('bladeEngraving');
-
-    // Reset visuals
-    blade.className = 'blade'; // remove all FX classes
-    layer.style.width = '0%';
-    layer.style.opacity = 0;
-    layer.style.background = 'transparent';
-    aura.style.opacity = 0;
-    engraving.style.opacity = 0;
-    engraving.innerText = '';
-
-    const status = document.getElementById('forgeStatus');
-    const bar = document.getElementById('forgeProgressBar');
-
-    let progress = 0;
-    const interval = setInterval(() => {
-        progress += 1; // Slower
-        bar.style.width = progress + '%';
-
-        if (progress < 40) {
-            status.innerText = "Derretendo Minério Escarlate...";
-            if (progress % 5 === 0) spawnSpark();
-        } else if (progress < 80) {
-            status.innerText = "Moldando a Lâmina...";
-            if (progress % 20 === 0) blade.parentElement.style.transform = `rotate(${Math.random() * 2 - 1}deg)`;
-        } else {
-            status.innerText = "Polindo...";
-        }
-
-        if (progress >= 100) {
-            clearInterval(interval);
-            blade.parentElement.style.transform = 'rotate(0deg)';
-            playRevealSequence();
-        }
-    }, 50);
-}
-
-// --- CINEMATIC REVEAL ---
-function playRevealSequence() {
-    const r = forgeState.finalResult;
-    const blade = document.getElementById('swordBlade');
-    const layer = document.getElementById('swordColorLayer');
-    const aura = document.getElementById('bladeAura');
-    const engraving = document.getElementById('bladeEngraving');
-
-    // 1. Hide process UI
-    document.getElementById('forgeProcess').style.display = 'none';
-
-    // 2. TEXT SET
-    document.getElementById('finalSwordName').innerText = r.name;
-    document.getElementById('finalSwordDesc').innerText = r.desc;
-
-    // 3. APPLY CLASS / COLOR SETTINGS (Hidden initially)
-    if (r.type === 'custom') {
-        layer.style.background = `hsl(${r.hue}, 100%, 50%)`;
-        engraving.innerText = r.feeling;
     } else {
-        if (r.class) {
-            blade.classList.add(r.class);
-        } else {
-            // Fallback for custom logic if not using class
-            layer.style.background = r.style.col;
-            aura.style.boxShadow = `0 0 20px ${r.style.glow}`;
+        calculateResult();
+    }
+}
+
+function calculateResult() {
+    let max = -1;
+    let winner = 'water'; // Default
+
+    for (const [el, score] of Object.entries(forgeState.scores)) {
+        // Random tie-breaker
+        const finalScore = score + (Math.random() * 0.5);
+        if (finalScore > max) {
+            max = finalScore;
+            winner = el;
         }
-        engraving.innerText = r.feeling;
     }
 
-    // 4. ANIMATION SEQUENCE
-    // STEP A: FLASH (Sound Visual)
-    createScreenFlash();
+    forgeState.finalElement = winner;
+    startHammering();
+}
 
-    // STEP B: The Fill
+// ============================================
+// FASE 2: HAMMERING
+// ============================================
+
+function startHammering() {
+    document.getElementById('forgeQuizUI').innerHTML = '';
+    const ui = document.getElementById('forgeHammerUI');
+
+    ui.innerHTML = `
+        <div class="hammer-stage">
+            <h2 style="color:#ffd700; font-family:'Cinzel'; margin-bottom:20px;">Forjando o Destino</h2>
+            <div class="hammer-progress-track">
+                <div id="hammerFill" class="hammer-progress-fill"></div>
+            </div>
+            <button id="mainHammerBtn" class="legendary-hammer-btn">
+                <i data-lucide="hammer"></i> GOLPEAR (0/5)
+            </button>
+            <p id="hammerInstruction" style="color:#aaa; margin-top:15px;">Dê forma à sua alma!</p>
+        </div>
+    `;
+
+    if (window.lucide) window.lucide.createIcons();
+
+    const btn = document.getElementById('mainHammerBtn');
+    btn.onclick = (e) => {
+        forgeState.hammerClicks++;
+
+        createImpact(e.clientX, e.clientY);
+        updateHammerProgress();
+
+        if (forgeState.hammerClicks >= 5) {
+            finishHammering();
+        }
+    };
+}
+
+function updateHammerProgress() {
+    const pct = (forgeState.hammerClicks / 5) * 100;
+    document.getElementById('hammerFill').style.width = pct + '%';
+    document.getElementById('mainHammerBtn').innerHTML = `<i data-lucide="hammer"></i> GOLPEAR (${forgeState.hammerClicks}/5)`;
+    document.getElementById('hammerInstruction').innerText = "CLANG!!";
+    document.getElementById('hammerInstruction').style.color = "#ff4d00";
+
+    document.body.style.transform = `translate(${Math.random() * 4 - 2}px, ${Math.random() * 4 - 2}px)`;
+    setTimeout(() => document.body.style.transform = 'none', 50);
+}
+
+function createImpact(x, y) {
+    const el = document.createElement('div');
+    el.className = 'impact-spark';
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 600);
+}
+
+function finishHammering() {
+    const btn = document.getElementById('mainHammerBtn');
+    btn.disabled = true;
+    btn.innerText = "PRONTO!";
+
+    setTimeout(startRevealSequence, 800);
+}
+
+// ============================================
+// FASE 3: REVEAL
+// ============================================
+
+function startRevealSequence() {
+    document.getElementById('forgeHammerUI').innerHTML = '';
+
+    const element = NICHIRIN_ELEMENTS[forgeState.finalElement];
+    const blade = document.getElementById('swordBlade');
+    const colorLayer = document.getElementById('swordColorLayer');
+    const aura = document.getElementById('bladeAura');
+
+    // 1. White Flash
+    const flash = document.createElement('div');
+    flash.className = 'screen-flash';
+    document.body.appendChild(flash);
+
     setTimeout(() => {
-        layer.style.opacity = 1;
-        layer.style.transition = 'width 2s cubic-bezier(0.22, 1, 0.36, 1)'; // Heavy ease out
-        layer.style.width = '100%';
+        // 2. Apply Visuals during flash
+        blade.className = `blade ${element.class}`;
 
-        // Explosion of particles
-        spawnExplosion(r);
+        // IMPORTANT: Clear inline background if using a CSS class effect, 
+        // otherwise let JS set the fall-back color.
+        if (element.class) {
+            colorLayer.style.background = '';
+        } else {
+            colorLayer.style.background = element.color;
+        }
 
-        // Show Aura
-        setTimeout(() => {
-            aura.style.opacity = 1;
-        }, 1000);
+        colorLayer.style.width = '100%';
+        colorLayer.style.opacity = '1';
+        aura.style.background = element.glow;
+        aura.style.opacity = '1';
 
-        // Show Text slowly
-        setTimeout(() => {
-            engraving.style.opacity = 1;
-            engraving.style.transition = 'opacity 3s ease';
-        }, 1500);
+        // 3. Remove Flash & Show Result Card
+        flash.remove();
+        showResultCard(element);
 
-        // Show Result UI
-        setTimeout(() => {
-            document.getElementById('forgeResult').style.display = 'block';
-        }, 2500);
-
-    }, 300);
+    }, 1500);
 }
 
-// --- VFX ENGINE ---
-function createScreenFlash() {
-    const f = document.createElement('div');
-    f.className = 'screen-flash';
-    document.body.appendChild(f);
+function showResultCard(element) {
+    const ui = document.getElementById('forgeResultUI');
+    ui.innerHTML = `
+        <div class="nichirin-result-card">
+            <h1 style="color:${element.color}; text-shadow:0 0 15px ${element.glow}">Nichirin de ${element.name}</h1>
+            <p style="margin-bottom:10px;">"${element.desc}"</p>
+            
+            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px; border-left:3px solid ${element.color}; margin-bottom:20px; text-align:left;">
+                <div style="color:${element.color}; font-weight:bold; font-size:0.9rem; text-transform:uppercase;">${element.buffName}</div>
+                <div style="color:#ddd; font-size:0.9rem;">${element.buffDesc}</div>
+            </div>
 
-    // Force reflow
-    void f.offsetWidth;
-
-    f.style.opacity = 1;
-    setTimeout(() => {
-        f.style.opacity = 0;
-        setTimeout(() => f.remove(), 2000);
-    }, 100);
+            <button class="forge-btn" onclick="equipAndClose()">EMPUNHAR LÂMINA</button>
+        </div>
+    `;
 }
 
-function spawnSpark() {
-    const stage = document.querySelector('.sword-stage');
-    // ... simple spark logic if needed, but updated explosion below is key
-}
+// ============================================
+// FINALIZATION & INVENTORY TRANSFER
+// ============================================
 
-function spawnExplosion(result) {
-    const container = document.getElementById('vfxContainer');
-    if (!container) return;
-    container.innerHTML = ''; // Clear
+function equipAndClose() {
+    const element = NICHIRIN_ELEMENTS[forgeState.finalElement];
+    const timestamp = Date.now();
 
-    const count = 50;
-    let color = '#fff';
+    // 1. Construct the detailed item
+    const newItem = {
+        id: timestamp,
+        name: `Nichirin de ${element.name} `,
+        type: 'weapon',
+        rarity: (['sun', 'moon'].includes(forgeState.finalElement)) ? 'legendary' : 'rare',
+        // FORMAT: "Buff da Nichirin: [Nome] - [Descrição]"
+        desc: `Lâmina forjada.Buff da Nichirin: ${element.buffName} - ${element.buffDesc} `,
+        quantity: 1,
+        equipped: true,
+        damage: '1d8',
+        properties: 'Acuidade, Versátil (1d10)',
+        value: 1000 // Yen value
+    };
 
-    // Determine color based on result
-    if (result.hue) color = `hsl(${result.hue}, 100%, 70%)`;
-    if (result.style) color = result.style.glow;
-    if (result.class === 'fx-flame') color = '#ff9f00';
-    if (result.class === 'fx-water') color = '#48cae4';
-
-    const rect = container.getBoundingClientRect();
-    const midX = rect.width / 2;
-    const midY = rect.height / 2;
-
-    for (let i = 0; i < count; i++) {
-        const p = document.createElement('div');
-        p.className = 'particle rise';
-
-        const size = Math.random() * 6 + 2;
-        p.style.width = size + 'px';
-        p.style.height = size + 'px';
-        p.style.background = color;
-        p.style.boxShadow = `0 0 ${size * 2}px ${color}`;
-
-        // Random start along the blade roughly
-        const startX = midX - 200 + Math.random() * 400; // Spread along blade length
-        const startY = midY + (Math.random() * 20 - 10);
-
-        p.style.left = startX + 'px';
-        p.style.top = startY + 'px';
-
-        // Random Float Dir
-        const dx = (Math.random() - 0.5) * 100;
-        p.style.setProperty('--dx', dx + 'px');
-
-        p.style.animationDelay = Math.random() * 0.5 + 's';
-        p.style.animationDuration = (Math.random() * 1.5 + 1) + 's';
-
-        container.appendChild(p);
-
-        // Cleanup
-        setTimeout(() => p.remove(), 3000);
+    // 2. Add to Inventory System (Attempt multiple methods)
+    try {
+        if (typeof addItemToInventory === 'function') {
+            addItemToInventory(newItem);
+            console.log("Item added via addItemToInventory");
+        } else if (window.charData) {
+            if (!window.charData.inventory) window.charData.inventory = [];
+            window.charData.inventory.push(newItem);
+            if (window.saveHuman) window.saveHuman();
+            console.log("Item added via direct push");
+        }
+    } catch (e) {
+        console.error("Error adding to inventory:", e);
+        if (window.showToast) window.showToast("Erro ao adicionar ao inventário!", "error");
     }
+
+    // 3. Save Visual State
+    if (window.charData) {
+        window.charData.nichirin = {
+            name: newItem.name,
+            element: forgeState.finalElement,
+            color: element.color,
+            buffName: element.buffName,
+            buffDesc: element.buffDesc
+        };
+        if (window.saveHuman) window.saveHuman();
+    }
+
+    if (window.showToast) window.showToast("Lâmina adicionada ao Inventário!", "success");
+    resetForge();
+
+    // 4. Force Redirect to Inventory
+    setTimeout(() => {
+        // Try direct function
+        if (typeof showSection === 'function') {
+            showSection('inventory');
+        }
+
+        // Try clicking the specific sidebar nav item
+        const navItem = document.getElementById('nav-inventory');
+        if (navItem) {
+            navItem.click();
+        }
+
+        // Fallback: general query
+        const anyInvBtn = document.querySelector('[onclick*="inventory"]');
+        if (anyInvBtn) anyInvBtn.click();
+
+    }, 500);
 }
 
 function resetForge() {
-    document.getElementById('forgeResult').style.display = 'none';
-    selectForgeMode(null); // Back to start but clear selection
-    document.getElementById('forgeModeSelect').style.display = 'block';
-
-    // Clean Blade
-    const blade = document.getElementById('swordBlade');
-    blade.className = 'blade';
-    document.getElementById('swordColorLayer').style.width = '0';
-    document.getElementById('bladeAura').style.opacity = 0;
-    document.getElementById('bladeEngraving').style.opacity = 0;
-    document.getElementById('bladeEngraving').innerText = '';
+    initForge();
 }
 
-function equipSword() {
-    alert("Espada equipada! O poder flui em você.");
-    // Connect to actual inventory later
+function adjustBladeVisuals(action) {
+    const colorLayer = document.getElementById('swordColorLayer');
+    const aura = document.getElementById('bladeAura');
+    if (action === 'reset') {
+        colorLayer.style.width = '0%';
+        colorLayer.style.opacity = '0';
+        aura.style.opacity = '0';
+    }
+}
+
+// Exports
+if (typeof window !== 'undefined') {
+    window.initForge = initForge;
+    window.selectForgeMode = selectForgeMode;
+    window.startQuiz = startQuiz;
+    window.selectQuizOption = handleOptionClick;
+    window.handleOptionClick = handleOptionClick;
+    window.equipAndClose = equipAndClose;
+    window.equipBlade = equipAndClose;
+    window.resetForge = resetForge;
 }

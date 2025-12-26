@@ -310,13 +310,17 @@
                 </div>
             </div>
 
-            <!-- THUNDER BREATHING (LOCKED) -->
-            <div class="breath-card locked theme-thunder">
+            <!-- THUNDER BREATHING (AVAILABLE) -->
+            <div class="breath-card theme-thunder" onclick="selectBreathing('thunder')">
                 <div class="breath-card-bg"></div>
                 <div class="breath-content">
-                    <i data-lucide="lock" class="lock-icon"></i>
-                    <div class="locked-text">Indisponível</div>
-                    <div style="margin-top:10px; color:#444; font-size:0.8rem;">Respiração do Trovão</div>
+                    <div style="flex:1"></div>
+                    <div class="breath-icon"><i data-lucide="zap"></i></div>
+                    <div class="breath-name">Respiração do Trovão</div>
+                    <div class="breath-desc">Velocidade divina e ataques explosivos. Domine o relâmpago.</div>
+                    <button class="select-btn">
+                        Selecionar <i data-lucide="arrow-right"></i>
+                    </button>
                 </div>
             </div>
 
@@ -343,12 +347,55 @@
         </div>
     </div>
 
+    <!-- THUNDER MODAL -->
+    <div id="thunderModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; align-items:center; justify-content:center;">
+        <div
+            style="background:#111; padding:3rem; border-radius:12px; border:1px solid #ffd700; max-width:600px; text-align:center;">
+            <i data-lucide="zap" size="48" style="color:#ffd700; margin-bottom:1rem;"></i>
+            <h2 style="font-family:'Cinzel', serif; color:white; margin-bottom:1rem;">Caminho do Trovão</h2>
+            <p style="color:#ccc; margin-bottom:2rem;">A Respiração do Trovão é difícil de dominar completamente. Como
+                você treinou?</p>
+
+            <div style="display:flex; gap:20px; justify-content:center;">
+                <button onclick="confirmThunder('specialist')"
+                    style="padding:1rem 2rem; background:#ffd700; color:black; border:none; border-radius:8px; font-weight:bold; cursor:pointer; flex:1;">
+                    <div>Especialista na Primeira Forma</div>
+                    <div style="font-size:0.7rem; font-weight:normal; margin-top:5px;">Mestre absoluto do Hekireki
+                        Issen.</div>
+                </button>
+
+                <button onclick="confirmThunder('versed')"
+                    style="padding:1rem 2rem; background:#333; color:white; border:1px solid #555; border-radius:8px; font-weight:bold; cursor:pointer; flex:1;">
+                    <div>Versado</div>
+                    <div style="font-size:0.7rem; font-weight:normal; margin-top:5px;">Conhece todas as formas básicas.
+                    </div>
+                </button>
+            </div>
+            <button onclick="document.getElementById('thunderModal').style.display='none'"
+                style="margin-top:20px; background:none; border:none; color:#888; cursor:pointer; text-decoration:underline;">Cancelar</button>
+        </div>
+    </div>
+
     <script>
         lucide.createIcons();
 
         function selectBreathing(type) {
-            if (type !== 'water') return;
+            if (type === 'thunder') {
+                document.getElementById('thunderModal').style.display = 'flex';
+                return;
+            }
 
+            if (type !== 'water') return; // Others locked
+
+            finalizeSelection(type, null);
+        }
+
+        function confirmThunder(subType) {
+            finalizeSelection('thunder', subType);
+        }
+
+        function finalizeSelection(type, subType) {
             // Load Temp Data
             let tempData = null;
             try {
@@ -360,31 +407,53 @@
                 return;
             }
 
-            // FINALIZATION LOGIC (Merged from previous step)
-            const waterBreathingData = {
-                "id": "class_water",
-                "name": "Respiração da Água",
-                "icon": "🌊",
-                "base_stats": {
-                    "hit_die": 10
-                },
-                "proficiencies": ["Acrobacia", "Atletismo"]
-            };
+            // BREATHING DATA
+            let breathData = {};
+            if (type === 'water') {
+                breathData = {
+                    "id": "class_water",
+                    "name": "Respiração da Água",
+                    "icon": "🌊",
+                    "base_stats": { "hit_die": 10 },
+                    "proficiencies": ["Acrobacia", "Atletismo"]
+                };
+            } else if (type === 'thunder') {
+                breathData = {
+                    "id": "class_thunder",
+                    "name": "Respiração do Trovão",
+                    "icon": "⚡",
+                    "base_stats": { "hit_die": 8 },
+                    "proficiencies": ["Acrobacia", "Intimidação"],
+                    "mastery": subType // 'specialist' or 'versed'
+                };
+            }
 
+            // Stats Calc
             const con = tempData.attributes.con || 10;
             const conMod = Math.floor((con - 10) / 2);
-            const finalHP = 10 + conMod;
+            const finalHP = (breathData.base_stats.hit_die || 10) + conMod;
 
             const finalChar = {
                 id: Date.now().toString(),
                 ...tempData,
                 hp: finalHP,
                 currentHP: finalHP,
-                currentPE: 1, // Start with 1? Or max? Usually max = level.
+                currentPE: 1,
                 maxPE: 1,
-                breathingStyle: waterBreathingData,
-                proficiencies: [...(new Set([...(tempData.proficiencies || []), "Acrobacia", "Atletismo"]))]
+                breathingStyle: type, // string ID
+                breathingData: breathData, // Full Obj
+                proficiencies: [...(new Set([...(tempData.proficiencies || []), ...(breathData.proficiencies || [])]))]
             };
+
+            // Add Special Feature for Thunder
+            if (type === 'thunder' && subType === 'specialist') {
+                if (!finalChar.inventory) finalChar.inventory = [];
+                finalChar.inventory.push({
+                    name: "Mestre da Primeira Forma",
+                    type: "feature",
+                    desc: "Pode usar Hekireki Issen consecutivamente com custo reduzido (Exemplo)."
+                });
+            }
 
             // Multi Char Logic
             let allChars = [];

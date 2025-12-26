@@ -4,21 +4,451 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Demoníaco | Demon Slayer RPG</title>
+    <title>Painel do Oni | Demon Slayer RPG</title>
+
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700&display=swap"
         rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Shared Styles -->
     <link rel="stylesheet" href="oni-dashboard.css">
+    <link rel="stylesheet" href="mobile.css">
+    <!-- Reusing some forged styles for layout if needed, or rely on oni-dashboard.css overrides -->
+
+    <style>
+        :root {
+            --accent-primary: #d90429;
+            /* Blood Red */
+            --accent-glow: #800f2f;
+            --text-highlight: #ff595e;
+        }
+
+        body {
+            background-color: #050505;
+            color: #ddd;
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        /* --- ONI BACKGROUND --- */
+        #oni-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(circle at 50% 20%, rgba(100, 0, 0, 0.2), #000 80%);
+        }
+
+        .ember {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ff4d00;
+            border-radius: 50%;
+            opacity: 0;
+            animation: rise 4s infinite linear;
+            box-shadow: 0 0 10px #ff4d00;
+        }
+
+        @keyframes rise {
+            0% {
+                transform: translateY(100vh) scale(1);
+                opacity: 0;
+            }
+
+            20% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-10vh) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        /* LAYOUT & UTILS (Copied from dashboard.html structure) */
+        .sidebar-left {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 260px;
+            background: #080808;
+            border-right: 1px solid #222;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            z-index: 100;
+        }
+
+        .sidebar-right {
+            position: fixed;
+            right: 0;
+            top: 0;
+            height: 100vh;
+            width: 300px;
+            background: #080808;
+            border-left: 1px solid #222;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            margin-right: 300px;
+            padding: 2rem;
+            height: 100vh;
+            overflow-y: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .app-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 3rem;
+            color: white;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #888;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .nav-item:hover {
+            background: #111;
+            color: white;
+        }
+
+        .nav-item.active {
+            border-right: 3px solid var(--accent-primary);
+            background: linear-gradient(90deg, rgba(217, 4, 41, 0.1), transparent);
+            color: white;
+        }
+
+        .nav-item.active i {
+            color: var(--accent-primary);
+        }
+
+        .dashboard-section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .dashboard-section.active-tab {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #222;
+        }
+
+        .sec-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: white;
+            text-shadow: 0 0 10px rgba(217, 4, 41, 0.4);
+        }
+
+        /* CARD STYLES */
+        .vital-box {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 8px;
+            padding: 1rem;
+            flex: 1;
+        }
+
+        .vital-card {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 10px;
+        }
+
+        .vital-card.red {
+            border-left: 3px solid #d90429;
+        }
+
+        .vital-card.blue {
+            border-left: 3px solid #00b4d8;
+        }
+
+        .vital-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .vital-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #888;
+            letter-spacing: 1px;
+        }
+
+        .vital-values {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: white;
+            cursor: pointer;
+        }
+
+        .vital-bar-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .vital-bar-track {
+            flex-grow: 1;
+            height: 12px;
+            background: #222;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .vital-bar-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .vital-bar-fill.hp {
+            background: #d90429;
+            box-shadow: 0 0 10px rgba(217, 4, 41, 0.5);
+        }
+
+        .vital-bar-fill.pe {
+            background: #00b4d8;
+        }
+
+        .vital-btn {
+            width: 24px;
+            height: 24px;
+            background: #222;
+            border: 1px solid #333;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .vital-btn:hover {
+            background: #333;
+        }
+
+        .vital-btn.plus {
+            color: #20bf6b;
+        }
+
+        .vital-btn.minus {
+            color: #eb3b5a;
+        }
+
+        .vital-footer {
+            margin-top: 10px;
+        }
+
+        .vital-mod-input {
+            background: #080808;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            width: 50px;
+            text-align: center;
+        }
+
+        /* ATTRIBUTES GRID */
+        .attributes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 2rem;
+        }
+
+        .attr-card {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 8px;
+            padding: 1.2rem;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .attr-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .attr-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .attr-name {
+            font-family: 'Cinzel';
+            font-weight: 700;
+            color: #eee;
+            font-size: 0.9rem;
+        }
+
+        .attr-mod {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--accent-primary);
+        }
+
+        .attr-val {
+            font-size: 0.7rem;
+            color: #666;
+            font-family: 'Outfit';
+        }
+
+        .skill-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            padding: 4px 0;
+            color: #aaa;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .skill-row:last-child {
+            border-bottom: none;
+        }
+
+        .skill-prof-btn {
+            background: none;
+            border: 1px solid #333;
+            color: #444;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+
+        .skill-prof-btn.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: #000;
+        }
+
+        .skill-name-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .skill-bonus {
+            font-weight: bold;
+            color: #ddd;
+        }
+
+        .devour-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #800f2f, #d90429);
+            border: none;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            margin-top: 1rem;
+            box-shadow: 0 4px 15px rgba(217, 4, 41, 0.2);
+        }
+
+        .devour-btn:hover {
+            filter: brightness(1.2);
+            transform: translateY(-2px);
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #050505;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
 </head>
 
 <body>
+    <div id="oni-bg">
+        <div class="ember" style="left:10%; animation-delay:0s;"></div>
+        <div class="ember" style="left:30%; animation-delay:1.5s;"></div>
+        <div class="ember" style="left:70%; animation-delay:0.5s;"></div>
+        <div class="ember" style="left:90%; animation-delay:2.5s;"></div>
+    </div>
 
-    <!-- Sidebar Left: Navigation -->
     <aside class="sidebar-left">
         <div class="app-logo">
-            <i data-lucide="ghost" color="#bb0a1e"></i>
-            <span>DEMON<br>SLAYER</span>
+            <i data-lucide="skull" color="#d90429"></i>
+            <span>PORTAL DO<br>ONI</span>
         </div>
 
         <nav class="nav-steps">
@@ -30,283 +460,353 @@
                 <i data-lucide="backpack"></i>
                 <span>Inventário</span>
             </div>
-            <div class="nav-item" id="nav-skills" onclick="showSection('skills')">
-                <i data-lucide="swords"></i>
-                <span>Mestre de Habilidades</span>
-            </div>
             <div class="nav-item" id="nav-kekkijutsu" onclick="showSection('kekkijutsu')">
                 <i data-lucide="flame"></i>
                 <span>Kekkijutsu</span>
             </div>
+            <div class="nav-item" id="nav-attacks" onclick="showSection('attacks')">
+                <i data-lucide="swords" color="#d90429"></i>
+                <span>Combate</span>
+            </div>
+            <div class="nav-item" id="nav-store" onclick="showSection('store')">
+                <i data-lucide="shopping-bag" color="#e0aaff"></i>
+                <span style="color:#e0aaff;">Mercado Negro</span>
+            </div>
         </nav>
 
         <div style="margin-top:auto">
-            <button class="devour-btn" onclick="window.location.href='index.html'" style="text-align:center;">
+            <button class="devour-btn" onclick="window.location.href='index.html'"
+                style="text-align:center; border-color:#333; background:#222;">
                 <i data-lucide="log-out"></i> SAIR
             </button>
         </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
 
         <!-- SECTION: OVERVIEW -->
         <section id="overview" class="dashboard-section active-tab">
             <div class="section-header">
-                <span class="sec-title">Status Vital</span>
-                <i data-lucide="activity" color="#bb0a1e"></i>
+                <span class="sec-title">Painel do Oni</span>
+                <i data-lucide="activity" color="#d90429"></i>
             </div>
 
-            <div id="pathDisplay"
-                style="margin-bottom: 2rem; background: rgba(255,0,0,0.05); padding: 1rem; border: 1px solid #400; border-radius: 8px; display: flex; gap: 1rem; align-items: center;">
-                <!-- JS Fill -->
+            <!-- CHARACTER HEADER -->
+            <div class="char-header-panel"
+                style="background: #111; border: 1px solid #333; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 15px;">
+
+                <!-- TOP ROW: Name, Rank, Level -->
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 15px;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div class="avatar-circle"
+                            style="width: 60px; height: 60px; background: #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--accent-primary);">
+                            <i data-lucide="ghost" size="32" color="#fff"></i>
+                        </div>
+                        <div>
+                            <h2 id="dispName" contenteditable="true" onblur="updateCharName(this.innerText)"
+                                style="margin: 0; font-size: 1.5rem; color: #fff; cursor: text; border-bottom: 1px dashed #444;"
+                                title="Clique para editar">Oni</h2>
+                            <span id="dispRank"
+                                style="font-size: 0.85rem; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">ONI
+                                INFERIOR</span>
+                        </div>
+                    </div>
+
+                    <div style="position: relative;">
+                        <div style="text-align: right; cursor: pointer;" onclick="toggleLevelSelector()">
+                            <span
+                                style="display: block; font-size: 0.75rem; color: #666; font-weight: 600;">NÍVEL</span>
+                            <span id="dispLevel"
+                                style="font-size: 2.5rem; color: var(--accent-primary); font-weight: 800; line-height: 1;">1</span>
+                        </div>
+                        <!-- Level Dropdown (Hidden) -->
+                        <div id="levelSelector"
+                            style="display: none; position: absolute; top: 100%; right: 0; background: #111; border: 1px solid #444; border-radius: 8px; max-height: 200px; overflow-y: auto; z-index: 100; padding: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+                            <!-- JS Generated 1-20 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STATS ROW: AC, Speed, Actions -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px;">
+                    <div class="vital-box" style="text-align: center;">
+                        <div style="font-size: 0.65rem; color: #888; text-transform: uppercase;">Defesa</div>
+                        <div id="dispAC" style="font-size: 1.4rem; font-weight: 800; color: #fff;">10</div>
+                    </div>
+                    <div class="vital-box" onclick="editSpeed()" style="cursor:pointer; text-align:center;"
+                        title="Editar Deslocamento">
+                        <div style="font-size: 0.65rem; color: #888; text-transform: uppercase;">Desl.</div>
+                        <div id="dispSpeed" style="font-size: 1.4rem; font-weight: 800; color: #fff;">9m</div>
+                    </div>
+                    <button id="btnBlock" onclick="combatAction('block')" class="vital-box"
+                        style="color:#a8dadc; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#16161a;">
+                        <i data-lucide="shield" size="20"></i>
+                        <span style="font-size:0.6rem; margin-top:4px;">Bloqueio</span>
+                    </button>
+                    <button id="btnDodge" onclick="combatAction('dodge')" class="vital-box"
+                        style="color:#20bf6b; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#16161a;">
+                        <i data-lucide="wind" size="20"></i>
+                        <span style="font-size:0.6rem; margin-top:4px;">Esquiva</span>
+                    </button>
+                </div>
+
+                <!-- VITAL: HP -->
+                <div class="vital-card minimalist red">
+                    <div class="vital-header">
+                        <span class="vital-title">VIDA (HP)</span>
+                        <span class="vital-values" onclick="editVital('hp')" title="Editar Máximo">
+                            <span id="currHP">20</span> / <span id="maxHP">20</span>
+                        </span>
+                    </div>
+                    <div class="vital-bar-container">
+                        <div class="vital-bar-track">
+                            <div class="vital-bar-fill hp" style="width: 100%;"></div>
+                        </div>
+                        <div class="vital-controls">
+                            <button onclick="changeHP('sub')" class="vital-btn minus">-</button>
+                            <button onclick="changeHP('add')" class="vital-btn plus">+</button>
+                        </div>
+                    </div>
+                    <div class="vital-footer">
+                        <input type="number" id="hpModInput" value="1" class="vital-mod-input">
+                        <button onclick="autoRegen()"
+                            style="margin-left:10px; background:none; border:none; color:#d90429; cursor:pointer; font-size:0.8rem;">
+                            <i data-lucide="refresh-cw" size="12"></i> Regen
+                        </button>
+                    </div>
+                </div>
+
+                <!-- VITAL: PE (Blood Points) -->
+                <div class="vital-card minimalist blue" style="border-left-color: #d90429;">
+                    <div class="vital-header">
+                        <span class="vital-title">PONTOS DE SANGUE</span>
+                        <span class="vital-values" onclick="editVital('pe')" title="Editar Máximo">
+                            <span id="currPE">5</span> / <span id="maxPE">5</span>
+                        </span>
+                    </div>
+                    <div class="vital-bar-container">
+                        <div class="vital-bar-track">
+                            <div class="vital-bar-fill pe" style="width: 100%; background:#d90429;"></div>
+                        </div>
+                        <div class="vital-controls">
+                            <button onclick="changePE('sub')" class="vital-btn minus">-</button>
+                            <button onclick="changePE('add')" class="vital-btn plus">+</button>
+                        </div>
+                    </div>
+                    <div class="vital-footer">
+                        <input type="number" id="peModInput" value="1" class="vital-mod-input">
+                    </div>
+                </div>
+
+                <!-- PROFICIENCIES ROW -->
+                <div id="proficiencies-container"
+                    style="background: rgba(255,255,255,0.03); border-radius: 8px; padding: 10px; margin-top: 10px; display: flex; flex-direction: column; gap: 5px; border: 1px solid rgba(255,255,255,0.05);">
+                    <span
+                        style="font-size: 0.75rem; color: #666; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Proficiências
+                        & Talentos</span>
+                    <div id="profList"
+                        style="display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.85rem; color: #ccc;">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+
+                <!-- ONI PATH & PARTICULARITIES ROW -->
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
+                    <!-- PATH -->
+                    <div class="vital-card minimalist" style="padding:10px; border-left:3px solid #666; margin-top:0;">
+                        <div class="vital-header" style="margin-bottom:5px;">
+                            <span class="vital-title">CAMINHO DO ONI</span>
+                        </div>
+                        <select id="oniPathSelect" onchange="setOniPath(this.value)"
+                            style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:5px; border-radius:4px;">
+                            <option value="">Selecione um Caminho...</option>
+                            <option value="blood">Alimentação por Sangue (1L/sem)</option>
+                            <option value="flesh">Retenção de Carne (Sem comida)</option>
+                        </select>
+                    </div>
+
+                    <!-- PARTICULARITIES -->
+                    <div class="vital-card minimalist"
+                        style="padding:10px; border-left:3px solid #ff595e; margin-top:0; cursor:pointer;"
+                        onclick="openParticularityModal()">
+                        <div class="vital-header" style="margin-bottom:5px;">
+                            <span class="vital-title">PARTICULARIDADES</span>
+                            <i data-lucide="plus-circle" size="14" color="#fff"></i>
+                        </div>
+                        <div id="particularitiesList" style="font-size:0.8rem; color:#ccc;">
+                            <!-- JS Injected -->
+                            <em style="color:#666;">Clique para configurar...</em>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Attributes Grid -->
-            <h3 style="margin-bottom:1rem; color:#aaa; font-family:'Cinzel';">Atributos</h3>
-            <div class="attributes-grid" id="attrGrid">
-                <!-- JS Fill -->
-            </div>
-
-            <!-- Particularities -->
-            <h3 style="margin-bottom:1rem; color:#aaa; font-family:'Cinzel'; margin-top: 2rem;">Particularidades</h3>
-            <div class="attributes-grid" id="partGrid" style="grid-template-columns: repeat(2, 1fr);">
-                <!-- JS Fill -->
-            </div>
+            <!-- ATTRIBUTES GRID (Injected JS) -->
+            <div class="attributes-grid" id="attrGrid"></div>
         </section>
 
         <!-- SECTION: INVENTORY -->
         <section id="inventory" class="dashboard-section">
             <div class="section-header">
-                <span class="sec-title">Inventário & Arsenal</span>
-                <i data-lucide="sword" color="#bb0a1e"></i>
+                <span class="sec-title">Inventário</span>
+                <i data-lucide="backpack" color="#d90429"></i>
             </div>
-
             <div class="inventory-controls">
-                <div style="margin-right:auto; display:flex; flex-direction:column; gap:5px;">
-                    <div style="font-size:0.8rem; color:#888;">CAPACIDADE: <span id="capacityText">0.0 / 0 kg</span>
-                    </div>
-                    <div
-                        style="width:200px; height:6px; background:#222; border-radius:3px; overflow:hidden; border:1px solid #333;">
-                        <div id="capacityBar" style="width:0%; height:100%; background:#666; transition:width 0.5s;">
-                        </div>
-                    </div>
-                </div>
-
                 <button class="devour-btn" style="width:auto; margin:0;" onclick="openItemModal()">
                     <i data-lucide="plus"></i> Adicionar Item
                 </button>
             </div>
-
-            <!-- Inventory Layout: List + Details Panel -->
             <div class="inv-workspace">
-                <div class="inv-list-container" id="inventoryGrid">
-                    <!-- JS Fill -->
-                </div>
+                <div class="inv-list-container" id="inventoryGrid"></div>
+            </div>
+        </section>
 
-                <!-- Helper/Details Panel -->
-                <div id="itemDetailContainer"
-                    style="display:none; flex-direction:column; background:#111; border:1px solid #333; border-radius:8px;">
-                    <!-- Details will be injected here by JS -->
-                </div>
-                <div id="itemDetailEmpty"
-                    style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2rem; color:#444; border:1px solid #222; border-radius:8px;">
-                    <i data-lucide="mouse-pointer-2" style="margin-bottom:1rem;"></i>
-                    Selecione um item
+        <!-- SECTION: KEKKIJUTSU (Skills) -->
+        <section id="kekkijutsu" class="dashboard-section">
+            <div class="section-header">
+                <span class="sec-title">Kekkijutsu</span>
+                <i data-lucide="flame" color="#d90429"></i>
+            </div>
+            <!-- Placeholder for Kekkijutsu Logic -->
+            <div style="text-align:center; padding:3rem; color:#666; background:#111; border-radius:8px;">
+                <i data-lucide="skull" size="48" style="margin-bottom:1rem; opacity:0.5;"></i>
+                <p>O poder do seu sangue se manifestará aqui.</p>
+                <!-- Reuse skill tree if available or list -->
+                <div id="formsGrid"
+                    style="display:grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap:10px; margin-top:20px;">
                 </div>
             </div>
         </section>
 
-        <!-- SECTION: SKILLS -->
-        <section id="skills" class="dashboard-section">
+        <!-- SECTION: ATTACKS -->
+        <section id="attacks" class="dashboard-section">
             <div class="section-header">
-                <span class="sec-title">Perícias</span>
-                <i data-lucide="book-open" color="#bb0a1e"></i>
+                <span class="sec-title">Ataques & Combate</span>
+                <i data-lucide="swords" color="#d90429"></i>
             </div>
-            <div class="skills-list" id="skillsGrid">
-                <!-- JS Fill -->
+            <div class="atk-controls" style="margin-bottom:1rem;">
+                <button class="devour-btn" style="width:auto; margin:0;" onclick="openAttackModal()">+ Novo
+                    Ataque</button>
             </div>
+            <div id="attacksList"></div>
         </section>
 
-        <!-- SECTION: KEKKIJUTSU -->
-        <section id="kekkijutsu" class="dashboard-section" style="overflow: hidden; position: relative;">
+        <!-- SECTION: STORE (Premium Mockup) -->
+        <section id="store" class="dashboard-section">
             <div class="section-header">
-                <span class="sec-title">Arvores de Sangue (Kekkijutsu)</span>
-                <i data-lucide="git-branch" color="#bb0a1e"></i>
+                <span class="sec-title" style="color:#e0aaff">Mercado Negro</span>
+                <i data-lucide="shopping-bag" color="#e0aaff"></i>
             </div>
-
-            <div id="treeControls"
-                style="position: absolute; top: 100px; right: 20px; z-index: 10; display: flex; flex-direction: column; gap: 10px;">
-                <div style="background: rgba(0,0,0,0.8); padding: 10px; border-radius: 8px; border: 1px solid #444; color: white; display: none;"
-                    id="treePointsDisplay">
-                    Pontos de Kekkijutsu: <span id="kkPoints" style="color: #00b4d8; font-weight: bold;">0</span>
-                </div>
-            </div>
-
-            <!-- Full Screen Zoomable/Pannable Container -->
-            <div id="skillTreeWrapper"
-                style="width: 100%; height: 600px; border: 1px solid #333; background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%); position: relative; overflow: hidden; cursor: grab; border-radius: 12px;">
-                <div id="skillTreeContainer"
-                    style="position: absolute; top: 50%; left: 50%; width: 0; height: 0; transform-origin: center;">
-                    <!-- Nodes will be injected here via JS -->
-                    <!-- Background Rings -->
-                    <div class="tree-ring ring-1"></div>
-                    <div class="tree-ring ring-2"></div>
-                    <div class="tree-ring ring-3"></div>
-                    <div class="tree-ring ring-4"></div>
-                </div>
-            </div>
-
-            <div style="margin-top: 10px; font-size: 0.8rem; color: #666; text-align: center;">
-                Arraste para mover • Scroll para zoom • Clique para ver detalhes
+            <div
+                style="background:linear-gradient(90deg, #240046, #3c096c); padding:2rem; border-radius:12px; text-align:center;">
+                <h2 style="font-family:'Cinzel'; margin:0; color:#e0aaff;">Favor de Muzan</h2>
+                <p style="color:#c77dff;">Em breve...</p>
             </div>
         </section>
 
     </main>
 
-    <!-- Sidebar Right: Vitals -->
+    <!-- RIGHT SIDEBAR: ONI ORG -->
     <aside class="sidebar-right">
-        <div class="char-portrait">
-            <i data-lucide="ghost" size="64" color="#333"></i>
+        <div class="sidebar-header">
+            <span class="sec-title" style="font-size:1rem; color:#d90429;">Hierarquia Demoníaca</span>
         </div>
-
-        <div class="char-info-block" style="text-align:center; margin-bottom:2rem;">
-            <h2 id="dispName" style="color:white; font-size:1.5rem;">Nome do Oni</h2>
-            <div style="color:var(--accent-red); font-weight:700;" id="dispRank">Oni Inferior</div>
-            <div style="color:#666; font-size:0.8rem; margin-top:5px;">Nível <span id="dispLevel"
-                    style="color:white;">1</span></div>
-            <button class="devour-btn" style="margin-top:10px;" onclick="levelUp()">+ LEVEL UP</button>
-        </div>
-
-        <!-- HP Bar -->
-        <div class="vital-box">
-            <div class="vital-row">
-                <span>VIDA (HP)</span>
-                <span id="hpText">20 / 20</span>
+        <div class="hunter-org-panel" style="display:flex; flex-direction:column; gap:20px; padding-top:10px;">
+            <div
+                style="background:rgba(255, 255, 255, 0.03); border:1px solid rgba(255, 255, 255, 0.1); padding:1rem; border-radius:8px; text-align:center;">
+                <div
+                    style="font-size:0.7rem; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:5px;">
+                    Rank Atual</div>
+                <div id="sideRankDisplay"
+                    style="font-family:'Cinzel'; font-size:1.5rem; color:var(--accent-primary); font-weight:bold;">Oni
+                    Inferior</div>
             </div>
-            <div class="premium-bar">
-                <div class="premium-fill bar-hp" id="hpBarFill" style="width: 100%;"></div>
-                <div class="bar-btn-group">
-                    <button class="bar-btn" onclick="modHP(-1)">-</button>
-                    <button class="bar-btn" onclick="modHP(1)">+</button>
+
+            <!-- INSTINCT TRACKER -->
+            <div
+                style="background:rgba(20, 0, 0, 0.5); border:1px solid #d90429; padding:1rem; border-radius:8px; text-align:center;">
+                <div
+                    style="font-size:0.7rem; color:#ff595e; text-transform:uppercase; letter-spacing:1px; margin-bottom:5px;">
+                    Controle de Instinto (CD)</div>
+                <div style="display:flex; align-items:center; justify-content:center; gap:10px;">
+                    <button onclick="changeInstinct(-1)"
+                        style="background:none; border:none; color:#666; cursor:pointer;">-</button>
+                    <div id="dispInstinctDC" style="font-size:1.8rem; color:#fff; font-weight:bold;">15</div>
+                    <button onclick="changeInstinct(1)"
+                        style="background:none; border:none; color:#666; cursor:pointer;">+</button>
+                </div>
+                <div style="font-size:0.7rem; color:#666; margin-top:5px;">CD Sabedoria para resistir</div>
+            </div>
+            <!-- Human Consumption Tracker -->
+            <div
+                style="background:rgba(255, 255, 255, 0.03); border:1px solid rgba(255, 255, 255, 0.1); padding:1rem; border-radius:8px; text-align:center;">
+                <div
+                    style="font-size:0.7rem; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:5px;">
+                    Humanos Devorados</div>
+                <div style="display:flex; align-items:center; justify-content:center; gap:10px;">
+                    <button onclick="changeDevoured(-1)"
+                        style="background:none; border:none; color:#666; cursor:pointer;">-</button>
+                    <div id="dispDevoured" style="font-size:1.4rem; color:#d90429; font-weight:bold;">0</div>
+                    <button onclick="changeDevoured(1)"
+                        style="background:none; border:none; color:#666; cursor:pointer;">+</button>
                 </div>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
-                <input type="number" id="hpMaxInput" class="ds-input" style="width:60px;" onchange="updateMaxHP()">
-                <div style="font-size:0.7rem; color:#666; cursor:pointer;" onclick="autoRegen()">
-                    Regen: <span id="regenVal" style="color:#d90429">1d10</span> <i data-lucide="rotate-cw"
-                        size="10"></i>
-                </div>
-            </div>
         </div>
-
-        <!-- PE Bar -->
-        <div class="vital-box">
-            <div class="vital-row">
-                <span>ENERGIA (PE)</span>
-                <span id="peText">5 / 5</span>
-            </div>
-            <div class="premium-bar">
-                <div class="premium-fill bar-pe" id="peBarFill" style="width: 100%;"></div>
-                <div class="bar-btn-group">
-                    <button class="bar-btn" onclick="modPE(-1)">-</button>
-                    <button class="bar-btn" onclick="modPE(1)">+</button>
-                </div>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
-                <input type="number" id="peMaxInput" class="ds-input" style="width:60px;" onchange="updateMaxPE()">
-            </div>
-        </div>
-
     </aside>
 
+    <!-- MODALS (Reused/Adapted) -->
     <!-- Dice Modal -->
-    <div id="diceModal" class="dice-modal">
-        <div class="dice-container" style="margin-bottom: 2rem;">
-            <div id="diceCube" class="cube blood">
-                <div class="face front">20</div>
-                <div class="face back">1</div>
-                <div class="face right">5</div>
-                <div class="face left">15</div>
-                <div class="face top">10</div>
-                <div class="face bottom">2</div>
+    <div id="diceModal" class="dice-modal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; justify-content:center; align-items:center; z-index:9999; background:rgba(0,0,0,0.8);">
+        <div style="text-align:center;">
+            <div id="diceCube" class="cube" style="width:60px; height:60px; background:#d90429; margin:0 auto 20px;">
             </div>
+            <h2 id="rollOverlayText" style="color:white;">Rolando...</h2>
         </div>
-        <h2 style="color:white; font-family:'Cinzel';" id="rollOverlayText">Rolling...</h2>
     </div>
 
     <!-- ITEM PICKER MODAL -->
-    <div id="itemModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Adicionar Item</h2>
-                <span class="close-modal" onclick="closeItemModal()">&times;</span>
-            </div>
-            <div class="picker-controls">
-                <div class="picker-cats">
-                    <button class="cat-btn active" onclick="filterModal('all', this)">Todos</button>
-                    <button class="cat-btn" onclick="filterModal('weapon', this)">Armas</button>
-                    <button class="cat-btn" onclick="filterModal('armor', this)">Armaduras</button>
-                    <button class="cat-btn" onclick="filterModal('consumable', this)">Consumíveis</button>
-                </div>
-                <input type="text" class="ds-input" placeholder="Buscar item..." style="margin-left:auto; width:200px;"
-                    onkeyup="searchModal(this.value)">
-            </div>
-            <div class="picker-grid" id="pickerGrid">
-                <!-- Items injected here -->
+    <div id="itemModal" class="modal"
+        style="display:none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8);">
+        <div class="modal-content"
+            style="background-color: #111; margin: 10% auto; padding: 20px; border: 1px solid #d90429; width: 80%; max-width: 600px; border-radius: 12px; position:relative;">
+            <span class="close-modal" onclick="closeItemModal()"
+                style="color:red; float:right; font-size:28px; font-weight:bold; cursor:pointer;">&times;</span>
+            <h2 style="color:var(--accent-primary);">Adicionar Item</h2>
+            <input type="text" id="itemSearch" placeholder="Buscar..." class="ds-input" onkeyup="searchModal()"
+                style="width:100%; padding:8px; margin:10px 0; background:#222; border:1px solid #444; color:white;">
+            <div id="pickerGrid"
+                style="display:grid; grid-template-columns:repeat(auto-fill, minmax(100px, 1fr)); gap:10px; max-height:400px; overflow-y:auto;">
             </div>
         </div>
     </div>
 
-    </div>
-
-    <!-- Skill Detail Modal -->
-    <div id="skillDetailModal" class="modal">
-        <div class="modal-content" style="border-color: #00b4d8; max-width: 500px;">
-            <div class="modal-header">
-                <h2 id="sdName" style="color: #00b4d8;">Skill Name</h2>
-                <span class="close-modal" onclick="closeSkillModal()">&times;</span>
-            </div>
-            <div style="padding: 1rem;">
-                <div style="margin-bottom: 10px; font-size: 0.9rem; color: #aaa;">
-                    <span id="sdType">Tipo</span> • <span id="sdCost">Custo</span>
-                </div>
-                <p id="sdDesc" style="color: #ddd; line-height: 1.6;">Descrição...</p>
-
-                <div class="stats-box"
-                    style="margin-top: 15px; background: rgba(0, 180, 216, 0.1); border: 1px solid #00b4d8; padding: 10px; border-radius: 6px;">
-                    <div style="display: flex; justify-content: space-between;"><span>Dano:</span> <span id="sdDmg"
-                            style="color: white;">-</span></div>
-                    <div style="display: flex; justify-content: space-between;"><span>Alcance:</span> <span id="sdRange"
-                            style="color: white;">-</span></div>
-                    <div style="display: flex; justify-content: space-between;"><span>Duração:</span> <span id="sdDur"
-                            style="color: white;">-</span></div>
-                </div>
-
-                <div id="reqWarning" style="color: red; margin-top: 10px; display: none;">Requisito: Nível anterior
-                    incompleto.</div>
-
-                <button id="learnSkillBtn" class="devour-btn"
-                    style="width: 100%; margin-top: 20px; border-color: #00b4d8; color: #00b4d8;"
-                    onclick="learnSelectedSkill()">
-                    APRENDER
-                </button>
-            </div>
+    <!-- ATTACK MODAL -->
+    <div id="attackModal" class="modal"
+        style="display:none; background:rgba(0,0,0,0.8); position:fixed; top:0; left:0; width:100%; height:100%; z-index:2000;">
+        <div class="modal-content"
+            style="background:#111; border:1px solid #d90429; width:90%; max-width:400px; margin:10% auto; padding:20px; border-radius:12px;">
+            <h3 style="color:#d90429; margin-top:0;">Novo Ataque</h3>
+            <input type="text" id="atkName" placeholder="Nome do Ataque"
+                style="width:100%; padding:8px; margin-bottom:10px; background:#222; border:1px solid #444; color:fff;">
+            <input type="text" id="atkDmg" placeholder="Dano (ex: 1d6 + 2)"
+                style="width:100%; padding:8px; margin-bottom:10px; background:#222; border:1px solid #444; color:fff;">
+            <input type="text" id="atkType" placeholder="Tipo (Cortante, Perfurante)"
+                style="width:100%; padding:8px; margin-bottom:10px; background:#222; border:1px solid #444; color:fff;">
+            <button class="devour-btn" onclick="saveNewAttack()">Salvar</button>
+            <button onclick="document.getElementById('attackModal').style.display='none'"
+                style="width:100%; padding:10px; background:none; border:none; color:#888; cursor:pointer; margin-top:5px;">Cancelar</button>
         </div>
-    </div>
-
-    <!-- Roll Log Container -->
-    <div id="rollLog"
-        style="position:fixed; bottom:20px; right:20px; display:flex; flex-direction:column; gap:10px; pointer-events:none;">
     </div>
 
     <!-- SCRIPTS -->
     <script src="items_db.js"></script>
-    <script src="inventory_modules.js"></script>
+    <script src="inventory_modules.js"></script> <!-- Uses window.charData -->
     <script src="oni-dashboard.js"></script>
-    <script src="kekkijutsu_db.js"></script>
-    <script src="oni_skill_tree.js"></script>
+
     <script>
+        // Init Icons
         lucide.createIcons();
     </script>
 </body>
