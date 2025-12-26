@@ -243,46 +243,89 @@
                     </div>
                 </div>
 
-                <!-- BOTTOM ROW: Vitals (HP & PE) -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <!-- HP -->
-                    <div class="vital-box">
-                        <div
-                            style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.85rem; font-weight: 600; align-items: center;">
-                            <span style="color: #ff595e;">VIDA (HP)</span>
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <button onclick="changeHP(-1)" class="vital-btn" style="color: #ff595e;">-</button>
-                                <span id="hpDisplayWrapper"><span id="currHP">20</span> / <span
-                                        id="maxHP">20</span></span>
-                                <button onclick="changeHP(1)" class="vital-btn" style="color: #ff595e;">+</button>
-                            </div>
+                <!-- NEW STATS ROW with COMBAT ACTIONS -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px;">
+                    <div class="vital-box"
+                        style="text-align: center; padding: 10px; background:linear-gradient(135deg, rgba(255,255,255,0.05), rgba(0,0,0,0.5));">
+                        <div style="font-size: 0.65rem; color: #888; text-transform: uppercase;">Defesa</div>
+                        <div id="dispAC" style="font-size: 1.4rem; font-weight: 800; color: #fff;">10</div>
+                    </div>
+                    <div class="vital-box"
+                        style="text-align: center; padding: 10px; background:linear-gradient(135deg, rgba(255,255,255,0.05), rgba(0,0,0,0.5));">
+                        <div style="font-size: 0.65rem; color: #888; text-transform: uppercase;">Desl.</div>
+                        <div id="dispSpeed" style="font-size: 1.4rem; font-weight: 800; color: #fff;">9m</div>
+                    </div>
+                    <button id="btnBlock" onclick="combatAction('block')" class="vital-box action-btn-combat"
+                        style="color:#a8dadc; cursor:pointer;">
+                        <i data-lucide="shield" size="20"></i>
+                        <div style="font-size:0.6rem; margin-top:4px;">BLOQUEAR</div>
+                    </button>
+                    <button id="btnDodge" onclick="combatAction('dodge')" class="vital-box action-btn-combat"
+                        style="color:#d90429; cursor:pointer;">
+                        <i data-lucide="wind" size="20"></i>
+                        <div style="font-size:0.6rem; margin-top:4px;">ESQUIVAR</div>
+                    </button>
+                </div>
+
+                <!-- MINIMALIST HP -->
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <!-- Input -->
+                    <div class="mini-control-group">
+                        <input type="number" id="hpModInput" placeholder="Mod"
+                            style="width:40px; background:transparent; border:none;  border-bottom:1px solid #444; color:#fff; text-align:center;">
+                        <div style="display:flex; flex-direction:column; gap:2px;">
+                            <button onclick="changeHP('add')"
+                                style="color:#ff595e; font-size:10px; background:none; border:none; cursor:pointer;">▲</button>
+                            <button onclick="changeHP('sub')"
+                                style="color:#ff595e; font-size:10px; background:none; border:none; cursor:pointer;">▼</button>
                         </div>
-                        <div
-                            style="background: #333; height: 10px; border-radius: 5px; overflow: hidden; position: relative;">
-                            <div class="bar-hp"
-                                style="width: 100%; background: #ff595e; height: 100%; transition: width 0.3s;"></div>
-                        </div>
-                        <div id="hitDieInfo" style="margin-top:4px; text-align:right; font-size:0.75rem;"></div>
                     </div>
 
-                    <!-- PE -->
-                    <div class="vital-box">
-                        <div
-                            style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.85rem; font-weight: 600; align-items: center;">
-                            <span style="color: #4cc9f0;">ESFORÇO (PE)</span>
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <button onclick="changePE(-1)" class="vital-btn" style="color: #4cc9f0;">-</button>
-                                <span id="peDisplay">1 / 1</span>
-                                <button onclick="changePE(1)" class="vital-btn" style="color: #4cc9f0;">+</button>
-                            </div>
+                    <!-- Bar -->
+                    <div style="flex:1; position:relative;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:2px; font-size:0.75rem;">
+                            <span style="font-weight:700; color:#ff595e;">VIDA</span>
+                            <span id="hpDisplayWrapper" onclick="editVital('hp')" style="cursor:pointer;"><span
+                                    id="currHP">20</span> / <span id="maxHP">20</span></span>
                         </div>
-                        <div
-                            style="background: #333; height: 10px; border-radius: 5px; overflow: hidden; position: relative;">
-                            <div class="bar-pe"
-                                style="width: 100%; background: #4cc9f0; height: 100%; transition: width 0.3s;"></div>
+                        <div style="height:6px; background:#333; border-radius:3px; overflow:hidden;">
+                            <div class="bar-hp"
+                                style="width:100%; height:100%; background:#ff595e; transition: width 0.3s ease;"></div>
                         </div>
                     </div>
                 </div>
+
+                <!-- MINIMALIST PE -->
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <!-- Input -->
+                    <div class="mini-control-group">
+                        <input type="number" id="peModInput" placeholder="Mod"
+                            style="width:40px; background:transparent; border:none; border-bottom:1px solid #444; color:#fff; text-align:center;">
+                        <div style="display:flex; flex-direction:column; gap:2px;">
+                            <button onclick="changePE('add')"
+                                style="color:#4cc9f0; font-size:10px; background:none; border:none; cursor:pointer;">▲</button>
+                            <button onclick="changePE('sub')"
+                                style="color:#4cc9f0; font-size:10px; background:none; border:none; cursor:pointer;">▼</button>
+                        </div>
+                    </div>
+
+                    <!-- Bar -->
+                    <div style="flex:1; position:relative;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:2px; font-size:0.75rem;">
+                            <span style="font-weight:700; color:#4cc9f0;">ESFORÇO</span>
+                            <span id="peDisplayWrapper" onclick="editVital('pe')" style="cursor:pointer;"><span
+                                    id="peDisplay">1 / 1</span></span>
+                        </div>
+                        <div style="height:6px; background:#333; border-radius:3px; overflow:hidden;">
+                            <div class="bar-pe"
+                                style="width:100%; height:100%; background:#4cc9f0; transition: width 0.3s ease;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OLD HP SECTION (REMOVED) -->
+                <!-- OLD PE SECTION (REMOVED) -->
+
 
                 <!-- PROFICIENCIES ROW (NEW) -->
                 <div id="proficiencies-container"

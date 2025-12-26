@@ -22,20 +22,67 @@ if (typeof charData === 'undefined') {
 // === FUNÇÕES DO MODAL DE ADICIONAR ITEM ===
 
 window.openItemModal = function () {
-    console.log('openItemModal called');
     const modal = document.getElementById('itemModal');
-    console.log('Modal element:', modal);
-
     if (modal) {
         modal.style.display = 'flex';
         modal.classList.add('open');
+
+        // Inject Filter UI if not present
+        const content = modal.querySelector('.modal-content');
+        if (content && !document.getElementById('itemModalFilters')) {
+            // Find insertion point (after search input)
+            const searchInput = document.getElementById('itemSearch');
+
+            const filterContainer = document.createElement('div');
+            filterContainer.id = 'itemModalFilters';
+            filterContainer.style.cssText = 'display:flex; flex-direction:column; gap:10px; margin-bottom:15px;';
+
+            // Level 1: Main Categories
+            const mainCats = document.createElement('div');
+            mainCats.style.display = 'flex';
+            mainCats.style.gap = '5px';
+            mainCats.style.flexWrap = 'wrap';
+            mainCats.innerHTML = `
+                <button class="cat-btn active" onclick="filterModal('all', this)">Todos</button>
+                <button class="cat-btn" onclick="filterModal('weapon', this)">Armas</button>
+                <button class="cat-btn" onclick="filterModal('armor', this)">Armaduras</button>
+                <button class="cat-btn" onclick="filterModal('consumable', this)">Consumíveis</button>
+                <button class="cat-btn" onclick="filterModal('adventure', this)">Aventura</button>
+            `;
+
+            // Level 2: Sub Categories (Initially Hidden/Dynamic)
+            const subCats = document.createElement('div');
+            subCats.id = 'itemModalSubFilters';
+            subCats.style.display = 'flex';
+            subCats.style.gap = '5px';
+            subCats.style.flexWrap = 'wrap';
+            subCats.innerHTML = ''; // Populated via JS
+
+            // Custom Item Button
+            const customBtn = document.createElement('button');
+            customBtn.className = 'cat-btn';
+            customBtn.style.background = '#d90429';
+            customBtn.style.marginLeft = 'auto';
+            customBtn.innerHTML = '<i data-lucide="plus-circle" style="width:14px;"></i> Criar Item';
+            customBtn.onclick = () => showCustomItemForm();
+
+            // Assemble
+            filterContainer.appendChild(mainCats);
+            filterContainer.appendChild(subCats);
+
+            // Insert after search
+            if (searchInput) {
+                searchInput.parentNode.insertBefore(filterContainer, searchInput.nextSibling);
+                // Insert custom btn in the header or filter row? Let's put it in filter row for now or valid place.
+                // Actually, let's put it in the mainCats row
+                mainCats.appendChild(customBtn);
+            }
+        }
+
         populateItemModal();
         setTimeout(() => {
             if (window.lucide) window.lucide.createIcons();
         }, 100);
-    } else {
-        console.error("Modal 'itemModal' não encontrado no DOM.");
-        alert("Erro: Modal de itens não encontrado. Verifique o HTML.");
     }
 };
 
@@ -44,16 +91,79 @@ window.closeItemModal = function () {
     if (modal) {
         modal.style.display = 'none';
         modal.classList.remove('open');
+        // Reset view to grid in case it was on form
+        if (document.getElementById('pickerGrid')) document.getElementById('pickerGrid').style.display = 'grid';
+        if (document.getElementById('customItemForm')) document.getElementById('customItemForm').style.display = 'none';
     }
 };
 
 window.filterModal = function (type, btn) {
     currentModalFilter = type;
 
-    // Update button states
-    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-    if (btn) btn.classList.add('active');
+    // Update active class
+    if (btn && btn.parentNode) {
+        btn.parentNode.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
 
+    // Handle Sub-filters
+    const subContainer = document.getElementById('itemModalSubFilters');
+    if (subContainer) {
+        subContainer.innerHTML = '';
+        if (type === 'weapon') {
+            const subs = [
+                { id: 'all', label: 'Todas' },
+                { id: 'simple_melee', label: 'Simples C-a-C' },
+                { id: 'simple_ranged', label: 'Simples Dist' },
+                { id: 'martial_melee', label: 'Marciais C-a-C' },
+                { id: 'martial_ranged', label: 'Marciais Dist' },
+                { id: 'heavy', label: 'Pesadas' },
+                { id: 'unique', label: 'Únicas' },
+                { id: 'firearm', label: 'Fogo' }
+            ];
+            subs.forEach(s => {
+                const b = document.createElement('button');
+                b.className = 'cat-btn sub-cat-btn';
+                if (s.id === 'all') b.classList.add('active');
+                b.innerText = s.label;
+                b.onclick = (e) => filterSubModal(s.id, e.target);
+                subContainer.appendChild(b);
+            });
+            window.currentSubFilter = 'all';
+        } else if (type === 'consumable') {
+            const subs = [
+                { id: 'all', label: 'Todos' },
+                { id: 'ammo', label: 'Munição' }
+            ];
+            subs.forEach(s => {
+                const b = document.createElement('button');
+                b.className = 'cat-btn sub-cat-btn';
+                if (s.id === 'all') b.classList.add('active');
+                b.innerText = s.label;
+                b.onclick = (e) => filterSubModal(s.id, e.target);
+                subContainer.appendChild(b);
+            });
+            window.currentSubFilter = 'all';
+        } else {
+            window.currentSubFilter = null;
+        }
+    }
+
+    // Hide Custom Form if open
+    const grid = document.getElementById('pickerGrid');
+    const form = document.getElementById('customItemForm');
+    if (grid) grid.style.display = 'grid';
+    if (form) form.style.display = 'none';
+
+    populateItemModal();
+};
+
+window.filterSubModal = function (subType, btn) {
+    window.currentSubFilter = subType;
+    if (btn && btn.parentNode) {
+        btn.parentNode.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
     populateItemModal();
 };
 
@@ -62,33 +172,115 @@ window.searchModal = function (query) {
     populateItemModal();
 };
 
+window.showCustomItemForm = function () {
+    const grid = document.getElementById('pickerGrid');
+    const parent = grid.parentNode;
+
+    // Check if form exists
+    let form = document.getElementById('customItemForm');
+    if (!form) {
+        form = document.createElement('div');
+        form.id = 'customItemForm';
+        form.style.display = 'none';
+        form.style.padding = '10px';
+        form.innerHTML = `
+            <h3 style="color:white; margin-top:0;">Criar Item Personalizado</h3>
+            <div style="display:grid; gap:10px;">
+                <input type="text" id="custName" class="ds-input" placeholder="Nome do Item" style="background:#222; border:1px solid #444; color:white; padding:8px;">
+                
+                <select id="custType" class="ds-input" style="background:#222; border:1px solid #444; color:white; padding:8px;">
+                    <option value="weapon">Arma</option>
+                    <option value="armor">Armadura</option>
+                    <option value="consumable">Consumível</option>
+                    <option value="adventure">Item de Aventura</option>
+                </select>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <input type="text" id="custDmg" class="ds-input" placeholder="Dano / CA (ex: 1d8)" style="background:#222; border:1px solid #444; color:white; padding:8px;">
+                    <input type="text" id="custWeight" class="ds-input" placeholder="Peso (ex: 1.0 kg)" style="background:#222; border:1px solid #444; color:white; padding:8px;">
+                </div>
+
+                <input type="text" id="custProps" class="ds-input" placeholder="Propriedades (ex: Leve, Dois Mãos)" style="background:#222; border:1px solid #444; color:white; padding:8px;">
+                 <textarea id="custDesc" class="ds-input" placeholder="Descrição" style="background:#222; border:1px solid #444; color:white; padding:8px; min-height:60px;"></textarea>
+
+                <button onclick="saveCustomItem()" style="background:var(--accent-primary); color:white; border:none; padding:10px; cursor:pointer; font-weight:bold; margin-top:10px;">CRIAR E ADICIONAR</button>
+            </div>
+        `;
+        parent.insertBefore(form, grid);
+    }
+
+    grid.style.display = 'none';
+    form.style.display = 'block';
+};
+
+window.saveCustomItem = function () {
+    const name = document.getElementById('custName').value;
+    const type = document.getElementById('custType').value;
+    const stat = document.getElementById('custDmg').value;
+    const weight = document.getElementById('custWeight').value;
+    const props = document.getElementById('custProps').value;
+    const desc = document.getElementById('custDesc').value;
+
+    if (!name) {
+        alert("O item precisa de um nome.");
+        return;
+    }
+
+    const newItem = {
+        name,
+        type,
+        weight: weight || '0 kg',
+        props,
+        desc,
+        isCustom: true
+    };
+
+    if (type === 'weapon') newItem.dmg = stat;
+    if (type === 'armor') newItem.ac = stat;
+    if (type === 'consumable') newItem.dmg = stat; // Consumables might use dmg field for healing roll
+
+    addItemToInventory(newItem);
+
+    // Auto-update Stats
+    if (window.updateStatsUI) window.updateStatsUI();
+
+    // Return to grid
+    document.getElementById('customItemForm').style.display = 'none';
+    document.getElementById('pickerGrid').style.display = 'grid';
+    showFlashMessage("Item personalizado criado!");
+};
+
 function populateItemModal() {
     const grid = document.getElementById('pickerGrid');
     if (!grid) return;
-
     grid.innerHTML = '';
 
     // Combine all items from DB
     const allItems = [
-        ...ITEMS_DB.weapons.map(i => ({ ...i, category: 'weapon' })),
-        ...ITEMS_DB.armor.map(i => ({ ...i, category: 'armor' }))
+        ...(ITEMS_DB.weapons || []).map(i => ({ ...i, category: 'weapon' })),
+        ...(ITEMS_DB.armor || []).map(i => ({ ...i, category: 'armor' })),
+        ...(ITEMS_DB.consumables || []).map(i => ({ ...i, category: 'consumable' })),
+        ...(ITEMS_DB.adventure || []).map(i => ({ ...i, category: 'adventure' })),
+        ...(ITEMS_DB.misc || []).map(i => ({ ...i, category: 'misc' }))
     ];
-
-    // Add consumables and misc if they exist
-    if (ITEMS_DB.consumables) {
-        allItems.push(...ITEMS_DB.consumables.map(i => ({ ...i, category: 'consumable' })));
-    }
-    if (ITEMS_DB.misc) {
-        allItems.push(...ITEMS_DB.misc.map(i => ({ ...i, category: 'misc' })));
-    }
 
     // Filter items
     const filtered = allItems.filter(item => {
-        const matchesFilter = currentModalFilter === 'all' || item.category === currentModalFilter;
+        // Main Filter
+        const matchesMain = currentModalFilter === 'all' || item.category === currentModalFilter;
+
+        // Sub Filter
+        let matchesSub = true;
+        if (window.currentSubFilter && window.currentSubFilter !== 'all') {
+            if (item.subType !== window.currentSubFilter) matchesSub = false;
+        }
+
+        // Search Filter
         const matchesSearch = !currentModalSearch ||
             item.name.toLowerCase().includes(currentModalSearch) ||
             (item.props && item.props.toLowerCase().includes(currentModalSearch));
-        return matchesFilter && matchesSearch;
+
+        return matchesMain && matchesSub && matchesSearch;
     });
 
     // Render items
@@ -102,6 +294,7 @@ function populateItemModal() {
         if (item.category === 'weapon') icon = '⚔️';
         else if (item.category === 'armor') icon = '🛡️';
         else if (item.category === 'consumable') icon = '🧪';
+        else if (item.category === 'adventure') icon = '🎒';
 
         // Stat display
         let statText = '';
@@ -113,7 +306,7 @@ function populateItemModal() {
             <div class="picker-item-icon">${icon}</div>
             <div class="picker-item-name">${item.name}</div>
             ${statText ? `<div class="picker-item-stat">${statText}</div>` : ''}
-            ${item.props ? `<div class="picker-item-desc">${item.props}</div>` : ''}
+            <div class="picker-item-desc" style="font-size:0.75rem; color:#888;">${item.subType ? item.subType.replace('_', ' ') : ''}</div>
         `;
 
         grid.appendChild(card);
@@ -205,9 +398,15 @@ window.renderInventory = function () {
     let totalWeight = 0;
     const maxWeight = (charData.attributes && charData.attributes.str ? charData.attributes.str : 10) * 15;
 
+    // Valid Types that should appear in inventory
+    const VALID_TYPES = ['weapon', 'armor', 'consumable', 'adventure', 'misc'];
+
     // Filtrar itens
     const filtered = (charData.inventory || []).filter(item => {
         if (!item) return false;
+
+        // Safety Clean: If item has no type or invalid type, hide it (likely a skill/ability that got mixed in)
+        if (!VALID_TYPES.includes(item.type)) return false;
 
         // Filtro de categoria do inventário principal
         const matchesFilter = invFilter === 'all' || item.type === invFilter;

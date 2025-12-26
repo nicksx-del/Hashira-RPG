@@ -2,6 +2,7 @@
 
 let humanData = {};
 let currentBreathingStyle = 'water';
+let combatState = { block: false, dodge: false };
 let concentrationInterval = null;
 
 // SKILL MAP
@@ -168,6 +169,107 @@ function updateVitalsUI() {
 
     const peDisp = document.getElementById('peDisplay');
     if (peDisp) peDisp.textContent = humanData.currentPE + " / " + maxPE;
+
+    // Also update Stats if present
+    updateStatsUI();
+}
+
+// Combat Actions
+window.combatAction = function (action) {
+    const btnBlock = document.getElementById('btnBlock');
+    const btnDodge = document.getElementById('btnDodge');
+
+    if (action === 'block') {
+        combatState.block = !combatState.block;
+        combatState.dodge = false; // Mutually exclusive usually? Let's say yes for simplicity
+
+        if (combatState.block) showToast("🛡️ Postura de Bloqueio (+Def)", "info");
+        else showToast("Bloqueio cancelado", "info");
+    } else if (action === 'dodge') {
+        combatState.dodge = !combatState.dodge;
+        combatState.block = false;
+
+        if (combatState.dodge) showToast("💨 Postura de Esquiva (Desvantagem em ataques)", "info");
+        else showToast("Esquiva cancelada", "info");
+    }
+
+    // Update Visuals
+    if (btnBlock) btnBlock.style.borderColor = combatState.block ? '#00b4d8' : '#333';
+    if (btnBlock) btnBlock.style.background = combatState.block ? '#00b4d822' : '#111';
+
+    if (btnDodge) btnDodge.style.borderColor = combatState.dodge ? '#ffbf69' : '#333';
+    if (btnDodge) btnDodge.style.background = combatState.dodge ? '#ffbf6922' : '#111';
+
+    updateStatsUI();
+};
+
+function updateStatsUI() {
+    // 1. Armor Class (CA)
+    let dex = (humanData.stats ? humanData.stats.dex : 10);
+    let dexMod = Math.floor((dex - 10) / 2);
+    let ac = 10 + dexMod;
+
+    // Check equipped armor
+    if (humanData.inventory) {
+        const armor = humanData.inventory.find(i => i.type === 'armor' && i.equipped);
+        if (armor) {
+            let armorAC = 10;
+            // Parse Formula
+            if (typeof armor.ac === 'string') {
+                const formula = armor.ac.toLowerCase().replace(/\s/g, '');
+
+                // Pure Number: "17"
+                const matchVal = formula.match(/^(\d+)$/);
+                // Formula: "12+des"
+                const matchDex = formula.includes('des');
+
+                if (matchVal) {
+                    armorAC = parseInt(matchVal[1]);
+                    // Heavy armor usually replaces base, so we set AC directly
+                    ac = armorAC;
+                } else if (matchDex) {
+                    const baseMatch = formula.match(/(\d+)/);
+                    const base = baseMatch ? parseInt(baseMatch[1]) : 10;
+
+                    // Medium Armor Cap Logic (Standard 5e: Max 2)
+                    let effectiveDex = dexMod;
+                    if (armor.subType === 'medium' && effectiveDex > 2) effectiveDex = 2;
+
+                    ac = base + effectiveDex;
+                }
+            } else if (typeof armor.ac === 'number') {
+                ac = armor.ac;
+            }
+        }
+
+        // Shield Bonus (Classic +2)
+        // Check for items with 'shield' in name or subType if we had it
+        // For now, let's assume if there's an item named "Escudo" equipped
+        const shield = humanData.inventory.find(i => i.name.toLowerCase().includes('escudo') && i.equipped);
+        if (shield) ac += 2;
+    }
+
+    // Combat Mods
+    if (combatState.block) ac += 2; // Defensive stance bonus?
+
+    // 2. Speed
+    let speed = 9;
+    // Heavy armor w/ low Str reduces speed? (Optional rule)
+
+    // Update DOM
+    const acEl = document.getElementById('dispAC');
+    if (acEl) acEl.textContent = ac;
+
+    // Visual cue for temp AC
+    if (combatState.block) {
+        if (acEl) acEl.style.color = '#00b4d8';
+        if (acEl) acEl.innerText = ac + "*";
+    } else {
+        if (acEl) acEl.style.color = '#fff';
+    }
+
+    const spdEl = document.getElementById('dispSpeed');
+    if (spdEl) spdEl.textContent = speed + "m";
 }
 
 function changeLevel(delta) {
@@ -213,8 +315,25 @@ function updateLevel(newLvl) {
 }
 
 // Header Interactions
-function changeHP(delta) {
-    if (!humanData.currentHP) humanData.currentHP = humanData.maxHP;
+
+// Header Interactions
+function changeHP(modeOrDelta) {
+    let delta = 0;
+
+    // Check if using new V2 logic (string 'add'/'sub') or legacy delta (number)
+    if (typeof modeOrDelta === 'string') {
+        const input = document.getElementById('hpModInput');
+        const val = input && input.value ? parseInt(input.value) : 1; // Default to 1 if empty
+
+        if (modeOrDelta === 'sub') delta = -val;
+        else if (modeOrDelta === 'add') delta = val;
+
+        // Clear input after use? Optional. Let's keep it for repeated dmg.
+    } else {
+        delta = modeOrDelta;
+    }
+
+    if (!humanData.currentHP && humanData.currentHP !== 0) humanData.currentHP = humanData.maxHP;
     humanData.currentHP += delta;
     if (humanData.currentHP < 0) humanData.currentHP = 0;
     if (humanData.currentHP > humanData.maxHP) humanData.currentHP = humanData.maxHP;
@@ -223,7 +342,19 @@ function changeHP(delta) {
     updateVitalsUI();
 }
 
-function changePE(delta) {
+function changePE(modeOrDelta) {
+    let delta = 0;
+
+    if (typeof modeOrDelta === 'string') {
+        const input = document.getElementById('peModInput');
+        const val = input && input.value ? parseInt(input.value) : 1;
+
+        if (modeOrDelta === 'sub') delta = -val;
+        else if (modeOrDelta === 'add') delta = val;
+    } else {
+        delta = modeOrDelta;
+    }
+
     if (humanData.currentPE === undefined) humanData.currentPE = humanData.maxPE;
     humanData.currentPE += delta;
     if (humanData.currentPE < 0) humanData.currentPE = 0;
@@ -317,6 +448,25 @@ function renderClassFeatures() {
     });
 }
 
+window.editProficiencyBonus = function (skillName, e) {
+    if (e && e.target) {
+        const valStr = e.target.value.trim();
+        const val = parseInt(valStr);
+
+        if (!humanData.proficiencies) humanData.proficiencies = {};
+        if (!humanData.proficiencies[skillName]) humanData.proficiencies[skillName] = { trained: false };
+
+        if (!isNaN(val) && val !== 0) {
+            humanData.proficiencies[skillName].customBonus = val;
+        } else {
+            delete humanData.proficiencies[skillName].customBonus;
+            if (!humanData.proficiencies[skillName].trained) delete humanData.proficiencies[skillName];
+        }
+        saveHuman();
+        renderAttributes();
+    }
+};
+
 // --- NEW ATTRIBUTE RENDER WITH SKILLS ---
 function renderAttributes() {
     const grid = document.getElementById('attrGrid');
@@ -330,9 +480,8 @@ function renderAttributes() {
     const map = { str: 'Força', dex: 'Destreza', con: 'Constituição', int: 'Inteligência', wis: 'Sabedoria', cha: 'Carisma' };
 
     // Create Layout
-    // We will clear existing styles and add new ones inline or via class
     grid.style.display = 'grid';
-    grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(280px, 1fr))';
+    grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(300px, 1fr))';
     grid.style.gap = '20px';
 
     Object.keys(stats).forEach(k => {
@@ -381,26 +530,58 @@ function renderAttributes() {
                 const sRow = document.createElement('div');
                 sRow.style.display = 'flex';
                 sRow.style.justifyContent = 'space-between';
-                sRow.style.fontSize = '0.85rem';
-                sRow.style.color = '#aaab';
-                sRow.style.padding = '4px 8px';
+                sRow.style.alignItems = 'center';
+                sRow.style.fontSize = '0.9rem';
+                sRow.style.color = '#ccc';
+                sRow.style.padding = '6px 8px';
                 sRow.style.borderRadius = '4px';
                 sRow.style.cursor = 'pointer';
                 sRow.style.transition = 'background 0.2s';
 
-                // Prof check is simplified for now
-                // We assume if it's in inventory as a skill, you are proficient
-                const isProf = humanData.inventory && humanData.inventory.some(i => i.type === 'skill' && i.name === skill);
-                const profBonus = window.HunterSystem ? window.HunterSystem.calculateProficiency(humanData.level) : 2;
-                const total = mod + (isProf ? profBonus : 0);
+                // Proficiency Logic
+                const profData = (humanData.proficiencies && humanData.proficiencies[skill]) || {};
+                const isTrained = !!profData.trained;
+                const customBonus = profData.customBonus || 0;
 
-                sRow.innerHTML = `<span>${skill}</span> <span style="color:#fff;">${total >= 0 ? '+' : ''}${total}</span>`;
-                sRow.onmouseover = () => sRow.style.background = 'rgba(255,255,255,0.05)';
-                sRow.onmouseout = () => sRow.style.background = 'transparent';
-                sRow.onclick = (e) => {
-                    e.stopPropagation();
-                    rollCheck(skill, total);
+                // Prof Bonus Calculation (Level based, usually starts at +2)
+                const pb = Math.ceil(1 + (humanData.level / 4)); // Std D&D 5e PB: 1-4=+2, 5-8=+3, etc. Actually ceil(1 + lvl/4) works: 1->2, 4->2, 5->3.
+
+                let total = mod + customBonus;
+                if (isTrained) total += pb;
+
+                const starIcon = isTrained ?
+                    `<i data-lucide="star" fill="#ffd700" color="#ffd700" style="width:14px;"></i>` :
+                    `<i data-lucide="star" color="#444" style="width:14px;"></i>`;
+
+                sRow.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <input type="text" 
+                             value="${customBonus > 0 ? '+' + customBonus : (customBonus < 0 ? customBonus : '')}" 
+                             placeholder="+0"
+                             onclick="event.stopPropagation()"
+                             onchange="editProficiencyBonus('${skill}', event)"
+                             class="skill-bonus-input"
+                             style="width:30px; background:#111; border:1px solid #333; color:#fff; font-size:0.75rem; text-align:center; padding:2px; border-radius:4px;"
+                        />
+                        <div onclick="event.stopPropagation(); toggleProficiency('${skill}')" style="cursor:pointer; display:flex;">
+                            ${starIcon}
+                        </div>
+                        <span style="${isTrained ? 'color:#fff; font-weight:bold;' : ''}">${skill}</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                         <span style="color:${total >= 0 ? '#4cc9f0' : '#ff595e'}; min-width:25px; text-align:right;">${total >= 0 ? '+' : ''}${total}</span>
+                    </div>
+                `;
+
+                // CSS to show settings on hover
+                sRow.onmouseover = () => {
+                    sRow.style.background = 'rgba(255,255,255,0.05)';
                 };
+                sRow.onmouseout = () => {
+                    sRow.style.background = 'transparent';
+                };
+
+                sRow.onclick = () => rollCheck(skill, total);
 
                 skillsList.appendChild(sRow);
             });
@@ -409,6 +590,8 @@ function renderAttributes() {
 
         grid.appendChild(col);
     });
+
+    if (window.lucide) window.lucide.createIcons();
 }
 
 function rollCheck(label, mod) {
@@ -514,7 +697,6 @@ function renderBreathing(forceStyleId = null) {
     addBtn.onclick = () => unlockNewStyle();
     sidebar.appendChild(addBtn);
 
-    layout.appendChild(sidebar);
     layout.appendChild(sidebar);
 
     // 2. CONTENT AREA
