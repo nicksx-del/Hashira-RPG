@@ -175,18 +175,60 @@
         /* --- CAROUSEL / GRID --- */
         .char-grid {
             display: flex;
-            gap: 30px;
-            perspective: 1000px;
+            gap: 20px;
+            /* Reduced gap */
+            perspective: 1200px;
             animation: fadeInUp 1s ease-out 0.2s backwards;
             flex-wrap: wrap;
             justify-content: center;
-            max-width: 1400px;
+            max-width: 1600px;
+            padding: 1rem;
+        }
+
+        /* --- STAGGERED ANIMATION --- */
+        .char-card {
+            opacity: 0;
+            animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        .char-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .char-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .char-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .char-card:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .char-card:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
         /* --- CHARACTER CARD --- */
         .char-card {
-            width: 280px;
-            height: 420px;
+            width: 240px;
+            /* Reduced width */
+            height: 380px;
+            /* Reduced height */
             background: rgba(15, 15, 20, 0.8);
             border-radius: 20px;
             position: relative;
@@ -196,31 +238,60 @@
             border: 1px solid var(--border);
             display: flex;
             flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         .char-card:hover {
-            transform: translateY(-15px) rotateX(5deg);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-            z-index: 2;
+            transform: translateY(-20px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
+            z-index: 10;
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
-        /* Add New Card */
+        /* --- NEW SLOT CARD --- */
         .char-card.new-slot {
-            background: transparent;
-            border: 2px dashed rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            display: flex;
             align-items: center;
             justify-content: center;
-            color: #666;
-            transition: 0.3s;
+            transition: all 0.4s ease;
         }
 
         .char-card.new-slot:hover {
-            border-color: #fff;
-            color: #fff;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.08);
+            /* Brighter hover */
+            border-color: var(--accent-human);
+            box-shadow: 0 0 40px rgba(0, 180, 216, 0.2);
         }
 
-        /* Card Visuals */
+        .char-card.new-slot i {
+            transition: 0.4s;
+            color: #555;
+            transform: scale(1);
+        }
+
+        .char-card.new-slot:hover i {
+            color: var(--accent-human);
+            transform: scale(1.3) rotate(90deg);
+        }
+
+        .new-slot-text {
+            margin-top: 20px;
+            font-family: var(--font-display);
+            letter-spacing: 3px;
+            color: #555;
+            font-size: 1.1rem;
+            transition: 0.3s;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .char-card.new-slot:hover .new-slot-text {
+            color: #fff;
+            letter-spacing: 5px;
+        }
+
+        /* --- CARD VISUALS --- */
         .card-bg {
             position: absolute;
             top: 0;
@@ -229,155 +300,98 @@
             height: 100%;
             background-size: cover;
             background-position: center;
-            opacity: 0.4;
-            transition: 0.5s;
+            opacity: 0.6;
+            /* Increased default opacity */
+            transition: 0.6s;
+            filter: grayscale(30%);
         }
 
         .char-card:hover .card-bg {
-            opacity: 0.6;
-            transform: scale(1.1);
+            opacity: 0.8;
+            transform: scale(1.05);
+            /* Subtle zoom */
+            filter: grayscale(0%);
         }
 
+        .race-badge {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            backdrop-filter: blur(10px);
+            z-index: 5;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* --- CARD CONTENT & TYPOGRAPHY --- */
         .card-content {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            padding: 20px;
-            background: linear-gradient(to top, #000, transparent);
-            z-index: 2;
+            padding: 30px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 1) 10%, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0) 100%);
+            z-index: 5;
+            transform: translateY(15px);
+            transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
-        .race-badge {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            backdrop-filter: blur(5px);
-            z-index: 2;
-        }
-
-        .human-theme {
-            border-color: rgba(0, 180, 216, 0.3);
-        }
-
-        .human-theme:hover {
-            box-shadow: 0 0 30px rgba(0, 180, 216, 0.2);
-            border-color: var(--accent-human);
-        }
-
-        .human-theme .race-badge {
-            background: rgba(0, 180, 216, 0.2);
-            color: var(--accent-human);
-            border: 1px solid var(--accent-human);
-        }
-
-        .oni-theme {
-            border-color: rgba(217, 4, 41, 0.3);
-        }
-
-        .oni-theme:hover {
-            box-shadow: 0 0 30px rgba(217, 4, 41, 0.2);
-            border-color: var(--accent-oni);
-        }
-
-        .oni-theme .race-badge {
-            background: rgba(217, 4, 41, 0.2);
-            color: var(--accent-oni);
-            border: 1px solid var(--accent-oni);
+        .char-card:hover .card-content {
+            transform: translateY(0);
+            background: linear-gradient(to top, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0.8) 70%, rgba(0, 0, 0, 0) 100%);
         }
 
         .char-name {
             font-family: var(--font-display);
-            font-size: 1.5rem;
+            font-size: 2rem;
+            /* Larger Title */
             margin: 0;
-            line-height: 1.2;
-        }
-
-        .char-details {
-            font-size: 0.9rem;
-            color: #aaa;
-            margin-top: 5px;
-        }
-
-        .char-level {
-            font-weight: bold;
+            line-height: 1.1;
             color: #fff;
-            font-size: 0.8rem;
-            margin-top: 15px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .play-indicator {
-            margin-top: 20px;
-            font-size: 0.8rem;
-            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: 0.3s;
-            color: #fff;
+            letter-spacing: 1px;
+        }
+
+        /* --- DELETE BUTTON --- */
+        .delete-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            /* Moved to left for better UX vs badge */
+            width: 36px;
+            height: 36px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 99, 99, 0.3);
+            border-radius: 50%;
             display: flex;
             align-items: center;
-            gap: 5px;
-        }
-
-        .char-card:hover .play-indicator {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* --- ACTIONS --- */
-        .action-bar {
-            position: absolute;
-            bottom: 30px;
-            display: flex;
-            gap: 20px;
-            animation: fadeIn 1s ease-out 0.5s backwards;
-        }
-
-        .text-btn {
-            background: none;
-            border: none;
-            color: #666;
+            justify-content: center;
             cursor: pointer;
-            font-size: 0.9rem;
-            transition: 0.3s;
+            color: #ff6b6b;
+            opacity: 0.7;
+            /* ALWAYS VISIBLE BUT SUBTLE */
+            transform: scale(0.9);
+            transition: all 0.3s;
+            z-index: 20;
         }
 
-        .text-btn:hover {
-            color: #fff;
-            text-decoration: underline;
+        .delete-btn:hover {
+            opacity: 1;
+            background: #d90429;
+            color: white;
+            border-color: #d90429;
+            transform: scale(1.1) rotate(90deg);
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .char-card:hover .delete-btn {
+            opacity: 1;
+            transform: scale(1);
         }
     </style>
 </head>
@@ -418,86 +432,202 @@
     </main>
 
     <script>
-        // MOCK DATA MIGRATION
-        // If single char exists but no list, create list
+        // DATA MIGRATION & STANDARDIZATION
         function migrateData() {
+            // 1. Migrate single char 'demonSlayerChar' -> 'demonSlayerSaveSlots' if slots empty
+            let slots = JSON.parse(localStorage.getItem('demonSlayerSaveSlots') || '[]');
             const single = localStorage.getItem('demonSlayerChar');
-            let list = JSON.parse(localStorage.getItem('demonSlayerSaveSlots') || '[]');
 
-            if (single && list.length === 0) {
-                // Check if the single char is valid
-                const char = JSON.parse(single);
-                if (char.name) {
-                    list.push(char);
-                    localStorage.setItem('demonSlayerSaveSlots', JSON.stringify(list));
-                }
+            if (slots.length === 0 && single) {
+                try {
+                    const char = JSON.parse(single);
+                    if (char.name) {
+                        slots.push(char);
+                        localStorage.setItem('demonSlayerSaveSlots', JSON.stringify(slots));
+                    }
+                } catch (e) { }
+            }
+
+            // 2. Migrate 'demonSlayerAllChars' (old array) -> 'demonSlayerSaveSlots'
+            // If we have 'demonSlayerAllChars' and it has data, merge it or supersede if slots uses it
+            const oldArr = localStorage.getItem('demonSlayerAllChars');
+            if (oldArr) {
+                try {
+                    const oldList = JSON.parse(oldArr);
+                    if (oldList.length > 0) {
+                        // Merge unique chars mainly
+                        oldList.forEach(c => {
+                            if (!slots.find(s => s.id === c.id || s.name === c.name)) {
+                                slots.push(c);
+                            }
+                        });
+                        localStorage.setItem('demonSlayerSaveSlots', JSON.stringify(slots));
+                    }
+                    // Remove old key to prevent confusion
+                    localStorage.removeItem('demonSlayerAllChars');
+                } catch (e) { }
             }
         }
 
         function renderChars() {
             migrateData();
-            const list = JSON.parse(localStorage.getItem('demonSlayerSaveSlots') || '[]');
-            const grid = document.getElementById('charGrid');
 
-            // Keep the "New Slot" card at the end, so remove it temporarily or append before it
-            // Actually let's just clear and rebuild, adding New Slot at end
+            // Single Source of Truth: 'demonSlayerSaveSlots'
+            let list = [];
+            try {
+                list = JSON.parse(localStorage.getItem('demonSlayerSaveSlots') || '[]');
+            } catch (e) {
+                list = [];
+            }
+
+            const grid = document.getElementById('charGrid');
             grid.innerHTML = '';
 
-            list.forEach((char, index) => {
-                const el = document.createElement('div');
-                const isOni = char.race === 'Oni';
-                el.className = `char-card ${isOni ? 'oni-theme' : 'human-theme'}`;
+            // Rank Helper
+            const getRank = (lvl) => {
+                const l = parseInt(lvl);
+                if (l <= 1) return "Mizunoto";
+                if (l <= 3) return "Mizunoe";
+                if (l <= 5) return "Kanoto";
+                if (l <= 7) return "Kanoe";
+                if (l <= 9) return "Tsuchinoto";
+                if (l <= 11) return "Tsuchinoe";
+                if (l <= 13) return "Hinoto";
+                if (l <= 16) return "Hinoe";
+                if (l <= 19) return "Kinoe";
+                return "Hashira";
+            };
 
-                // Visuals
-                const bgUrl = isOni
-                    ? 'https://images5.alphacoders.com/109/1099896.jpg' // Dark/Red
-                    : 'https://images2.alphacoders.com/100/1009137.jpg'; // Water/Blue
+            // RENDER 5 SLOTS
+            for (let i = 0; i < 5; i++) {
+                const char = list[i]; // May be undefined
 
-                const raceLabel = isOni ? 'ONI' : 'CAÇADOR';
-                const subtext = isOni ? (char.kekkijutsu || 'Arte Desconhecida') : (char.breathingStyle ? `Respiração: ${char.breathingStyle}` : 'Semeador');
+                if (char) {
+                    // --- FILLED SLOT ---
+                    const el = document.createElement('div');
+                    const isOni = char.race === 'Oni';
+                    el.className = `char-card ${isOni ? 'oni-theme' : 'human-theme'}`;
 
-                el.innerHTML = `
-                    <div class="card-bg" style="background-image: url('${bgUrl}')"></div>
-                    <div class="race-badge">${raceLabel}</div>
-                    <div class="card-content">
-                        <h2 class="char-name">${char.name}</h2>
-                        <div class="char-details">${subtext}</div>
-                        <div class="char-level">
-                            <i data-lucide="chevrons-up" size="14" color="${isOni ? '#d90429' : '#00b4d8'}"></i>
-                            Nível ${char.level}
+                    // Colors
+                    const accentColor = isOni ? '#d90429' : '#00b4d8';
+
+                    // Image Logic
+                    let bgUrl = isOni
+                        ? 'https://images5.alphacoders.com/109/1099896.jpg'
+                        : 'https://images2.alphacoders.com/100/1009137.jpg';
+
+                    if (char.avatar) {
+                        bgUrl = char.avatar;
+                    }
+
+                    const raceLabel = isOni ? 'ONI' : 'CAÇADOR';
+
+                    // Style Name Logic
+                    let styleName = 'Semeador';
+                    let styleIcon = 'zap'; // default lucide icon
+
+                    if (!isOni) {
+                        if (char.breathingStyle) {
+                            if (typeof char.breathingStyle === 'object' && char.breathingStyle.name) {
+                                styleName = char.breathingStyle.name;
+                            } else if (typeof char.breathingStyle === 'string') {
+                                const styleMap = {
+                                    'water': "Respiração da Água",
+                                    'thunder': "Respiração do Trovão",
+                                    'beast': "Respiração da Fera",
+                                    'flame': "Respiração das Chamas",
+                                    'wind': "Respiração do Vento"
+                                };
+                                styleName = styleMap[char.breathingStyle] || char.breathingStyle;
+                            }
+                        }
+                        if (styleName.toLowerCase().includes('água')) styleIcon = 'droplets';
+                        if (styleName.toLowerCase().includes('fogo') || styleName.toLowerCase().includes('chamas')) styleIcon = 'flame';
+                        if (styleName.toLowerCase().includes('vento')) styleIcon = 'wind';
+                        if (styleName.toLowerCase().includes('pedra')) styleIcon = 'mountain';
+                        if (styleName.toLowerCase().includes('fera')) styleIcon = 'paw-print';
+                    } else {
+                        styleName = char.kekkijutsu || 'Arte Desconhecida';
+                        styleIcon = 'skull';
+                    }
+
+                    const rankName = getRank(char.level);
+
+                    el.innerHTML = `
+                        <div class="card-bg" style="background-image: url('${bgUrl}')"></div>
+                        <div class="race-badge" style="background:${isOni ? 'rgba(217, 4, 41, 0.2)' : 'rgba(0, 180, 216, 0.2)'}; border:1px solid ${accentColor}; color:${accentColor}; box-shadow:0 0 10px ${accentColor}40;">${raceLabel}</div>
+                        
+                        <div class="card-content" style="background: linear-gradient(0deg, #000 0%, rgba(0,0,0,0.9) 50%, transparent 100%);">
+                            <div style="transform:translateY(0); transition:0.3s;">
+                                <h2 class="char-name" style="text-shadow: 0 2px 10px rgba(0,0,0,0.8);">${char.name}</h2>
+                                
+                                <div style="display:flex; align-items:center; gap:8px; margin-top:8px; color:${accentColor}; font-weight:600; font-size:0.95rem;">
+                                    <i data-lucide="${styleIcon}" size="14"></i>
+                                    <span>${styleName}</span>
+                                </div>
+
+                                <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:15px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">
+                                    <div>
+                                        <div style="font-size:0.75rem; color:#888; text-transform:uppercase; letter-spacing:1px;">Rank</div>
+                                        <div style="font-family:'Cinzel', serif; font-size:1.1rem; color:#fff;">${rankName}</div>
+                                    </div>
+                                    <div style="text-align:right;">
+                                        <div style="font-size:0.75rem; color:#888; text-transform:uppercase; letter-spacing:1px;">Nível</div>
+                                        <div style="font-size:1.4rem; font-weight:800; color:#fff; line-height:1;">${char.level}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="play-indicator" style="margin-top:20px;">
+                                <span style="background:${accentColor}; color:#000; padding:8px 20px; border-radius:4px; font-weight:800; display:flex; align-items:center; gap:5px; box-shadow:0 0 15px ${accentColor}60;">
+                                    JOGAR <i data-lucide="arrow-right" size="16"></i>
+                                </span>
+                            </div>
                         </div>
-                        <div class="play-indicator">
-                            JOGAR AGORA <i data-lucide="arrow-right" size="14"></i>
+                    `;
+
+                    el.onclick = () => selectChar(i);
+
+                    // Add delete button (Enhanced)
+                    const delBtn = document.createElement('div');
+                    delBtn.className = 'delete-btn';
+                    delBtn.innerHTML = '<i data-lucide="trash-2" size="16"></i>';
+                    delBtn.title = "Apagar Personagem";
+                    delBtn.onclick = (e) => { e.stopPropagation(); deleteChar(i); };
+
+                    el.appendChild(delBtn);
+                    grid.appendChild(el);
+
+                } else {
+                    // --- EMPTY SLOT ---
+                    const newSlot = document.createElement('div');
+                    newSlot.className = 'char-card new-slot';
+                    newSlot.onclick = () => window.location.href = 'create-character.html';
+                    newSlot.innerHTML = `
+                        <div style="text-align:center; position:relative; z-index:2; display:flex; flex-direction:column; align-items:center;">
+                            <div style="width:60px; height:60px; border-radius:50%; border:2px dashed #444; display:flex; align-items:center; justify-content:center; margin-bottom:15px;">
+                                <i data-lucide="plus" size="30" style="opacity:0.6; color:#666;"></i>
+                            </div>
+                            <div class="new-slot-text" style="color:#444; font-size:1rem;">SLOT VAZIO ${i + 1}</div>
                         </div>
-                    </div>
-                `;
+                        <div class="style-overlay" style="position:absolute; inset:0; background: radial-gradient(circle at center, rgba(255,255,255,0.02), transparent 70%); transition:0.3s;"></div>
+                    `;
 
-                el.onclick = () => selectChar(index);
+                    // Hover effect for empty slot specifically
+                    newSlot.onmouseenter = function () {
+                        this.querySelector('.new-slot-text').style.color = '#fff';
+                        this.querySelector('div[style*="border-radius:50%"]').style.borderColor = '#fff';
+                        this.querySelector('i').style.color = '#fff';
+                    }
+                    newSlot.onmouseleave = function () {
+                        this.querySelector('.new-slot-text').style.color = '#444';
+                        this.querySelector('div[style*="border-radius:50%"]').style.borderColor = '#444';
+                        this.querySelector('i').style.color = '#666';
+                    }
 
-                // Add delete button (small X)
-                const delBtn = document.createElement('div');
-                delBtn.innerHTML = '&times;';
-                delBtn.style.cssText = 'position:absolute; top:10px; left:10px; width:24px; height:24px; background:rgba(0,0,0,0.5); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#fff; font-size:16px; opacity:0; transition:0.3s; z-index:10;';
-
-                el.onmouseenter = () => delBtn.style.opacity = '1';
-                el.onmouseleave = () => delBtn.style.opacity = '0';
-                delBtn.onclick = (e) => { e.stopPropagation(); deleteChar(index); };
-
-                el.appendChild(delBtn);
-                grid.appendChild(el);
-            });
-
-            // Re-add New Slot
-            const newSlot = document.createElement('div');
-            newSlot.className = 'char-card new-slot';
-            newSlot.onclick = () => window.location.href = 'create-character.html';
-            newSlot.innerHTML = `
-                <div style="text-align:center;">
-                    <i data-lucide="plus" size="40" style="margin-bottom:10px; opacity:0.5;"></i>
-                    <div>NOVO PERSONAGEM</div>
-                </div>
-            `;
-            grid.appendChild(newSlot);
+                    grid.appendChild(newSlot);
+                }
+            }
 
             lucide.createIcons();
         }

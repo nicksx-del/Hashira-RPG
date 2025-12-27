@@ -1031,7 +1031,8 @@
             <div style="display:flex; gap:1rem;">
                 <a href="create-character.html" class="btn-play" style="font-size:1.2rem; padding:1rem 2rem;">Começar
                     Aventura</a>
-                <a href="#" class="btn-hero-secondary" style="background:rgba(0,0,0,0.5);">Entrar no Discord</a>
+                <a href="https://discord.gg/aCGCuwN9" target="_blank" class="btn-hero-secondary"
+                    style="background:rgba(0,0,0,0.5);">Entrar no Discord</a>
             </div>
         </div>
     </section>
@@ -1072,7 +1073,8 @@
 
             let allChars = [];
             try {
-                const stored = localStorage.getItem('demonSlayerAllChars');
+                // Check both keys for migration/robustness
+                const stored = localStorage.getItem('demonSlayerAllChars') || localStorage.getItem('demonSlayerSaveSlots');
                 if (stored) allChars = JSON.parse(stored);
 
                 // MIGRATION: Check if old single char exists but array is empty
@@ -1105,23 +1107,134 @@
 
             // Render Items
             if (allChars.length === 0) {
-                list.innerHTML = '<div style="text-align:center; color:#666; padding:2rem;">Nenhum personagem encontrado. Crie o seu primeiro!</div>';
+                list.innerHTML = '<div style="text-align:center; color:#888; padding:3rem; font-style:italic;">Sua jornada ainda não começou.<br><span style="font-size:0.9rem; opacity:0.7;">Crie seu primeiro caçador.</span></div>';
             } else {
                 allChars.forEach((char, index) => {
                     const item = document.createElement('div');
-                    item.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#16161c; padding:1rem; border-radius:8px; border:1px solid #2a2a35;";
+                    const isOni = char.race === 'Oni';
+                    const accentColor = isOni ? '#d90429' : '#00b4d8';
+                    const glowColor = isOni ? 'rgba(217, 4, 41, 0.2)' : 'rgba(0, 180, 216, 0.2)';
+
+                    // Container Style
+                    item.style.cssText = `
+                        position: relative;
+                        display: flex; 
+                        justify-content: space-between; 
+                        align-items: center; 
+                        background: linear-gradient(90deg, #121216 0%, #1a1a24 100%); 
+                        padding: 1.2rem; 
+                        border-radius: 12px; 
+                        border: 1px solid #2a2a35; 
+                        margin-bottom: 12px;
+                        overflow: hidden;
+                        transition: all 0.3s ease;
+                        cursor: pointer;
+                        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+                    `;
+
+                    // Hover Effect (via inline JS for simplicity here, though CSS class is better)
+                    item.onmouseover = () => {
+                        item.style.transform = 'translateY(-3px)';
+                        item.style.borderColor = accentColor;
+                        item.style.boxShadow = `0 10px 20px ${glowColor}`;
+                    };
+                    item.onmouseout = () => {
+                        item.style.transform = 'translateY(0)';
+                        item.style.borderColor = '#2a2a35';
+                        item.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
+                    };
+                    item.onclick = () => selectChar(char.id);
+
+                    // Avatar Logic
+                    let avatarSrc = '';
+                    let avatarContent = '';
+                    if (char.avatar) {
+                        avatarContent = `<img src="${char.avatar}" style="width:100%; height:100%; object-fit:cover;">`;
+                    } else {
+                        avatarContent = `<span style="font-size:1.8rem;">${getIconByRace(char.race)}</span>`;
+                    }
+
+                    // Style Name
+                    let styleName = 'Semeador';
+                    if (!isOni) {
+                        if (char.breathingStyle) {
+                            if (typeof char.breathingStyle === 'object' && char.breathingStyle.name) {
+                                styleName = char.breathingStyle.name;
+                            } else if (typeof char.breathingStyle === 'string') {
+                                const styleMap = { 'water': "Respiração da Água", 'thunder': "Respiração do Trovão", 'beast': "Respiração da Fera", 'flame': "Respiração das Chamas", 'wind': "Respiração do Vento" };
+                                styleName = styleMap[char.breathingStyle] || char.breathingStyle;
+                            }
+                        }
+                    } else {
+                        styleName = char.kekkijutsu || 'Kekkijutsu';
+                    }
 
                     item.innerHTML = `
-                        <div style="display:flex; gap:15px; align-items:center; cursor:pointer; flex:1;" onclick="selectChar('${char.id}')">
-                            <div style="width:50px; height:50px; background:#222; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid ${getColorByRace(char.race)}; color:#fff; font-size:1.5rem;">
-                                ${getIconByRace(char.race)}
+                        <div style="display:flex; gap:18px; align-items:center; position:relative; z-index:2; flex:1;">
+                            
+                            <!-- Avatar Circle -->
+                            <div style="
+                                width: 64px; 
+                                height: 64px; 
+                                border-radius: 50%; 
+                                background: #222; 
+                                border: 2px solid ${accentColor}; 
+                                display: flex; 
+                                align-items: center; 
+                                justify-content: center; 
+                                overflow: hidden;
+                                box-shadow: 0 0 15px ${glowColor};
+                                flex-shrink: 0;
+                            ">
+                                ${avatarContent}
                             </div>
-                            <div>
-                                <h3 style="margin:0; font-size:1.1rem; color:#fff;">${char.name}</h3>
-                                <div style="font-size:0.8rem; color:#888;">Nível ${char.level} • ${char.race} • ${char.breathingStyle ? char.breathingStyle.name : 'Sem Respiração'}</div>
+
+                            <div style="flex:1;">
+                                <div style="display:flex; align-items:center; gap:10px;">
+                                    <h3 style="margin:0; font-family:'Cinzel', serif; font-size:1.3rem; color:#fff; letter-spacing:1px;">${char.name}</h3>
+                                    <span style="
+                                        font-size: 0.65rem; 
+                                        font-weight: 800; 
+                                        padding: 2px 8px; 
+                                        border-radius: 12px; 
+                                        background: ${glowColor}; 
+                                        color: ${accentColor}; 
+                                        border: 1px solid ${accentColor};
+                                        text-transform: uppercase;
+                                    ">${char.race === 'Oni' ? 'ONI' : 'CAÇADOR'}</span>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:15px; margin-top:6px;">
+                                    <div style="font-size:0.85rem; color:#aaa; display:flex; align-items:center; gap:6px;">
+                                        <i data-lucide="zap" size="14" color="${accentColor}"></i> ${styleName}
+                                    </div>
+                                    <div style="font-size:0.85rem; color:#fff; display:flex; align-items:center; gap:6px; font-weight:bold;">
+                                        <i data-lucide="chevrons-up" size="14" color="#ffb703"></i> Nível ${char.level}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <button onclick="deleteChar('${char.id}', event)" style="background:transparent; border:none; color:#d90429; cursor:pointer; padding:5px;"><i data-lucide="trash-2"></i></button>
+
+                        <!-- Actions -->
+                        <div style="z-index:2; padding-left:15px; border-left:1px solid #333;">
+                            <button onclick="deleteChar('${char.id}', event)" 
+                                onmouseover="this.style.color='#d90429'; this.style.background='rgba(217,4,41,0.1)'" 
+                                onmouseout="this.style.color='#666'; this.style.background='transparent'"
+                                style="
+                                    background: transparent; 
+                                    border: none; 
+                                    color: #666; 
+                                    cursor: pointer; 
+                                    width: 36px; 
+                                    height: 36px; 
+                                    border-radius: 6px; 
+                                    display: flex; 
+                                    align-items: center; 
+                                    justify-content: center; 
+                                    transition: all 0.2s;
+                                " title="Apagar Personagem">
+                                <i data-lucide="trash-2" size="18"></i>
+                            </button>
+                        </div>
                     `;
                     list.appendChild(item);
                 });

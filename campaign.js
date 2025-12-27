@@ -43,6 +43,12 @@ window.CampaignSystem = {
         return newCamp.id;
     },
 
+    deleteCampaign: function (id) {
+        let list = this.getCampaigns();
+        list = list.filter(c => c.id !== id);
+        this.saveCampaigns(list);
+    },
+
     // --- ENTITY MANAGEMENT ---
     addPlayerToCampaign: function (campId, charData) {
         const list = this.getCampaigns();
@@ -141,27 +147,71 @@ window.CampaignSystem = {
 
         this.saveCampaigns(list);
     },
+    // --- COMBAT & ENTITIES ---
+    addMonster: function (campId, monsterTemplate) {
+        const list = this.getCampaigns();
+        const c = list.find(x => x.id === campId);
+        if (!c) return null;
+
+        const newId = 'mob_' + Date.now();
+        const newMob = {
+            id: newId,
+            name: monsterTemplate.name,
+            maxHP: monsterTemplate.maxHP,
+            currentHP: monsterTemplate.maxHP,
+            ac: monsterTemplate.ac,
+            xp: monsterTemplate.xp,
+            stats: monsterTemplate.stats, // Ensure stats are copied
+            actions: monsterTemplate.actions,
+            isNPC: true,
+            initiative: 0 // Will be rolled later
+        };
+
+        c.monsters.push(newMob);
+        this.saveCampaigns(list);
+        return newMob;
+    },
+
+    startCombat: function (campId) {
+        const list = this.getCampaigns();
+        const c = list.find(x => x.id === campId);
+        if (!c) return;
+
+        // simple logic: reset initiatives? 
+        // For now just notify "Combat Started"
+        this.addLog(campId, "Combate Iniciado!", "combat");
+
+        // Sort by initiative would happen in UI
+    },
+
+    nextTurn: function (campId) {
+        // Logic to advance turn index
+        // For now, simpler implementation handled by UI or just logging
+        this.addLog(campId, "Avançando Turno...", "system");
+    },
 
     updateEntity: function (campId, entityId, isNPC, updates) {
         const list = this.getCampaigns();
         const c = list.find(x => x.id === campId);
         if (!c) return;
 
-        let ent;
-        if (isNPC) ent = c.monsters.find(m => m.id === entityId);
-        else ent = c.players.find(p => p.charId === entityId);
+        let target = null;
+        if (isNPC) {
+            target = c.monsters.find(m => m.id === entityId);
+        } else {
+            target = c.players.find(p => p.charId === entityId);
+        }
 
-        if (!ent) return;
+        if (target) {
+            Object.assign(target, updates);
+            this.saveCampaigns(list);
 
-        Object.assign(ent, updates);
-        this.saveCampaigns(list);
-
-        if (!isNPC) {
-            // Sync back to char sheet logic (simplified)
-            this.syncToRealCharacter(entityId, updates);
+            // WS Sync if Player
+            if (!isNPC) {
+                this.sendUpdate(campId, entityId, updates, true);
+            }
         }
     },
-
     toggleCondition: function (campId, entityId, isNPC, condId) {
         const list = this.getCampaigns();
         const c = list.find(x => x.id === campId);
@@ -299,5 +349,81 @@ window.CampaignSystem = {
         localStorage.setItem('demonSlayerSaveSlots', JSON.stringify(chars));
 
         console.log(`[Sync] Character ${charId} updated:`, updates);
+    },
+
+    // --- WEBSOCKET SYNC ---
+    ws: null,
+
+    connectServer: function (campId, charId = null) {
+        if (this.ws) return; // Already connected
+
+        // Auto-detect localhost or 127.0.0.1
+        this.ws = new WebSocket('ws://localhost:8080');
+
+        this.ws.onopen = () => {
+            console.log('🔌 Connected to Sync Server');
+            window.dispatchEvent(new CustomEvent('server-status', { detail: 'online' }));
+            if (charId) {
+                // Player joining
+                this.ws.send(JSON.stringify({
+                    type: 'JOIN_PLAYER',
+                    campId: campId,
+                    charId: charId
+                }));
+            } else {
+                // DM joining
+                this.ws.send(JSON.stringify({
+                    type: 'JOIN_DM',
+                    campId: campId
+                }));
+            }
+        };
+
+        this.ws.onmessage = (event) => {
+            try {
+                const msg = JSON.parse(event.data);
+                if (msg.type === 'SYNC_DATA') {
+                    // Update Local Data
+                    console.log('📥 Received SYNC:', msg.payload);
+                    this.handleSync(msg.payload);
+                }
+            } catch (e) { console.error(e); }
+        };
+
+        this.ws.onclose = () => {
+            console.log('🔌 Disconnected. Retrying in 5s...');
+            window.dispatchEvent(new CustomEvent('server-status', { detail: 'offline' }));
+            this.ws = null;
+            setTimeout(() => this.connectServer(campId, charId), 5000);
+        };
+    },
+
+    sendUpdate: function (campId, charId, payload, isDM = false) {
+        if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
+
+        this.ws.send(JSON.stringify({
+            type: 'UPDATE_PLAYER',
+            campId: campId,
+            charId: charId,
+            payload: payload
+        }));
+    },
+
+    handleSync: function (payload) {
+        // payload = { currentHP, maxHP, currentPE... } for the CURRENT character
+        // We need to update localStorage and trigger UI refresh if possible
+
+        const raw = localStorage.getItem('demonSlayerChar');
+        if (!raw) return;
+
+        const char = JSON.parse(raw);
+        Object.assign(char, payload);
+        localStorage.setItem('demonSlayerChar', JSON.stringify(char));
+
+        // Sync to "slots" as well to be safe
+        this.syncToRealCharacter(char.id, payload);
+
+        // Dispatch Custom Event for UI to listen
+        window.dispatchEvent(new CustomEvent('character-synced', { detail: char }));
     }
 };

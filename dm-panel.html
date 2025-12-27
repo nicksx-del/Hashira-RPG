@@ -1502,6 +1502,8 @@
             <div>
                 <button class="tab-btn active" onclick="switchCenterTab('combat')" id="tabCombat">COMBATE</button>
                 <button class="tab-btn" onclick="switchCenterTab('agents')" id="tabAgents">AGENTES</button>
+                <span id="serverStatus" title="Desconectado"
+                    style="display:inline-block; width:10px; height:10px; background:#ef4444; border-radius:50%; margin-left:10px; box-shadow:0 0 5px #ef4444;"></span>
             </div>
             <div style="display:flex; gap:10px;">
                 <!-- Agents Tab specific actions -->
@@ -1514,10 +1516,14 @@
 
                 <!-- Combat Tab specific actions -->
                 <div id="combatActions" style="display:flex; gap:10px;">
-                    <button class="btn btn-primary" onclick="window.CampaignSystem.startCombat(CAMP_ID); loadData();">
+                    <button class="btn btn-primary" onclick="openAddCreatureModal()">
+                        <i data-lucide="skull" size="14"></i> + Criatura
+                    </button>
+                    <button class="btn" style="border:1px solid var(--primary);"
+                        onclick="window.CampaignSystem.startCombat(CAMP_ID); loadCampaign(CAMP_ID);">
                         Iniciativa
                     </button>
-                    <button class="btn" onclick="window.CampaignSystem.nextTurn(CAMP_ID); loadData();">
+                    <button class="btn" onclick="window.CampaignSystem.nextTurn(CAMP_ID); loadCampaign(CAMP_ID);">
                         Próximo Turno <i data-lucide="skip-forward" size="14" style="margin-left:5px;"></i>
                     </button>
                 </div>
@@ -1652,14 +1658,41 @@
         <div class="dice-close-hint">Clique para fechar</div>
     </div>
 
+    <!-- ADD CREATURE MODAL -->
+    <div id="addCreatureModal" class="modal-overlay" style="display:none; opacity:0;">
+        <div class="modal-box">
+            <h2 style="margin-top:0; color:var(--primary);">Adicionar Criatura</h2>
+            <div id="bestiaryList" style="max-height:300px; overflow-y:auto; margin-bottom:20px;">
+                <!-- JS Injected -->
+            </div>
+            <button class="btn btn-danger" onclick="toggleModal('addCreatureModal', false)">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- INVITE MODAL -->
+    <div id="inviteModal" class="modal-overlay" style="display:none; opacity:0;">
+        <div class="modal-box" style="text-align:center;">
+            <h2 style="margin-top:0; color:var(--primary);">Convidar Jogadores</h2>
+            <p>Envie este link para seus jogadores:</p>
+            <div style="background:#222; padding:10px; border-radius:6px; font-family:monospace; margin:15px 0; word-break:break-all;"
+                id="inviteLinkDisplay">
+                ...
+            </div>
+            <button class="btn btn-primary" onclick="copyInviteLink()">Copiar Link</button>
+            <button class="btn btn-danger" onclick="toggleModal('inviteModal', false)"
+                style="margin-top:10px;">Fechar</button>
+        </div>
+    </div>
+
     <!-- INVITE AGENT MODAL -->
-    <div id="inviteModal" class="modal-overlay" style="display:none;">
+    <div id="inviteAgentModal" class="modal-overlay" style="display:none;">
         <div class="modal-box" style="max-width:400px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                 <h3 style="margin:0; color:var(--primary);">Adicionar Agente</h3>
-                <button class="btn" onclick="document.getElementById('inviteModal').style.display='none'">✕</button>
+                <button class="btn"
+                    onclick="document.getElementById('inviteAgentModal').style.display='none'">✕</button>
             </div>
-            <div id="inviteList" style="max-height:300px; overflow-y:auto;">
+            <div id="inviteAgentList" style="max-height:300px; overflow-y:auto;">
                 <!-- Personagens serão listados aqui -->
             </div>
         </div>
@@ -1668,1005 +1701,1198 @@
     <!-- SCRIPTS -->
     <script src="bestiary_db.js"></script>
     <script src="campaign.js"></script>
-    <script>
-        lucide.createIcons();
-        const urlParams = new URLSearchParams(window.location.search);
-        const CAMP_ID = urlParams.get('id');
-        let currentCamp = null;
-        let selectedId = null;
+    // --- ADD CREATURE LOGIC ---
+    const BESTIARY = [
+    { id: 'oni_weak', name: "Oni Fraco", maxHP: 20, ac: 12, xp: 50, stats: { str: 14, dex: 12, con: 14, int: 8, wis: 10,
+    cha: 6 }, actions: ["Garras (1d6+2)"] },
+    { id: 'oni_avg', name: "Oni Médio", maxHP: 45, ac: 14, xp: 200, stats: { str: 16, dex: 14, con: 16, int: 10, wis:
+    12, cha: 8 }, actions: ["Soco Devastador (1d8+3)", "Regeneração (5HP)"] },
+    { id: 'oni_strong', name: "Oni Forte", maxHP: 80, ac: 16, xp: 500, stats: { str: 18, dex: 16, con: 18, int: 12, wis:
+    14, cha: 10 }, actions: ["Arte de Sangue (3d6)", "Eviscerar (2d6+4)"] },
+    { id: 'kizuki_lower', name: "Lua Inferior", maxHP: 150, ac: 18, xp: 2000, stats: { str: 20, dex: 20, con: 20, int:
+    16, wis: 16, cha: 16 }, actions: ["Técnica Mortal (4d8)", "Velocidade Divina"] },
+    ];
 
-        window.onload = function () {
-            // FIX: Robust initialization
-            if (!CAMP_ID) {
-                // If no ID, create a temp one or grab the first available
-                const campaigns = window.CampaignSystem.getCampaigns();
-                if (campaigns.length > 0) {
-                    window.location.search = `?id=${campaigns[0].id}`;
-                } else {
-                    const newId = window.CampaignSystem.createCampaign("Campanha Exemplo", "Mestre");
-                    window.location.search = `?id=${newId}`;
-                }
-                return;
-            }
+    function openAddCreatureModal() {
+    const list = document.getElementById('bestiaryList');
+    list.innerHTML = '';
 
-            // Verify if campaign exists
-            currentCamp = window.CampaignSystem.getCampaignById(CAMP_ID);
-            if (!currentCamp) {
-                alert("Campanha não encontrada! Criando nova...");
-                const newId = window.CampaignSystem.createCampaign("Nova Campanha", "Mestre");
-                window.location.search = `?id=${newId}`;
-                return;
-            }
+    BESTIARY.forEach(mob => {
+    const el = document.createElement('div');
+    el.className = 'mob-item';
+    el.innerHTML = `
+    <div class="mob-name">${mob.name}</div>
+    <div class="mob-meta">HP: ${mob.maxHP} | AC: ${mob.ac} | XP: ${mob.xp}</div>
+    `;
+    el.onclick = () => {
+    const newMob = window.CampaignSystem.addMonster(CAMP_ID, mob);
+    if(newMob) {
+    showToast(`Criatura adicionada: ${newMob.name}`);
+    toggleModal('addCreatureModal', false);
+    loadCampaign(CAMP_ID);
+    // Notify Server? Not strictly needed for players unless we show monsters on their screen eventually
+    }
+    };
+    list.appendChild(el);
+    });
 
-            loadData();
-            renderBestiaryTab(); // Initialize bestiary list
+    toggleModal('addCreatureModal', true);
+    }
 
-            // Auto-refresh slightly slower to avoid race conditions
-            setInterval(updateLog, 2000);
-        };
+    // --- INVITE LOGIC ---
+    function openInviteModal() {
+    const url = window.location.origin + window.location.pathname.replace('dm-panel.html', 'campaign-hub.html') +
+    '?join=' + CAMP_ID;
+    document.getElementById('inviteLinkDisplay').innerText = url;
+    toggleModal('inviteModal', true);
+    }
 
-        let rightTab = 'inspector';
-        function switchRightTab(t) {
-            rightTab = t;
-            document.getElementById('btnInsp').className = t === 'inspector' ? 'tab-btn active' : 'tab-btn';
-            document.getElementById('btnBest').className = t === 'bestiary' ? 'tab-btn active' : 'tab-btn';
+    function copyInviteLink() {
+    const text = document.getElementById('inviteLinkDisplay').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+    showToast("Link copiado!");
+    });
+    }
 
-            document.getElementById('inspectorPanel').style.display = t === 'inspector' ? 'block' : 'none';
-            document.getElementById('bestiaryPanel').style.display = t === 'bestiary' ? 'block' : 'none';
-        }
+    // Ensure buttons are hooked up
+    // We will do this via inline onclicks or searching DOM in toggleModal,
+    // but best ensures the buttons in Header call these functions.
 
-        function loadData() {
-            currentCamp = window.CampaignSystem.getCampaignById(CAMP_ID);
-            if (!currentCamp) return;
+    function toggleModal(id, show) {
+    const el = document.getElementById(id);
+    if (show) {
+    el.style.display = 'flex';
+    setTimeout(() => el.style.opacity = '1', 10);
+    } else {
+    el.style.opacity = '0';
+    setTimeout(() => el.style.display = 'none', 300);
+    }
+    }
+    lucide.createIcons();
+    const urlParams = new URLSearchParams(window.location.search);
+    const CAMP_ID = urlParams.get('id');
+    let currentCamp = null;
+    let selectedId = null;
 
-            const cn = document.getElementById('campaignName');
-            if (cn) cn.innerText = currentCamp.name.toUpperCase();
+    // Initialize
+    function switchRightTab(t) {
+    rightTab = t;
+    document.getElementById('btnInsp').className = t === 'inspector' ? 'tab-btn active' : 'tab-btn';
+    document.getElementById('btnBest').className = t === 'bestiary' ? 'tab-btn active' : 'tab-btn';
 
-            renderCombatList();
-            renderAgentGrid(); // Added this line
+    document.getElementById('inspectorPanel').style.display = t === 'inspector' ? 'block' : 'none';
+    document.getElementById('bestiaryPanel').style.display = t === 'bestiary' ? 'block' : 'none';
+    }
 
-            // If selection exists, re-render inspector
-            if (selectedId) {
-                const ent = getEntity(selectedId);
-                if (ent) renderInspector(ent);
-            }
+    let centerTab = 'combat';
+    function switchCenterTab(t) {
+    centerTab = t;
+    document.getElementById('tabCombat').className = t === 'combat' ? 'tab-btn active' : 'tab-btn';
+    document.getElementById('tabAgents').className = t === 'agents' ? 'tab-btn active' : 'tab-btn';
 
-            updateLog(); // Initial log render
-            updateReactionStatus(); // Update reaction status on data load
-        }
+    // Toggle Views
+    document.getElementById('combatList').style.display = t === 'combat' ? 'flex' : 'none'; // logic uses flex column
+    document.getElementById('agentGrid').className = t === 'agents' ? 'agent-grid-container active' :
+    'agent-grid-container';
 
-        // CENTER TAB SWITCH LOGIC UPDATED
-        let activeCenterTab = 'combat';
-        function switchCenterTab(tab) {
-            activeCenterTab = tab;
-            document.getElementById('tabCombat').className = tab === 'combat' ? 'tab-btn active' : 'tab-btn';
-            document.getElementById('tabAgents').className = tab === 'agents' ? 'tab-btn active' : 'tab-btn';
+    // Toggle Actions
+    // combatActions contains Initiative/Next Turn
+    const combatActions = document.getElementById('combatActions');
+    if(combatActions) combatActions.style.display = t === 'combat' ? 'flex' : 'none';
 
-            document.getElementById('combatList').style.display = tab === 'combat' ? 'flex' : 'none';
-            document.getElementById('combatActions').style.display = tab === 'combat' ? 'flex' : 'none';
+    const btnAddAgent = document.getElementById('btnAddAgent');
+    if(btnAddAgent) btnAddAgent.style.display = t === 'agents' ? 'block' : 'none';
 
-            document.getElementById('agentGrid').className = tab === 'agents' ? 'agent-grid-container active' : 'agent-grid-container';
-            document.getElementById('btnAddAgent').style.display = tab === 'agents' ? 'block' : 'none';
-            document.getElementById('btnRest').style.display = tab === 'agents' ? 'block' : 'none';
-        }
+    const btnRest = document.getElementById('btnRest');
+    if(btnRest) btnRest.style.display = t === 'agents' ? 'block' : 'none';
 
-        function openInviteModal() {
-            const modal = document.getElementById('inviteModal');
-            const list = document.getElementById('inviteList');
-            modal.style.display = 'flex';
-            list.innerHTML = "Carregando...";
+    if (t === 'agents') renderAgentGrid(); // Ensure grid is fresh
+    }
 
-            // Get all chars
-            const raw = localStorage.getItem('demonSlayerSaveSlots');
-            const allChars = raw ? JSON.parse(raw) : [];
+    // Initialize
+    window.onload = function () {
+    // Check ID
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
 
-            // Filter out existing
-            const existingIds = currentCamp.players.map(p => p.charId);
-            const candidates = allChars.filter(c => !existingIds.includes(c.id));
+    if (!id) {
+    // Check if we can auto-create or redirect
+    const list = window.CampaignSystem.getCampaigns();
+    if(list.length > 0) {
+    window.location.search = `?id=${list[0].id}`;
+    } else {
+    const newId = window.CampaignSystem.createCampaign("Nova Campanha", "Mestre");
+    window.location.search = `?id=${newId}`;
+    }
+    return;
+    }
 
-            list.innerHTML = "";
-            if (candidates.length === 0) {
-                list.innerHTML = "<div style='color:#777; text-align:center;'>Nenhum personagem disponível.</div>";
-                return;
-            }
+    // Connect WS
+    window.CampaignSystem.connectServer(id);
 
-            candidates.forEach(c => {
-                const row = document.createElement('div');
-                row.className = 'mob-item'; // Reuse mob-item class for consistent list style
-                row.innerHTML = `
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <div class="avatar-sm" style="background-image: url('https://ui-avatars.com/api/?name=${c.name}&background=random')"></div>
-                        <div>
-                            <div class="mob-name">${c.name}</div>
-                            <div class="mob-meta">${c.rank || "Mizunoto"} - Nível ${c.level || 1}</div>
+    loadCampaign(id);
+
+    // Initialize Tabs
+    switchCenterTab('combat');
+    renderBestiaryTab();
+
+    lucide.createIcons();
+    };
+    document.getElementById('bestiaryPanel').style.display = t === 'bestiary' ? 'block' : 'none';
+    }
+
+    function loadData() {
+    currentCamp = window.CampaignSystem.getCampaignById(CAMP_ID);
+    if (!currentCamp) return;
+
+    const cn = document.getElementById('campaignName');
+    if (cn) cn.innerText = currentCamp.name.toUpperCase();
+
+    renderCombatList();
+    renderAgentGrid(); // Added this line
+
+    // If selection exists, re-render inspector
+    if (selectedId) {
+    const ent = getEntity(selectedId);
+    if (ent) renderInspector(ent);
+    }
+
+    updateLog(); // Initial log render
+    updateReactionStatus(); // Update reaction status on data load
+    }
+
+    // CENTER TAB SWITCH LOGIC UPDATED
+    let activeCenterTab = 'combat';
+    function switchCenterTab(tab) {
+    activeCenterTab = tab;
+    document.getElementById('tabCombat').className = tab === 'combat' ? 'tab-btn active' : 'tab-btn';
+    document.getElementById('tabAgents').className = tab === 'agents' ? 'tab-btn active' : 'tab-btn';
+
+    document.getElementById('combatList').style.display = tab === 'combat' ? 'flex' : 'none';
+    document.getElementById('combatActions').style.display = tab === 'combat' ? 'flex' : 'none';
+
+    document.getElementById('agentGrid').className = tab === 'agents' ? 'agent-grid-container active' :
+    'agent-grid-container';
+    document.getElementById('btnAddAgent').style.display = tab === 'agents' ? 'block' : 'none';
+    document.getElementById('btnRest').style.display = tab === 'agents' ? 'block' : 'none';
+    }
+
+    function openInviteModal() {
+    const modal = document.getElementById('inviteModal');
+    const list = document.getElementById('inviteList');
+    modal.style.display = 'flex';
+    list.innerHTML = "Carregando...";
+
+    // Get all chars
+    const raw = localStorage.getItem('demonSlayerSaveSlots');
+    const allChars = raw ? JSON.parse(raw) : [];
+
+    // Filter out existing
+    const existingIds = currentCamp.players.map(p => p.charId);
+    const candidates = allChars.filter(c => !existingIds.includes(c.id));
+
+    list.innerHTML = "";
+    if (candidates.length === 0) {
+    list.innerHTML = "<div style='color:#777; text-align:center;'>Nenhum personagem disponível.</div>";
+    return;
+    }
+
+    candidates.forEach(c => {
+    const row = document.createElement('div');
+    row.className = 'mob-item'; // Reuse mob-item class for consistent list style
+    row.innerHTML = `
+    <div style="display:flex; align-items:center; gap:10px;">
+        <div class="avatar-sm"
+            style="background-image: url('https://ui-avatars.com/api/?name=${c.name}&background=random')"></div>
+        <div>
+            <div class="mob-name">${c.name}</div>
+            <div class="mob-meta">${c.rank || "Mizunoto"} - Nível ${c.level || 1}</div>
+        </div>
+    </div>
+    <button class="btn btn-primary" style="font-size:0.75rem; padding:4px 8px;">+</button>
+    `;
+
+    row.onclick = () => {
+    try {
+    window.CampaignSystem.addPlayerToCampaign(CAMP_ID, c);
+
+    // Switch to combat tab if combat is active, otherwise Agents
+    if (currentCamp.combat.active) {
+    switchCenterTab('combat');
+    } else {
+    switchCenterTab('agents');
+    }
+
+    loadData();
+    showToast(`Agente adicionado: ${c.name}`);
+    document.getElementById('inviteModal').style.display = 'none';
+
+    // Auto-scroll logic if added to combat
+    if (currentCamp.combat.active) {
+    setTimeout(() => {
+    const cl = document.getElementById('combatList');
+    if (cl) cl.scrollTop = cl.scrollHeight;
+    }, 100);
+    }
+    } catch (err) {
+    alert("Erro ao adicionar agente: " + err.message);
+    }
+    };
+    list.appendChild(row);
+    });
+    }
+
+
+    // --- RENDERERS ---
+
+    function renderCombatList() {
+    const list = document.getElementById('combatList');
+    list.innerHTML = "";
+
+    // Determine order
+    let entities = getAllEntities();
+    if (currentCamp.combat.active && currentCamp.combat.order.length > 0) {
+    // Sort by combat order
+    const ordered = [];
+    currentCamp.combat.order.forEach(id => {
+    const e = entities.find(x => (x.id === id || x.charId === id));
+    if (e) ordered.push(e);
+    });
+    // Add any not in order (newly added?)
+    entities.forEach(e => {
+    if (!ordered.find(x => (x.id || x.charId) === (e.id || e.charId))) ordered.push(e);
+    });
+    entities = ordered;
+    } else {
+    // Sort randomly or by name
+    entities.sort((a, b) => b.initiative - a.initiative);
+    }
+
+    entities.forEach((e, idx) => {
+    const id = e.id || e.charId;
+    const isTurn = currentCamp.combat.active && currentCamp.combat.order[currentCamp.combat.turnIndex] === id;
+    const isSelected = selectedId === id;
+
+    const row = document.createElement('div');
+    row.className = `init-row ${isTurn ? 'active-turn' : ''} ${isSelected ? 'selected' : ''}`;
+    if (e.isNPC) row.setAttribute('data-type', 'oni');
+    row.onclick = () => selectEntity(id);
+
+    const hpPct = (e.currentHP / e.maxHP) * 100;
+    const pePct = e.maxPE ? (e.currentPE / e.maxPE) * 100 : 0;
+
+    row.innerHTML = `
+    <div class="avatar-sm"
+        style="background-image: url('https://ui-avatars.com/api/?name=${e.name}&background=random')"></div>
+    <div class="row-info">
+        <div class="row-name">${e.name} ${renderConditionIcons(e.conditions || [])}</div>
+        <div class="row-vitals">
+            <span style="color:#ef4444; font-weight:600; font-size:0.75rem;">${e.currentHP} / ${e.maxHP}</span>
+            ${e.maxPE ? `<span
+                style="color:#a855f7; font-weight:600; font-size:0.75rem; margin-left:8px;">${e.currentPE} /
+                ${e.maxPE}</span>` : ''}
+            <span style="color:#999; font-size:0.7rem; margin-left:8px;">CA ${e.ac}</span>
+        </div>
+        <div class="hp-bar-mini">
+            <div class="hp-fill-mini" style="width:${hpPct}%"></div>
+        </div>
+    </div>
+    <input type="number" class="init-input" value="${e.initiative || 0}" onclick="event.stopPropagation()"
+        onchange="updateInit('${id}', this.value, ${e.isNPC})">
+    `;
+    list.appendChild(row);
+    });
+    }
+
+    function renderInspector(e) {
+    const box = document.getElementById('inspector');
+    if (!box) {
+    console.error("Inspector element not found!");
+    return;
+    }
+    if (!e) {
+    box.innerHTML = '<div style="text-align:center; color:#555; margin-top:50px;">Selecione um personagem</div>';
+    return;
+    }
+
+    console.log("Rendering inspector for:", e.name, e);
+
+    const hpPct = e.maxHP ? (e.currentHP / e.maxHP) * 100 : 0;
+    const pePct = e.maxPE ? (e.currentPE / e.maxPE) * 100 : 0;
+    const id = e.id || e.charId;
+    const isNPC = e.isNPC;
+
+    // Stats defaults
+    const s = e.stats || { str: 0, dex: 0, con: 0, int: 0, wis: 0 };
+    const speed = e.speed || "9m";
+
+    box.innerHTML = `
+    <div class="profile-card">
+        <img src="https://ui-avatars.com/api/?name=${e.name}&background=random" class="profile-img">
+        <div class="profile-info">
+            <div class="profile-name">${e.name}</div>
+            <div class="profile-class">${isNPC ? e.type || 'Oni' : e.rank}</div>
+        </div>
+        ${!isNPC ? `<button class="btn btn-primary" style="margin-left:auto; padding:6px 12px;"
+            onclick="openCharacterSheet('${e.charId}')">
+            <i data-lucide="external-link" size="14"></i> Ver Ficha
+        </button>` : ''}
+    </div>
+
+    <!-- ORDEM BARS -->
+    <!-- HP -->
+    <div class="ordem-bar-row" style="border-color: #7f1d1d;">
+        <div class="ordem-bar-btn" onclick="modStat('${id}', 'hp', -5)">
+            <<< /div>
+                <div class="ordem-bar-btn" onclick="modStat('${id}', 'hp', -1)">
+                    << /div>
+                        <div class="ordem-bar-display">
+                            <div class="ordem-bar-fill bar-red" style="width:${hpPct}%"></div>
+                            <div class="text-overlay"><span>${e.currentHP}</span><span style="opacity:0.6">/
+                                    ${e.maxHP}</span></div>
                         </div>
-                    </div>
-                    <button class="btn btn-primary" style="font-size:0.75rem; padding:4px 8px;">+</button>
-                `;
-
-                row.onclick = () => {
-                    try {
-                        window.CampaignSystem.addPlayerToCampaign(CAMP_ID, c);
-
-                        // Switch to combat tab if combat is active, otherwise Agents
-                        if (currentCamp.combat.active) {
-                            switchCenterTab('combat');
-                        } else {
-                            switchCenterTab('agents');
-                        }
-
-                        loadData();
-                        showToast(`Agente adicionado: ${c.name}`);
-                        document.getElementById('inviteModal').style.display = 'none';
-
-                        // Auto-scroll logic if added to combat
-                        if (currentCamp.combat.active) {
-                            setTimeout(() => {
-                                const cl = document.getElementById('combatList');
-                                if (cl) cl.scrollTop = cl.scrollHeight;
-                            }, 100);
-                        }
-                    } catch (err) {
-                        alert("Erro ao adicionar agente: " + err.message);
-                    }
-                };
-                list.appendChild(row);
-            });
-        }
-
-
-        // --- RENDERERS ---
-
-        function renderCombatList() {
-            const list = document.getElementById('combatList');
-            list.innerHTML = "";
-
-            // Determine order
-            let entities = getAllEntities();
-            if (currentCamp.combat.active && currentCamp.combat.order.length > 0) {
-                // Sort by combat order
-                const ordered = [];
-                currentCamp.combat.order.forEach(id => {
-                    const e = entities.find(x => (x.id === id || x.charId === id));
-                    if (e) ordered.push(e);
-                });
-                // Add any not in order (newly added?)
-                entities.forEach(e => {
-                    if (!ordered.find(x => (x.id || x.charId) === (e.id || e.charId))) ordered.push(e);
-                });
-                entities = ordered;
-            } else {
-                // Sort randomly or by name
-                entities.sort((a, b) => b.initiative - a.initiative);
-            }
-
-            entities.forEach((e, idx) => {
-                const id = e.id || e.charId;
-                const isTurn = currentCamp.combat.active && currentCamp.combat.order[currentCamp.combat.turnIndex] === id;
-                const isSelected = selectedId === id;
-
-                const row = document.createElement('div');
-                row.className = `init-row ${isTurn ? 'active-turn' : ''} ${isSelected ? 'selected' : ''}`;
-                if (e.isNPC) row.setAttribute('data-type', 'oni');
-                row.onclick = () => selectEntity(id);
-
-                const hpPct = (e.currentHP / e.maxHP) * 100;
-                const pePct = e.maxPE ? (e.currentPE / e.maxPE) * 100 : 0;
-
-                row.innerHTML = `
-                    <div class="avatar-sm" style="background-image: url('https://ui-avatars.com/api/?name=${e.name}&background=random')"></div>
-                    <div class="row-info">
-                        <div class="row-name">${e.name} ${renderConditionIcons(e.conditions || [])}</div>
-                        <div class="row-vitals">
-                            <span style="color:#ef4444; font-weight:600; font-size:0.75rem;">${e.currentHP} / ${e.maxHP}</span>
-                            ${e.maxPE ? `<span style="color:#a855f7; font-weight:600; font-size:0.75rem; margin-left:8px;">${e.currentPE} / ${e.maxPE}</span>` : ''}
-                            <span style="color:#999; font-size:0.7rem; margin-left:8px;">CA ${e.ac}</span>
-                        </div>
-                        <div class="hp-bar-mini"><div class="hp-fill-mini" style="width:${hpPct}%"></div></div>
-                    </div>
-                    <input type="number" class="init-input" value="${e.initiative || 0}" 
-                           onclick="event.stopPropagation()" 
-                           onchange="updateInit('${id}', this.value, ${e.isNPC})">
-                `;
-                list.appendChild(row);
-            });
-        }
-
-        function renderInspector(e) {
-            const box = document.getElementById('inspector');
-            if (!box) {
-                console.error("Inspector element not found!");
-                return;
-            }
-            if (!e) {
-                box.innerHTML = '<div style="text-align:center; color:#555; margin-top:50px;">Selecione um personagem</div>';
-                return;
-            }
-
-            console.log("Rendering inspector for:", e.name, e);
-
-            const hpPct = e.maxHP ? (e.currentHP / e.maxHP) * 100 : 0;
-            const pePct = e.maxPE ? (e.currentPE / e.maxPE) * 100 : 0;
-            const id = e.id || e.charId;
-            const isNPC = e.isNPC;
-
-            // Stats defaults
-            const s = e.stats || { str: 0, dex: 0, con: 0, int: 0, wis: 0 };
-            const speed = e.speed || "9m";
-
-            box.innerHTML = `
-                <div class="profile-card">
-                    <img src="https://ui-avatars.com/api/?name=${e.name}&background=random" class="profile-img">
-                    <div class="profile-info">
-                        <div class="profile-name">${e.name}</div>
-                        <div class="profile-class">${isNPC ? e.type || 'Oni' : e.rank}</div>
-                    </div>
-                    ${!isNPC ? `<button class="btn btn-primary" style="margin-left:auto; padding:6px 12px;" onclick="openCharacterSheet('${e.charId}')">
-                        <i data-lucide="external-link" size="14"></i> Ver Ficha
-                    </button>` : ''}
-                </div>
-
-                <!-- ORDEM BARS -->
-                <!-- HP -->
-                <div class="ordem-bar-row" style="border-color: #7f1d1d;">
-                    <div class="ordem-bar-btn" onclick="modStat('${id}', 'hp', -5)"><<</div>
-                    <div class="ordem-bar-btn" onclick="modStat('${id}', 'hp', -1)"><</div>
-                    <div class="ordem-bar-display">
-                        <div class="ordem-bar-fill bar-red" style="width:${hpPct}%"></div>
-                        <div class="text-overlay"><span>${e.currentHP}</span><span style="opacity:0.6">/ ${e.maxHP}</span></div>
-                    </div>
-                    <div class="ordem-bar-btn last" onclick="modStat('${id}', 'hp', 1)">></div>
-                    <div class="ordem-bar-btn last" onclick="modStat('${id}', 'hp', 5)">>></div>
+                        <div class="ordem-bar-btn last" onclick="modStat('${id}', 'hp', 1)">></div>
+                        <div class="ordem-bar-btn last" onclick="modStat('${id}', 'hp', 5)">>></div>
                 </div>
 
                 <!-- PE -->
                 <div class="ordem-bar-row" style="border-color: #5b21b6;">
-                    <div class="ordem-bar-btn" onclick="modStat('${id}', 'pe', -5)"><<</div>
-                    <div class="ordem-bar-btn" onclick="modStat('${id}', 'pe', -1)"><</div>
-                    <div class="ordem-bar-display">
-                        <div class="ordem-bar-fill bar-purple" style="width:${pePct}%"></div>
-                        <div class="text-overlay"><span>${e.currentPE}</span><span style="opacity:0.6">/ ${e.maxPE}</span></div>
-                    </div>
-                    <div class="ordem-bar-btn last" onclick="modStat('${id}', 'pe', 1)">></div>
-                    <div class="ordem-bar-btn last" onclick="modStat('${id}', 'pe', 5)">>></div>
-                </div>
-
-                <!-- TABS (Visual only for now) -->
-                <div class="insp-tabs" style="margin-top:15px;">
-                    <div class="insp-tab" style="color:#aaa;">ATRIBUTOS</div>
-                    <div class="insp-tab active">COMBATE</div>
-                    <div class="insp-tab" style="color:#aaa;">RITUAIS</div>
-                </div>
-
-                <!-- ATTRIBUTES GRID -->
-                <div class="attr-grid">
-                     <div class="attr-box"><div class="attr-val">${s.agi || s.dex || 0}</div><div class="attr-label">AGI</div></div>
-                     <div class="attr-box"><div class="attr-val">${s.str || 0}</div><div class="attr-label">FOR</div></div>
-                     <div class="attr-box"><div class="attr-val">${s.int || 0}</div><div class="attr-label">INT</div></div>
-                     <div class="attr-box"><div class="attr-val">${s.pre || s.wis || 0}</div><div class="attr-label">PRE</div></div>
-                     <div class="attr-box"><div class="attr-val">${s.vig || s.con || 0}</div><div class="attr-label">VIG</div></div>
-                </div>
-
-                <!-- SECONDARY STATS (DEF / SPEED) -->
-                <div class="sec-stats">
-                    <div class="sec-stat-box">
-                        <div class="sec-stat-label">DEFESA</div>
-                        <div class="sec-stat-val">${e.ac}</div>
-                    </div>
-                    <div class="sec-stat-box">
-                        <div class="sec-stat-label">BLOQUEIO</div>
-                        <div class="sec-stat-val">0</div>
-                    </div>
-                    <div class="sec-stat-box">
-                        <div class="sec-stat-label">ESQUIVA</div>
-                        <div class="sec-stat-val">0</div>
-                    </div>
-                    <div class="sec-stat-box">
-                         <div class="sec-stat-label">DESL.</div>
-                         <div class="sec-stat-val" style="font-size:1rem; margin-top:5px;">${speed}</div>
-                    </div>
-                </div>
-
-                <!-- ATTACKS LIST -->
-                <div style="margin-top:10px;">
-                    <div style="font-size:0.8rem; color:#777; margin-bottom:5px;">Ataques e Ações (Clique para Rolar)</div>
-                    <div id="inspectorAttacks"></div>
-                </div>
-                
-                <!-- REMOVE BUTTON -->
-                <div style="margin-top:20px; padding-top:15px; border-top:1px solid #333;">
-                    <button class="btn btn-danger" style="width:100%;" onclick="removeEntityFromCombat('${id}', ${isNPC})">
-                        <i data-lucide="trash-2" size="14"></i> Remover do Combate
-                    </button>
-                </div>
-            `;
-
-            const list = document.getElementById('inspectorAttacks');
-            if (isNPC && e.actions) {
-                e.actions.forEach(act => {
-                    const row = document.createElement('div');
-                    row.className = 'acc-item';
-                    row.innerHTML = `
-                        <div class="acc-header" onclick="performAttack('${e.name}', '${act.name}', ${act.bonus || 0}, '${act.damage}')">
-                            <div style="display:flex; flex-direction:column;">
-                                <span style="font-weight:700; color:#fff;">${act.name}</span>
-                                <span style="font-size:0.75rem; color:#a855f7;">Dano: ${act.damage || "?"}</span>
+                    <div class="ordem-bar-btn" onclick="modStat('${id}', 'pe', -5)">
+                        <<< /div>
+                            <div class="ordem-bar-btn" onclick="modStat('${id}', 'pe', -1)">
+                                << /div>
+                                    <div class="ordem-bar-display">
+                                        <div class="ordem-bar-fill bar-purple" style="width:${pePct}%"></div>
+                                        <div class="text-overlay"><span>${e.currentPE}</span><span style="opacity:0.6">/
+                                                ${e.maxPE}</span></div>
+                                    </div>
+                                    <div class="ordem-bar-btn last" onclick="modStat('${id}', 'pe', 1)">></div>
+                                    <div class="ordem-bar-btn last" onclick="modStat('${id}', 'pe', 5)">>></div>
                             </div>
-                            <i data-lucide="dices" color="#fff"></i>
-                        </div>
-                    `;
-                    list.appendChild(row);
-                });
-            } else {
-                list.innerHTML = "<div style='font-size:0.8rem; color:#555;'>Ficha de jogador. Ações gerenciadas pelo jogador.</div>";
-            }
-            lucide.createIcons();
-        }
-
-        function renderAgentGrid() {
-            const grid = document.getElementById('agentGrid');
-            grid.innerHTML = "";
-            const entities = getAllEntities(); // or just players? User said "jogadores", usually implies players.
-            // However, let's show only players to match "Analysis General" context usually for Party.
-            const players = entities.filter(e => !e.isNPC);
-
-            players.forEach(p => {
-                const hpPct = (p.currentHP / p.maxHP) * 100;
-                const pePct = (p.currentPE / p.maxPE) * 100;
-                const s = p.stats || { str: 0, dex: 0, con: 0, int: 0, wis: 0 };
-
-                const card = document.createElement('div');
-                card.className = 'agent-card';
-                card.innerHTML = `
-                   <div class="agent-header">
-                       <img src="https://ui-avatars.com/api/?name=${p.name}&background=random" class="agent-avatar">
-                       <div class="agent-details">
-                           <div class="agent-name">${p.name}</div>
-                           <div class="agent-meta">${p.rank} <span style="color:#777">•</span> ${p.breathingStyle || "Respiração"}</div>
-                       </div>
-                   </div>
-                   
-                   <div class="agent-attrs">
-                        <div><div class="agent-attr-val">${s.dex || 0}</div><div class="agent-attr-lbl">AGI</div></div>
-                        <div><div class="agent-attr-val">${s.str || 0}</div><div class="agent-attr-lbl">FOR</div></div>
-                        <div><div class="agent-attr-val">${s.int || 0}</div><div class="agent-attr-lbl">INT</div></div>
-                        <div><div class="agent-attr-val">${s.wis || 0}</div><div class="agent-attr-lbl">PRE</div></div>
-                        <div><div class="agent-attr-val">${s.con || 0}</div><div class="agent-attr-lbl">VIG</div></div>
-                   </div>
-
-                    <div class="row-name">
-                        ${p.name} ${renderConditionIcons(p.conditions)}
-                    </div>
-                    
-                    <div class="agent-bars">
-                        <!-- HP -->
-                        <div style="font-size:0.6rem; color:#aaa; margin-bottom:2px; text-align:center;">VIDA</div>
-                        <div class="ordem-bar-row" style="border-color:#7f1d1d;">
-                             <div class="ordem-bar-display">
-                                <div class="ordem-bar-fill bar-red" style="width:${hpPct}%"></div>
-                                <div class="text-overlay"><span>${p.currentHP}</span><span style="opacity:0.6">/ ${p.maxHP}</span></div>
-                             </div>
-                        </div>
-                        <!-- PE -->
-                        <div style="font-size:0.6rem; color:#aaa; margin-bottom:2px; text-align:center;">SANIDADE/PE</div>
-                         <div class="ordem-bar-row" style="border-color:#5b21b6;">
-                             <div class="ordem-bar-display">
-                                <div class="ordem-bar-fill bar-purple" style="width:${pePct}%"></div>
-                                <div class="text-overlay"><span>${p.currentPE}</span><span style="opacity:0.6">/ ${p.maxPE}</span></div>
-                             </div>
-                        </div>
-                   </div>
-                   
-                   <div class="agent-footer">
-                        <div class="af-box"><span class="af-val">${p.ac}</span> DEFESA</div>
-                        <div class="af-box"><span class="af-val">0</span> BLOQUEIO</div>
-                        <div class="af-box"><span class="af-val">0</span> ESQUIVA</div>
-                        <div class="af-box"><span class="af-val">${p.speed || "9m"}</span> DESL.</div>
-                   </div>
-               `;
-                grid.appendChild(card);
-            });
-            lucide.createIcons();
-        }
-
-        function updateLog() {
-            if (!currentCamp || !currentCamp.log) return;
-            const feed = document.getElementById('logFeed');
-            // Check if log length changed
-            // For simplicity, just wipe and redraw bottom 20
-            feed.innerHTML = "";
-
-            currentCamp.log.slice().reverse().forEach(l => {
-                const card = document.createElement('div');
-                card.className = 'log-card';
-                // Try parse result from msg if it has format "Result: 23"
-                // Or just show text.
-                // Assuming format from performAttack
-
-                let icon = '<div class="dice-icon"><i data-lucide="message-square"></i></div>';
-                let total = "";
-
-                if (l.msg.includes("Rolagem")) {
-                    // Primitive regex to extract total
-                    const match = l.msg.match(/<strong>(\d+)<\/strong>/);
-                    const val = match ? match[1] : "?";
-                    icon = `<div class="dice-icon" style="background:#222; border:1px solid #444;">${val}</div>`;
-                }
-
-                card.innerHTML = `
-                    ${icon}
-                    <div class="log-content">
-                        <div class="log-detail" style="font-size:0.7rem; color:#666;">${l.time}</div>
-                        <div class="log-title" style="font-size:0.8rem; color:#ccc;">${l.msg}</div>
-                    </div>
-                `;
-                feed.appendChild(card);
-            });
-            lucide.createIcons();
-        }
-
-        // --- ACTIONS ---
-        function selectEntity(id) {
-            selectedId = id;
-            console.log("Selected entity:", id);
-
-            // Switch to inspector tab automatically
-            switchRightTab('inspector');
-
-            // Immediately render the inspector for this entity
-            const ent = getEntity(id);
-            if (ent) {
-                renderInspector(ent);
-            }
-
-            // Also refresh the combat list to show selection
-            renderCombatList();
-            lucide.createIcons();
-        }
-
-        function openCharacterSheet(charId) {
-            // Load the character from save slots and set it as active
-            const raw = localStorage.getItem('demonSlayerSaveSlots');
-            if (!raw) {
-                alert('Nenhum personagem encontrado!');
-                return;
-            }
-            const chars = JSON.parse(raw);
-            const char = chars.find(c => c.id === charId);
-            if (!char) {
-                alert('Personagem não encontrado!');
-                return;
-            }
-            // Set as active character for dashboard
-            localStorage.setItem('demonSlayerChar', JSON.stringify(char));
-            window.open('dashboard.html', '_blank');
-        }
-
-        function modStat(id, type, delta) {
-            const ent = getEntity(id);
-            if (!ent) {
-                console.error('modStat: Entity not found', id);
-                return;
-            }
-
-            // Use charId for players, id for monsters
-            const entityId = ent.charId || ent.id;
-
-            let updates = {};
-            if (type === 'hp') {
-                let v = (ent.currentHP || 0) + delta;
-                v = Math.min(Math.max(v, 0), ent.maxHP || 100);
-                updates = { currentHP: v };
-            } else {
-                let v = (ent.currentPE || 0) + delta;
-                v = Math.min(Math.max(v, 0), ent.maxPE || 10);
-                updates = { currentPE: v };
-            }
-
-            console.log('modStat:', entityId, ent.isNPC, updates);
-            window.CampaignSystem.updateEntity(CAMP_ID, entityId, ent.isNPC, updates);
-
-            // Refresh data and re-render inspector
-            currentCamp = window.CampaignSystem.getCampaignById(CAMP_ID);
-            const updatedEnt = getEntity(id);
-            if (updatedEnt) renderInspector(updatedEnt);
-            renderCombatList();
-            lucide.createIcons();
-        }
-
-        function updateInit(id, val, isNPC) {
-            const newVal = parseInt(val) || 0;
-            console.log('updateInit:', id, isNPC, newVal);
-            window.CampaignSystem.updateEntity(CAMP_ID, id, isNPC, { initiative: newVal });
-            // Just update the campaign data without full re-render to keep focus
-            currentCamp = window.CampaignSystem.getCampaignById(CAMP_ID);
-        }
-
-        function removeEntityFromCombat(id, isNPC) {
-            if (!confirm('Remover esta entidade do combate?')) return;
-            window.CampaignSystem.removeEntity(CAMP_ID, id, isNPC);
-            selectedId = null;
-            loadData();
-            showToast('Entidade removida!');
-        }
-
-        function performAttack(attackerName, attackName, bonus, dmgStr) {
-            // Roll the d20
-            const d20 = Math.floor(Math.random() * 20) + 1;
-            const total = d20 + bonus;
-            const isCrit = d20 === 20;
-            const isFail = d20 === 1;
-
-            // Calculate damage
-            let dmgVal = 0;
-            try {
-                const parts = dmgStr.split('+');
-                const dice = parts[0].trim().split('d');
-                const n = parseInt(dice[0]);
-                const s = parseInt(dice[1]);
-                const flat = parts[1] ? parseInt(parts[1]) : 0;
-                for (let i = 0; i < n; i++) dmgVal += Math.floor(Math.random() * s) + 1;
-                dmgVal += flat;
-                if (isCrit) dmgVal *= 2; // Double damage on crit
-            } catch (e) { }
-
-            // Show the premium dice overlay
-            showPremiumDice(d20, total, dmgVal, attackerName, attackName, dmgStr, isCrit, isFail);
-
-            // Log the attack
-            const msg = `${attackerName} usa ${attackName}: <strong>${total}</strong> (Dano: ${dmgVal}${isCrit ? ' CRÍTICO!' : ''})`;
-            window.CampaignSystem.addLog(CAMP_ID, msg);
-            updateLog();
-        }
-
-        function showPremiumDice(roll, total, damage, attackerName, attackName, damageFormula, isCrit, isFail) {
-            const overlay = document.getElementById('diceOverlay');
-            const cube = document.getElementById('diceCube');
-            const result = document.getElementById('diceResultDisplay');
-            const info = document.getElementById('diceAttackInfo');
-
-            // Set all faces to show the roll value
-            document.querySelectorAll('.dice-face').forEach(face => {
-                face.textContent = roll;
-            });
-
-            // Show overlay and start rolling animation
-            overlay.classList.add('show');
-            cube.classList.add('rolling');
-            result.className = '';
-            result.textContent = '';
-            info.innerHTML = '';
-
-            // After rolling animation, show result
-            setTimeout(() => {
-                cube.classList.remove('rolling');
-
-                // Show result with appropriate class
-                result.textContent = total;
-                result.classList.add('show');
-                if (isCrit) result.classList.add('crit');
-                if (isFail) result.classList.add('fail');
-
-                // Show attack info
-                info.innerHTML = `
-                    <div class="attacker-name">${attackerName}</div>
-                    <div>${attackName} • Rolou <span style="color:${isCrit ? '#ffd60a' : isFail ? '#ef4444' : '#a855f7'}">${roll}</span> + ${total - roll}</div>
-                    <div class="damage-display">${damage} de dano${isCrit ? ' 🔥' : ''}</div>
-                    <div class="breakdown">${damageFormula}${isCrit ? ' (x2 Crítico!)' : ''}</div>
-                `;
-            }, 1200);
-        }
-
-        function closeDiceOverlay() {
-            const overlay = document.getElementById('diceOverlay');
-            const cube = document.getElementById('diceCube');
-            const result = document.getElementById('diceResultDisplay');
-
-            overlay.classList.remove('show');
-            cube.classList.remove('rolling');
-            result.className = '';
-        }
-
-        // Legacy functions for compatibility
-        function showDiceAnim(callback) {
-            const overlay = document.getElementById('diceOverlay');
-            const cube = document.getElementById('diceCube');
-
-            overlay.classList.add('show');
-            cube.classList.add('rolling');
-
-            setTimeout(() => {
-                cube.classList.remove('rolling');
-                callback();
-            }, 1200);
-        }
-
-        function showDiceResult(val) {
-            const result = document.getElementById('diceResultDisplay');
-            result.textContent = val;
-            result.classList.add('show');
-        }
-
-        function renderBestiaryTab() {
-            const list = document.getElementById('bestiaryList');
-            list.innerHTML = "";
-            window.BestiaryDB.forEach(m => {
-                const el = document.createElement('div');
-                el.className = 'mob-item';
-                el.innerHTML = `
-                    <div>
-                        <div class="mob-name">${m.name}</div>
-                        <div class="mob-meta">HP ${m.hp} | CR ${m.cr}</div>
-                    </div>
-                    <button class="btn btn-primary" style="padding:4px 8px;" onclick="spawnMobById('${m.id}')">+</button>
-                `;
-                list.appendChild(el);
-            });
-        }
-
-        function spawnMobById(id) {
-            try {
-                // Check custom first
-                const customs = JSON.parse(localStorage.getItem('customBestiary') || "[]");
-                let t = customs.find(x => x.id === id);
-                if (!t && window.BestiaryDB) t = window.BestiaryDB.find(x => x.id === id);
-
-                if (t) {
-                    window.CampaignSystem.addMonster(CAMP_ID, t);
-                    // Force switch to combat tab to see the new monster
-                    switchCenterTab('combat');
-                    loadData();
-                    showToast(`Criatura adicionada: ${t.name}`);
-
-                    // Auto-scroll to bottom of combat list
-                    setTimeout(() => {
-                        const cl = document.getElementById('combatList');
-                        if (cl) cl.scrollTop = cl.scrollHeight;
-                    }, 100);
-                } else {
-                    console.error("Spawn Error: Monster template not found", id);
-                    alert("Erro: Monstro não encontrado na base de dados.");
-                }
-            } catch (err) {
-                console.error("Spawn Error:", err);
-                alert("Erro ao adicionar monstro: " + err.message);
-            }
-        }
-
-        function clearLog() {
-            // Not implemented in campaign.js yet, but harmless
-            currentCamp.log = [];
-            window.CampaignSystem.saveCampaigns(window.CampaignSystem.getCampaigns());
-            updateLog();
-        }
-
-        // --- HELPERS ---
-        function getAllEntities() {
-            if (!currentCamp) return [];
-            const players = currentCamp.players || [];
-            const monsters = currentCamp.monsters || [];
-            return [
-                ...players.map(p => ({ ...p, isNPC: false })),
-                ...monsters.map(m => ({ ...m, isNPC: true }))
-            ];
-        }
-        function getEntity(id) {
-            return getAllEntities().find(e => (e.id === id || e.charId === id));
-        }
-
-        /* --- CUSTOM MOB LOGIC --- */
-        function openCustomMobModal() {
-            document.getElementById('customMobModal').style.display = 'flex';
-            document.getElementById('cmAttacksList').innerHTML = "";
-            addCustomAttackRow(); // Add one by default
-        }
-
-        function addCustomAttackRow() {
-            const div = document.createElement('div');
-            div.style.cssText = "display:grid; grid-template-columns: 2fr 1fr 1fr 30px; gap:5px; margin-bottom:5px;";
-            div.innerHTML = `
-                <input type="text" placeholder="Nome Ataque" class="d-input atk-name">
-                <input type="number" placeholder="Bonus" class="d-input atk-bonus">
-                <input type="text" placeholder="Dano (ex: 1d6+2)" class="d-input atk-dmg">
-                <button class="btn btn-danger" onclick="this.parentElement.remove()">x</button>
-            `;
-            document.getElementById('cmAttacksList').appendChild(div);
-        }
-
-        function saveCustomMob() {
-            const name = document.getElementById('cmName').value;
-            const hp = parseInt(document.getElementById('cmHP').value) || 10;
-            const ac = parseInt(document.getElementById('cmAC').value) || 10;
-            const cr = document.getElementById('cmCR').value || "-";
-
-            if (!name) return alert("Nome é obrigatório!");
-
-            const actions = [];
-            const rows = document.querySelectorAll('#cmAttacksList > div');
-            rows.forEach(r => {
-                const n = r.querySelector('.atk-name').value;
-                const b = parseInt(r.querySelector('.atk-bonus').value) || 0;
-                const d = r.querySelector('.atk-dmg').value;
-                if (n) actions.push({ name: n, bonus: b, damage: d, type: 'melee' });
-            });
-
-            const newMob = {
-                id: 'custom_' + Date.now(),
-                name: name,
-                hp: hp,
-                maxHP: hp,
-                ac: ac,
-                cr: cr,
-                actions: actions,
-                custom: true
-            };
-
-            // Save to localStorage
-            const existing = JSON.parse(localStorage.getItem('customBestiary') || "[]");
-            existing.push(newMob);
-            localStorage.setItem('customBestiary', JSON.stringify(existing));
-
-            document.getElementById('customMobModal').style.display = 'none';
-            renderBestiaryTab(); // Refresh list
-        }
-
-        function renderBestiaryTab() {
-            const list = document.getElementById('bestiaryList');
-            const search = document.getElementById('mobSearch') ? document.getElementById('mobSearch').value.toLowerCase() : "";
-            list.innerHTML = "";
-
-            // Merge Standard DB + Custom DB
-            const customs = JSON.parse(localStorage.getItem('customBestiary') || "[]");
-            const fullDB = [...customs, ...window.BestiaryDB];
-
-            fullDB
-                .filter(m => m.name.toLowerCase().includes(search))
-                .forEach(m => {
-                    const el = document.createElement('div');
-                    el.className = 'mob-item';
-                    if (m.custom) el.style.borderLeft = "2px solid var(--primary)"; // Visually mark custom
-
-                    el.innerHTML = `
-                        <div>
-                            <div class="mob-name">${m.name}</div>
-                            <div class="mob-meta">HP ${m.hp || m.maxHP} | CR ${m.cr}</div>
-                        </div>
-                        <div style="display:flex; gap:5px;">
-                            ${m.custom ? `<button class="btn btn-danger" onclick="deleteCustomMob('${m.id}')" style="padding:4px;"><i data-lucide="trash-2" size="12"></i></button>` : ''}
-                            <button class="btn btn-primary" style="padding:4px 8px;" onclick="spawnMobById('${m.id}')">+</button>
-                        </div>
-                    `;
-                    list.appendChild(el);
-                });
-            lucide.createIcons();
-        }
-
-        function deleteCustomMob(id) {
-            if (!confirm("Deletar criatura customizada?")) return;
-            let customs = JSON.parse(localStorage.getItem('customBestiary') || "[]");
-            customs = customs.filter(x => x.id !== id);
-            localStorage.setItem('customBestiary', JSON.stringify(customs));
-            renderBestiaryTab();
-        }
-
-        /* --- CONDITIONS LOGIC --- */
-        const CONDITIONS_DB = [
-            { id: 'poisoned', name: 'Envenenado', icon: 'droplet', color: '#10b981' },
-            { id: 'stunned', name: 'Atordoado', icon: 'zap', color: '#fbbf24' },
-            { id: 'prone', name: 'Caído', icon: 'arrow-down', color: '#94a3b8' },
-            { id: 'bleeding', name: 'Sangrando', icon: 'cloud-drizzle', color: '#ef4444' },
-            { id: 'blinded', name: 'Cego', icon: 'eye-off', color: '#555' },
-            { id: 'charmed', name: 'Encantado', icon: 'heart', color: '#ec4899' },
-            { id: 'frightened', name: 'Amedrontado', icon: 'ghost', color: '#fff' },
-            { id: 'grappled', name: 'Agarrado', icon: 'anchor', color: '#a855f7' },
-            { id: 'restrained', name: 'Contido', icon: 'lock', color: '#f59e0b' },
-            { id: 'unconscious', name: 'Inconsciente', icon: 'moon', color: '#888' },
-            { id: 'reaction_used', name: 'Reação Usada', icon: 'shield-alert', color: '#b91c1c' }
-        ];
-
-        function openConditionsModal() {
-            if (!selectedId) return alert("Selecione alguém primeiro!");
-            const ent = getEntity(selectedId);
-            if (!ent) return;
-
-            document.getElementById('condTargetName').innerText = ent.name;
-            const grid = document.getElementById('condGrid');
-            grid.innerHTML = "";
-
-            CONDITIONS_DB.filter(c => c.id !== 'reaction_used').forEach(c => {
-                const isActive = ent.conditions && ent.conditions.includes(c.id);
-                const btn = document.createElement('div');
-                btn.className = `cond-btn ${isActive ? 'active' : ''}`;
-                btn.innerHTML = `<i data-lucide="${c.icon}"></i> ${c.name}`;
-                btn.onclick = () => toggleCondition(ent.id || ent.charId, ent.isNPC, c.id);
-                grid.appendChild(btn);
-            });
-
-            document.getElementById('condModal').style.display = 'flex';
-            lucide.createIcons();
-        }
-
-        function toggleCondition(id, isNPC, condId) {
-            window.CampaignSystem.toggleCondition(CAMP_ID, id, isNPC, condId);
-            loadData();
-            // Re-render modal only if open
-            if (document.getElementById('condModal').style.display === 'flex') openConditionsModal();
-            // Refresh reaction status
-            updateReactionStatus();
-        }
-
-        function toggleReaction() {
-            if (!selectedId) return alert("Selecione alguém primeiro!");
-            const ent = getEntity(selectedId);
-            if (!ent) return;
-            toggleCondition(ent.id || ent.charId, ent.isNPC, 'reaction_used');
-        }
-
-        function updateReactionStatus() {
-            if (!selectedId) {
-                document.getElementById('reactionStatus').style.display = 'none';
-                return;
-            }
-            const ent = getEntity(selectedId);
-            const used = ent && ent.conditions && ent.conditions.includes('reaction_used');
-            document.getElementById('reactionStatus').style.display = used ? 'block' : 'none';
-        }
-
-        function triggerLongRest() {
-            if (!confirm("Realizar Descanso Longo? (Recupera HP/PE e remove condições)")) return;
-            window.CampaignSystem.longRest(CAMP_ID);
-            loadData();
-        }
-
-        // --- HELPER RENDERERS ---
-        function renderConditionIcons(conds) {
-            if (!conds || conds.length === 0) return "";
-            return conds.map(cid => {
-                const def = CONDITIONS_DB.find(x => x.id === cid);
-                if (!def) return ""; // Reaction used might be hidden or shown differently
-                return `<span class="cond-badge" style="border-color:${def.color}" title="${def.name}"><i data-lucide="${def.icon}" style="color:${def.color}"></i></span>`;
-            }).join("");
-        }
-        // --- ATTACK & DICE SYSTEM ---
-        function performAttack(attackerName, attackName, bonus, damageFormula) {
-            // Roll d20 for attack
-            const roll = Math.floor(Math.random() * 20) + 1;
-            const total = roll + bonus;
-
-            // Parse damage formula (e.g., "2d6+3")
-            const damage = rollDamage(damageFormula);
-
-            // Show 3D dice animation
-            showDiceAnimation(roll, total, attackerName, attackName, damage, damageFormula);
-
-            // Log the attack
-            addToLog({
-                type: 'attack',
-                attacker: attackerName,
-                attack: attackName,
-                roll: roll,
-                total: total,
-                damage: damage,
-                damageFormula: damageFormula
-            });
-        }
-
-        function rollDamage(formula) {
-            if (!formula) return 0;
-            // Parse "XdY+Z" format
-            const match = formula.match(/(\d+)d(\d+)([+-]\d+)?/i);
-            if (!match) return parseInt(formula) || 0;
-
-            const numDice = parseInt(match[1]);
-            const dieSize = parseInt(match[2]);
-            const modifier = parseInt(match[3]) || 0;
-
-            let total = modifier;
-            for (let i = 0; i < numDice; i++) {
-                total += Math.floor(Math.random() * dieSize) + 1;
-            }
-            return total;
-        }
-
-        function showDiceAnimation(roll, total, attackerName, attackName, damage, damageFormula) {
-            const overlay = document.getElementById('diceOverlay');
-            const cube = document.getElementById('diceCube');
-            const result = document.getElementById('diceResultDisplay');
-
-            // Set faces to show the roll
-            document.querySelectorAll('.d20-face').forEach(face => {
-                face.textContent = roll;
-            });
-
-            // Show overlay
-            overlay.classList.add('show');
-
-            // Reset animation
-            cube.style.animation = 'none';
-            cube.offsetHeight; // Trigger reflow
-            cube.style.animation = 'diceRoll 1.5s ease-out';
-
-            // After animation, show result
-            setTimeout(() => {
-                result.innerHTML = `
-                    <div style="font-size:1rem; color:#888; margin-bottom:5px;">${attackerName} usa ${attackName}</div>
-                    <div>Ataque: <span style="color:${roll === 20 ? '#ffd60a' : roll === 1 ? '#ef4444' : 'var(--primary-light)'}">${roll}</span> + ${total - roll} = <span style="color:#fff">${total}</span></div>
-                    <div style="margin-top:10px; font-size:2rem; color:#ef4444;">Dano: ${damage} <span style="font-size:1rem; color:#888">(${damageFormula})</span></div>
-                    ${roll === 20 ? '<div style="color:#ffd60a; margin-top:10px;">⚔️ CRÍTICO! ⚔️</div>' : ''}
-                    ${roll === 1 ? '<div style="color:#ef4444; margin-top:10px;">💀 FALHA CRÍTICA! 💀</div>' : ''}
-                `;
-            }, 1500);
-
-            // Close on click
-            overlay.onclick = () => {
-                overlay.classList.remove('show');
-                result.innerHTML = '';
-            };
-
-            // Auto-close after 5 seconds
-            setTimeout(() => {
-                overlay.classList.remove('show');
-                result.innerHTML = '';
-            }, 5000);
-        }
-
-        function addToLog(entry) {
-            if (!currentCamp.log) currentCamp.log = [];
-            currentCamp.log.unshift({
-                ...entry,
-                timestamp: new Date().toISOString()
-            });
-            // Keep only last 50 entries
-            if (currentCamp.log.length > 50) currentCamp.log.pop();
-            window.CampaignSystem.saveCampaigns(window.CampaignSystem.getCampaigns());
-            updateLog();
-        }
-
-        function updateLog() {
-            const feed = document.getElementById('logFeed');
-            if (!feed || !currentCamp) return;
-
-            feed.innerHTML = '';
-            const log = currentCamp.log || [];
-
-            log.slice(0, 20).forEach(entry => {
-                const card = document.createElement('div');
-                card.className = 'log-card';
-
-                if (entry.type === 'attack') {
-                    const isCrit = entry.roll === 20;
-                    const isFail = entry.roll === 1;
-                    card.innerHTML = `
-                        <div style="font-weight:600; color:${isCrit ? '#ffd60a' : isFail ? '#ef4444' : '#fff'};">
-                            ${entry.attacker}
-                        </div>
-                        <div style="font-size:0.8rem; color:#888;">
-                            ${entry.attack} • Rolou ${entry.roll} (${entry.total})
-                        </div>
-                        <div style="color:#ef4444; font-weight:600;">
-                            ${entry.damage} de dano
-                        </div>
-                    `;
-                } else {
-                    card.innerHTML = `<div style="color:#888;">${JSON.stringify(entry)}</div>`;
-                }
-
-                feed.appendChild(card);
-            });
-        }
-
-        // --- TOAST HELPER ---
-        function showToast(msg) {
-            const el = document.getElementById('toast');
-            const msgEl = document.getElementById('toastMsg');
-            if (!el || !msgEl) {
-                console.log("Toast:", msg);
-                return;
-            }
-            msgEl.innerText = msg;
-            el.classList.add('show');
-            setTimeout(() => el.classList.remove('show'), 3000);
-        }
-    </script>
+
+                            <!-- TABS (Visual only for now) -->
+                            <div class="insp-tabs" style="margin-top:15px;">
+                                <div class="insp-tab" style="color:#aaa;">ATRIBUTOS</div>
+                                <div class="insp-tab active">COMBATE</div>
+                                <div class="insp-tab" style="color:#aaa;">RITUAIS</div>
+                            </div>
+
+                            <!-- ATTRIBUTES GRID -->
+                            <div class="attr-grid">
+                                <div class="attr-box">
+                                    <div class="attr-val">${s.agi || s.dex || 0}</div>
+                                    <div class="attr-label">AGI</div>
+                                </div>
+                                <div class="attr-box">
+                                    <div class="attr-val">${s.str || 0}</div>
+                                    <div class="attr-label">FOR</div>
+                                </div>
+                                <div class="attr-box">
+                                    <div class="attr-val">${s.int || 0}</div>
+                                    <div class="attr-label">INT</div>
+                                </div>
+                                <div class="attr-box">
+                                    <div class="attr-val">${s.pre || s.wis || 0}</div>
+                                    <div class="attr-label">PRE</div>
+                                </div>
+                                <div class="attr-box">
+                                    <div class="attr-val">${s.vig || s.con || 0}</div>
+                                    <div class="attr-label">VIG</div>
+                                </div>
+                            </div>
+
+                            <!-- SECONDARY STATS (DEF / SPEED) -->
+                            <div class="sec-stats">
+                                <div class="sec-stat-box">
+                                    <div class="sec-stat-label">DEFESA</div>
+                                    <div class="sec-stat-val">${e.ac}</div>
+                                </div>
+                                <div class="sec-stat-box">
+                                    <div class="sec-stat-label">BLOQUEIO</div>
+                                    <div class="sec-stat-val">0</div>
+                                </div>
+                                <div class="sec-stat-box">
+                                    <div class="sec-stat-label">ESQUIVA</div>
+                                    <div class="sec-stat-val">0</div>
+                                </div>
+                                <div class="sec-stat-box">
+                                    <div class="sec-stat-label">DESL.</div>
+                                    <div class="sec-stat-val" style="font-size:1rem; margin-top:5px;">${speed}</div>
+                                </div>
+                            </div>
+
+                            <!-- ATTACKS LIST -->
+                            <div style="margin-top:10px;">
+                                <div style="font-size:0.8rem; color:#777; margin-bottom:5px;">Ataques e Ações (Clique
+                                    para Rolar)</div>
+                                <div id="inspectorAttacks"></div>
+                            </div>
+
+                            <!-- REMOVE BUTTON -->
+                            <div style="margin-top:20px; padding-top:15px; border-top:1px solid #333;">
+                                <button class="btn btn-danger" style="width:100%;"
+                                    onclick="removeEntityFromCombat('${id}', ${isNPC})">
+                                    <i data-lucide="trash-2" size="14"></i> Remover do Combate
+                                </button>
+                            </div>
+                            `;
+
+                            const list = document.getElementById('inspectorAttacks');
+                            if (isNPC && e.actions) {
+                            e.actions.forEach(act => {
+                            const row = document.createElement('div');
+                            row.className = 'acc-item';
+                            row.innerHTML = `
+                            <div class="acc-header"
+                                onclick="performAttack('${e.name}', '${act.name}', ${act.bonus || 0}, '${act.damage}')">
+                                <div style="display:flex; flex-direction:column;">
+                                    <span style="font-weight:700; color:#fff;">${act.name}</span>
+                                    <span style="font-size:0.75rem; color:#a855f7;">Dano: ${act.damage || "?"}</span>
+                                </div>
+                                <i data-lucide="dices" color="#fff"></i>
+                            </div>
+                            `;
+                            list.appendChild(row);
+                            });
+                            } else {
+                            list.innerHTML = "<div style='font-size:0.8rem; color:#555;'>Ficha de jogador. Ações
+                                gerenciadas pelo jogador.</div>";
+                            }
+                            lucide.createIcons();
+                            }
+
+                            function renderAgentGrid() {
+                            const grid = document.getElementById('agentGrid');
+                            grid.innerHTML = "";
+                            const entities = getAllEntities(); // or just players? User said "jogadores", usually
+                            implies players.
+                            // However, let's show only players to match "Analysis General" context usually for Party.
+                            const players = entities.filter(e => !e.isNPC);
+
+                            players.forEach(p => {
+                            const hpPct = (p.currentHP / p.maxHP) * 100;
+                            const pePct = (p.currentPE / p.maxPE) * 100;
+                            const s = p.stats || { str: 0, dex: 0, con: 0, int: 0, wis: 0 };
+
+                            const card = document.createElement('div');
+                            card.className = 'agent-card';
+                            card.innerHTML = `
+                            <div class="agent-header">
+                                <img src="https://ui-avatars.com/api/?name=${p.name}&background=random"
+                                    class="agent-avatar">
+                                <div class="agent-details">
+                                    <div class="agent-name">${p.name}</div>
+                                    <div class="agent-meta">${p.rank} <span style="color:#777">•</span>
+                                        ${p.breathingStyle || "Respiração"}</div>
+                                </div>
+                            </div>
+
+                            <div class="agent-attrs">
+                                <div>
+                                    <div class="agent-attr-val">${s.dex || 0}</div>
+                                    <div class="agent-attr-lbl">AGI</div>
+                                </div>
+                                <div>
+                                    <div class="agent-attr-val">${s.str || 0}</div>
+                                    <div class="agent-attr-lbl">FOR</div>
+                                </div>
+                                <div>
+                                    <div class="agent-attr-val">${s.int || 0}</div>
+                                    <div class="agent-attr-lbl">INT</div>
+                                </div>
+                                <div>
+                                    <div class="agent-attr-val">${s.wis || 0}</div>
+                                    <div class="agent-attr-lbl">PRE</div>
+                                </div>
+                                <div>
+                                    <div class="agent-attr-val">${s.con || 0}</div>
+                                    <div class="agent-attr-lbl">VIG</div>
+                                </div>
+                            </div>
+
+                            <div class="row-name">
+                                ${p.name} ${renderConditionIcons(p.conditions)}
+                            </div>
+
+                            <div class="agent-bars">
+                                <!-- HP -->
+                                <div style="font-size:0.6rem; color:#aaa; margin-bottom:2px; text-align:center;">VIDA
+                                </div>
+                                <div class="ordem-bar-row" style="border-color:#7f1d1d;">
+                                    <div class="ordem-bar-display">
+                                        <div class="ordem-bar-fill bar-red" style="width:${hpPct}%"></div>
+                                        <div class="text-overlay"><span>${p.currentHP}</span><span style="opacity:0.6">/
+                                                ${p.maxHP}</span></div>
+                                    </div>
+                                </div>
+                                <!-- PE -->
+                                <div style="font-size:0.6rem; color:#aaa; margin-bottom:2px; text-align:center;">
+                                    SANIDADE/PE</div>
+                                <div class="ordem-bar-row" style="border-color:#5b21b6;">
+                                    <div class="ordem-bar-display">
+                                        <div class="ordem-bar-fill bar-purple" style="width:${pePct}%"></div>
+                                        <div class="text-overlay"><span>${p.currentPE}</span><span style="opacity:0.6">/
+                                                ${p.maxPE}</span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="agent-footer">
+                                <div class="af-box"><span class="af-val">${p.ac}</span> DEFESA</div>
+                                <div class="af-box"><span class="af-val">0</span> BLOQUEIO</div>
+                                <div class="af-box"><span class="af-val">0</span> ESQUIVA</div>
+                                <div class="af-box"><span class="af-val">${p.speed || "9m"}</span> DESL.</div>
+                            </div>
+                            `;
+                            grid.appendChild(card);
+                            });
+                            lucide.createIcons();
+                            }
+
+                            function updateLog() {
+                            if (!currentCamp || !currentCamp.log) return;
+                            const feed = document.getElementById('logFeed');
+                            // Check if log length changed
+                            // For simplicity, just wipe and redraw bottom 20
+                            feed.innerHTML = "";
+
+                            currentCamp.log.slice().reverse().forEach(l => {
+                            const card = document.createElement('div');
+                            card.className = 'log-card';
+                            // Try parse result from msg if it has format "Result: 23"
+                            // Or just show text.
+                            // Assuming format from performAttack
+
+                            let icon = '<div class="dice-icon"><i data-lucide="message-square"></i></div>';
+                            let total = "";
+
+                            if (l.msg.includes("Rolagem")) {
+                            // Primitive regex to extract total
+                            const match = l.msg.match(/<strong>(\d+)<\ /strong>/);
+                                    const val = match ? match[1] : "?";
+                                    icon = `<div class="dice-icon" style="background:#222; border:1px solid #444;">
+                                        ${val}</div>`;
+                                    }
+
+                                    card.innerHTML = `
+                                    ${icon}
+                                    <div class="log-content">
+                                        <div class="log-detail" style="font-size:0.7rem; color:#666;">${l.time}</div>
+                                        <div class="log-title" style="font-size:0.8rem; color:#ccc;">${l.msg}</div>
+                                    </div>
+                                    `;
+                                    feed.appendChild(card);
+                                    });
+                                    lucide.createIcons();
+                                    }
+
+                                    // --- ACTIONS ---
+                                    function selectEntity(id) {
+                                    selectedId = id;
+                                    console.log("Selected entity:", id);
+
+                                    // Switch to inspector tab automatically
+                                    switchRightTab('inspector');
+
+                                    // Immediately render the inspector for this entity
+                                    const ent = getEntity(id);
+                                    if (ent) {
+                                    renderInspector(ent);
+                                    }
+
+                                    // Also refresh the combat list to show selection
+                                    renderCombatList();
+                                    lucide.createIcons();
+                                    }
+
+                                    function openCharacterSheet(charId) {
+                                    // Load the character from save slots and set it as active
+                                    const raw = localStorage.getItem('demonSlayerSaveSlots');
+                                    if (!raw) {
+                                    alert('Nenhum personagem encontrado!');
+                                    return;
+                                    }
+                                    const chars = JSON.parse(raw);
+                                    const char = chars.find(c => c.id === charId);
+                                    if (!char) {
+                                    alert('Personagem não encontrado!');
+                                    return;
+                                    }
+                                    // Set as active character for dashboard
+                                    localStorage.setItem('demonSlayerChar', JSON.stringify(char));
+                                    window.open('dashboard.html', '_blank');
+                                    }
+
+                                    // --- UNIVERSAL UPDATE (PLAYERS & MONSTERS) ---
+                                    function updateStat(id, type, val, isMax = false) {
+                                    const c = window.CampaignSystem.getCampaignById(CAMP_ID);
+                                    if (!c) return;
+
+                                    let target = c.players.find(p => p.charId === id);
+                                    let isPlayer = !!target;
+                                    if (!target) {
+                                    target = c.monsters.find(m => m.id === id);
+                                    }
+
+                                    if (!target) return;
+
+                                    // Update Value
+                                    if (type === 'hp') {
+                                    if (isMax) target.maxHP = Math.max(1, target.maxHP + val);
+                                    else target.currentHP = Math.max(0, Math.min(target.maxHP, target.currentHP + val));
+                                    } else if (type === 'pe') {
+                                    if (isMax) target.maxPE = Math.max(0, target.maxPE + val);
+                                    else target.currentPE = Math.max(0, Math.min(target.maxPE, target.currentPE + val));
+                                    }
+
+                                    // Save
+                                    window.CampaignSystem.saveCampaigns(window.CampaignSystem.getCampaigns());
+
+                                    // NOTIFY SERVER (Only for players)
+                                    if (isPlayer) {
+                                    window.CampaignSystem.sendUpdate(CAMP_ID, id, {
+                                    currentHP: target.currentHP,
+                                    maxHP: target.maxHP,
+                                    currentPE: target.currentPE,
+                                    maxPE: target.maxPE
+                                    }, true);
+                                    }
+
+                                    // Refresh data and re-render inspector
+                                    currentCamp = window.CampaignSystem.getCampaignById(CAMP_ID); // Re-fetch
+                                    currentCamp after save
+                                    renderCombatList(); // Re-render logic
+                                    if (selectedId === id || (isPlayer && selectedId === target.id)) { // Check if the
+                                    updated entity is currently selected
+                                    renderInspector(getEntity(id));
+                                    }
+                                    lucide.createIcons();
+                                    }
+
+                                    function modStat(id, type, delta) {
+                                    // Use charId for players, id for monsters
+                                    const ent = getEntity(id);
+                                    if (!ent) {
+                                    console.error('modStat: Entity not found', id);
+                                    return;
+                                    }
+                                    const entityId = ent.charId || ent.id;
+                                    renderCombatList();
+                                    lucide.createIcons();
+                                    }
+
+                                    function updateInit(id, val, isNPC) {
+                                    const newVal = parseInt(val) || 0;
+                                    console.log('updateInit:', id, isNPC, newVal);
+                                    window.CampaignSystem.updateEntity(CAMP_ID, id, isNPC, { initiative: newVal });
+                                    // Just update the campaign data without full re-render to keep focus
+                                    currentCamp = window.CampaignSystem.getCampaignById(CAMP_ID);
+                                    }
+
+                                    function removeEntityFromCombat(id, isNPC) {
+                                    if (!confirm('Remover esta entidade do combate?')) return;
+                                    window.CampaignSystem.removeEntity(CAMP_ID, id, isNPC);
+                                    selectedId = null;
+                                    loadData();
+                                    showToast('Entidade removida!');
+                                    }
+
+                                    function performAttack(attackerName, attackName, bonus, dmgStr) {
+                                    // Roll the d20
+                                    const d20 = Math.floor(Math.random() * 20) + 1;
+                                    const total = d20 + bonus;
+                                    const isCrit = d20 === 20;
+                                    const isFail = d20 === 1;
+
+                                    // Calculate damage
+                                    let dmgVal = 0;
+                                    try {
+                                    const parts = dmgStr.split('+');
+                                    const dice = parts[0].trim().split('d');
+                                    const n = parseInt(dice[0]);
+                                    const s = parseInt(dice[1]);
+                                    const flat = parts[1] ? parseInt(parts[1]) : 0;
+                                    for (let i = 0; i < n; i++) dmgVal +=Math.floor(Math.random() * s) + 1; dmgVal
+                                        +=flat; if (isCrit) dmgVal *=2; // Double damage on crit } catch (e) { } // Show
+                                        the premium dice overlay showPremiumDice(d20, total, dmgVal, attackerName,
+                                        attackName, dmgStr, isCrit, isFail); // Log the attack const
+                                        msg=`${attackerName} usa ${attackName}: <strong>${total}</strong> (Dano:
+                            ${dmgVal}${isCrit ? ' CRÍTICO!' : ''})`;
+                            window.CampaignSystem.addLog(CAMP_ID, msg);
+                            updateLog();
+                            }
+
+                            function showPremiumDice(roll, total, damage, attackerName, attackName, damageFormula,
+                            isCrit, isFail) {
+                            const overlay = document.getElementById('diceOverlay');
+                            const cube = document.getElementById('diceCube');
+                            const result = document.getElementById('diceResultDisplay');
+                            const info = document.getElementById('diceAttackInfo');
+
+                            // Set all faces to show the roll value
+                            document.querySelectorAll('.dice-face').forEach(face => {
+                            face.textContent = roll;
+                            });
+
+                            // Show overlay and start rolling animation
+                            overlay.classList.add('show');
+                            cube.classList.add('rolling');
+                            result.className = '';
+                            result.textContent = '';
+                            info.innerHTML = '';
+
+                            // After rolling animation, show result
+                            setTimeout(() => {
+                            cube.classList.remove('rolling');
+
+                            // Show result with appropriate class
+                            result.textContent = total;
+                            result.classList.add('show');
+                            if (isCrit) result.classList.add('crit');
+                            if (isFail) result.classList.add('fail');
+
+                            // Show attack info
+                            info.innerHTML = `
+                            <div class="attacker-name">${attackerName}</div>
+                            <div>${attackName} • Rolou <span
+                                    style="color:${isCrit ? '#ffd60a' : isFail ? '#ef4444' : '#a855f7'}">${roll}</span>
+                                + ${total - roll}</div>
+                            <div class="damage-display">${damage} de dano${isCrit ? ' 🔥' : ''}</div>
+                            <div class="breakdown">${damageFormula}${isCrit ? ' (x2 Crítico!)' : ''}</div>
+                            `;
+                            }, 1200);
+                            }
+
+                            function closeDiceOverlay() {
+                            const overlay = document.getElementById('diceOverlay');
+                            const cube = document.getElementById('diceCube');
+                            const result = document.getElementById('diceResultDisplay');
+
+                            overlay.classList.remove('show');
+                            cube.classList.remove('rolling');
+                            result.className = '';
+                            }
+
+                            // Legacy functions for compatibility
+                            function showDiceAnim(callback) {
+                            const overlay = document.getElementById('diceOverlay');
+                            const cube = document.getElementById('diceCube');
+
+                            overlay.classList.add('show');
+                            cube.classList.add('rolling');
+
+                            setTimeout(() => {
+                            cube.classList.remove('rolling');
+                            callback();
+                            }, 1200);
+                            }
+
+                            function showDiceResult(val) {
+                            const result = document.getElementById('diceResultDisplay');
+                            result.textContent = val;
+                            result.classList.add('show');
+                            }
+
+                            function renderBestiaryTab() {
+                            const list = document.getElementById('bestiaryList');
+                            list.innerHTML = "";
+                            window.BestiaryDB.forEach(m => {
+                            const el = document.createElement('div');
+                            el.className = 'mob-item';
+                            el.innerHTML = `
+                            <div>
+                                <div class="mob-name">${m.name}</div>
+                                <div class="mob-meta">HP ${m.hp} | CR ${m.cr}</div>
+                            </div>
+                            <button class="btn btn-primary" style="padding:4px 8px;"
+                                onclick="spawnMobById('${m.id}')">+</button>
+                            `;
+                            list.appendChild(el);
+                            });
+                            }
+
+                            function spawnMobById(id) {
+                            try {
+                            // Check custom first
+                            const customs = JSON.parse(localStorage.getItem('customBestiary') || "[]");
+                            let t = customs.find(x => x.id === id);
+                            if (!t && window.BestiaryDB) t = window.BestiaryDB.find(x => x.id === id);
+
+                            if (t) {
+                            window.CampaignSystem.addMonster(CAMP_ID, t);
+                            // Force switch to combat tab to see the new monster
+                            switchCenterTab('combat');
+                            loadData();
+                            showToast(`Criatura adicionada: ${t.name}`);
+
+                            // Auto-scroll to bottom of combat list
+                            setTimeout(() => {
+                            const cl = document.getElementById('combatList');
+                            if (cl) cl.scrollTop = cl.scrollHeight;
+                            }, 100);
+                            } else {
+                            console.error("Spawn Error: Monster template not found", id);
+                            alert("Erro: Monstro não encontrado na base de dados.");
+                            }
+                            } catch (err) {
+                            console.error("Spawn Error:", err);
+                            alert("Erro ao adicionar monstro: " + err.message);
+                            }
+                            }
+
+                            function clearLog() {
+                            // Not implemented in campaign.js yet, but harmless
+                            currentCamp.log = [];
+                            window.CampaignSystem.saveCampaigns(window.CampaignSystem.getCampaigns());
+                            updateLog();
+                            }
+
+                            // --- HELPERS ---
+                            function getAllEntities() {
+                            if (!currentCamp) return [];
+                            const players = currentCamp.players || [];
+                            const monsters = currentCamp.monsters || [];
+                            return [
+                            ...players.map(p => ({ ...p, isNPC: false })),
+                            ...monsters.map(m => ({ ...m, isNPC: true }))
+                            ];
+                            }
+                            function getEntity(id) {
+                            return getAllEntities().find(e => (e.id === id || e.charId === id));
+                            }
+
+                            /* --- CUSTOM MOB LOGIC --- */
+                            function openCustomMobModal() {
+                            document.getElementById('customMobModal').style.display = 'flex';
+                            document.getElementById('cmAttacksList').innerHTML = "";
+                            addCustomAttackRow(); // Add one by default
+                            }
+
+                            function addCustomAttackRow() {
+                            const div = document.createElement('div');
+                            div.style.cssText = "display:grid; grid-template-columns: 2fr 1fr 1fr 30px; gap:5px;
+                            margin-bottom:5px;";
+                            div.innerHTML = `
+                            <input type="text" placeholder="Nome Ataque" class="d-input atk-name">
+                            <input type="number" placeholder="Bonus" class="d-input atk-bonus">
+                            <input type="text" placeholder="Dano (ex: 1d6+2)" class="d-input atk-dmg">
+                            <button class="btn btn-danger" onclick="this.parentElement.remove()">x</button>
+                            `;
+                            document.getElementById('cmAttacksList').appendChild(div);
+                            }
+
+                            function saveCustomMob() {
+                            const name = document.getElementById('cmName').value;
+                            const hp = parseInt(document.getElementById('cmHP').value) || 10;
+                            const ac = parseInt(document.getElementById('cmAC').value) || 10;
+                            const cr = document.getElementById('cmCR').value || "-";
+
+                            if (!name) return alert("Nome é obrigatório!");
+
+                            const actions = [];
+                            const rows = document.querySelectorAll('#cmAttacksList > div');
+                            rows.forEach(r => {
+                            const n = r.querySelector('.atk-name').value;
+                            const b = parseInt(r.querySelector('.atk-bonus').value) || 0;
+                            const d = r.querySelector('.atk-dmg').value;
+                            if (n) actions.push({ name: n, bonus: b, damage: d, type: 'melee' });
+                            });
+
+                            const newMob = {
+                            id: 'custom_' + Date.now(),
+                            name: name,
+                            hp: hp,
+                            maxHP: hp,
+                            ac: ac,
+                            cr: cr,
+                            actions: actions,
+                            custom: true
+                            };
+
+                            // Save to localStorage
+                            const existing = JSON.parse(localStorage.getItem('customBestiary') || "[]");
+                            existing.push(newMob);
+                            localStorage.setItem('customBestiary', JSON.stringify(existing));
+
+                            document.getElementById('customMobModal').style.display = 'none';
+                            renderBestiaryTab(); // Refresh list
+                            }
+
+                            function renderBestiaryTab() {
+                            const list = document.getElementById('bestiaryList');
+                            const search = document.getElementById('mobSearch') ?
+                            document.getElementById('mobSearch').value.toLowerCase() : "";
+                            list.innerHTML = "";
+
+                            // Merge Standard DB + Custom DB
+                            const customs = JSON.parse(localStorage.getItem('customBestiary') || "[]");
+                            const fullDB = [...customs, ...window.BestiaryDB];
+
+                            fullDB
+                            .filter(m => m.name.toLowerCase().includes(search))
+                            .forEach(m => {
+                            const el = document.createElement('div');
+                            el.className = 'mob-item';
+                            if (m.custom) el.style.borderLeft = "2px solid var(--primary)"; // Visually mark custom
+
+                            el.innerHTML = `
+                            <div>
+                                <div class="mob-name">${m.name}</div>
+                                <div class="mob-meta">HP ${m.hp || m.maxHP} | CR ${m.cr}</div>
+                            </div>
+                            <div style="display:flex; gap:5px;">
+                                ${m.custom ? `<button class="btn btn-danger" onclick="deleteCustomMob('${m.id}')"
+                                    style="padding:4px;"><i data-lucide="trash-2" size="12"></i></button>` : ''}
+                                <button class="btn btn-primary" style="padding:4px 8px;"
+                                    onclick="spawnMobById('${m.id}')">+</button>
+                            </div>
+                            `;
+                            list.appendChild(el);
+                            });
+                            lucide.createIcons();
+                            }
+
+                            function deleteCustomMob(id) {
+                            if (!confirm("Deletar criatura customizada?")) return;
+                            let customs = JSON.parse(localStorage.getItem('customBestiary') || "[]");
+                            customs = customs.filter(x => x.id !== id);
+                            localStorage.setItem('customBestiary', JSON.stringify(customs));
+                            renderBestiaryTab();
+                            }
+
+                            /* --- CONDITIONS LOGIC --- */
+                            const CONDITIONS_DB = [
+                            { id: 'poisoned', name: 'Envenenado', icon: 'droplet', color: '#10b981' },
+                            { id: 'stunned', name: 'Atordoado', icon: 'zap', color: '#fbbf24' },
+                            { id: 'prone', name: 'Caído', icon: 'arrow-down', color: '#94a3b8' },
+                            { id: 'bleeding', name: 'Sangrando', icon: 'cloud-drizzle', color: '#ef4444' },
+                            { id: 'blinded', name: 'Cego', icon: 'eye-off', color: '#555' },
+                            { id: 'charmed', name: 'Encantado', icon: 'heart', color: '#ec4899' },
+                            { id: 'frightened', name: 'Amedrontado', icon: 'ghost', color: '#fff' },
+                            { id: 'grappled', name: 'Agarrado', icon: 'anchor', color: '#a855f7' },
+                            { id: 'restrained', name: 'Contido', icon: 'lock', color: '#f59e0b' },
+                            { id: 'unconscious', name: 'Inconsciente', icon: 'moon', color: '#888' },
+                            { id: 'reaction_used', name: 'Reação Usada', icon: 'shield-alert', color: '#b91c1c' }
+                            ];
+
+                            function openConditionsModal() {
+                            if (!selectedId) return alert("Selecione alguém primeiro!");
+                            const ent = getEntity(selectedId);
+                            if (!ent) return;
+
+                            document.getElementById('condTargetName').innerText = ent.name;
+                            const grid = document.getElementById('condGrid');
+                            grid.innerHTML = "";
+
+                            CONDITIONS_DB.filter(c => c.id !== 'reaction_used').forEach(c => {
+                            const isActive = ent.conditions && ent.conditions.includes(c.id);
+                            const btn = document.createElement('div');
+                            btn.className = `cond-btn ${isActive ? 'active' : ''}`;
+                            btn.innerHTML = `<i data-lucide="${c.icon}"></i> ${c.name}`;
+                            btn.onclick = () => toggleCondition(ent.id || ent.charId, ent.isNPC, c.id);
+                            grid.appendChild(btn);
+                            });
+
+                            document.getElementById('condModal').style.display = 'flex';
+                            lucide.createIcons();
+                            }
+
+                            function toggleCondition(id, isNPC, condId) {
+                            window.CampaignSystem.toggleCondition(CAMP_ID, id, isNPC, condId);
+                            loadData();
+                            // Re-render modal only if open
+                            if (document.getElementById('condModal').style.display === 'flex') openConditionsModal();
+                            // Refresh reaction status
+                            updateReactionStatus();
+                            }
+
+                            function toggleReaction() {
+                            if (!selectedId) return alert("Selecione alguém primeiro!");
+                            const ent = getEntity(selectedId);
+                            if (!ent) return;
+                            toggleCondition(ent.id || ent.charId, ent.isNPC, 'reaction_used');
+                            }
+
+                            function updateReactionStatus() {
+                            if (!selectedId) {
+                            document.getElementById('reactionStatus').style.display = 'none';
+                            return;
+                            }
+                            const ent = getEntity(selectedId);
+                            const used = ent && ent.conditions && ent.conditions.includes('reaction_used');
+                            document.getElementById('reactionStatus').style.display = used ? 'block' : 'none';
+                            }
+
+                            function triggerLongRest() {
+                            if (!confirm("Realizar Descanso Longo? (Recupera HP/PE e remove condições)")) return;
+                            window.CampaignSystem.longRest(CAMP_ID);
+                            loadData();
+                            }
+
+                            // --- HELPER RENDERERS ---
+                            function renderConditionIcons(conds) {
+                            if (!conds || conds.length === 0) return "";
+                            return conds.map(cid => {
+                            const def = CONDITIONS_DB.find(x => x.id === cid);
+                            if (!def) return ""; // Reaction used might be hidden or shown differently
+                            return `<span class="cond-badge" style="border-color:${def.color}" title="${def.name}"><i
+                                    data-lucide="${def.icon}" style="color:${def.color}"></i></span>`;
+                            }).join("");
+                            }
+                            // --- ATTACK & DICE SYSTEM ---
+                            function performAttack(attackerName, attackName, bonus, damageFormula) {
+                            // Roll d20 for attack
+                            const roll = Math.floor(Math.random() * 20) + 1;
+                            const total = roll + bonus;
+
+                            // Parse damage formula (e.g., "2d6+3")
+                            const damage = rollDamage(damageFormula);
+
+                            // Show 3D dice animation
+                            showDiceAnimation(roll, total, attackerName, attackName, damage, damageFormula);
+
+                            // Log the attack
+                            addToLog({
+                            type: 'attack',
+                            attacker: attackerName,
+                            attack: attackName,
+                            roll: roll,
+                            total: total,
+                            damage: damage,
+                            damageFormula: damageFormula
+                            });
+                            }
+
+                            function rollDamage(formula) {
+                            if (!formula) return 0;
+                            // Parse "XdY+Z" format
+                            const match = formula.match(/(\d+)d(\d+)([+-]\d+)?/i);
+                            if (!match) return parseInt(formula) || 0;
+
+                            const numDice = parseInt(match[1]);
+                            const dieSize = parseInt(match[2]);
+                            const modifier = parseInt(match[3]) || 0;
+
+                            let total = modifier;
+                            for (let i = 0; i < numDice; i++) { total +=Math.floor(Math.random() * dieSize) + 1; }
+                                return total; } function showDiceAnimation(roll, total, attackerName, attackName,
+                                damage, damageFormula) { const overlay=document.getElementById('diceOverlay'); const
+                                cube=document.getElementById('diceCube'); const
+                                result=document.getElementById('diceResultDisplay'); // Set faces to show the roll
+                                document.querySelectorAll('.d20-face').forEach(face=> {
+                                face.textContent = roll;
+                                });
+
+                                // Show overlay
+                                overlay.classList.add('show');
+
+                                // Reset animation
+                                cube.style.animation = 'none';
+                                cube.offsetHeight; // Trigger reflow
+                                cube.style.animation = 'diceRoll 1.5s ease-out';
+
+                                // After animation, show result
+                                setTimeout(() => {
+                                result.innerHTML = `
+                                <div style="font-size:1rem; color:#888; margin-bottom:5px;">${attackerName} usa
+                                    ${attackName}</div>
+                                <div>Ataque: <span
+                                        style="color:${roll === 20 ? '#ffd60a' : roll === 1 ? '#ef4444' : 'var(--primary-light)'}">${roll}</span>
+                                    + ${total - roll} = <span style="color:#fff">${total}</span></div>
+                                <div style="margin-top:10px; font-size:2rem; color:#ef4444;">Dano: ${damage} <span
+                                        style="font-size:1rem; color:#888">(${damageFormula})</span></div>
+                                ${roll === 20 ? '<div style="color:#ffd60a; margin-top:10px;">⚔️ CRÍTICO! ⚔️</div>' :
+                                ''}
+                                ${roll === 1 ? '<div style="color:#ef4444; margin-top:10px;">💀 FALHA CRÍTICA! 💀</div>'
+                                : ''}
+                                `;
+                                }, 1500);
+
+                                // Close on click
+                                overlay.onclick = () => {
+                                overlay.classList.remove('show');
+                                result.innerHTML = '';
+                                };
+
+                                // Auto-close after 5 seconds
+                                setTimeout(() => {
+                                overlay.classList.remove('show');
+                                result.innerHTML = '';
+                                }, 5000);
+                                }
+
+                                function addToLog(entry) {
+                                if (!currentCamp.log) currentCamp.log = [];
+                                currentCamp.log.unshift({
+                                ...entry,
+                                timestamp: new Date().toISOString()
+                                });
+                                // Keep only last 50 entries
+                                if (currentCamp.log.length > 50) currentCamp.log.pop();
+                                window.CampaignSystem.saveCampaigns(window.CampaignSystem.getCampaigns());
+                                updateLog();
+                                }
+
+                                function updateLog() {
+                                const feed = document.getElementById('logFeed');
+                                if (!feed || !currentCamp) return;
+
+                                feed.innerHTML = '';
+                                const log = currentCamp.log || [];
+
+                                log.slice(0, 20).forEach(entry => {
+                                const card = document.createElement('div');
+                                card.className = 'log-card';
+
+                                if (entry.type === 'attack') {
+                                const isCrit = entry.roll === 20;
+                                const isFail = entry.roll === 1;
+                                card.innerHTML = `
+                                <div
+                                    style="font-weight:600; color:${isCrit ? '#ffd60a' : isFail ? '#ef4444' : '#fff'};">
+                                    ${entry.attacker}
+                                </div>
+                                <div style="font-size:0.8rem; color:#888;">
+                                    ${entry.attack} • Rolou ${entry.roll} (${entry.total})
+                                </div>
+                                <div style="color:#ef4444; font-weight:600;">
+                                    ${entry.damage} de dano
+                                </div>
+                                `;
+                                } else {
+                                card.innerHTML = `<div style="color:#888;">${JSON.stringify(entry)}</div>`;
+                                }
+
+                                feed.appendChild(card);
+                                });
+                                }
+
+                                // --- TOAST HELPER ---
+                                function showToast(msg) {
+                                const el = document.getElementById('toast');
+                                const msgEl = document.getElementById('toastMsg');
+                                if (!el || !msgEl) {
+                                console.log("Toast:", msg);
+                                return;
+                                }
+                                msgEl.innerText = msg;
+                                el.classList.add('show');
+                                setTimeout(() => el.classList.remove('show'), 3000);
+                                }
+                                // Server Status Listener
+                                window.addEventListener('server-status', (e) => {
+                                const el = document.getElementById('serverStatus');
+                                if(e.detail === 'online') {
+                                el.style.background = '#22c55e'; // Green
+                                el.style.boxShadow = '0 0 10px #22c55e';
+                                el.title = "Online";
+                                showToast("Conectado ao Servidor!");
+                                } else {
+                                el.style.background = '#ef4444'; // Red
+                                el.style.boxShadow = '0 0 5px #ef4444';
+                                el.title = "Offline";
+                                }
+                                });
+                                </script>
 
 </html>

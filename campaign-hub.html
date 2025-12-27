@@ -430,12 +430,15 @@
                         ${playerCircles || '<span style="font-size:0.8rem; color:#444;">Nenhum jogador</span>'}
                     </div>
 
-                    <div class="camp-actions">
+                     <div class="camp-actions">
                          <button class="action-btn btn-enter" onclick="window.location.href='dm-panel.html?id=${c.id}'">
                             Entrar
                          </button>
                          <button class="action-btn btn-invite" title="Copiar Convite" onclick="copyInvite('${c.id}')">
                             <i data-lucide="link"></i>
+                         </button>
+                         <button class="action-btn btn-invite" title="Apagar Campanha" onclick="deleteCamp('${c.id}', '${c.name}')" style="border-color:#d90429; color:#d90429;">
+                            <i data-lucide="trash-2"></i>
                          </button>
                     </div>
                 `;
@@ -495,6 +498,14 @@
             navigator.clipboard.writeText(url).then(() => {
                 showToast("Link de convite copiado!");
             });
+        }
+
+        function deleteCamp(id, name) {
+            if (confirm(`Tem certeza que deseja apagar a campanha "${name}"? Essa ação é irreversível e todos os dados serão perdidos.`)) {
+                window.CampaignSystem.deleteCampaign(id);
+                renderCampaigns();
+                showToast("Campanha apagada com sucesso.");
+            }
         }
 
         function openJoinModal(id) {

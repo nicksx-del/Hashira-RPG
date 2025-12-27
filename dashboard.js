@@ -60,6 +60,8 @@ function initDashboard() {
     const xpEl = document.getElementById('dispXP');
     if (xpEl) xpEl.textContent = humanData.xp;
 
+    updateAvatarUI();
+
     updateVitalsUI();
     renderAttributes();
     renderProficiencies(); // NEW
@@ -466,6 +468,50 @@ function toggleLevelSelector() {
 function updateCharName(newName) {
     humanData.name = newName.trim();
     saveHuman();
+}
+
+window.changeAvatar = function () {
+    // Trigger file input click
+    const input = document.getElementById('avatarUpload');
+    if (input) input.click();
+}
+
+window.handleAvatarUpload = function (input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+
+        // Size Limit Check (e.g. 2MB) to prevent crashing localStorage
+        if (file.size > 2 * 1024 * 1024) {
+            alert("A imagem é muito grande! Por favor escolha uma menor que 2MB.");
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            humanData.avatar = e.target.result; // Base64 string
+            saveHuman();
+            updateAvatarUI();
+        }
+
+        reader.readAsDataURL(file);
+    }
+}
+
+function updateAvatarUI() {
+    const icon = document.getElementById('avatarIcon');
+    const img = document.getElementById('avatarImg');
+
+    if (humanData.avatar && humanData.avatar !== '') {
+        if (img) {
+            img.src = humanData.avatar;
+            img.style.display = 'block';
+        }
+        if (icon) icon.style.display = 'none';
+    } else {
+        if (img) img.style.display = 'none';
+        if (icon) icon.style.display = 'block';
+    }
 }
 
 // --- VITALS ACTIONS ---
