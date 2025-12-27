@@ -622,6 +622,33 @@
     }
 }
 
+/* RAINBOW (Special) - RGB Gaming Style */
+.blade.fx-rainbow .blade-color-layer {
+    background: linear-gradient(0deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+    background-size: 100% 200%;
+    opacity: 0.9;
+    animation: rainbowScroll 1.5s linear infinite;
+    mix-blend-mode: overlay;
+}
+
+.blade.fx-rainbow .blade-aura {
+    background: linear-gradient(0deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+    background-size: 100% 200%;
+    filter: blur(8px);
+    opacity: 0.7;
+    animation: rainbowScroll 1.5s linear infinite;
+}
+
+@keyframes rainbowScroll {
+    0% {
+        background-position: 0% 100%;
+    }
+
+    100% {
+        background-position: 0% 0%;
+    }
+}
+
 /* --- UI COMPONENTS --- */
 .forge-ui {
     width: 100%;

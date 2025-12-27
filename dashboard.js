@@ -274,44 +274,48 @@ function updateStatsUI() {
     let dexMod = Math.floor((dex - 10) / 2);
     let ac = 10 + dexMod;
 
-    // Check equipped armor
-    if (humanData.inventory) {
-        const armor = humanData.inventory.find(i => i.type === 'armor' && i.equipped);
-        if (armor) {
-            let armorAC = 10;
-            // Parse Formula
-            if (typeof armor.ac === 'string') {
-                const formula = armor.ac.toLowerCase().replace(/\s/g, '');
+    if (humanData.manualAC !== undefined) {
+        ac = humanData.manualAC;
+    } else {
+        // Check equipped armor
+        if (humanData.inventory) {
+            const armor = humanData.inventory.find(i => i.type === 'armor' && i.equipped);
+            if (armor) {
+                let armorAC = 10;
+                // Parse Formula
+                if (typeof armor.ac === 'string') {
+                    const formula = armor.ac.toLowerCase().replace(/\s/g, '');
 
-                // Pure Number: "17"
-                const matchVal = formula.match(/^(\d+)$/);
-                // Formula: "12+des"
-                const matchDex = formula.includes('des');
+                    // Pure Number: "17"
+                    const matchVal = formula.match(/^(\d+)$/);
+                    // Formula: "12+des"
+                    const matchDex = formula.includes('des');
 
-                if (matchVal) {
-                    armorAC = parseInt(matchVal[1]);
-                    // Heavy armor usually replaces base, so we set AC directly
-                    ac = armorAC;
-                } else if (matchDex) {
-                    const baseMatch = formula.match(/(\d+)/);
-                    const base = baseMatch ? parseInt(baseMatch[1]) : 10;
+                    if (matchVal) {
+                        armorAC = parseInt(matchVal[1]);
+                        // Heavy armor usually replaces base, so we set AC directly
+                        ac = armorAC;
+                    } else if (matchDex) {
+                        const baseMatch = formula.match(/(\d+)/);
+                        const base = baseMatch ? parseInt(baseMatch[1]) : 10;
 
-                    // Medium Armor Cap Logic (Standard 5e: Max 2)
-                    let effectiveDex = dexMod;
-                    if (armor.subType === 'medium' && effectiveDex > 2) effectiveDex = 2;
+                        // Medium Armor Cap Logic (Standard 5e: Max 2)
+                        let effectiveDex = dexMod;
+                        if (armor.subType === 'medium' && effectiveDex > 2) effectiveDex = 2;
 
-                    ac = base + effectiveDex;
+                        ac = base + effectiveDex;
+                    }
+                } else if (typeof armor.ac === 'number') {
+                    ac = armor.ac;
                 }
-            } else if (typeof armor.ac === 'number') {
-                ac = armor.ac;
             }
-        }
 
-        // Shield Bonus (Classic +2)
-        // Check for items with 'shield' in name or subType if we had it
-        // For now, let's assume if there's an item named "Escudo" equipped
-        const shield = humanData.inventory.find(i => i.name.toLowerCase().includes('escudo') && i.equipped);
-        if (shield) ac += 2;
+            // Shield Bonus (Classic +2)
+            // Check for items with 'shield' in name or subType if we had it
+            // For now, let's assume if there's an item named "Escudo" equipped
+            const shield = humanData.inventory.find(i => i.name.toLowerCase().includes('escudo') && i.equipped);
+            if (shield) ac += 2;
+        }
     }
 
     // Combat Mods
@@ -511,6 +515,27 @@ window.editVital = function (type) {
 
 // Regen function removed per user request (Humans don't regen)
 
+window.editAC = function () {
+    const current = humanData.manualAC !== undefined ? humanData.manualAC : parseInt(document.getElementById('dispAC').innerText.replace('*', ''));
+    const newVal = prompt("Definir Defesa (CA) Base:\n(Deixe em branco para voltar ao automático)", current);
+
+    if (newVal !== null) {
+        if (newVal.trim() === '') {
+            // Clear manual override
+            delete humanData.manualAC;
+            showToast("Defesa voltou para o cálculo automático.");
+        } else {
+            const parsed = parseInt(newVal);
+            if (!isNaN(parsed)) {
+                humanData.manualAC = parsed;
+                showToast(`Defesa base definida para ${parsed}`);
+            }
+        }
+        saveHuman();
+        updateStatsUI();
+    }
+};
+
 window.editSpeed = function () {
     const current = humanData.manualSpeed || 9;
     const newVal = prompt("Definir Deslocamento (em metros):", current);
@@ -602,8 +627,11 @@ function renderClassFeatures() {
         item.style.marginBottom = "8px";
 
         let desc = "Habilidade da Respiração.";
-        // Legacy Hook
-        if (window.HunterSystem && window.HunterSystem.FEAT_DESCRIPTIONS && window.HunterSystem.FEAT_DESCRIPTIONS[fStr]) {
+
+        // Priority: New DB -> Legacy HunterSystem
+        if (window.FEATURE_DESCRIPTIONS && window.FEATURE_DESCRIPTIONS[fStr]) {
+            desc = window.FEATURE_DESCRIPTIONS[fStr];
+        } else if (window.HunterSystem && window.HunterSystem.FEAT_DESCRIPTIONS && window.HunterSystem.FEAT_DESCRIPTIONS[fStr]) {
             desc = window.HunterSystem.FEAT_DESCRIPTIONS[fStr];
         }
 
@@ -1019,7 +1047,8 @@ function renderBreathing(forceStyleId = null) {
         { id: 'water', name: 'Água', icon: 'droplets', color: '#00b4d8' },
         { id: 'thunder', name: 'Trovão', icon: 'zap', color: '#ffd700' },
         { id: 'beast', name: 'Fera', icon: 'skull', color: '#7b8cde' },
-        { id: 'flame', name: 'Chamas', icon: 'flame', color: '#ff4d00' }
+        { id: 'flame', name: 'Chamas', icon: 'flame', color: '#ff4d00' },
+        { id: 'wind', name: 'Vento', icon: 'wind', color: '#56ab2f' }
     ];
 
     // Filter displayed styles
@@ -1117,7 +1146,7 @@ function unlockNewStyle() {
     const styleId = prompt("Digite o ID do estilo para desbloquear (water, thunder, beast, flame):");
     if (!styleId) return;
 
-    const validStyles = ['water', 'thunder', 'beast', 'flame'];
+    const validStyles = ['water', 'thunder', 'beast', 'flame', 'wind'];
     const s = styleId.toLowerCase().trim();
 
     if (!validStyles.includes(s)) {

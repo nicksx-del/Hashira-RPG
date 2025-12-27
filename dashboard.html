@@ -245,8 +245,9 @@
 
                 <!-- NEW STATS ROW with COMBAT ACTIONS -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px;">
-                    <div class="vital-box"
-                        style="text-align: center; padding: 10px; background:linear-gradient(135deg, rgba(255,255,255,0.05), rgba(0,0,0,0.5));">
+                    <div class="vital-box" onclick="editAC()"
+                        style="cursor:pointer; text-align: center; padding: 10px; background:linear-gradient(135deg, rgba(255,255,255,0.05), rgba(0,0,0,0.5));"
+                        title="Editar Defesa">
                         <div style="font-size: 0.65rem; color: #888; text-transform: uppercase;">Defesa</div>
                         <div id="dispAC" style="font-size: 1.4rem; font-weight: 800; color: #fff;">10</div>
                     </div>
@@ -602,9 +603,8 @@
                 </div>
             </div>
 
-            <!-- MISSION COMPLETE BUTTON -->
             <button onclick="completeMission()"
-                style="background:rgba(0, 180, 216, 0.1); border:1px solid var(--accent-primary); color:var(--accent-primary); padding:10px; border-radius:6px; font-weight:bold; cursor:pointer; display:flex; alignItems:center; justify-content:center; gap:8px; transition:all 0.2s;">
+                style="background:rgba(0, 180, 216, 0.1); border:1px solid var(--accent-primary); color:var(--accent-primary); padding:10px; border-radius:6px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s;">
                 <i data-lucide="check-circle" size="18"></i> Missão Realizada
             </button>
 

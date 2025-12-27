@@ -634,7 +634,7 @@
                         <div class="attr-label"><i data-lucide="swords" size="16" style="color:var(--blood-bright)"></i>
                             Força</div>
                         <div class="attr-input-group">
-                            <input type="range" min="8" max="15" value="8" style="--val:0%"
+                            <input type="range" id="input-str" min="6" max="18" step="2" value="8" style="--val:0%"
                                 oninput="updateStat('str', this.value)">
                             <div class="attr-val-box" id="val-str">8</div>
                         </div>
@@ -644,7 +644,8 @@
                         <div class="attr-label"><i data-lucide="wind" size="16" style="color:var(--blood-bright)"></i>
                             Destreza</div>
                         <div class="attr-input-group">
-                            <input type="range" min="8" max="15" value="8" oninput="updateStat('dex', this.value)">
+                            <input type="range" id="input-dex" min="6" max="18" step="2" value="8"
+                                oninput="updateStat('dex', this.value)">
                             <div class="attr-val-box" id="val-dex">8</div>
                         </div>
                     </div>
@@ -653,7 +654,8 @@
                         <div class="attr-label"><i data-lucide="shield" size="16" style="color:var(--blood-bright)"></i>
                             Constituição</div>
                         <div class="attr-input-group">
-                            <input type="range" min="8" max="15" value="8" oninput="updateStat('con', this.value)">
+                            <input type="range" id="input-con" min="6" max="18" step="2" value="8"
+                                oninput="updateStat('con', this.value)">
                             <div class="attr-val-box" id="val-con">8</div>
                         </div>
                     </div>
@@ -662,7 +664,8 @@
                         <div class="attr-label"><i data-lucide="brain" size="16" style="color:var(--blood-bright)"></i>
                             Inteligência</div>
                         <div class="attr-input-group">
-                            <input type="range" min="8" max="15" value="8" oninput="updateStat('int', this.value)">
+                            <input type="range" id="input-int" min="6" max="18" step="2" value="8"
+                                oninput="updateStat('int', this.value)">
                             <div class="attr-val-box" id="val-int">8</div>
                         </div>
                     </div>
@@ -671,7 +674,8 @@
                         <div class="attr-label"><i data-lucide="eye" size="16" style="color:var(--blood-bright)"></i>
                             Sabedoria</div>
                         <div class="attr-input-group">
-                            <input type="range" min="8" max="15" value="8" oninput="updateStat('wis', this.value)">
+                            <input type="range" id="input-wis" min="6" max="18" step="2" value="8"
+                                oninput="updateStat('wis', this.value)">
                             <div class="attr-val-box" id="val-wis">8</div>
                         </div>
                     </div>
@@ -680,7 +684,8 @@
                         <div class="attr-label"><i data-lucide="smile" size="16" style="color:var(--blood-bright)"></i>
                             Carisma</div>
                         <div class="attr-input-group">
-                            <input type="range" min="8" max="15" value="8" oninput="updateStat('cha', this.value)">
+                            <input type="range" id="input-cha" min="6" max="18" step="2" value="8"
+                                oninput="updateStat('cha', this.value)">
                             <div class="attr-val-box" id="val-cha">8</div>
                         </div>
                     </div>
@@ -906,16 +911,21 @@
         // ... REST OF LOGIC ...
 
         // Oni Point Buy Costs (6=-2, 8=0, 10=2, 12=4, 14=7, 16=11, 18=16)
+        // Oni Point Buy Costs
         const COSTS = { 6: -2, 8: 0, 10: 2, 12: 4, 14: 7, 16: 11, 18: 16 };
 
         function updateStat(stat, val) {
             val = parseInt(val);
+            console.log(`Updating ${stat} to ${val}`);
 
             // Calculate cost of other stats
             let usedPoints = 0;
             for (let key in state.stats) {
                 if (key !== stat) {
-                    usedPoints += COSTS[state.stats[key]] || 0;
+                    const sVal = state.stats[key];
+                    // Fallback to 0 if undefined, but warn
+                    const sCost = COSTS[sVal] !== undefined ? COSTS[sVal] : 0;
+                    usedPoints += sCost;
                 }
             }
 
@@ -923,11 +933,22 @@
             const cost = COSTS[val] !== undefined ? COSTS[val] : 0;
             const newCost = usedPoints + cost;
 
+            console.log(`Used: ${usedPoints}, NewItemCost: ${cost}, Total: ${newCost}`);
+
             if (newCost > 27) {
-                // Revert input via DOM
-                const input = document.querySelector(`input[oninput*="'${stat}'"]`);
+                // Revert input via ID
+                const input = document.getElementById(`input-${stat}`);
                 if (input) input.value = state.stats[stat];
-                if (window.alert) window.alert("Pontos insuficientes!");
+
+                // Show warning in UI instead of alerting repeatedly
+                const ptLabel = document.getElementById('pointsRemain');
+                const originalText = ptLabel.innerText;
+                ptLabel.innerText = "SEM PONTOS!";
+                ptLabel.style.color = "red";
+                setTimeout(() => {
+                    ptLabel.innerText = 27 - usedPoints - (COSTS[state.stats[stat]] || 0);
+                    ptLabel.style.color = "var(--accent-red)";
+                }, 1000);
                 return;
             }
 
@@ -955,19 +976,22 @@
 
         // Init Parts
         const pContainer = document.getElementById('particularitiesRef');
-        pContainer.innerHTML = ''; // Clear existing
-        PARTS.forEach(p => {
-            const el = document.createElement('div');
-            el.className = 'part-item';
-            el.onclick = () => togglePart(p.id, el);
-            el.innerHTML = `
-                <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px; color:white; font-weight:700;">
-                    <i data-lucide="${p.icon}" style="width:18px;"></i> ${p.name}
-                </div>
-                <div style="font-size:0.85rem; color:#888;">${p.desc}</div>
-            `;
-            pContainer.appendChild(el);
-        });
+        if (pContainer) {
+            pContainer.innerHTML = ''; // Force Clean
+            console.log("Rendering " + PARTS.length + " particularities.");
+            PARTS.forEach(p => {
+                const el = document.createElement('div');
+                el.className = 'part-item';
+                el.onclick = () => togglePart(p.id, el);
+                el.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px; color:white; font-weight:700;">
+                        <i data-lucide="${p.icon}" style="width:18px;"></i> ${p.name}
+                    </div>
+                    <div style="font-size:0.85rem; color:#888;">${p.desc}</div>
+                `;
+                pContainer.appendChild(el);
+            });
+        }
         lucide.createIcons();
 
         function togglePart(id, el) {

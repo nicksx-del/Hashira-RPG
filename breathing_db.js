@@ -258,13 +258,250 @@ const BREATHING_BEAST = {
 };
 
 // --- FLAME ---
+// --- FLAME ---
 const BREATHING_FLAME = {
     id: 'flame',
     name: 'Chamas',
-    description: 'Poderosa e apaixonada, queima os inimigos com golpes devastadores.',
+    description: 'Poderosa e apaixonada, queima os inimigos com golpes devastadores. Foca em alto dano e controle de área.',
     forms: [
-        { id: 'flame_1', name: "Primeira Forma: Shiranui", cost: 1, damage: "2d10 Fogo", range: "Linha 6m", desc: "Investida de chamas.", evolutions: ["Dano 3d10.", "Dano 4d10.", "Dano 5d10.", "Dano 6d10."] },
-        { id: 'flame_9', name: "Nona Forma: Rengoku", cost: 3, damage: "10d8 Fogo", range: "Linha 20m", desc: "Purgatório de chamas. (Nível 20)", isSpecial: true, reqLevel: 20, evolutions: [] }
+        {
+            id: 'flame_1',
+            name: "Primeira Forma: Shiranui",
+            cost: 1,
+            damage: "2d12 Fogo",
+            range: "Toque (Movimento)",
+            desc: "Investida rápida deixando rastro de fogo. Terreno difícil por 2 turnos. Teste Const ou Queimado.",
+            evolutions: [
+                "Dano aumenta para 3d12.",
+                "Dano aumenta para 4d12.",
+                "Dano aumenta para 5d12.",
+                "Dano 6d12. Ganha 12m deslocamento e mira no pescoço (+1 CD Const se fragilizado)."
+            ]
+        },
+        {
+            id: 'flame_2',
+            name: "Segunda Forma: Nobori Enten",
+            cost: 1,
+            damage: "2d12 Fogo",
+            range: "Toque",
+            desc: "Corte rápido de baixo para cima. Teste Const ou Queimado.",
+            evolutions: [
+                "Dano aumenta para 3d12.",
+                "Dano aumenta para 4d12.",
+                "Dano aumenta para 5d12.",
+                "Dano 6d12. Mira no pescoço (+1 CD Const se fragilizado)."
+            ]
+        },
+        {
+            id: 'flame_3',
+            name: "Terceira Forma: Kien Banjo",
+            cost: 1,
+            damage: "2d12 Fogo",
+            range: "Toque",
+            desc: "Similar à segunda, mas de cima para baixo. +6m deslocamento. Terreno difícil (2 turnos). Teste Const ou Queimado.",
+            evolutions: [
+                "Dano aumenta para 3d12.",
+                "Dano aumenta para 4d12.",
+                "Dano aumenta para 5d12.",
+                "Dano 6d12. Golpe extra (1d12 Fogo). +2 na CD Const."
+            ]
+        },
+        {
+            id: 'flame_4',
+            name: "Quarta Forma: Sei En no Uneri",
+            cost: 1,
+            damage: "Redução de Dano",
+            range: "Toque (Reação)",
+            desc: "Reação a ataque corpo a corpo. Reduz o dano recebido em 2d12.",
+            evolutions: [
+                "Redução aumenta para 3d12.",
+                "Redução aumenta para 4d12.",
+                "Redução aumenta para 5d12.",
+                "Redução 6d12. Ao defender, contra-ataca com 4d10 (Teste Const ou Queimado)."
+            ]
+        },
+        {
+            id: 'flame_5',
+            name: "Quinta Forma: Enko",
+            cost: 1,
+            damage: "2d12 Fogo",
+            range: "Toque",
+            desc: "Golpes poderosos na forma de tigre. Teste Const (Desvantagem) ou Queimado.",
+            evolutions: [
+                "Dano aumenta para 3d12.",
+                "Dano aumenta para 4d12.",
+                "Dano aumenta para 5d12.",
+                "Dano 6d12. Ataque à distância (Linha 9m)."
+            ]
+        },
+        {
+            id: 'flame_9_rengoku',
+            name: "Nona Forma: Rengoku",
+            cost: 2,
+            damage: "7d12 Fogo",
+            range: "Linha 24m",
+            desc: "Salto gigantesco que queima o terreno (difícil 2 turnos). Acerta pescoço. Dano automático de queimadura. Se fragilizado: +1 CD Const. (Nível 20)",
+            evolutions: [],
+            isSpecial: true,
+            reqLevel: 20
+        },
+        {
+            id: 'flame_9_taiyo',
+            name: "Nona Forma: Taiyo",
+            cost: 2,
+            damage: "7d12 Fogo",
+            range: "Toque",
+            desc: "Múltiplos golpes circulares como um sol. Teste Const para não ter 3 membros decepados + Queimado. (Nível 20 - Alternativa)",
+            evolutions: [],
+            isSpecial: true,
+            reqLevel: 20
+        }
+    ]
+};
+
+// --- WIND ---
+const BREATHING_WIND = {
+    id: 'wind',
+    name: 'Vento',
+    description: 'Agressiva e versátil, utiliza correntes de ar para infligir danos massivos.',
+    forms: [
+        {
+            id: 'wind_1',
+            name: "Primeira Forma: Jin Senpuu - Sogi",
+            cost: 1,
+            damage: "2d10 Perfurante",
+            range: "Linha 9m",
+            desc: "Ataque à distância em espiral. Alvo deve passar em Teste de Força ou ser empurrado.",
+            evolutions: [
+                "Dano aumenta para 3d10.",
+                "Dano aumenta para 4d10.",
+                "Dano aumenta para 5d10.",
+                "Dano 6d10. Acerta todos na área (15m x 3m). Teste de Destreza."
+            ]
+        },
+        {
+            id: 'wind_2',
+            name: "Segunda Forma: Shinato Kaze",
+            cost: 1,
+            damage: "2d12 Cortante",
+            range: "Toque",
+            desc: "Corte vertical com 4 garras de vento. Teste de Destreza para não ter mão decepada.",
+            evolutions: [
+                "Dano aumenta para 3d12.",
+                "Dano aumenta para 4d12.",
+                "Dano aumenta para 5d12.",
+                "Dano 6d12. Agora decepa um braço."
+            ]
+        },
+        {
+            id: 'wind_3',
+            name: "Terceira Forma: Seiran Fuju",
+            cost: 1,
+            damage: "Redução de Dano",
+            range: "Toque (Reação)",
+            desc: "Reação para reduzir dano corpo a corpo em 1d10.",
+            evolutions: [
+                "Redução aumenta para 3d10.",
+                "Redução aumenta para 4d10.",
+                "Redução aumenta para 5d10.",
+                "Redução 6d10. Se redução > dano, redireciona para inimigo."
+            ]
+        },
+        {
+            id: 'wind_4',
+            name: "Quarta Forma: Shoujou Sajinran",
+            cost: 1,
+            damage: "2d12 Cortante",
+            range: "Toque",
+            desc: "Vários golpes para gerar correntes descendentes. Pode usar como reação para se soltar de agarrão.",
+            evolutions: [
+                "Dano aumenta para 3d12.",
+                "Dano aumenta para 4d12.",
+                "Dano aumenta para 5d12.",
+                "Dano 6d12. Se usado como reação, faz jogada de acerto contra quem agarrou."
+            ]
+        },
+        {
+            id: 'wind_5',
+            name: "Quinta Forma: Kogarashi Oroshi",
+            cost: 1,
+            damage: "2d6 Cortante",
+            range: "Cilindro 3m (Caindo)",
+            desc: "Ataque no ar caindo. Cortes espirais. Teste de Destreza (metade).",
+            evolutions: [
+                "Dano 3d6, raio 6m.",
+                "Dano 4d6, raio 9m.",
+                "Dano 5d6, raio 12m.",
+                "Dano 6d6, raio 15m. Se falhar, meio movimento (Teste Const)."
+            ]
+        },
+        {
+            id: 'wind_6',
+            name: "Sexta Forma: Kokufuu Enran",
+            cost: 1,
+            damage: "2d12 Cortante",
+            range: "Toque",
+            desc: "Movimento ascendente de tornado. Teste de Destreza para não perder perna.",
+            evolutions: [
+                "Dano aumenta para 3d12.",
+                "Dano aumenta para 4d12.",
+                "Dano aumenta para 5d12.",
+                "Dano 6d12. Se errar, nova rolagem para acertar braço (Teste Const decepa)."
+            ]
+        },
+        {
+            id: 'wind_7',
+            name: "Sétima Forma: Tengu Kaze",
+            cost: 1,
+            damage: "2d12 Cortante",
+            range: "Toque",
+            desc: "Golpes no ar. +4m salto, sofre dano de queda. Dano dobrado em estruturas.",
+            evolutions: [
+                "Dano aumenta para 3d12.",
+                "Dano aumenta para 4d12.",
+                "Dano aumenta para 5d12.",
+                "Dano 6d12. Acerto obriga Teste de Const para não perder perna."
+            ]
+        },
+        {
+            id: 'wind_8',
+            name: "Oitava Forma: Rekkaza Kiri",
+            cost: 1,
+            damage: "2d12 Cortante",
+            range: "Toque",
+            desc: "Imenso turbilhão. Ganha +6m deslocamento e acaba atrás do inimigo. Inimigo faz Teste Const ou sofre corte profundo.",
+            evolutions: [
+                "Dano aumenta para 3d12.",
+                "Dano aumenta para 4d12.",
+                "Dano aumenta para 5d12.",
+                "Dano 6d12. Se falhar no primeiro teste, segundo Teste de Força ou corpo decepado."
+            ]
+        },
+        {
+            id: 'wind_9',
+            name: "Nona Forma: Idaten Taifuu",
+            cost: 1,
+            damage: "2d10 Perfurante",
+            range: "Linha 9m",
+            desc: "Salta e desfere golpes perfurantes. Teste de Destreza (metade).",
+            evolutions: [
+                "Dano aumenta para 3d10.",
+                "Dano aumenta para 4d10.",
+                "Dano aumenta para 5d10.",
+                "Dano 6d10. Falha também perde metade do deslocamento."
+            ]
+        },
+        {
+            id: 'wind_10_special',
+            name: "Técnica Especial (Ex: Storm/Fujin/Etc)",
+            cost: 2,
+            damage: "7d10 Variável",
+            range: "Variável",
+            desc: "Técnica de Nível 20 (Storm, Fujin, Seiran Fujin ou Hasagi). Escolha do usuário.",
+            evolutions: [],
+            isSpecial: true,
+            reqLevel: 20
+        }
     ]
 };
 
@@ -273,6 +510,7 @@ if (typeof window !== 'undefined') {
         water: BREATHING_WATER,
         thunder: BREATHING_THUNDER,
         beast: BREATHING_BEAST,
-        flame: BREATHING_FLAME
+        flame: BREATHING_FLAME,
+        wind: BREATHING_WIND
     };
 }

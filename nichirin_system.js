@@ -129,6 +129,16 @@ const NICHIRIN_ELEMENTS = {
         buffName: 'Calor Solar',
         buffDesc: '+1d4 dano extra contra Onis.',
         desc: 'Determinado, destino trágico, raro.'
+    },
+    // ESPECIAL
+    rainbow: {
+        name: 'Arco-Íris (Niji)',
+        color: '#ffffff', // Display as white text, effect handles the rest
+        glow: 'rgba(255, 255, 255, 0.8)',
+        class: 'fx-rainbow',
+        buffName: 'Cromaticidade',
+        buffDesc: '+1 em Carisma e Performance.',
+        desc: 'Vibrante, imprevisível, a cor de todas as almas.'
     }
 };
 

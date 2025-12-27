@@ -11,189 +11,279 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --bg-dark: #0a0a0f;
-            --bg-panel: #141419;
-            --text-main: #ffffff;
-            --text-muted: #888;
+            --bg-dark: #050505;
+            --bg-panel: rgba(20, 20, 25, 0.7);
+            --text-main: #f0f0f0;
+            --text-muted: #a0a0a0;
             --accent-red: #d90429;
             --accent-red-hover: #ef233c;
-            --border-color: #2a2a35;
+            --accent-gold: #ffd700;
+            --border-color: rgba(255, 255, 255, 0.1);
             --font-main: 'Outfit', sans-serif;
             --font-display: 'Cinzel', serif;
+            --glass-bg: rgba(20, 20, 25, 0.6);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
         * {
             box-sizing: border-box;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-red) #111;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #111;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-red);
+            border-radius: 3px;
         }
 
         body {
             margin: 0;
             padding: 0;
             background-color: var(--bg-dark);
+            background-image: url('assets/backgrounds/dark_Japanese_pattern.png'), linear-gradient(to bottom, #050505, #111);
+            background-blend-mode: overlay;
             color: var(--text-main);
             font-family: var(--font-main);
             overflow: hidden;
-            /* App layout */
             height: 100vh;
             display: flex;
         }
 
         /* --- LEFT SIDEBAR (Navigation) --- */
         .sidebar-left {
-            width: 250px;
+            width: 280px;
             background: var(--bg-panel);
-            border-right: 1px solid var(--border-color);
-            padding: 2rem 1.5rem;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-right: var(--glass-border);
+            padding: 2.5rem 1.5rem;
             display: flex;
             flex-direction: column;
-            gap: 2rem;
+            gap: 2.5rem;
+            box-shadow: 5px 0 30px rgba(0, 0, 0, 0.5);
+            z-index: 10;
         }
 
         .app-logo {
             font-family: var(--font-display);
             font-weight: 700;
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             color: white;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            text-shadow: 0 0 10px rgba(217, 4, 41, 0.5);
+            letter-spacing: 1px;
         }
 
         .nav-steps {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 0.8rem;
         }
 
         .nav-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 10px;
-            border-radius: 8px;
+            gap: 15px;
+            padding: 12px 16px;
+            border-radius: 12px;
             color: var(--text-muted);
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             text-decoration: none;
+            font-weight: 500;
+            border: 1px solid transparent;
         }
 
-        .nav-item:hover,
-        .nav-item.active {
-            background: hsla(0, 0%, 100%, 0.05);
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
             color: white;
+            transform: translateX(5px);
         }
 
         .nav-item.active {
-            border-right: 3px solid var(--accent-red);
+            background: linear-gradient(90deg, rgba(217, 4, 41, 0.15), transparent);
+            color: white;
+            border-left: 3px solid var(--accent-red);
+            border-color: rgba(217, 4, 41, 0.3);
         }
 
         .step-icon {
-            width: 24px;
-            height: 24px;
-            background: #222;
-            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
+            transition: 0.3s;
         }
 
         .nav-item.active .step-icon {
             background: var(--accent-red);
             color: white;
+            box-shadow: 0 0 15px var(--accent-red);
         }
 
         /* --- MAIN CONTENT (Middle) --- */
         .main-content {
             flex: 1;
             overflow-y: auto;
-            padding: 2rem 4rem;
+            padding: 3rem 5rem;
             scroll-behavior: smooth;
+            background: radial-gradient(circle at top right, rgba(20, 20, 30, 0.4), transparent 70%);
         }
 
         .page-header {
-            margin-bottom: 3rem;
+            margin-bottom: 4rem;
+            position: relative;
+            z-index: 2;
         }
 
         .breadcrumbs {
             color: var(--accent-red);
-            font-size: 0.8rem;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breadcrumbs::before {
+            content: '';
+            display: block;
+            width: 30px;
+            height: 2px;
+            background: var(--accent-red);
         }
 
         .page-title {
             font-family: var(--font-display);
-            font-size: 3rem;
+            font-size: 3.5rem;
             margin: 0;
-            transform: translateY(-5px);
+            line-height: 1;
+            background: linear-gradient(to right, #fff, #aaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         .page-subtitle {
             color: var(--text-muted);
-            margin-top: 5px;
+            margin-top: 10px;
             font-weight: 300;
+            font-size: 1.1rem;
+            max-width: 600px;
         }
 
         .form-section {
-            margin-bottom: 4rem;
-            scroll-margin-top: 2rem;
+            margin-bottom: 5rem;
+            scroll-margin-top: 3rem;
+            position: relative;
         }
 
         .section-header {
             display: flex;
-            align-items: baseline;
-            gap: 10px;
+            align-items: center;
+            gap: 15px;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-            margin-bottom: 2rem;
+            padding-bottom: 15px;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100px;
+            height: 3px;
+            background: var(--accent-red);
+            box-shadow: 0 0 10px var(--accent-red);
         }
 
         .sec-num {
             color: var(--accent-red);
             font-weight: 800;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             font-family: var(--font-display);
+            opacity: 0.8;
         }
 
         .sec-title {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: 700;
-            font-family: var(--font-main);
+            font-family: var(--font-display);
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         /* CARDS GRID (Race) */
         .grid-2 {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
         }
 
         .selection-card {
-            background: #1a1a20;
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            /* Matched to Index */
-            aspect-ratio: 1 / 1;
-            /* Square */
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid transparent;
+            border-radius: 20px;
+            aspect-ratio: 4/5;
+            /* Taller Aspect Ratio */
             position: relative;
             overflow: hidden;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .selection-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            padding: 2px;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.5;
+            transition: 0.4s;
         }
 
         .selection-card:hover {
-            border-color: var(--accent-red);
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .selection-card:hover::before {
+            opacity: 1;
+            background: linear-gradient(45deg, var(--accent-red), transparent, var(--accent-gold));
         }
 
         .selection-card.selected {
             border-color: var(--accent-red);
-            box-shadow: 0 0 0 2px var(--accent-red), 0 20px 40px rgba(217, 4, 41, 0.2);
-            transform: translateY(-5px);
+            box-shadow: 0 0 0 2px var(--accent-red), 0 20px 60px rgba(217, 4, 41, 0.4);
+            transform: translateY(-8px);
         }
 
         .card-bg-img {
@@ -203,14 +293,20 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.5;
-            transition: 0.5s;
+            opacity: 0.4;
+            transition: 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            filter: grayscale(40%) contrast(1.1);
         }
 
         .selection-card:hover .card-bg-img {
             opacity: 0.7;
-            transform: scale(1.05);
-            /* Smooth zoom */
+            transform: scale(1.1);
+            filter: grayscale(0%) contrast(1.2);
+        }
+
+        .selection-card.selected .card-bg-img {
+            opacity: 0.8;
+            filter: grayscale(0%);
         }
 
         .card-text {
@@ -218,39 +314,45 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            padding: 2rem;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.95), transparent);
+            padding: 2.5rem;
+            background: linear-gradient(to top, #000 10%, rgba(0, 0, 0, 0.8) 50%, transparent);
+            transform: translateY(10px);
+            transition: 0.4s;
+        }
+
+        .selection-card:hover .card-text {
+            transform: translateY(0);
         }
 
         .card-text h3 {
-            margin: 0 0 5px 0;
-            font-size: 1.8rem;
-            /* Larger Title */
+            margin: 0 0 8px 0;
+            font-size: 2.2rem;
             font-family: var(--font-display);
             text-transform: uppercase;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+            letter-spacing: 1px;
         }
 
         .card-text p {
             margin: 0;
-            font-size: 0.95rem;
+            font-size: 1rem;
             color: #ccc;
-            line-height: 1.4;
+            line-height: 1.5;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 1);
+            opacity: 0.9;
         }
 
         .selection-card.locked {
-            opacity: 0.6;
+            filter: grayscale(1) brightness(0.5);
+            opacity: 0.7;
             cursor: not-allowed;
-            filter: grayscale(1);
+            pointer-events: none;
+            /* Prevent click */
         }
 
         .selection-card.locked .card-bg-img {
-            opacity: 0.3;
-        }
-
-        .selection-card.locked:hover {
-            border-color: var(--border-color);
             transform: none;
-            box-shadow: none;
         }
 
         /* WIZARD STEPS */
@@ -267,151 +369,234 @@
         .step-nav-btns {
             display: flex;
             justify-content: space-between;
-            margin-top: 2rem;
+            margin-top: 4rem;
         }
 
         .btn-next,
         .btn-prev {
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            font-weight: 700;
+            padding: 1.2rem 2.5rem;
+            border-radius: 12px;
+            font-weight: 800;
             cursor: pointer;
             border: none;
             font-size: 1rem;
-            transition: 0.2s;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: var(--font-main);
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-next {
-            background: var(--accent-red);
+            background: linear-gradient(135deg, var(--accent-red), #9d0208);
             color: white;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            box-shadow: 0 10px 20px rgba(217, 4, 41, 0.3);
+        }
+
+        .btn-next::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
         }
 
         .btn-next:hover {
-            background: var(--accent-red-hover);
-            transform: translateX(5px);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(217, 4, 41, 0.5);
+        }
+
+        .btn-next:hover::after {
+            left: 100%;
         }
 
         .btn-prev {
-            background: #333;
-            color: white;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ccc;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
         }
 
         .btn-prev:hover {
-            background: #444;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
         }
 
         /* COMBAT STYLES (Small Cards) */
         .grid-4 {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
         }
 
         .style-btn {
-            background: #1a1a20;
+            background: var(--glass-bg);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1.5rem;
+            border-radius: 16px;
+            padding: 0;
+            /* Removing padding to let image fill */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 10px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 1/1.2;
+        }
+
+        .style-btn img {
+            transition: 0.4s;
+            filter: grayscale(0.5);
         }
 
         .style-btn:hover {
-            background: #222;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .style-btn:hover img {
+            transform: translateX(-50%) scale(1.1) !important;
+            filter: grayscale(0);
         }
 
         .style-btn.selected {
-            background: var(--accent-red);
-            color: white;
             border-color: var(--accent-red);
+            box-shadow: 0 0 0 2px var(--accent-red), 0 10px 30px rgba(217, 4, 41, 0.3);
+        }
+
+        .style-btn.selected img {
+            filter: grayscale(0);
+            transform: translateX(-50%) scale(1.05) !important;
         }
 
         .style-btn.locked {
-            opacity: 0.4;
+            opacity: 0.3;
             cursor: not-allowed;
-        }
-
-        .style-icon-box {
-            font-size: 1.5rem;
+            filter: grayscale(1);
         }
 
         /* NICHIRIN SECTION */
         .forge-container {
-            background: #121215;
+            background: rgba(10, 10, 12, 0.8);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 2rem;
+            border-radius: 20px;
+            padding: 2.5rem;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 2rem;
+            gap: 3rem;
             align-items: center;
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .forge-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, transparent, var(--accent-red), transparent);
+            opacity: 0.5;
         }
 
         .colors-row {
             display: flex;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 12px;
+            margin-top: 15px;
+            flex-wrap: wrap;
         }
 
         .color-dot {
-            width: 30px;
-            height: 30px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             cursor: pointer;
-            border: 2px solid transparent;
-            transition: transform 0.2s;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
         }
 
         .color-dot:hover {
             transform: scale(1.2);
+            z-index: 2;
         }
 
         .color-dot.selected {
             border-color: white;
-            transform: scale(1.1);
-            box-shadow: 0 0 10px currentColor;
+            transform: scale(1.3);
+            box-shadow: 0 0 15px currentColor;
+            z-index: 2;
         }
 
         .ds-input {
             width: 100%;
-            background: #08080a;
-            border: 1px solid #333;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: white;
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 5px;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 8px;
             font-family: var(--font-main);
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .ds-input:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent-red);
+            outline: none;
+            box-shadow: 0 0 20px rgba(217, 4, 41, 0.1);
         }
 
         .blade-preview-box {
-            height: 150px;
-            background: #08080a;
-            border-radius: 8px;
+            height: 180px;
+            background: #050505;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid #333;
+            border: 1px solid #222;
             position: relative;
+            box-shadow: inset 0 0 20px #000;
         }
 
         .preview-glow {
-            width: 80%;
-            height: 10px;
+            width: 85%;
+            height: 12px;
             background: white;
-            border-radius: 5px;
-            box-shadow: 0 0 15px white;
-            transition: 0.3s;
+            border-radius: 6px;
+            box-shadow: 0 0 20px white;
+            transition: box-shadow 0.4s, background 0.4s;
+            position: relative;
+        }
+
+        /* Blade Detail (Handle) */
+        .preview-glow::before {
+            content: '';
+            position: absolute;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 25px;
+            height: 16px;
+            background: #333;
+            border: 1px solid #555;
+            border-radius: 2px;
         }
 
         /* ATTRIBUTES SLIDERS */
@@ -419,22 +604,28 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .attr-label {
-            width: 140px;
+            width: 150px;
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            font-size: 1.1rem;
+            color: #ddd;
         }
 
         .attr-input-group {
             flex: 1;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
         }
 
         input[type="range"] {
@@ -442,34 +633,41 @@
             -webkit-appearance: none;
             appearance: none;
             height: 6px;
-            background: #333;
+            background: #222;
             border-radius: 3px;
+            cursor: pointer;
         }
 
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             background: var(--accent-red);
+            border: 2px solid #111;
             border-radius: 50%;
             cursor: pointer;
             transition: 0.2s;
+            box-shadow: 0 0 10px var(--accent-red);
         }
 
         input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
+            transform: scale(1.3);
+            background: white;
         }
 
         .attr-val-box {
-            background: #222;
-            width: 40px;
-            height: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            width: 45px;
+            height: 35px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 4px;
+            border-radius: 6px;
             font-weight: bold;
             font-family: var(--font-display);
+            font-size: 1.2rem;
+            color: var(--accent-gold);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .points-box {
@@ -750,7 +948,60 @@
             display: none;
         }
 
-        /* Wisteria Particles */
+        /* WIZARD STEPS ANIMATION */
+        .form-step {
+            display: none;
+            animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(217, 4, 41, 0.7);
+            }
+
+            70% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(217, 4, 41, 0);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(217, 4, 41, 0);
+            }
+        }
+
+        .points-box {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 1rem;
+            float: right;
+            transform: translateY(-5px);
+            box-shadow: 0 0 15px rgba(217, 4, 41, 0.2);
+            font-family: var(--font-display);
+        }
+
+        /* Wisteria Particles - Z-Index Fix */
         .wisteria-container {
             position: absolute;
             top: 0;
@@ -758,13 +1009,20 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 0;
+            z-index: 1;
+            /* Behind content but above bg */
             overflow: hidden;
+            mix-blend-mode: color-dodge;
         }
 
-        /* Ensure header has relative pos */
-        .page-header {
+        .main-content {
             position: relative;
+            z-index: 5;
+        }
+
+        .sidebar-left,
+        .sidebar-right {
+            z-index: 10;
         }
 
         .petal {
@@ -787,13 +1045,29 @@
             }
 
             50% {
-                transform: translateY(150px) rotate(180deg) translateX(50px);
+                transform: translateY(40vh) rotate(180deg) translateX(50px);
             }
 
             100% {
-                transform: translateY(300px) rotate(360deg) translateX(100px);
+                transform: translateY(100vh) rotate(360deg) translateX(100px);
                 opacity: 0;
             }
+        }
+
+        /* RGB RAINBOW ANIMATION */
+        @keyframes rainbow {
+            0% {
+                filter: hue-rotate(0deg);
+            }
+
+            100% {
+                filter: hue-rotate(360deg);
+            }
+        }
+
+        .rainbow-anim {
+            background: linear-gradient(0deg, red, orange, yellow, green, blue, indigo, violet) !important;
+            animation: rainbow 2s linear infinite;
         }
     </style>
 </head>
@@ -1023,9 +1297,81 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Vento (Sanemi) -->
+                        <div class="style-btn" onclick="selectCombatStyle('wind', this)"
+                            style="aspect-ratio:1/1; position:relative; overflow:hidden; border-radius:16px; transition:0.3s; background:#1a1a20; border:1px solid #333; height:auto;">
+                            <img src="assets/criação_personagem/Sanemi_colored_body-removebg-preview.png"
+                                style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); height:110%; width:auto; opacity:1; pointer-events:none; object-fit:contain; z-index:1;">
+
+                            <div
+                                style="position:absolute; bottom:0; left:0; width:100%; z-index:2; background:linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.6), transparent); padding:2rem 1rem 1rem 1rem; display:flex; flex-direction:column; align-items:center; justify-content:flex-end;">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <div style="background:rgba(86, 171, 47, 0.2); padding:6px; border-radius:50%;"><i
+                                            data-lucide="wind" style="color:#56ab2f; width:20px; height:20px;"></i>
+                                    </div>
+                                    <strong
+                                        style="color:white; font-size:1.4rem; font-family:'Cinzel', serif; letter-spacing:1px;">Vento</strong>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div style="font-size:0.8rem; color:#666; margin-top:15px; text-align:right;">* Outros estilos
                         disponíveis em níveis superiores.</div>
+                </div>
+
+                <!-- 2. FORGE (NICHIRIN BLADE) -->
+                <div>
+                    <h4 style="margin-top:0; color:#ddd; margin-bottom:1.5rem;">Sua Lâmina Nichirin</h4>
+                    <div class="forge-container">
+                        <!-- Left: Preview -->
+                        <div>
+                            <div class="blade-preview-box">
+                                <div id="bladeGlow" class="preview-glow"
+                                    style="background:#00b4d8; box-shadow:0 0 15px #00b4d8;"></div>
+                            </div>
+                            <input type="text" id="swordName" class="ds-input" placeholder="Nome da Espada (Opcional)"
+                                oninput="updatePreview()">
+                        </div>
+
+                        <!-- Right: Colors -->
+                        <div>
+                            <label style="color:#aaa; font-size:0.9rem;">Cor do Minério</label>
+                            <div class="colors-row" style="flex-wrap:wrap;">
+                                <!-- Standard Colors -->
+                                <div class="color-dot selected" style="background:#00b4d8;"
+                                    onclick="selectColor('#00b4d8', this)"></div> <!-- Blue -->
+                                <div class="color-dot" style="background:#ef233c;"
+                                    onclick="selectColor('#ef233c', this)"></div> <!-- Red -->
+                                <div class="color-dot" style="background:#ffb703;"
+                                    onclick="selectColor('#ffb703', this)"></div> <!-- Yellow -->
+                                <div class="color-dot" style="background:#56ab2f;"
+                                    onclick="selectColor('#56ab2f', this)"></div> <!-- Green -->
+                                <div class="color-dot" style="background:#7b8cde;"
+                                    onclick="selectColor('#7b8cde', this)"></div> <!-- Indigo -->
+                                <div class="color-dot" style="background:#f72585;"
+                                    onclick="selectColor('#f72585', this)"></div> <!-- Pink -->
+                                <div class="color-dot" style="background:#7209b7;"
+                                    onclick="selectColor('#7209b7', this)"></div> <!-- Purple -->
+                                <div class="color-dot" style="background:#3f37c9;"
+                                    onclick="selectColor('#3f37c9', this)"></div> <!-- Deep Blue -->
+                            </div>
+
+                            <label
+                                style="color:#aaa; font-size:0.9rem; margin-top:10px; display:block;">Especiais</label>
+                            <div class="colors-row">
+                                <div class="color-dot" style="background:#333; border:1px solid #555;"
+                                    onclick="selectColor('#333333', this)"></div> <!-- Black -->
+                                <div class="color-dot" style="background:#e0e0e0;"
+                                    onclick="selectColor('#e0e0e0', this)"></div> <!-- White -->
+
+                                <!-- RGB RAINBOW OPTION -->
+                                <div class="color-dot"
+                                    style="background: linear-gradient(0deg, red, orange, yellow, green, blue, indigo, violet); border: 2px solid white;"
+                                    onclick="selectColor('rgb', this)" title="Arco-íris Dinâmico">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -1163,12 +1509,12 @@
                 </div>
 
             </div>
-        </div>
 
-        <div class="step-nav-btns">
-            <button class="btn-prev" onclick="goToStep(2)"><i data-lucide="arrow-left"></i> Voltar</button>
-            <button class="btn-next" onclick="goToStep(4)">Próximo <i data-lucide="arrow-right"></i></button>
-        </div>
+
+            <div class="step-nav-btns">
+                <button class="btn-prev" onclick="goToStep(2)"><i data-lucide="arrow-left"></i> Voltar</button>
+                <button class="btn-next" onclick="goToStep(4)">Próximo <i data-lucide="arrow-right"></i></button>
+            </div>
         </div>
 
         <script>
@@ -2161,8 +2507,17 @@
             state.bladeColor = color;
             document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
             el.classList.add('selected');
-            document.getElementById('bladeGlow').style.backgroundColor = color;
-            document.getElementById('bladeGlow').style.boxShadow = `0 0 15px ${color}`;
+
+            const glow = document.getElementById('bladeGlow');
+
+            if (color === 'rgb') {
+                glow.classList.add('rainbow-anim');
+                glow.style.boxShadow = '0 0 20px rgba(255, 255, 255, 0.5)';
+            } else {
+                glow.classList.remove('rainbow-anim');
+                glow.style.background = color;
+                glow.style.boxShadow = `0 0 15px ${color}`;
+            }
         }
 
         function updateStat(stat, val) {
@@ -2231,7 +2586,7 @@
 
                 selectedCombatStyle = id;
                 element.classList.add('selected');
-                element.style.borderColor = (id === 'thunder' ? '#ffd700' : id === 'flame' ? '#ff4d00' : id === 'beast' ? '#7b8cde' : '#00b4d8');
+                element.style.borderColor = (id === 'thunder' ? '#ffd700' : id === 'flame' ? '#ff4d00' : id === 'beast' ? '#7b8cde' : id === 'wind' ? '#56ab2f' : '#00b4d8');
                 element.style.transform = 'scale(1.05)';
             }
         }
@@ -2294,7 +2649,8 @@
                 'water': "Respiração da Água",
                 'thunder': "Respiração do Trovão",
                 'beast': "Respiração da Fera",
-                'flame': "Respiração das Chamas"
+                'flame': "Respiração das Chamas",
+                'wind': "Respiração do Vento"
             };
 
             const finalChar = {

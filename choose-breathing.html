@@ -240,6 +240,20 @@
             background: linear-gradient(135deg, #ff416c, #ff4b2b);
         }
 
+        .theme-wind .breath-card-bg {
+            background: linear-gradient(135deg, #a8e063, #56ab2f);
+        }
+
+        .theme-wind .breath-icon {
+            color: #56ab2f;
+            border-color: #56ab2f;
+        }
+
+        .theme-wind:hover {
+            border-color: #56ab2f;
+            box-shadow: 0 0 30px rgba(86, 171, 47, 0.3);
+        }
+
 
         @keyframes fadeIn {
             from {
@@ -324,6 +338,20 @@
                 </div>
             </div>
 
+            <!-- WIND BREATHING (NEW) -->
+            <div class="breath-card theme-wind" onclick="selectBreathing('wind')">
+                <div class="breath-card-bg"></div>
+                <div class="breath-content">
+                    <div style="flex:1"></div>
+                    <div class="breath-icon"><i data-lucide="wind"></i></div>
+                    <div class="breath-name">Respiração do Vento</div>
+                    <div class="breath-desc">Ofensiva e selvagem. Cria vendavais que estraçalham tudo.</div>
+                    <button class="select-btn">
+                        Selecionar <i data-lucide="arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
             <!-- BEAST BREATHING (LOCKED) -->
             <div class="breath-card locked theme-beast">
                 <div class="breath-card-bg"></div>
@@ -386,7 +414,7 @@
                 return;
             }
 
-            if (type !== 'water') return; // Others locked
+            if (type !== 'water' && type !== 'wind') return; // Others locked (except wind now)
 
             finalizeSelection(type, null);
         }
@@ -425,6 +453,14 @@
                     "base_stats": { "hit_die": 8 },
                     "proficiencies": ["Acrobacia", "Intimidação"],
                     "mastery": subType // 'specialist' or 'versed'
+                };
+            } else if (type === 'wind') {
+                breathData = {
+                    "id": "class_wind",
+                    "name": "Respiração do Vento",
+                    "icon": "🌪️",
+                    "base_stats": { "hit_die": 10 },
+                    "proficiencies": ["Acrobacia", "Sobrevivência"]
                 };
             }
 
