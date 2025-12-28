@@ -275,6 +275,88 @@ const BREATHING_CLASS_DB = {
             19: { pe: 19, fury: 5, features: ["Incremento no Valor de Habilidade"] },
             20: { pe: 20, fury: 6, features: ["Técnica Especial da Respiração"] }
         }
+    },
+
+    // --- FLOR (FLOWER) ---
+    flower: {
+        name: "Respiração da Flor",
+        hitDie: 10,
+        hitDieavg: 6,
+        baseHP: 10,
+        proficiencies: {
+            armor: ["Leve", "Médio"],
+            weapons: ["Simples", "Marciais", "Katana"],
+            savingThrows: ["str", "dex"],
+            skillsCount: 2,
+            skillsList: ["Acrobacia", "Atletismo", "Intuição", "Percepção", "Sobrevivência"]
+        },
+        equipment: {
+            weapons: ["Uma Katana", "Uma Arma Simples"],
+            armor: ["Uniforme Leve ou Médio"]
+        },
+        levels: {
+            1: { pe: 1, features: ["Domínio", "Resiliente"] },
+            2: { pe: 2, features: ["Especialização", "Kaifuku"] },
+            3: { pe: 3, features: ["Técnicas de Respiração", "Petal Dance 'Única'"] },
+            4: { pe: 4, features: ["Incremento no Valor de Habilidade"] },
+            5: { pe: 5, features: ["Ataque Extra", "Controle de Danos"] },
+            6: { pe: 6, features: ["Ataque de Oportunidade Focado"] },
+            7: { pe: 7, features: ["Evolução da Respiração"] },
+            8: { pe: 8, features: ["Incremento no Valor de Habilidade"] },
+            9: { pe: 9, features: ["Lírio 'Única'"] },
+            10: { pe: 10, features: ["Evolução da Respiração", "Resiliente (2 Usos)"] },
+            11: { pe: 11, features: ["Ataque Extra (2)"] },
+            12: { pe: 12, features: ["Incremento no Valor de Habilidade", "Mizu (Dano/CA +2)"] },
+            13: { pe: 13, features: ["Evolução da Respiração"] },
+            14: { pe: 14, features: ["Violeta 'Única'"] },
+            15: { pe: 15, features: ["Potencialização Suprema", "Resiliente (3 Usos)", "Mizu (Reação 2d10)"] },
+            16: { pe: 16, features: ["Incremento no Valor de Habilidade"] },
+            17: { pe: 17, features: ["Evolução da Respiração (x3)"] },
+            18: { pe: 18, features: ["Resiliência Eterna"] },
+            19: { pe: 19, features: ["Incremento no Valor de Habilidade"] },
+            20: { pe: 20, features: ["Técnica Especial da Respiração"] }
+        }
+    },
+
+    // --- SERPENTE (SERPENT) ---
+    serpent: {
+        name: "Respiração da Serpente",
+        hitDie: 10,
+        hitDieavg: 6,
+        baseHP: 10,
+        proficiencies: {
+            armor: ["Leve", "Médio"],
+            weapons: ["Simples", "Marciais", "Katana"],
+            savingThrows: ["str", "dex"],
+            skillsCount: 2,
+            skillsList: ["Acrobacia", "Atletismo", "Intuição", "Percepção", "Sobrevivência"]
+        },
+        equipment: {
+            weapons: ["Uma Katana", "Uma Arma Simples"],
+            armor: ["Uniforme Leve ou Médio"]
+        },
+        levels: {
+            1: { pe: 1, features: ["Domínio", "Resiliente"] },
+            2: { pe: 2, features: ["Especialização", "Kaifuku"] },
+            3: { pe: 3, features: ["Técnicas de Respiração", "Snake Strike 'Única'", "Companheira 'Única'"] },
+            4: { pe: 4, features: ["Incremento no Valor de Habilidade"] },
+            5: { pe: 5, features: ["Ataque Extra", "Controle de Danos"] },
+            6: { pe: 6, features: ["Ataque de Oportunidade Focado"] },
+            7: { pe: 7, features: ["Evolução da Respiração"] },
+            8: { pe: 8, features: ["Incremento no Valor de Habilidade"] },
+            9: { pe: 9, features: ["Infra-Red 'Única'"] },
+            10: { pe: 10, features: ["Evolução da Respiração", "Resiliente (2 Usos)"] },
+            11: { pe: 11, features: ["Ataque Extra (2)"] },
+            12: { pe: 12, features: ["Incremento no Valor de Habilidade", "Mizu (Dano/CA +2)"] },
+            13: { pe: 13, features: ["Evolução da Respiração"] },
+            14: { pe: 14, features: ["Bote 'Única'"] },
+            15: { pe: 15, features: ["Potencialização Suprema", "Resiliente (3 Usos)", "Mizu (Reação 2d10)"] },
+            16: { pe: 16, features: ["Incremento no Valor de Habilidade"] },
+            17: { pe: 17, features: ["Evolução da Respiração (x3)"] },
+            18: { pe: 18, features: ["Resiliência Eterna"] },
+            19: { pe: 19, features: ["Incremento no Valor de Habilidade"] },
+            20: { pe: 20, features: ["Técnica Especial da Respiração"] }
+        }
     }
 };
 
@@ -343,7 +425,18 @@ const FEATURE_DESCRIPTIONS = {
     // --- NÉVOA FEATURES ---
     "Mist 'Única'": "Estilo de luta único. 'Velocidade' (+4.5m desl, ignora oport) ou 'Desaceleração' (+1 CA, +2 Stealth). Crítico e Turno Start permite troca.",
     "Tensai 'Única'": "Troca de instância rápida. Pode usar Ação Bônus ou Reação para mudar entre Velocidade e Desaceleração.",
-    "Gekisen 'Única'": "Ao realizar técnica ou ataque crítico, ganha +1 ataque extra (cumulativo com Ataque Extra)."
+    "Gekisen 'Única'": "Ao realizar técnica ou ataque crítico, ganha +1 ataque extra (cumulativo com Ataque Extra).",
+
+    // --- FLOR FEATURES ---
+    "Petal Dance 'Única'": "No início do turno, escolha um buff: +Prof na CA, Ignora Resistência, Empurrão 3m, +3m Movimento, Reposicionamento, Reação de Ataque, Troca com Aliado, Dano Necrótico Extra ou Vantagem em Ataques (mas sofre Adv).",
+    "Lírio 'Única'": "Crítico 19-20. Pode analisar inimigo (Sabedoria CD) para revelar um atributo.",
+    "Violeta 'Única'": "Proficiência em todos os testes de resistência contra ataques que você possa ver.",
+
+    // --- SERPENTE FEATURES ---
+    "Snake Strike 'Única'": "Uma vez por turno, adicione dano extra (inicia 2d4, escala com nível) se tiver vantagem ou aliado a 1.5m.",
+    "Companheira 'Única'": "Serpente companheira. Pode usar Ação de Ajuda e compartilha sentidos.",
+    "Infra-Red 'Única'": "Sente criaturas a até 9m, ignorando invisibilidade.",
+    "Bote 'Única'": "Pode rolar o dano duas vezes e ficar com o maior resultado. Usos igual bônus de proficiência."
 };
 
 window.BREATHING_CLASS_DB = BREATHING_CLASS_DB;

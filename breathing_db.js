@@ -698,6 +698,178 @@ const BREATHING_WIND = {
     ]
 };
 
+const BREATHING_FLOWER = {
+    id: 'flower',
+    name: 'Flor',
+    description: 'Derivada da Água. Ataques elegantes e visão aprimorada. Utiliza "Danças de Pétalas" para efeitos variados.',
+    forms: [
+        {
+            id: 'flower_2',
+            name: "Segunda Forma: Mikage Ume",
+            cost: 1,
+            damage: "Redução de Dano",
+            range: "Toque (Reação)",
+            desc: "Círculo defensivo de espadas. Reduz 2d10 dano. Se reduzir > recebido, ganha +1 CA contra atacante.",
+            evolutions: [
+                "Redução aumenta para 3d10.",
+                "Redução aumenta para 4d10.",
+                "Redução aumenta para 5d10.",
+                "Redução 6d10. Se não receber dano, ganha +3m movimento e +2 AC."
+            ]
+        },
+        {
+            id: 'flower_4',
+            name: "Quarta Forma: Beni Hanagoromo",
+            cost: 1,
+            damage: "2d10 Cortante",
+            range: "Toque",
+            desc: "Golpes rápidos e giratórios. Sabedoria CD para não ficar Incapacitado.",
+            evolutions: [
+                "Dano aumenta para 3d10.",
+                "Dano aumenta para 4d10.",
+                "Dano aumenta para 5d10.",
+                "Dano 6d10. Se falhar no save, você se move livremente."
+            ]
+        },
+        {
+            id: 'flower_5',
+            name: "Quinta Forma: Ada no Shakuyaku",
+            cost: 1,
+            damage: "2d12 Cortante",
+            range: "Toque",
+            desc: "Nove golpes graciosos. Constituição CD ou tem deslocamento reduzido pela metade.",
+            evolutions: [
+                "Dano aumenta para 3d12.",
+                "Dano aumenta para 4d12.",
+                "Dano aumenta para 5d12.",
+                "Dano 6d12. Golpes ignoram resistência."
+            ]
+        },
+        {
+            id: 'flower_6',
+            name: "Sexta Forma: Uzumomo",
+            cost: 1,
+            damage: "2d10 Cortante",
+            range: "Toque + Salto",
+            desc: "Salto e golpe giratório. +1 CD Con se criatura fragilizada. Reação para diminuir queda 6m.",
+            evolutions: [
+                "Dano aumenta para 3d10.",
+                "Dano aumenta para 4d10.",
+                "Dano aumenta para 5d10.",
+                "Dano 6d10. Dano torna-se Necrótico."
+            ]
+        },
+        {
+            id: 'flower_7',
+            name: "Sétima Forma: Haru no Ken",
+            cost: 2,
+            damage: "7d12 Necrótico",
+            range: "9m Linha",
+            desc: "Golpes à distância precisos. Constituição CD ou deslocamento reduzido a 0.",
+            evolutions: [],
+            isSpecial: true,
+            reqLevel: 15
+        },
+        {
+            id: 'flower_final',
+            name: "Última Forma: Higan Shugan",
+            cost: 2,
+            damage: "Buff (Visão Suprema)",
+            range: "Pessoal",
+            desc: "Concentra sangue nos olhos. 1 min: Todas as 'Petal Dance' ativas, visão câmera lenta. Custo: Visão permanente de um olho.",
+            evolutions: [],
+            isSpecial: true,
+            reqLevel: 20
+        }
+    ]
+};
+
+const BREATHING_SERPENT = {
+    id: 'serpent',
+    name: 'Serpente',
+    description: 'Derivada da Água. Imita movimentos de serpente com espada maleável. Foca em debitar e contornar defesas.',
+    forms: [
+        {
+            id: 'serpent_1',
+            name: "Primeira Forma: Idagari",
+            cost: 1,
+            damage: "2d10 Cortante",
+            range: "6m",
+            desc: "Golpe circular. Reação reduz 1d10 dano. Com Snake Strike: atinge outra criatura.",
+            evolutions: [
+                "Dano aumenta para 3d10, Redução 2d10.",
+                "Dano aumenta para 4d10, Redução 3d10.",
+                "Dano aumenta para 5d10, Redução 4d10.",
+                "Dano 6d10, Redução 4d10. Contra-ataque se atacou."
+            ]
+        },
+        {
+            id: 'serpent_2',
+            name: "Segunda Forma: Kyozo no Dokuga",
+            cost: 1,
+            damage: "2d10 Cortante",
+            range: "Toque",
+            desc: "Ataque na nuca. +1 CD Con. Com Snake Strike: +2 CD Con.",
+            evolutions: [
+                "Dano aumenta para 3d10.",
+                "Dano aumenta para 4d10.",
+                "Dano aumenta para 5d10.",
+                "Dano 6d10. Move 9m sem oportunidade."
+            ]
+        },
+        {
+            id: 'serpent_3',
+            name: "Terceira Forma: Toguro Jime",
+            cost: 1,
+            damage: "2d10 Cortante",
+            range: "Toque",
+            desc: "Espiral em torno do alvo. CD Con ou decepa membro. Snake Strike: CD Con ou decepa perna.",
+            evolutions: [
+                "Dano aumenta para 3d10.",
+                "Dano aumenta para 4d10.",
+                "Dano aumenta para 5d10.",
+                "Dano 6d10. +2 na Dificuldade CD."
+            ]
+        },
+        {
+            id: 'serpent_4',
+            name: "Quarta Forma: Jeija Sosei",
+            cost: 1,
+            damage: "2d12 2 Cabeças",
+            range: "Toque",
+            desc: "Dois golpes horizontais. Dano Necrótico. Snake Strike: Todo dano vira necrótico e não pode ser diminuído.",
+            evolutions: [
+                "Dano aumenta para 3d12.",
+                "Dano aumenta para 4d12.",
+                "Dano aumenta para 5d12.",
+                "Dano 6d12. +1 dado de dano."
+            ]
+        },
+        {
+            id: 'serpent_5',
+            name: "Quinta Forma: En'en Choda",
+            cost: 2,
+            damage: "7d12 Cortante",
+            range: "Raio 4.5m",
+            desc: "Múltiplos golpes em área. CD Con ou fragilizado (+2 CD). Snake Strike: +2 CD.",
+            evolutions: [],
+            isSpecial: true,
+            reqLevel: 15
+        },
+        {
+            id: 'serpent_6',
+            name: "Sexta Forma: Zettai Teki na Kyofu",
+            cost: 2,
+            damage: "7d10 Cortante",
+            range: "Toque (Move)",
+            desc: "Movimento fluido e ataque. Imagens de cobras dificultam defesa. Perda de movimentação.",
+            evolutions: [],
+            isSpecial: true,
+            reqLevel: 20
+        }
+    ]
+};
+
 if (typeof window !== 'undefined') {
     window.BreathingDB = {
         water: BREATHING_WATER,
@@ -706,6 +878,8 @@ if (typeof window !== 'undefined') {
         flame: BREATHING_FLAME,
         wind: BREATHING_WIND,
         stone: BREATHING_STONE,
-        mist: BREATHING_MIST
+        mist: BREATHING_MIST,
+        flower: BREATHING_FLOWER,
+        serpent: BREATHING_SERPENT
     };
 }

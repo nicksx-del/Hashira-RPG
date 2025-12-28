@@ -1097,7 +1097,9 @@ function renderBreathing(forceStyleId = null) {
         { id: 'flame', name: 'Chamas', icon: 'flame', color: '#ff4d00' },
         { id: 'wind', name: 'Vento', icon: 'wind', color: '#56ab2f' },
         { id: 'stone', name: 'Pedra', icon: 'mountain', color: '#6c757d' },
-        { id: 'mist', name: 'Névoa', icon: 'cloud-fog', color: '#4cc9f0' }
+        { id: 'mist', name: 'Névoa', icon: 'cloud-fog', color: '#4cc9f0' },
+        { id: 'flower', name: 'Flor', icon: 'flower-2', color: '#ff70a6' },
+        { id: 'serpent', name: 'Serpente', icon: 'waves', color: '#8a2be2' }
     ];
 
     // Filter displayed styles
@@ -1221,7 +1223,9 @@ function openDiscoveryModal() {
         { id: 'stone', name: 'Pedra', icon: 'mountain', color: '#6c757d', type: 'primary' },
 
         // Secondary
-        { id: 'mist', name: 'Névoa', icon: 'cloud-fog', color: '#4cc9f0', type: 'secondary', req: 'wind', reqName: 'Vento' }
+        { id: 'mist', name: 'Névoa', icon: 'cloud-fog', color: '#4cc9f0', type: 'secondary', req: 'wind', reqName: 'Vento' },
+        { id: 'flower', name: 'Flor', icon: 'flower-2', color: '#ff70a6', type: 'secondary', req: 'water', reqName: 'Água' },
+        { id: 'serpent', name: 'Serpente', icon: 'waves', color: '#8a2be2', type: 'secondary', req: 'water', reqName: 'Água' }
     ];
 
     const unlocked = humanData.unlockedStyles || ['water'];
@@ -1763,7 +1767,11 @@ function updateNichirinVisuals() {
         'flame': 'red',
         'beast': 'indigo',
         'stone': 'gray',
-        'mist': 'cyan'
+        'beast': 'indigo',
+        'stone': 'gray',
+        'mist': 'cyan',
+        'flower': 'pink',
+        'serpent': 'purple'
     };
 
     const colorClass = styleMap[currentBreathingStyle] || 'black';
@@ -1789,7 +1797,9 @@ function populateForgeUI() {
         { val: 'indigo', label: 'Minério Índigo (Fera)' },
         { val: 'gray', label: 'Minério Cinza (Pedra)' },
         { val: 'cyan', label: 'Minério Turquesa (Névoa)' },
-        { val: 'pink', label: 'Minério Rosa (Amor)' },
+        { val: 'pink', label: 'Minério Rosa (Flor)' },
+        { val: 'purple', label: 'Minério Roxo (Serpente)' },
+        { val: 'light-pink', label: 'Minério Rosa Claro (Amor)' },
         { val: 'black', label: 'Minério Negro (Sol/Desconhecido)' }
     ];
 
@@ -1891,7 +1901,9 @@ function finishForging(color) {
         'indigo': { t: 'Lâmina de Nichirin Bestial', d: 'Serrilhada e pronta para rasgar a carne.' },
         'gray': { t: 'Lâmina de Nichirin da Pedra', d: 'Cinza e sólida, pesada como uma montanha.' },
         'cyan': { t: 'Lâmina de Nichirin da Névoa', d: 'Branca como as nuvens, rápida como o pensamento.' },
-        'pink': { t: 'Lâmina de Nichirin do Amor', d: 'Flexível e mortal como um chicote.' },
+        'pink': { t: 'Lâmina de Nichirin da Flor', d: 'Rosa pálido, exala elegância e perigo.' },
+        'purple': { t: 'Lâmina de Nichirin da Serpente', d: 'Roxa e curvada, desliza como uma cobra.' },
+        'light-pink': { t: 'Lâmina de Nichirin do Amor', d: 'Flexível e mortal como um chicote.' },
         'black': { t: 'Lâmina de Nichirin Negra', d: 'Um presságio de infortúnio... ou de grande destino?' }
     };
 
