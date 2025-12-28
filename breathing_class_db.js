@@ -193,6 +193,88 @@ const BREATHING_CLASS_DB = {
             17: { pe: 17, features: [] }, 18: { pe: 18, features: [] }, 19: { pe: 19, features: [] },
             20: { pe: 20, features: [] }
         }
+    },
+
+    // --- PEDRA (STONE) ---
+    stone: {
+        name: "Respiração da Pedra",
+        hitDie: 12,
+        hitDieavg: 7,
+        baseHP: 12,
+        proficiencies: {
+            armor: ["Leve", "Médio", "Pesado"],
+            weapons: ["Simples", "Pesadas", "Únicas"],
+            savingThrows: ["str", "con"],
+            skillsCount: 2,
+            skillsList: ["Atletismo", "Intimidação", "Percepção", "Sobrevivência", "Natureza"]
+        },
+        equipment: {
+            weapons: ["Heavy Kusarigama"],
+            armor: ["Uniforme Pesado"]
+        },
+        levels: {
+            1: { pe: 1, destruidor: 2, features: ["Kusari", "Destruidor"] },
+            2: { pe: 2, destruidor: 2, features: ["Defesa Inabalável", "Corpo Fechado"] },
+            3: { pe: 3, destruidor: 2, features: ["Técnicas de Respiração", "Devastador 'Única'"] },
+            4: { pe: 4, destruidor: 2, features: ["Incremento no Valor de Habilidade"] },
+            5: { pe: 5, destruidor: 3, features: ["Ataque Extra", "Investida"] },
+            6: { pe: 6, destruidor: 3, features: ["Ataque de Oportunidade Destruidor"] },
+            7: { pe: 7, destruidor: 3, features: ["Evolução da Respiração"] },
+            8: { pe: 8, destruidor: 4, features: ["Incremento no Valor de Habilidade"] },
+            9: { pe: 9, destruidor: 4, features: ["Guardião Único 'Única'"] },
+            10: { pe: 10, destruidor: 4, features: ["Evolução da Respiração"] },
+            11: { pe: 11, destruidor: 5, features: ["Evolução Destruidora"] },
+            12: { pe: 12, destruidor: 5, features: ["Incremento no Valor de Habilidade"] },
+            13: { pe: 13, destruidor: 5, features: ["Evolução da Respiração"] },
+            14: { pe: 14, destruidor: 6, features: ["Sentinela 'Única'"] },
+            15: { pe: 15, destruidor: 6, features: ["Fúria Indomável"] },
+            16: { pe: 16, destruidor: 6, features: ["Incremento no Valor de Habilidade"] },
+            17: { pe: 17, destruidor: 7, features: ["Evolução da Respiração"] },
+            18: { pe: 18, destruidor: 7, features: ["Corpo Indestrutível"] },
+            19: { pe: 19, destruidor: 7, features: ["Incremento no Valor de Habilidade"] },
+            20: { pe: 20, destruidor: 8, features: ["Técnica Especial da Respiração"] }
+        }
+    },
+
+    // --- NÉVOA (MIST) ---
+    mist: {
+        name: "Respiração da Névoa",
+        hitDie: 10,
+        hitDieavg: 6,
+        baseHP: 10,
+        proficiencies: {
+            armor: ["Leve", "Médio"],
+            weapons: ["Simples", "Marciais", "Únicas", "Katana"],
+            savingThrows: ["dex", "con"],
+            skillsCount: 2,
+            skillsList: ["Acrobacia", "Atletismo", "História", "Intimidação", "Natureza", "Percepção", "Sobrevivência"]
+        },
+        equipment: {
+            weapons: ["Uma Arma Marcial ou Única", "Uma Katana"],
+            armor: ["Uniforme Leve ou Médio"]
+        },
+        levels: {
+            1: { pe: 1, fury: 2, features: ["Fúria", "Imparável"] },
+            2: { pe: 2, fury: 2, features: ["Manobras"] },
+            3: { pe: 3, fury: 2, features: ["Técnicas de Respiração", "Mist 'Única'"] },
+            4: { pe: 4, fury: 2, features: ["Incremento no Valor de Habilidade"] },
+            5: { pe: 5, fury: 2, features: ["Ataque Extra", "Defesa Agressiva"] },
+            6: { pe: 6, fury: 3, features: ["Ataque de Oportunidade Certeiro"] },
+            7: { pe: 7, fury: 3, features: ["Evolução da Respiração"] },
+            8: { pe: 8, fury: 3, features: ["Incremento no Valor de Habilidade"] },
+            9: { pe: 9, fury: 3, features: ["Tensai 'Única'"] },
+            10: { pe: 10, fury: 3, features: ["Evolução da Respiração"] },
+            11: { pe: 11, fury: 4, features: ["Ataque Extra (2)", "Dança dos Ventos"] },
+            12: { pe: 12, fury: 4, features: ["Incremento no Valor de Habilidade"] },
+            13: { pe: 13, fury: 4, features: ["Evolução da Respiração"] },
+            14: { pe: 14, fury: 4, features: ["Gekisen 'Única'"] },
+            15: { pe: 15, fury: 4, features: ["Reflexos Aprimorados"] },
+            16: { pe: 16, fury: 5, features: ["Incremento no Valor de Habilidade"] },
+            17: { pe: 17, fury: 5, features: ["Evolução da Respiração"] },
+            18: { pe: 18, fury: 5, features: ["Crítico Absoluto"] },
+            19: { pe: 19, fury: 5, features: ["Incremento no Valor de Habilidade"] },
+            20: { pe: 20, fury: 6, features: ["Técnica Especial da Respiração"] }
+        }
     }
 };
 
@@ -242,7 +324,26 @@ const FEATURE_DESCRIPTIONS = {
     "Kaisui 'Única'": "Herança de técnica especial de outra classe (Requer aprovação).",
     "Sukiru Mizu 'Única'": "Escolha 1 técnica para usar sem custo de PE (Usos=Prof).",
     "Potencialização Suprema": "Rolar novamente 2 dados de dano por turno em técnicas (mantenha o segundo).",
-    "Resiliência Eterna": "Regenera 15 + CON se estiver com < metade PV e > 0."
+    "Resiliência Eterna": "Regenera 15 + CON se estiver com < metade PV e > 0.",
+
+    // --- PEDRA FEATURES ---
+    "Kusari": "Kusarigama personalizada (4,5m alcance). Ação bônus ataque extra com outra ponta. Dobro dano em estruturas.",
+    "Destruidor": "Acertos consecutivos aumentam dano em +1 (reset ao errar). Começa c/ +Destruidor na tabela.",
+    "Defesa Inabalável": "Reação: Gasta pontos acumulados de Destruidor para reduzir dano (1pt = 1d6 reduzido).",
+    "Corpo Fechado": "+3 PV max +2/nível. CA Fixa 18 (não soma Des). Sobe para 20 (lv11) e 22 (lv18).",
+    "Devastador 'Única'": "Crítico obriga teste Const para não perder membro. Bônus para decepar.",
+    "Investida": "Pode usar ação de disparada como ação bônus se atacar no mesmo turno.",
+    "Ataque de Oportunidade Destruidor": "Reação ao inimigo sair alcance: Ataque derruba (Caído) se acertar.",
+    "Guardião Único 'Única'": "Gera cobertura para aliados em 4,5m (Meia/Total) enquanto tiver Destruidor max.",
+    "Evolução Destruidora": "Reseta Destruidor max para curar PV (Valor Destruidor). Limite diário.",
+    "Sentinela 'Única'": "Ação Bônus: Abdica 1 pt Destruidor para dar +1 CA a criatura na área.",
+    "Fúria Indomável": "1 min: +2 Dano, Imune Medo, Resiste tudo (-psíquico). Exaustão -2 atk/skill pós uso.",
+    "Corpo Indestrutível": "+2 For/Con (Max 22). Resistente a Concussão. +40 PV Max.",
+
+    // --- NÉVOA FEATURES ---
+    "Mist 'Única'": "Estilo de luta único. 'Velocidade' (+4.5m desl, ignora oport) ou 'Desaceleração' (+1 CA, +2 Stealth). Crítico e Turno Start permite troca.",
+    "Tensai 'Única'": "Troca de instância rápida. Pode usar Ação Bônus ou Reação para mudar entre Velocidade e Desaceleração.",
+    "Gekisen 'Única'": "Ao realizar técnica ou ataque crítico, ganha +1 ataque extra (cumulativo com Ataque Extra)."
 };
 
 window.BREATHING_CLASS_DB = BREATHING_CLASS_DB;

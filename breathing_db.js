@@ -359,7 +359,200 @@ const BREATHING_FLAME = {
     ]
 };
 
+// --- STONE ---
+const BREATHING_STONE = {
+    id: 'stone',
+    name: 'Pedra',
+    description: 'Robusta e sólida, foca em defesa impenetrável e ataques devastadores com a Kusarigama.',
+    forms: [
+        {
+            id: 'stone_1',
+            name: "Primeira Forma: Jamongan Sokyoku",
+            cost: 1,
+            damage: "2d12 Perfurante",
+            range: "Toque",
+            desc: "Arremessa ambos os lados da arma. Teste de Constituição para não ter deslocamento reduzido pela metade.",
+            evolutions: [
+                "Dano aumenta para 3d12.",
+                "Dano aumenta para 4d12.",
+                "Dano aumenta para 5d12.",
+                "Dano 6d12. Falha no teste reduz deslocamento a zero."
+            ]
+        },
+        {
+            id: 'stone_2',
+            name: "Segunda Forma: Tenmen Kudaki",
+            cost: 1,
+            damage: "1d12 Cortante + 2d12 Concussão",
+            range: "Toque",
+            desc: "Pisa na corrente para ataque rápido. Teste de Constituição ou perde uma perna.",
+            evolutions: [
+                "Dano +1d12 (Totais aumentam progressivamente).",
+                "Dano aumenta base de Cortante e Concussão.", // Simplifying for automated text
+                "Dano massivo de esmagamento.",
+                "Dano devastador. Se fragilizada, perde braço ou perna garantido."
+            ]
+        },
+        {
+            id: 'stone_3',
+            name: "Terceira Forma: Ganko no Hadae",
+            cost: 1,
+            damage: "Redução de Dano",
+            range: "Toque (Reação)",
+            desc: "Defensiva. Desfere múltiplos golpes para defender. Reduz 2d10 do dano recebido.",
+            evolutions: [
+                "Redução aumenta para 3d10.",
+                "Redução aumenta para 4d10.",
+                "Redução aumenta para 5d10.",
+                "Redução 6d10. Se redução > dano original, atacante faz Teste Destreza ou recebe metade do dano."
+            ]
+        },
+        {
+            id: 'stone_4',
+            name: "Quarta Forma: Ryumongan Sokusei",
+            cost: 1,
+            damage: "2d12 Cortante",
+            range: "Toque",
+            desc: "Segura nas correntes atacando com força total. Teste Const ou perde um braço.",
+            evolutions: [
+                "Dano aumenta para 3d12.",
+                "Dano aumenta para 4d12.",
+                "Dano aumenta para 5d12.",
+                "Dano 6d12. Teste Const ou deslocamento zero."
+            ]
+        },
+        {
+            id: 'stone_5',
+            name: "Quinta Forma: Garin Gyobu",
+            cost: 1,
+            damage: "2d12 Cortante",
+            range: "Toque",
+            desc: "Ataque de precisão p/ cortar pescoço. Se fragilizada, +1 Dificuldade Const.",
+            evolutions: [
+                "Dano aumenta para 3d12.",
+                "Dano aumenta para 4d12.",
+                "Dano aumenta para 5d12.",
+                "Dano 6d12. Teste Resistência Constituição para não perder perna se Destruidor no máximo."
+            ]
+        },
+        {
+            id: 'stone_6_jishin',
+            name: "Sexta Forma: Jishin",
+            cost: 2,
+            damage: "7d10 Concussão",
+            range: "Cilindro 10m",
+            desc: "Múltiplos ataques no chão, tremor em área. Todos fazem Teste Destreza ou Caído.",
+            evolutions: [],
+            isSpecial: true,
+            reqLevel: 20
+        }
+    ]
+};
+
 // --- WIND ---
+const BREATHING_MIST = {
+    id: 'mist',
+    name: 'Névoa',
+    description: 'Derivada do Vento, confunde o oponente com oscilações bruscas de velocidade e ocultação.',
+    forms: [
+        {
+            id: 'mist_1',
+            name: "Primeira Forma: Suiten Togasumi",
+            cost: 1,
+            damage: "2d12 Cortante",
+            range: "Toque + 1.5m",
+            desc: "Ataque frontal ganhando alcance. Garante mudança para instância 'Velocidade'.",
+            evolutions: [
+                "Dano aumenta para 3d12.",
+                "Dano aumenta para 4d12.",
+                "Dano aumenta para 5d12.",
+                "Dano 6d12. +3m de alcance."
+            ]
+        },
+        {
+            id: 'mist_2',
+            name: "Segunda Forma: Kyozan Muken",
+            cost: 1,
+            damage: "2d10 Cortante",
+            range: "Toque",
+            desc: "Velocidade: Distribui dano entre inimigos. Desaceleração: Dobro dano estrutura ou Reação para soltar agarrão.",
+            evolutions: [
+                "Dano aumenta para 3d10.",
+                "Dano aumenta para 4d10.",
+                "Dano aumenta para 5d10.",
+                "Dano 6d10. Pode escolher trocar de instância."
+            ]
+        },
+        {
+            id: 'mist_3',
+            name: "Terceira Forma: Kasan no Shibuki",
+            cost: 1,
+            damage: "Redução de Dano",
+            range: "Toque (Reação)",
+            desc: "Cria névoa para se defender. Reduz 2d12 do dano recebido.",
+            evolutions: [
+                "Redução aumenta para 3d12.",
+                "Redução aumenta para 4d12.",
+                "Redução aumenta para 5d12.",
+                "Redução 6d12. Pode tentar se esconder (Furtividade) após usar."
+            ]
+        },
+        {
+            id: 'mist_4',
+            name: "Quarta Forma: Iryuukiri",
+            cost: 1,
+            damage: "2d12 Cortante",
+            range: "Toque",
+            desc: "Saque rápido. Única em 'Velocidade'. Se for primeira ação, +5 Acerto e rola dano 2 vezes.",
+            evolutions: [
+                "Dano aumenta para 3d12.",
+                "Dano aumenta para 4d12.",
+                "Dano aumenta para 5d12.",
+                "Dano 6d12. Movimenta-se sem ataques de oportunidade após ataque."
+            ]
+        },
+        {
+            id: 'mist_5',
+            name: "Quinta Forma: Kaun no Umi",
+            cost: 1,
+            damage: "2d10 Cortante",
+            range: "Toque + 3m Move",
+            desc: "Ataque com deslocamento. Se reagirem, pode rolar o dano da técnica contra a reação. Muda para 'Desaceleração'.",
+            evolutions: [
+                "Dano aumenta para 3d10.",
+                "Dano aumenta para 4d10.",
+                "Dano aumenta para 5d10.",
+                "Dano 6d10. Gaste 1 PE para próximo ataque ser Crítico Automático."
+            ]
+        },
+        {
+            id: 'mist_6',
+            name: "Sexta Forma: Tsuki n Kashou",
+            cost: 1,
+            damage: "2d12 Cortante",
+            range: "Toque + Salto",
+            desc: "Ataque com salto ou queda. Anula dano de queda de até 6m. Apenas 'Desaceleração'.",
+            evolutions: [
+                "Dano aumenta para 3d12.",
+                "Dano aumenta para 4d12.",
+                "Dano aumenta para 5d12.",
+                "Dano 6d12. Gaste 1 PE para impor Desvantagem no próximo ataque do alvo."
+            ]
+        },
+        {
+            id: 'mist_7_oboro',
+            name: "Sétima Forma: Oboro",
+            cost: 2,
+            damage: "Nuvem (Buff/Debuff)",
+            range: "6m Raio",
+            desc: "Cria névoa densa. Terreno difícil, visibilidade reduzida (-5 Percepção). Usa ambas instâncias. Crítico decepa pescoço fácil (+3 Dificuldade).",
+            evolutions: [],
+            isSpecial: true,
+            reqLevel: 20
+        }
+    ]
+};
+
 const BREATHING_WIND = {
     id: 'wind',
     name: 'Vento',
@@ -511,6 +704,8 @@ if (typeof window !== 'undefined') {
         thunder: BREATHING_THUNDER,
         beast: BREATHING_BEAST,
         flame: BREATHING_FLAME,
-        wind: BREATHING_WIND
+        wind: BREATHING_WIND,
+        stone: BREATHING_STONE,
+        mist: BREATHING_MIST
     };
 }

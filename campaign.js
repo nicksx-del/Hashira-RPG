@@ -234,26 +234,39 @@ window.CampaignSystem = {
     },
 
     // --- COMBAT LOGIC ---
+    // --- COMBAT LOGIC ---
     startCombat: function (campId) {
         const list = this.getCampaigns();
         const c = list.find(x => x.id === campId);
         if (!c) return;
 
+        // Reset Round
+        c.combat.active = true;
+        c.combat.round = 1;
+        c.combat.turnIndex = 0;
+
+        // Auto-Roll Initiative for Monsters
+        if (c.monsters) {
+            c.monsters.forEach(m => {
+                const dex = m.stats ? m.stats.dex : 10;
+                const mod = Math.floor((dex - 10) / 2);
+                const roll = Math.floor(Math.random() * 20) + 1;
+                m.initiative = roll + mod;
+            });
+        }
+
         // Collect all IDs
         const allIds = [
-            ...c.players.map(p => ({ id: p.charId, val: p.initiative })),
-            ...c.monsters.map(m => ({ id: m.id, val: m.initiative }))
+            ...c.players.map(p => ({ id: p.charId, val: p.initiative || 0 })),
+            ...c.monsters.map(m => ({ id: m.id, val: m.initiative || 0 }))
         ];
 
         // Sort descending
         allIds.sort((a, b) => b.val - a.val);
 
-        c.combat.active = true;
-        c.combat.round = 1;
-        c.combat.turnIndex = 0;
         c.combat.order = allIds.map(x => x.id);
 
-        this.addLog(campId, "⚔️ Combate Iniciado!", "system");
+        this.addLog(campId, "⚔️ Combate Iniciado! Iniciativas Roladas.", "system");
         this.saveCampaigns(list);
     },
 
@@ -383,9 +396,26 @@ window.CampaignSystem = {
             try {
                 const msg = JSON.parse(event.data);
                 if (msg.type === 'SYNC_DATA') {
-                    // Update Local Data
+                    // Update Local Data (Player View)
                     console.log('📥 Received SYNC:', msg.payload);
                     this.handleSync(msg.payload);
+                } else if (msg.type === 'PLAYER_SYNCED') {
+                    // DM View: Player updated themselves
+                    console.log('📥 Player Synced:', msg.charId, msg.payload);
+                    // Dispatch event for DM Panel
+                    window.dispatchEvent(new CustomEvent('character-synced', {
+                        detail: { id: msg.charId, ...msg.payload }
+                    }));
+
+                    // Also update campaign storage if possible?
+                    // DM Panel listener updates 'currentCamp' in memory. 
+                    // We should also update the persistent list.
+                    const list = this.getCampaigns();
+                    // We don't have campId here easily unless we store it. 
+                    // But DM Panel will likely save on next action.
+                    // Ideally we save here too.
+                    // Using msg.charId lookup is inefficient across all campaigns.
+                    // Rely on DM Panel listener for now as it has context.
                 }
             } catch (e) { console.error(e); }
         };

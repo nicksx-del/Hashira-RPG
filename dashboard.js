@@ -64,7 +64,8 @@ function initDashboard() {
 
     updateVitalsUI();
     renderAttributes();
-    renderProficiencies(); // NEW
+    renderAttributes();
+    if (typeof renderProficiencies === 'function') renderProficiencies();
     renderBreathing();
     renderBackgroundSkills();
     if (window.renderClassFeaturesInGrimoire) window.renderClassFeaturesInGrimoire(); // NEW TAB
@@ -1094,7 +1095,9 @@ function renderBreathing(forceStyleId = null) {
         { id: 'thunder', name: 'Trovão', icon: 'zap', color: '#ffd700' },
         { id: 'beast', name: 'Fera', icon: 'skull', color: '#7b8cde' },
         { id: 'flame', name: 'Chamas', icon: 'flame', color: '#ff4d00' },
-        { id: 'wind', name: 'Vento', icon: 'wind', color: '#56ab2f' }
+        { id: 'wind', name: 'Vento', icon: 'wind', color: '#56ab2f' },
+        { id: 'stone', name: 'Pedra', icon: 'mountain', color: '#6c757d' },
+        { id: 'mist', name: 'Névoa', icon: 'cloud-fog', color: '#4cc9f0' }
     ];
 
     // Filter displayed styles
@@ -1188,30 +1191,241 @@ function renderBreathing(forceStyleId = null) {
 }
 
 // Unlock New Style
-function unlockNewStyle() {
-    const styleId = prompt("Digite o ID do estilo para desbloquear (water, thunder, beast, flame):");
-    if (!styleId) return;
+// --- DISCOVERY SYSTEM ---
+window.unlockNewStyle = function () {
+    openDiscoveryModal();
+};
 
-    const validStyles = ['water', 'thunder', 'beast', 'flame', 'wind'];
-    const s = styleId.toLowerCase().trim();
+function openDiscoveryModal() {
+    const m = document.getElementById('discoveryModal');
+    const sel = document.getElementById('discoverySelection');
+    const anim = document.getElementById('discoveryAnimation');
+    const grid = document.getElementById('stylesGrid');
 
-    if (!validStyles.includes(s)) {
-        showToast("Estilo não encontrado ou inválido.", "error");
-        return;
+    if (!m || !grid) return;
+
+    // Reset State
+    sel.style.display = 'block';
+    anim.style.display = 'none';
+    m.style.display = 'flex';
+    grid.innerHTML = "";
+    grid.style.display = 'block'; // Reset grid to block to allow headers
+
+    const allStyles = [
+        // Primary
+        { id: 'water', name: 'Água', icon: 'droplets', color: '#00b4d8', type: 'primary' },
+        { id: 'thunder', name: 'Trovão', icon: 'zap', color: '#ffd700', type: 'primary' },
+        { id: 'beast', name: 'Fera', icon: 'skull', color: '#7b8cde', type: 'primary' },
+        { id: 'flame', name: 'Chamas', icon: 'flame', color: '#ff4d00', type: 'primary' },
+        { id: 'wind', name: 'Vento', icon: 'wind', color: '#56ab2f', type: 'primary' },
+        { id: 'stone', name: 'Pedra', icon: 'mountain', color: '#6c757d', type: 'primary' },
+
+        // Secondary
+        { id: 'mist', name: 'Névoa', icon: 'cloud-fog', color: '#4cc9f0', type: 'secondary', req: 'wind', reqName: 'Vento' }
+    ];
+
+    const unlocked = humanData.unlockedStyles || ['water'];
+
+    // renderSection Helper
+    const renderSection = (title, styles) => {
+        if (styles.length === 0) return;
+
+        const header = document.createElement('h3');
+        header.style.color = '#888';
+        header.style.fontFamily = "'Cinzel', serif";
+        header.style.borderBottom = '1px solid #333';
+        header.style.paddingBottom = '5px';
+        header.style.marginTop = '20px';
+        header.textContent = title;
+        grid.appendChild(header);
+
+        const subGrid = document.createElement('div');
+        subGrid.style.display = 'grid';
+        subGrid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(220px, 1fr))';
+        subGrid.style.gap = '25px';
+        subGrid.style.marginBottom = '30px';
+
+        styles.forEach(s => {
+            const isOwned = unlocked.includes(s.id);
+            const hasReq = !s.req || unlocked.includes(s.req);
+
+            // Skip owned? Or show as owned? User wants "Desbloquear", so skip owned usually. 
+            // But let's skip owned to keep it clean, as per original logic.
+            if (isOwned) return;
+
+            const card = document.createElement('div');
+            card.className = 'discovery-card';
+
+            if (!hasReq) {
+                // LOCKED STATE
+                card.style.opacity = '0.6';
+                card.style.filter = 'grayscale(1)';
+                card.style.cursor = 'not-allowed';
+                card.innerHTML = `
+                    <div style="position:absolute; top:10px; right:15px; color:#aaa;"><i data-lucide="lock" size="20"></i></div>
+                    <div class="icon-wrapper" style="border-color:#444;">
+                        <i data-lucide="${s.icon}" color="#666" size="32"></i>
+                    </div>
+                    <h3 style="color:#aaa; margin:0 0 5px 0; font-family:'Cinzel', serif;">${s.name}</h3>
+                    <div style="color:#d90429; font-size:0.8rem; font-weight:bold; margin-top:5px;">
+                        Requer: Respiração do ${s.reqName}
+                    </div>
+                `;
+            } else {
+                // AVAILABLE STATE
+                card.innerHTML = `
+                    <div class="icon-wrapper">
+                        <i data-lucide="${s.icon}" color="${s.color}" size="32"></i>
+                    </div>
+                    <h3 style="color:#fff; margin:0 0 5px 0; font-family:'Cinzel', serif;">${s.name}</h3>
+                    <span style="color:#666; font-size:0.8rem;">Toque para Meditar</span>
+                `;
+                card.onclick = () => startDiscovery(s);
+            }
+            subGrid.appendChild(card);
+        });
+
+        if (subGrid.children.length > 0) {
+            grid.appendChild(subGrid);
+        } else {
+            header.remove(); // Remove header if empty
+        }
+    };
+
+    // Filter
+    const primary = allStyles.filter(s => s.type === 'primary');
+    const secondary = allStyles.filter(s => s.type === 'secondary');
+
+    renderSection("Respirações Primordiais", primary);
+    renderSection("Respirações Derivadas", secondary);
+
+    if (grid.children.length === 0) {
+        grid.innerHTML = `<div style="color:#666; font-style:italic; text-align:center; padding:20px;">
+            Você já dominou todas as respirações disponíveis.
+        </div>`;
     }
 
-    if (!humanData.unlockedStyles) humanData.unlockedStyles = [];
-
-    if (humanData.unlockedStyles.includes(s)) {
-        showToast("Você já possui este estilo.", "info");
-        return;
-    }
-
-    humanData.unlockedStyles.push(s);
-    saveHuman();
-    showToast("Novo Estilo Desbloqueado!", "success");
-    renderBreathing(s);
+    if (window.lucide) lucide.createIcons();
 }
+
+let pendingDiscoveryStyle = null;
+
+function startDiscovery(style) {
+    pendingDiscoveryStyle = style;
+
+    // Switch to Animation View
+    document.getElementById('discoverySelection').style.display = 'none';
+    const anim = document.getElementById('discoveryAnimation');
+    anim.style.display = 'flex';
+
+    // Elements
+    const bg = document.getElementById('da-bg');
+    const icon = document.getElementById('da-icon');
+    const title = document.getElementById('da-title');
+    const sub = document.getElementById('da-subtitle');
+    const btn = document.getElementById('da-btn');
+    const ring = document.getElementById('da-icon-ring');
+    const glow = document.getElementById('da-icon-glow');
+    const cont = document.getElementById('da-icon-container');
+
+    // Setup Visuals
+    bg.style.background = `radial-gradient(circle, ${style.color}40 0%, #000 70%)`;
+    icon.setAttribute('data-lucide', style.icon);
+    icon.style.color = style.color;
+    title.textContent = `RESPIRAÇÃO DA ${style.name.toUpperCase()}`;
+    title.style.color = style.color;
+
+    ring.style.borderColor = style.color;
+    glow.style.boxShadow = `0 0 60px ${style.color}`;
+
+    if (window.lucide) lucide.createIcons();
+
+    // Reset Animations
+    bg.style.opacity = 0;
+    cont.style.opacity = 0;
+    cont.style.transform = 'scale(0.5)';
+    title.style.opacity = 0;
+    title.style.transform = 'translateY(20px)';
+    sub.style.opacity = 0;
+    btn.style.opacity = 0;
+    btn.style.pointerEvents = 'none';
+
+    // --- SEQUENCE ---
+    // 0s: Fade In BG & Icon
+    setTimeout(() => {
+        bg.style.opacity = 1;
+        cont.style.opacity = 1;
+        cont.style.transform = 'scale(1)';
+        createDiscoveryParticles(style.color);
+
+        // Add pulse
+        ring.classList.add('anim-pulse');
+
+        // Shake effect on impact
+        setTimeout(() => {
+            const stage = document.body; // Shake screen slightly? or just container
+            cont.classList.add('anim-shake');
+        }, 600);
+
+    }, 100);
+
+    // 1.5s: Title Reveal
+    setTimeout(() => {
+        title.style.opacity = 1;
+        title.style.transform = 'translateY(0)';
+    }, 1200);
+
+    // 2.0s: Subtitle
+    setTimeout(() => {
+        sub.style.opacity = 1;
+    }, 1800);
+
+    // 3.0s: Button
+    setTimeout(() => {
+        btn.style.opacity = 1;
+        btn.style.pointerEvents = 'all';
+    }, 2500);
+}
+
+function createDiscoveryParticles(color) {
+    const con = document.getElementById('da-particles');
+    con.innerHTML = '';
+    for (let i = 0; i < 40; i++) {
+        const p = document.createElement('div');
+        p.className = 'discovery-particle';
+        p.style.backgroundColor = color;
+        p.style.left = Math.random() * 100 + '%';
+        p.style.top = (50 + Math.random() * 50) + '%';
+        p.style.opacity = Math.random();
+        p.style.transform = `scale(${Math.random() * 2})`;
+        p.style.animationDuration = (1 + Math.random() * 2) + 's';
+        p.style.animationDelay = (Math.random() * 0.5) + 's';
+        con.appendChild(p);
+    }
+}
+
+window.finishDiscovery = function () {
+    if (!pendingDiscoveryStyle) return;
+
+    // Unlock
+    if (!humanData.unlockedStyles.includes(pendingDiscoveryStyle.id)) {
+        humanData.unlockedStyles.push(pendingDiscoveryStyle.id);
+    }
+
+    // Switch to new style
+    humanData.breathingStyle = pendingDiscoveryStyle.id;
+    saveHuman();
+
+    // Close & Render
+    document.getElementById('discoveryModal').style.display = 'none';
+    renderBreathing(humanData.breathingStyle);
+    showToast(`${pendingDiscoveryStyle.name} desbloqueada!`, 'success');
+
+    // Cleanup
+    document.getElementById('da-icon-ring').classList.remove('anim-pulse');
+    pendingDiscoveryStyle = null;
+};
+
 
 function renderFormsToGrid(grid, styleData) {
     if (!grid || !styleData) return;
@@ -1547,7 +1761,9 @@ function updateNichirinVisuals() {
         'water': 'blue',
         'thunder': 'yellow',
         'flame': 'red',
-        'beast': 'indigo'
+        'beast': 'indigo',
+        'stone': 'gray',
+        'mist': 'cyan'
     };
 
     const colorClass = styleMap[currentBreathingStyle] || 'black';
@@ -1571,6 +1787,8 @@ function populateForgeUI() {
         { val: 'yellow', label: 'Minério Amarelo (Trovão)' },
         { val: 'green', label: 'Minério Verde (Vento)' },
         { val: 'indigo', label: 'Minério Índigo (Fera)' },
+        { val: 'gray', label: 'Minério Cinza (Pedra)' },
+        { val: 'cyan', label: 'Minério Turquesa (Névoa)' },
         { val: 'pink', label: 'Minério Rosa (Amor)' },
         { val: 'black', label: 'Minério Negro (Sol/Desconhecido)' }
     ];
@@ -1671,6 +1889,8 @@ function finishForging(color) {
         'yellow': { t: 'Lâmina de Nichirin Trovejante', d: 'Raios percorrem o metal incessantemente.' },
         'green': { t: 'Lâmina de Nichirin do Vendaval', d: 'Leve como uma pluma, afiada como uma navalha.' },
         'indigo': { t: 'Lâmina de Nichirin Bestial', d: 'Serrilhada e pronta para rasgar a carne.' },
+        'gray': { t: 'Lâmina de Nichirin da Pedra', d: 'Cinza e sólida, pesada como uma montanha.' },
+        'cyan': { t: 'Lâmina de Nichirin da Névoa', d: 'Branca como as nuvens, rápida como o pensamento.' },
         'pink': { t: 'Lâmina de Nichirin do Amor', d: 'Flexível e mortal como um chicote.' },
         'black': { t: 'Lâmina de Nichirin Negra', d: 'Um presságio de infortúnio... ou de grande destino?' }
     };
@@ -1688,6 +1908,91 @@ function finishForging(color) {
 
     showToast("Forja Completa!", "success");
 }
+
+// --- STORE SYSTEM ---
+window.renderStore = function () {
+    const grid = document.getElementById('storeGrid');
+    if (!grid) return;
+    grid.innerHTML = "";
+
+    const userIsPremium = window.isPremium ? window.isPremium() : false;
+
+    // Items Database for Store
+    const storeItems = [
+        {
+            id: 'hashira_pass',
+            name: 'Passe Hashira',
+            price: 25.00,
+            image: 'crown',
+            desc: 'Acesso antecipado a estilos, cores de lâmina exclusivas e suporte ao dev.',
+            type: 'premium',
+            owned: userIsPremium
+        },
+        {
+            id: 'color_bundle',
+            name: 'Pacote de Cores',
+            price: 5.00,
+            image: 'palette',
+            desc: 'Desbloqueie todas as cores de lâmina Nichirin para forjar.',
+            type: 'addon',
+            owned: false
+        },
+        {
+            id: 'reset_token',
+            name: 'Token de Renascimento',
+            price: 2.00,
+            image: 'refresh-cw',
+            desc: 'Permite refazer sua ficha (Antecedente, Respiração e Status).',
+            type: 'consumable',
+            owned: false
+        }
+    ];
+
+    storeItems.forEach(item => {
+        const card = document.createElement('div');
+        card.style.background = "#1a0b2e";
+        card.style.border = "1px solid #3c096c";
+        card.style.borderRadius = "8px";
+        card.style.padding = "15px";
+        card.style.display = "flex";
+        card.style.flexDirection = "column";
+        card.style.alignItems = "center";
+        card.style.textAlign = "center";
+        card.style.position = "relative";
+        card.style.overflow = "hidden";
+
+        // Image Icon
+        const iconColor = item.id === 'hashira_pass' ? '#ffd700' : '#e0aaff';
+
+        card.innerHTML = `
+            <div style="background:rgba(255,255,255,0.05); border-radius:50%; width:60px; height:60px; display:flex; align-items:center; justify-content:center; margin-bottom:10px;">
+                <i data-lucide="${item.image}" size="32" color="${iconColor}"></i>
+            </div>
+            <h3 style="color:#fff; margin:0 0 5px 0; font-size:1.1rem;">${item.name}</h3>
+            <p style="color:#aaa; font-size:0.85rem; margin-bottom:15px; flex:1;">${item.desc}</p>
+            
+            ${item.owned
+                ? `<button disabled style="background:#333; color:#888; border:none; padding:8px 20px; border-radius:4px; font-weight:bold; cursor:not-allowed; width:100%;">ADQUIRIDO</button>`
+                : `<button onclick="buyItem('${item.id}', ${item.price})" style="background:linear-gradient(45deg, #7b2cbf, #9d4edd); color:#fff; border:none; padding:8px 20px; border-radius:4px; font-weight:bold; cursor:pointer; width:100%; transition:0.2s;">
+                    R$ ${item.price.toFixed(2)}
+                   </button>`
+            }
+        `;
+
+        grid.appendChild(card);
+    });
+
+    if (window.lucide) lucide.createIcons();
+};
+
+window.buyItem = function (id, price) {
+    if (id === 'hashira_pass') {
+        window.location.href = 'premium.html';
+        return;
+    }
+    alert(`Funcionalidade de compra para ${id} em breve!`);
+};
+
 
 // --- SKILL & BACKGROUND TABS ---
 window.switchSkillTab = function (tab) {
@@ -1909,47 +2214,6 @@ window.renderClassFeaturesInGrimoire = function () {
     if (window.lucide) lucide.createIcons();
 }
 
-// --- PROFICIENCIES RENDER ---
-function renderProficiencies() {
-    const container = document.getElementById('profList');
-    if (!container) return;
-
-    container.innerHTML = "";
-
-    const db = window.BREATHING_CLASS_DB;
-    const style = humanData.breathingStyle || 'water';
-    const classData = db ? db[style] : null;
-
-    if (!classData) return;
-
-    // Weapons
-    if (classData.proficiencies && classData.proficiencies.weapons) {
-        classData.proficiencies.weapons.forEach(w => {
-            const tag = document.createElement('span');
-            tag.style.background = "rgba(217, 4, 41, 0.2)";
-            tag.style.border = "1px solid rgba(217, 4, 41, 0.4)";
-            tag.style.color = "#ffbdc3";
-            tag.style.padding = "2px 8px";
-            tag.style.borderRadius = "4px";
-            tag.innerText = w;
-            container.appendChild(tag);
-        });
-    }
-
-    // Armor
-    if (classData.proficiencies && classData.proficiencies.armor) {
-        classData.proficiencies.armor.forEach(w => {
-            const tag = document.createElement('span');
-            tag.style.background = "rgba(0, 180, 216, 0.2)";
-            tag.style.border = "1px solid rgba(0, 180, 216, 0.4)";
-            tag.style.color = "#caf0f8";
-            tag.style.padding = "2px 8px";
-            tag.style.borderRadius = "4px";
-            tag.innerText = w;
-            container.appendChild(tag);
-        });
-    }
-}
 
 // --- GEAR SELECTION MODAL ---
 function showGearSelectionModal() {
