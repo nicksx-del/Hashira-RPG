@@ -72,6 +72,9 @@ function initDashboard() {
     renderAttacks();
     renderStore();
 
+    // Render Proficiencies (Background & others)
+    renderProficiencies();
+
     // Inventory Fix: Ensure it loads
     if (window.renderInventory) {
         window.renderInventory();
@@ -171,6 +174,10 @@ function updateVitalsUI() {
         maxHP = 20 + ((humanData.level - 1) * 5);
         maxPE = humanData.level;
     }
+
+    // Check for Manual Overrides
+    if (humanData.manualMaxHP) maxHP = humanData.manualMaxHP;
+    if (humanData.manualMaxPE) maxPE = humanData.manualMaxPE;
 
     humanData.maxHP = maxHP;
     humanData.maxPE = maxPE;
@@ -348,11 +355,21 @@ function updateStatsUI() {
 
 function changeLevel(delta) {
     let newLvl = humanData.level + delta;
-    updateLevel(newLvl);
+    if (newLvl > humanData.level) {
+        // Level UP Flow
+        showLevelUpModal(newLvl);
+    } else {
+        // Level Down (Just update)
+        updateLevel(newLvl);
+    }
 }
 
 function setLevel(lvl) {
-    updateLevel(lvl);
+    if (lvl > humanData.level) {
+        showLevelUpModal(lvl);
+    } else {
+        updateLevel(lvl);
+    }
     toggleLevelSelector(); // Close dropdown
 }
 
@@ -362,6 +379,9 @@ function updateLevel(newLvl) {
 
     if (newLvl !== humanData.level) {
         humanData.level = newLvl;
+        humanData.peMax = newLvl; // Rule: PE = Level
+        humanData.pe = humanData.peMax;
+
         showToast(`Nível alterado para ${newLvl}`, "success");
 
         // Add Feats Logic
@@ -375,7 +395,6 @@ function updateLevel(newLvl) {
                         desc: window.HunterSystem.FEAT_DESCRIPTIONS[f] || "Habilidade de Classe",
                         image: 'star'
                     });
-                    // Only toast new ones if leveling up linearly, but here we might jump
                 }
             });
         }
@@ -386,6 +405,155 @@ function updateLevel(newLvl) {
         // Update Form Unlocks if needed
         if (window.renderBreathing) renderBreathing(currentBreathingStyle);
     }
+}
+
+// === LEVEL UP MODAL ===
+// === LEVEL UP MODAL ===
+// === LEVEL UP MODAL ===
+function showLevelUpModal(targetLvl) {
+    // 1. Get Class Info
+    const styleData = BREATHING_CLASS_DB[currentBreathingStyle] || BREATHING_CLASS_DB['water'];
+    const hitDie = styleData.hitDie || 8;
+    const conMod = getConMod();
+
+    // 2. Calculate Options
+    const currentLvl = humanData.level || 1;
+    const levelsGained = targetLvl - currentLvl;
+
+    // Single Level Values
+    // User Rule: Average is Half Max + Con (e.g. d10 -> 5 + Con)
+    const avgHit = Math.floor(hitDie / 2); // Ex: d10 -> 5
+    const avgPerLvl = Math.max(1, avgHit + conMod);
+
+    // Cumulative Totals
+    const totalAvg = avgPerLvl * levelsGained;
+
+    // Breakdown Text
+    const breakdownText = `Média (${avgHit}) + Con (${conMod})`;
+
+    // 3. Create Modal
+    let modal = document.getElementById('levelUpModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'levelUpModal';
+        modal.className = 'modal-overlay';
+        document.body.appendChild(modal);
+    }
+
+    const titleText = levelsGained > 1
+        ? `Você subiu ${levelsGained} Níveis!`
+        : `Nível ${targetLvl} Alcançado!`;
+
+    const descText = levelsGained > 1
+        ? `Sua jornada avança do Nível <span style="color:white; font-weight:bold;">${currentLvl}</span> para <span style="color:white; font-weight:bold;">${targetLvl}</span>`
+        : `Aumente sua Vida Máxima como um caçador da <span style="color:var(--accent-cyan);">${styleData.name}</span>`;
+
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:800px; padding:3rem; text-align:center; border:1px solid #333; box-shadow:0 0 50px rgba(0,0,0,0.8); background:#111;">
+            
+            <div style="font-size:4rem; margin-bottom:1rem; opacity:0.8;">⬆️</div>
+            
+            <h2 style="font-family:var(--font-display); font-size:2.5rem; color:var(--accent-gold); margin:0 0 1rem 0; line-height:1.2;">
+                ${titleText}
+            </h2>
+            
+            <div style="color:#aaa; font-size:1.1rem; margin-bottom:3rem; padding:0 2rem;">
+                ${descText}
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:30px; margin-bottom:3rem;">
+                
+                <!-- OPTION 1: AVERAGE -->
+                <div class="level-opt-card" style="position:relative; background:linear-gradient(135deg, #1a1a1a, #222); padding:2rem; border:1px solid #444; border-radius:12px; cursor:pointer; transition:all 0.3s ease; display:flex; flex-direction:column; justify-content:center;"
+                     onclick="confirmLevelUp(${targetLvl}, 'avg', ${totalAvg}, null, ${levelsGained})"
+                     onmouseover="this.style.borderColor='var(--accent-gold)'; this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 20px rgba(0,0,0,0.5)'"
+                     onmouseout="this.style.borderColor='#444'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                    
+                    <div style="font-size:0.9rem; letter-spacing:1px; font-weight:bold; color:#888; text-transform:uppercase; margin-bottom:1rem;">Valor Médio Seguro</div>
+                    
+                    <div style="font-size:4rem; font-weight:bold; color:white; line-height:1;">+${totalAvg}</div>
+                    <div style="font-size:0.9rem; color:#666; margin-top:0.5rem;">PV Máximo Total</div>
+
+                    <div style="margin-top:2rem; padding-top:1.5rem; border-top:1px solid #333;">
+                        <div style="font-size:0.8rem; color:#aaa;">Cálculo por Nível:</div>
+                        <div style="font-size:1.1rem; color:var(--accent-gold); font-weight:bold; margin-top:5px;">
+                            ${levelsGained}x [ ${avgHit} + ${conMod} ]
+                        </div>
+                        <div style="font-size:0.8rem; color:#666; margin-top:5px;">(Média do dado + Constituição)</div>
+                    </div>
+                </div>
+
+                <!-- OPTION 2: ROLL -->
+                <div class="level-opt-card" style="position:relative; background:linear-gradient(135deg, #1a1a1a, #222); padding:2rem; border:1px solid #444; border-radius:12px; cursor:pointer; transition:all 0.3s ease; display:flex; flex-direction:column; justify-content:center;"
+                     onclick="confirmLevelUp(${targetLvl}, 'roll', ${hitDie}, ${conMod}, ${levelsGained})"
+                     onmouseover="this.style.borderColor='var(--accent-cyan)'; this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 20px rgba(0,0,0,0.5)'"
+                     onmouseout="this.style.borderColor='#444'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                    
+                    <div style="font-size:0.9rem; letter-spacing:1px; font-weight:bold; color:#888; text-transform:uppercase; margin-bottom:1rem;">Arriscar nos Dados</div>
+                    
+                    <div style="font-size:4rem; font-weight:bold; color:var(--accent-cyan); line-height:1;">${levelsGained}d${hitDie}</div>
+                    <div style="font-size:0.9rem; color:#666; margin-top:0.5rem;">Total de Dados</div>
+
+                    <div style="margin-top:2rem; padding-top:1.5rem; border-top:1px solid #333;">
+                        <div style="font-size:0.8rem; color:#aaa;">Bônus Garantido:</div>
+                        <div style="font-size:1.1rem; color:var(--accent-cyan); font-weight:bold; margin-top:5px;">
+                            +${levelsGained * conMod} PV
+                        </div>
+                        <div style="font-size:0.8rem; color:#666; margin-top:5px;">(Constituição acumulada)</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <button onclick="document.getElementById('levelUpModal').style.display='none'" style="background:transparent; border:none; color:#666; cursor:pointer; font-size:1rem; padding:10px 20px; border-radius:4px; transition:0.3s;" onmouseover="this.style.color='white'; this.style.background='#222'" onmouseout="this.style.color='#666'; this.style.background='transparent'">
+                Cancelar e Voltar
+            </button>
+        </div>
+    `;
+
+    modal.style.display = 'flex';
+    modal.classList.add('open');
+}
+
+function confirmLevelUp(lvl, mode, val1, val2, count = 1) {
+    let hpGain = 0;
+
+    if (mode === 'avg') {
+        hpGain = val1; // Pre-calculated total
+    } else {
+        // Roll: val1 = die, val2 = con, count = levels
+        const die = val1;
+        const conPerLvl = val2;
+        let rolls = [];
+        let totalRoll = 0;
+
+        for (let i = 0; i < count; i++) {
+            const r = Math.floor(Math.random() * die) + 1;
+            rolls.push(r);
+            totalRoll += Math.max(1, r + conPerLvl);
+        }
+        hpGain = totalRoll;
+
+        let msg = count > 1
+            ? `🎲 Rolagens: ${rolls.join(', ')}\n`
+            : `🎲 Dado: ${rolls[0]}\n`;
+
+        msg += `+ Con Total: ${conPerLvl * count}\n\nTotal Ganho: +${hpGain} PV!`;
+        alert(msg);
+    }
+
+    // Apply Changes
+    humanData.hpMax = (humanData.hpMax || 0) + hpGain;
+    humanData.hp = humanData.hpMax; // Heal Full
+
+    updateLevel(lvl);
+    document.getElementById('levelUpModal').style.display = 'none';
+    showFlashMessage(`Nível ${lvl}! +${hpGain} PV | ${lvl} PE`);
+}
+
+function getConMod() {
+    const con = humanData.attributes ? humanData.attributes.con : 10;
+    return Math.floor((con - 10) / 2);
 }
 
 // Header Interactions
@@ -2334,3 +2502,69 @@ window.setAttackPreset = function (type) {
         typeEl.value = "Perfurante";
     }
 };
+
+// --- RENDER PROFICIENCIES LIST (OVERVIEW) ---
+function renderProficiencies() {
+    const list = document.getElementById('profList');
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    // 1. Skill Proficiencies (Removed as per request - displayed in attributes)
+    // if (humanData.proficiencies) { ... }
+
+    // 2. Saving Throws (from Breathing)
+    if (humanData.savingThrows && humanData.savingThrows.length > 0) {
+        humanData.savingThrows.forEach(save => {
+            const tag = document.createElement('div');
+            tag.style.background = "rgba(255, 183, 3, 0.1)";
+            tag.style.border = "1px solid #ffb703";
+            tag.style.color = "#fff";
+            tag.style.padding = "4px 8px";
+            tag.style.borderRadius = "4px";
+            tag.style.display = "flex";
+            tag.style.alignItems = "center";
+            tag.style.gap = "5px";
+
+            tag.innerHTML = `<i data-lucide="shield" style="width:12px; fill:#ffb703;"></i> ${save.toUpperCase()}`;
+            list.appendChild(tag);
+        });
+    }
+
+    // 3. Weapon Proficiencies (Breathing)
+    if (humanData.weaponProfs && humanData.weaponProfs.length > 0) {
+        const tag = document.createElement('div');
+        tag.style.background = "rgba(220, 38, 38, 0.1)"; // Red tint
+        tag.style.border = "1px solid #dc2626";
+        tag.style.color = "#fff";
+        tag.style.padding = "4px 8px";
+        tag.style.borderRadius = "4px";
+        tag.style.display = "flex";
+        tag.style.alignItems = "center";
+        tag.style.gap = "5px";
+        tag.innerHTML = `<i data-lucide="sword" style="width:12px; fill:#dc2626;"></i> Armas: ${humanData.weaponProfs.join(', ')}`;
+        list.appendChild(tag);
+    }
+
+    // 4. Armor Proficiencies (Breathing)
+    if (humanData.armorProfs && humanData.armorProfs.length > 0) {
+        const tag = document.createElement('div');
+        tag.style.background = "rgba(100, 100, 100, 0.1)"; // Grey tint
+        tag.style.border = "1px solid #888";
+        tag.style.color = "#fff";
+        tag.style.padding = "4px 8px";
+        tag.style.borderRadius = "4px";
+        tag.style.display = "flex";
+        tag.style.alignItems = "center";
+        tag.style.gap = "5px";
+        tag.innerHTML = `<i data-lucide="shield" style="width:12px; fill:#888;"></i> Armaduras: ${humanData.armorProfs.join(', ')}`;
+        list.appendChild(tag);
+    }
+
+    // 5. Fallback if empty
+    if (list.children.length === 0) {
+        list.innerHTML = `<span style="color:#666; font-style:italic;">Nenhuma proficiência registrada.</span>`;
+    }
+
+    if (window.lucide) lucide.createIcons();
+}

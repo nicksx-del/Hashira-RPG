@@ -24,6 +24,20 @@ if (typeof window.charData === 'undefined') {
 window.openItemModal = function () {
     const modal = document.getElementById('itemModal');
     if (modal) {
+        // RESET STATE for clean open
+        window.pendingBundleIndex = null;
+        window.bundleActiveFilter = null;
+        currentModalFilter = 'all';
+        currentModalSearch = '';
+
+        // Reset Search Input if exists
+        const searchInput = document.getElementById('itemSearch');
+        if (searchInput) searchInput.value = '';
+
+        // Reset Title
+        const title = modal.querySelector('h2');
+        if (title) title.innerText = "Adicionar Item";
+
         modal.style.display = 'flex';
         modal.classList.add('open');
 
@@ -31,7 +45,7 @@ window.openItemModal = function () {
         const content = modal.querySelector('.modal-content');
         if (content && !document.getElementById('itemModalFilters')) {
             // Find insertion point (after search input)
-            const searchInput = document.getElementById('itemSearch');
+            const searchInputEl = document.getElementById('itemSearch');
 
             const filterContainer = document.createElement('div');
             filterContainer.id = 'itemModalFilters';
@@ -71,31 +85,22 @@ window.openItemModal = function () {
             filterContainer.appendChild(subCats);
 
             // Insert after search
-            if (searchInput) {
-                searchInput.parentNode.insertBefore(filterContainer, searchInput.nextSibling);
-                // Insert custom btn in the header or filter row? Let's put it in filter row for now or valid place.
-                // Actually, let's put it in the mainCats row
+            if (searchInputEl) {
+                searchInputEl.parentNode.insertBefore(filterContainer, searchInputEl.nextSibling);
                 mainCats.appendChild(customBtn);
             }
         }
 
-        populateItemModal();
+        // Trigger generic filter update to set classes and populate
+        filterModal('all');
+
         setTimeout(() => {
             if (window.lucide) window.lucide.createIcons();
         }, 100);
     }
 };
 
-window.closeItemModal = function () {
-    const modal = document.getElementById('itemModal');
-    if (modal) {
-        modal.style.display = 'none';
-        modal.classList.remove('open');
-        // Reset view to grid in case it was on form
-        if (document.getElementById('pickerGrid')) document.getElementById('pickerGrid').style.display = 'grid';
-        if (document.getElementById('customItemForm')) document.getElementById('customItemForm').style.display = 'none';
-    }
-};
+// Removed duplicate closeItemModal (it is defined at end of file)
 
 window.filterModal = function (type, btn) {
     currentModalFilter = type;
@@ -280,17 +285,34 @@ function populateItemModal() {
             item.name.toLowerCase().includes(currentModalSearch) ||
             (item.props && item.props.toLowerCase().includes(currentModalSearch));
 
-        return matchesMain && matchesSub && matchesSearch;
+        // BUNDLE SPECIFIC FILTER
+        let matchesBundle = true;
+        if (window.bundleActiveFilter) {
+            if (window.bundleActiveFilter === 'simple') {
+                if (!item.subType || !item.subType.includes('simple')) matchesBundle = false;
+            } else if (window.bundleActiveFilter === 'martial') {
+                // Allows martial and unique usually? Or just martial.
+                // "Arma Marcial ou Única"
+                if (!item.subType || (!item.subType.includes('martial') && !item.subType.includes('unique'))) matchesBundle = false;
+            } else if (window.bundleActiveFilter === 'heavy') {
+                if (!item.subType || !item.subType.includes('heavy')) matchesBundle = false;
+            } else if (window.bundleActiveFilter === 'light_medium') {
+                // For Armor. Subtypes: 'light', 'medium', 'heavy'
+                if (!item.subType || (!item.subType.includes('light') && !item.subType.includes('medium'))) matchesBundle = false;
+            }
+        }
+
+        return matchesMain && matchesSub && matchesSearch && matchesBundle;
     });
 
     // Render items
     filtered.forEach(item => {
         const card = document.createElement('div');
         card.className = 'picker-item-card';
-        card.onclick = () => addItemToInventory(item);
+        card.onclick = () => window.handleItemSelect(item);
 
         // Icon based on type
-        let icon = '📦';
+        let icon = 'box';
         if (item.category === 'weapon') icon = '⚔️';
         else if (item.category === 'armor') icon = '🛡️';
         else if (item.category === 'consumable') icon = '🧪';
@@ -325,168 +347,149 @@ function populateItemModal() {
     if (window.lucide) window.lucide.createIcons();
 }
 
-function addItemToInventory(item) {
-    const newItem = JSON.parse(JSON.stringify(item));
-    newItem.equipped = false;
-    delete newItem.category; // Remove temporary category field
-
-    const char = window.charData; // Use global
-    if (!char.inventory) char.inventory = [];
-    char.inventory.push(newItem);
-
-    if (typeof saveState === 'function') saveState();
-    else if (typeof saveHuman === 'function') saveHuman(); // Fallback to saveHuman if saveState not found
-
-    renderInventory();
-
-    // Visual feedback
-    showFlashMessage(`✓ ${item.name} adicionado!`);
-}
-
-function showFlashMessage(msg) {
-    const flash = document.createElement('div');
-    flash.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: var(--accent-cyan);
-        color: white;
-        padding: 1rem 2rem;
-        border-radius: 8px;
-        font-weight: bold;
-        z-index: 3000;
-        animation: fadeOut 1s forwards;
-        box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    `;
-    flash.textContent = msg;
-    document.body.appendChild(flash);
-    setTimeout(() => flash.remove(), 1000);
-}
-
-// === RENDERIZAÇÃO DO INVENTÁRIO ===
-
-window.editYen = function () {
-    const newVal = prompt("Nova quantidade de Ienes:", charData.yen || 0);
-    if (newVal !== null) {
-        const parsed = parseInt(newVal.replace(/\D/g, ''));
-        if (!isNaN(parsed)) {
-            charData.yen = parsed;
-            if (typeof saveState === 'function') saveState();
-            renderInventory();
-        }
-    }
-};
-
 window.renderInventory = function () {
-    const container = document.getElementById('inventoryGrid');
-    if (!container) return;
+    const grid = document.getElementById('inventoryGrid');
+    if (!grid) return;
 
-    container.innerHTML = '';
-    const char = window.charData; // Explicit Reference
+    grid.innerHTML = '';
 
-    // Ensure Yen Exists
-    if (typeof char.yen === 'undefined') char.yen = 0;
-
-    // YEN DISPLAY
-    const yenDisplay = document.createElement('div');
-    yenDisplay.style.gridColumn = '1 / -1';
-    yenDisplay.style.background = 'linear-gradient(90deg, #1a1a2e, #16213e)';
-    yenDisplay.style.padding = '10px 20px';
-    yenDisplay.style.borderRadius = '8px';
-    yenDisplay.style.display = 'flex';
-    yenDisplay.style.justifyContent = 'space-between';
-    yenDisplay.style.alignItems = 'center';
-    yenDisplay.style.marginBottom = '15px';
-    yenDisplay.style.border = '1px solid #333';
-    yenDisplay.style.cursor = 'pointer'; // Visual cue
-    yenDisplay.onclick = window.editYen; // Link to global edit function
-    yenDisplay.title = "Clique para editar";
-    yenDisplay.innerHTML = `
-        <div style="display:flex; align-items:center; gap:10px;">
-            <i data-lucide="coins" color="#ffd700"></i>
-            <span style="font-weight:bold; color:#ffd700; font-family:var(--font-display);">Riqueza</span>
-        </div>
-        <div style="font-size:1.2rem; font-weight:800; color:#fff;" id="yenDisplay">${char.yen.toLocaleString()} <span style="font-size:0.8rem; color:#888;">Ienes</span></div>
-    `;
-    container.appendChild(yenDisplay);
-
-    // Calcular peso total
     let totalWeight = 0;
-    const maxWeight = (char.attributes && char.attributes.str ? char.attributes.str : (char.stats ? char.stats.str : 10)) * 15;
+    const maxWeight = (charData.attributes.str || 10) * 15; // D&D 5e Standard Carrying Capacity (Str * 15 lbs -> transformed roughly to kg or kept raw unit for now, logic varies but sticking to standard multiplier)
 
-    // Valid Types that should appear in inventory
-    const VALID_TYPES = ['weapon', 'armor', 'consumable', 'adventure', 'misc'];
+    const VALID_INV_TYPES = ['weapon', 'armor', 'consumable', 'adventure', 'misc'];
 
-    // Filtrar itens
-    const filtered = (char.inventory || []).filter(item => {
-        if (!item) return false;
+    charData.inventory.forEach((item, index) => {
+        // Strict Type Check (Prevent Skills/Features in Inventory View)
+        let isBundle = item.type && item.type.startsWith('bundle');
+        if (!VALID_INV_TYPES.includes(item.type) && !isBundle) return;
 
-        // Safety Clean: If item has no type or invalid type, hide it
-        if (!VALID_TYPES.includes(item.type)) return false;
+        // Weight Calc
+        const w = parseFloat(item.weight) || 0;
+        totalWeight += w;
 
-        // Filtro de categoria do inventário principal
-        const matchesFilter = invFilter === 'all' || item.type === invFilter;
+        // Filtering
+        if (invFilter !== 'all') {
+            if (item.type !== invFilter && !item.type.includes(invFilter)) return;
+        }
 
-        // Filtro de busca do inventário principal
-        const matchesSearch = !invSearchQuery ||
-            item.name.toLowerCase().includes(invSearchQuery.toLowerCase()) ||
-            (item.props && item.props.toLowerCase().includes(invSearchQuery.toLowerCase()));
+        if (invSearchQuery) {
+            if (!item.name.toLowerCase().includes(invSearchQuery.toLowerCase()) &&
+                !(item.props && item.props.toLowerCase().includes(invSearchQuery.toLowerCase()))) return;
+        }
 
-        return matchesFilter && matchesSearch;
+        const card = createInventoryCard(item, index);
+        grid.appendChild(card);
     });
 
-    // Renderizar itens
-    if (filtered.length === 0) {
-        const empty = document.createElement('div');
-        empty.innerHTML = `
-            <div style="text-align:center; padding:3rem; color:#666; grid-column: 1/-1;">
-                <i data-lucide="package-x" style="width:48px; height:48px; margin:0 auto 1rem; display:block;"></i>
-                <div style="font-size:1.1rem; margin-bottom:0.5rem;">Vazio</div>
-                <div style="font-size:0.85rem;">Adicione itens pelo botão acima</div>
+    // Update Capacity UI
+    if (typeof updateCapacity === 'function') updateCapacity(totalWeight, maxWeight);
+
+    // Initial Empty State
+    if (charData.inventory.length === 0) {
+        grid.innerHTML = `
+            <div style="grid-column:1/-1; text-align:center; padding:2rem; color:#444;">
+                <i data-lucide="ghost" style="width:32px; height:32px; opacity:0.5; margin-bottom:10px;"></i>
+                <div>Inventário Vazio</div>
             </div>
         `;
-        container.appendChild(empty);
-    } else {
-        filtered.forEach((item, idx) => {
-            // Find real index in main array
-            const realIndex = char.inventory.indexOf(item);
-
-            const weight = parseFloat(String(item.weight || '0').replace(/[^\d.]/g, '')) || 0;
-            totalWeight += weight;
-
-            const card = createInventoryCard(item, realIndex);
-            container.appendChild(card);
-        });
     }
 
-    // Atualizar capacidade
-    updateCapacity(totalWeight, maxWeight);
-
-    // Atualizar paper doll logic se existir
-    if (typeof updatePaperDoll === 'function') updatePaperDoll();
-
-    // Reinicializar ícones
     if (window.lucide) window.lucide.createIcons();
 };
 
-function createInventoryCard(item, index) {
+window.addItemToInventory = function (item) {
+    try {
+        if (!item) return;
+
+        // Clone item to avoid reference issues
+        const newItem = JSON.parse(JSON.stringify(item));
+
+        // Add default icon if missing
+        if (!newItem.icon) {
+            if (newItem.type === 'weapon') newItem.icon = 'sword';
+            else if (newItem.type === 'armor') newItem.icon = 'shield';
+            else if (newItem.type === 'consumable') newItem.icon = 'flask-conical';
+            else newItem.icon = 'box';
+        }
+
+        charData.inventory.push(newItem);
+
+        // Save
+        if (typeof saveState === 'function') saveState();
+        else if (typeof saveHuman === 'function') saveHuman();
+
+        // Flash Message
+        if (typeof showFlashMessage === 'function') {
+            showFlashMessage("Adicionado: " + newItem.name);
+        } else {
+            // console.log("Adicionado:", newItem.name);
+        }
+
+        // Update UI
+        if (typeof renderInventory === 'function') {
+            renderInventory();
+        } else {
+            console.warn("renderInventory function not found!");
+            alert("Item adicionado, mas a tela não atualizou (renderInventory missing). Recarregue a página.");
+        }
+
+        // Recalc Stats if needed
+        if (typeof window.syncCombatValues === 'function') window.syncCombatValues();
+        else if (typeof calcDefense === 'function') calcDefense();
+
+    } catch (err) {
+        console.error("Erro ao adicionar item:", err);
+        alert("Erro ao adicionar item: " + err.message);
+    }
+};
+
+window.createInventoryCard = function (item, index) {
     const card = document.createElement('div');
     card.className = 'inv-item-card';
     if (item.equipped) card.classList.add('equipped');
     if (selectedItemIndex === index) card.classList.add('selected');
+
+    // Custom Color Handling
+    if (item.color) {
+        card.style.borderLeft = `3px solid ${item.color}`;
+        card.style.background = `linear-gradient(90deg, ${item.color}22, rgba(20,20,25,0.8))`;
+    }
 
     // Ícone baseado no tipo
     let icon = 'box';
     if (item.type === 'weapon') icon = 'sword';
     else if (item.type === 'armor') icon = 'shield';
     else if (item.type === 'consumable') icon = 'flask-conical';
+    else if (item.type.includes('bundle')) icon = 'gift'; // Bundle Icon
 
     // Estatística principal
     let mainStat = '';
     if (item.dmg) mainStat = item.dmg;
     else if (item.ac) mainStat = `CA ${item.ac}`;
     else if (item.def_bonus) mainStat = `+${item.def_bonus} CA`;
+
+    // Action Button Logic
+    let actionBtn = '';
+    if (item.type === 'consumable') {
+        actionBtn = `
+            <button class="inv-action-btn" style="background:#20bf6b; color:#fff; border:none;" onclick="event.stopPropagation(); useItem(${index})">
+                <i data-lucide="sparkles" style="width:14px;"></i> Usar/Abrir
+            </button>
+        `;
+    } else if (item.type && item.type.includes('bundle')) {
+        actionBtn = `
+            <button class="inv-action-btn" style="background:#d90429; color:#fff; border:none;" onclick="event.stopPropagation(); openBundleSelection(${index})">
+                <i data-lucide="gift" style="width:14px;"></i> Abrir
+            </button>
+        `;
+    } else {
+        actionBtn = `
+            <button class="inv-action-btn ${item.equipped ? 'equipped' : ''}" onclick="event.stopPropagation(); toggleEquip(${index})">
+                <i data-lucide="${item.equipped ? 'x-circle' : 'check-circle'}" style="width:14px;"></i>
+                ${item.equipped ? 'Desequipar' : 'Equipar'}
+            </button>
+        `;
+    }
 
     card.innerHTML = `
         <div class="inv-header" onclick="selectItem(${index})">
@@ -507,20 +510,10 @@ function createInventoryCard(item, index) {
             <div style="margin-bottom:10px; color:#aaa; font-style:italic;">${item.props || 'Sem propriedades'}</div>
             <div style="margin-bottom:15px; color:#ccc;">${item.desc || 'Sem descrição'}</div>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                ${item.type === 'consumable' ? `
-                     <button class="inv-action-btn" style="background:#20bf6b; color:#fff; border:none;" onclick="event.stopPropagation(); useItem(${index})">
-                        <i data-lucide="sparkles" style="width:14px;"></i> Usar/Abrir
-                    </button>
-                ` : `
-                    <button class="inv-action-btn ${item.equipped ? 'equipped' : ''}" onclick="event.stopPropagation(); toggleEquip(${index})">
-                        <i data-lucide="${item.equipped ? 'x-circle' : 'check-circle'}" style="width:14px;"></i>
-                        ${item.equipped ? 'Desequipar' : 'Equipar'}
-                    </button>
-                `}
+                ${actionBtn}
                 <button class="inv-action-btn" onclick="event.stopPropagation(); editItem(${index})">
                     <i data-lucide="pencil" style="width:14px;"></i> Editar
-                </button>
-                <button class="inv-action-btn danger" onclick="event.stopPropagation(); removeInvItem(${index})">
+                </button>                <button class="inv-action-btn danger" onclick="event.stopPropagation(); removeInvItem(${index})">
                     <i data-lucide="trash-2" style="width:14px;"></i> Remover
                 </button>
             </div>
@@ -528,13 +521,25 @@ function createInventoryCard(item, index) {
     `;
 
     return card;
-}
+};
 
 window.selectItem = function (index) {
     const details = document.getElementById(`inv-det-${index}`);
     if (details) details.classList.toggle('expanded');
     selectedItemIndex = selectedItemIndex === index ? null : index;
     showItemDetails(index);
+};
+
+window.toggleEquip = function (index) {
+    const item = charData.inventory[index];
+    if (!item) return;
+
+    item.equipped = !item.equipped;
+
+    if (typeof saveState === 'function') saveState();
+    renderInventory();
+    if (typeof window.syncCombatValues === 'function') window.syncCombatValues();
+    else if (typeof calcDefense === 'function') calcDefense();
 };
 
 function showItemDetails(index) {
@@ -585,25 +590,88 @@ function showItemDetails(index) {
     `;
 }
 
-window.toggleEquip = function (index) {
+// === BUNDLE SYSTEM ===
+window.pendingBundleIndex = null;
+window.bundleActiveFilter = null; // New global for strict filtering
+
+window.openBundleSelection = function (index) {
     const item = charData.inventory[index];
     if (!item) return;
 
-    if (!item.equipped && item.type === 'weapon') {
-        charData.inventory.forEach((i, idx) => {
-            if (i && i.type === 'weapon' && i.equipped && idx !== index) {
-                i.equipped = false;
-            }
-        });
+    window.pendingBundleIndex = index;
+    window.bundleActiveFilter = null;
+
+    if (item.props && item.props.includes('filter:simple')) window.bundleActiveFilter = 'simple';
+    else if (item.props && item.props.includes('filter:martial')) window.bundleActiveFilter = 'martial';
+    else if (item.props && item.props.includes('filter:heavy')) window.bundleActiveFilter = 'heavy';
+    else if (item.props && item.props.includes('filter:light_medium')) window.bundleActiveFilter = 'light_medium';
+
+    // Open Modal
+    const modal = document.getElementById('itemModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.classList.add('open');
+
+        // Hide Filter Buttons usually? Or pre-select?
+        if (item.type === 'bundle_weapon') window.filterModal('weapon');
+        else if (item.type === 'bundle_armor') window.filterModal('armor');
+
+        // Update Title
+        const title = modal.querySelector('h2');
+        if (title) title.innerText = `Selecione: ${item.name.replace('Escolha: ', '')}`;
+
+        showFlashMessage("Escolha um item da lista");
     }
-
-    item.equipped = !item.equipped;
-
-    if (typeof saveState === 'function') saveState();
-    renderInventory();
-    if (typeof window.syncCombatValues === 'function') window.syncCombatValues();
-    else if (typeof calcDefense === 'function') calcDefense();
 };
+
+window.handleItemSelect = function (item) {
+    try {
+        if (window.pendingBundleIndex !== null) {
+            const bundleIndex = window.pendingBundleIndex;
+
+            if (confirm(`Escolher ${item.name}?`)) {
+                // Remove bundle
+                charData.inventory.splice(bundleIndex, 1);
+                // Add new item
+                window.addItemToInventory(item);
+
+                // Reset
+                window.pendingBundleIndex = null;
+                window.bundleActiveFilter = null;
+                window.closeItemModal();
+
+                // Reset Title
+                const title = document.querySelector('#itemModal h2');
+                if (title) title.innerText = "Adicionar Item";
+            }
+        } else {
+            window.addItemToInventory(item);
+        }
+    } catch (err) {
+        console.error("Erro no handleItemSelect:", err);
+        alert("Erro ao selecionar item: " + err.message);
+    }
+};
+
+window.closeItemModal = function () {
+    const modal = document.getElementById('itemModal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('open');
+        // Reset bundle state if closed without selection
+        window.pendingBundleIndex = null;
+        window.bundleActiveFilter = null;
+        const title = modal.querySelector('h2');
+        if (title) title.innerText = "Adicionar Item"; // fallback reset
+
+        if (document.getElementById('pickerGrid')) document.getElementById('pickerGrid').style.display = 'grid';
+        if (document.getElementById('customItemForm')) document.getElementById('customItemForm').style.display = 'none';
+    }
+};
+
+// Replaces standard onclick
+// We need to inject this into populateItemModal loop
+// Line 290 changed from `addItemToInventory(item)` to `handleItemSelect(item)`
 
 window.removeInvItem = function (index) {
     const item = charData.inventory[index];
@@ -632,16 +700,86 @@ window.removeInvItem = function (index) {
 window.editItem = function (index) {
     const item = charData.inventory[index];
     if (!item) return;
+    showEditItemModal(index);
+};
 
-    const newName = prompt('Nome do item:', item.name);
-    if (newName === null) return;
-    if (newName.trim()) item.name = newName.trim();
+// === EDIT ITEM MODAL (Color & Details) ===
+window.editingItemIndex = null;
 
-    const newWeight = prompt('Peso (ex: 1.5 kg):', item.weight || '0 kg');
-    if (newWeight !== null && newWeight.trim()) item.weight = newWeight.trim();
+window.showEditItemModal = function (index) {
+    window.editingItemIndex = index;
+    const item = charData.inventory[index];
 
-    if (typeof saveState === 'function') saveState();
-    renderInventory();
+    let modal = document.getElementById('editItemModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'editItemModal';
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-content" style="border:1px solid #444; max-width:400px;">
+                <h2 style="color:var(--accent-primary); border-bottom:1px solid #333; padding-bottom:10px;">Editar Item</h2>
+                <div style="display:flex; flex-direction:column; gap:15px; padding:10px 0;">
+                    
+                    <div>
+                        <label style="color:#888; font-size:0.8rem;">Nome</label>
+                        <input type="text" id="editItemName" class="ds-input" style="width:100%; background:#222; border:1px solid #444; color:white; padding:8px;">
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <div>
+                            <label style="color:#888; font-size:0.8rem;">Peso</label>
+                            <input type="text" id="editItemWeight" class="ds-input" style="width:100%; background:#222; border:1px solid #444; color:white; padding:8px;">
+                        </div>
+                        <div>
+                             <label style="color:#888; font-size:0.8rem;">Cor Personalizada</label>
+                             <div style="display:flex; align-items:center; gap:10px;">
+                                <input type="color" id="editItemColor" style="width:50px; height:40px; border:none; background:none; cursor:pointer;">
+                                <span onclick="document.getElementById('editItemColor').value='#000000'" style="cursor:pointer; font-size:0.7rem; color:#666;">Reset</span>
+                             </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style="color:#888; font-size:0.8rem;">Descrição / Propriedades</label>
+                         <textarea id="editItemProps" class="ds-input" style="width:100%; background:#222; border:1px solid #444; color:white; padding:8px; min-height:60px;"></textarea>
+                    </div>
+
+                    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
+                        <button onclick="document.getElementById('editItemModal').style.display='none'" style="background:#333; color:#ccc; border:none; padding:8px 16px; cursor:pointer;">Cancelar</button>
+                        <button onclick="saveEditedItem()" style="background:var(--accent-primary); color:#10002b; border:none; padding:8px 16px; font-weight:bold; cursor:pointer;">SALVAR</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    // Populate
+    document.getElementById('editItemName').value = item.name || '';
+    document.getElementById('editItemWeight').value = item.weight || '';
+    document.getElementById('editItemColor').value = item.color || '#000000';
+    document.getElementById('editItemProps').value = item.props || '';
+
+    modal.style.display = 'flex';
+    modal.classList.add('open');
+};
+
+window.saveEditedItem = function () {
+    if (window.editingItemIndex === null) return;
+
+    const item = charData.inventory[window.editingItemIndex];
+    if (item) {
+        item.name = document.getElementById('editItemName').value;
+        item.weight = document.getElementById('editItemWeight').value;
+        const color = document.getElementById('editItemColor').value;
+        item.color = (color !== '#000000' && color !== '#000') ? color : null; // Save null if black (default)
+        item.props = document.getElementById('editItemProps').value;
+
+        if (typeof saveState === 'function') saveState();
+        renderInventory();
+        document.getElementById('editItemModal').style.display = 'none';
+        showFlashMessage("Item atualizado!");
+    }
 };
 
 window.setFilter = function (filter, btn) {

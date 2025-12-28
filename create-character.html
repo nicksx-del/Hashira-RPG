@@ -137,6 +137,31 @@
             box-shadow: 0 0 15px var(--accent-red);
         }
 
+        /* LOCKED STATE */
+        .nav-item.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(1);
+        }
+
+        .nav-item.locked:hover {
+            transform: none;
+            background: transparent;
+            color: var(--text-muted);
+        }
+
+        .nav-item .lock-icon {
+            display: none;
+            margin-left: auto;
+            width: 14px;
+            height: 14px;
+            color: #666;
+        }
+
+        .nav-item.locked .lock-icon {
+            display: block;
+        }
+
         /* --- MAIN CONTENT (Middle) --- */
         .main-content {
             flex: 1;
@@ -766,20 +791,60 @@
         }
 
         .vital-box {
-            background: #16161a;
-            border: 1px solid #2a2a35;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            flex: 1;
+            position: relative;
+            /* For tooltip */
+        }
+
+        .calc-tooltip {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #222;
+            border: 1px solid var(--accent-red);
             padding: 10px;
             border-radius: 6px;
-            text-align: center;
+            width: 160px;
+            font-size: 0.8rem;
+            color: #ddd;
+            z-index: 100;
+            margin-bottom: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            text-align: left;
+        }
+
+        .calc-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--accent-red) transparent transparent transparent;
+        }
+
+        .vital-box:hover .calc-tooltip {
+            display: block;
         }
 
         .vital-label {
-            font-size: 0.7rem;
-            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: #888;
+            font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            display: block;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
         }
 
         .vital-val {
@@ -1070,6 +1135,20 @@
             animation: rainbow 2s linear infinite;
         }
     </style>
+    <script src="breathing_class_db.js"></script>
+    <style>
+        .style-btn {
+            cursor: pointer;
+            transform: scale(1);
+            transition: all 0.3s;
+        }
+
+        .style-btn:hover {
+            transform: scale(1.03);
+            border-color: var(--accent-red) !important;
+            box-shadow: 0 0 20px rgba(217, 4, 41, 0.4);
+        }
+    </style>
 </head>
 
 <body>
@@ -1102,19 +1181,20 @@
             </div>
 
             <div onclick="goToStep(1)" class="nav-item active" id="nav-step-1">
-                <div class="step-icon">1</div> <span>Raça</span>
+                <div class="step-icon">1</div> <span>Raça</span> <i data-lucide="lock" class="lock-icon"></i>
             </div>
-            <div onclick="goToStep(2)" class="nav-item" id="nav-step-2">
-                <div class="step-icon">2</div> <span>Estilo de Combate</span>
+            <div onclick="goToStep(2)" class="nav-item locked" id="nav-step-2">
+                <div class="step-icon">2</div> <span>Estilo de Combate</span> <i data-lucide="lock"
+                    class="lock-icon"></i>
             </div>
-            <div onclick="goToStep(3)" class="nav-item" id="nav-step-3">
-                <div class="step-icon">3</div> <span>Antecedente</span>
+            <div onclick="goToStep(3)" class="nav-item locked" id="nav-step-3">
+                <div class="step-icon">3</div> <span>Antecedente</span> <i data-lucide="lock" class="lock-icon"></i>
             </div>
-            <div onclick="goToStep(4)" class="nav-item" id="nav-step-4">
-                <div class="step-icon">4</div> <span>Atributos</span>
+            <div onclick="goToStep(4)" class="nav-item locked" id="nav-step-4">
+                <div class="step-icon">4</div> <span>Atributos</span> <i data-lucide="lock" class="lock-icon"></i>
             </div>
-            <div onclick="goToStep(5)" class="nav-item" id="nav-step-5">
-                <div class="step-icon">5</div> <span>Descrição</span>
+            <div onclick="goToStep(5)" class="nav-item locked" id="nav-step-5">
+                <div class="step-icon">5</div> <span>Descrição</span> <i data-lucide="lock" class="lock-icon"></i>
             </div>
 
             <a href="index.html" class="nav-item" style="margin-top: auto; color: #666;">
@@ -1141,7 +1221,8 @@
             <div class="grid-2"
                 style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:2rem;">
                 <!-- Humano -->
-                <div class="selection-card selected" onclick="selectRace('Humano', this)">
+                <!-- Humano -->
+                <div class="selection-card" onclick="openRaceDetails('Humano')">
                     <img src="assets/criação_personagem/Humano-removebg-preview.png" class="card-bg-img"
                         style="object-position: top;">
                     <div class="card-text">
@@ -1157,7 +1238,8 @@
                 </div>
 
                 <!-- Marechi -->
-                <div class="selection-card" onclick="selectRace('Marechi', this)">
+                <!-- Marechi -->
+                <div class="selection-card" onclick="openRaceDetails('Marechi')">
                     <img src="assets/criação_personagem/Sanemi_colored_body-removebg-preview.png" class="card-bg-img"
                         style="object-position: top;">
                     <div class="card-text">
@@ -1173,7 +1255,8 @@
                 </div>
 
                 <!-- Tsuyoi -->
-                <div class="selection-card" onclick="selectRace('Tsuyoi', this)">
+                <!-- Tsuyoi -->
+                <div class="selection-card" onclick="openRaceDetails('Tsuyoi')">
                     <img src="assets/criação_personagem/MItsuri-removebg-preview.png" class="card-bg-img"
                         style="object-position: top;">
                     <div class="card-text">
@@ -1225,8 +1308,8 @@
                     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:2rem;">
 
                         <!-- Água (Tanjiro) -->
-                        <div class="style-btn selected" onclick="selectCombatStyle('water', this)"
-                            style="aspect-ratio:1/1; position:relative; overflow:hidden; border-radius:16px; transition:0.3s; background:#1a1a20; border:1px solid #00b4d8; height:auto; box-shadow:0 0 15px rgba(0,180,216,0.3); transform:scale(1.05);">
+                        <div class="style-btn type-water" onclick="openBreathingDetails('water')"
+                            style="aspect-ratio:1/1; position:relative; overflow:hidden; border-radius:16px; transition:0.3s; background:#1a1a20; border:1px solid #333; height:auto;">
                             <!-- Image -->
                             <img src="assets/Respirações/Tanjirou_manga.png"
                                 style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); height:105%; width:auto; opacity:1; transition:0.3s; pointer-events:none; object-fit:contain; z-index:1;">
@@ -1246,7 +1329,7 @@
                         </div>
 
                         <!-- Trovão (Zenitsu) -->
-                        <div class="style-btn" onclick="selectCombatStyle('thunder', this)"
+                        <div class="style-btn type-thunder" onclick="openBreathingDetails('thunder')"
                             style="aspect-ratio:1/1; position:relative; overflow:hidden; border-radius:16px; transition:0.3s; background:#1a1a20; border:1px solid #333; height:auto;">
                             <img src="assets/Respirações/Zenitsu_colored_body_2 (1).png"
                                 style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); height:110%; width:auto; opacity:1; pointer-events:none; object-fit:contain; z-index:1;">
@@ -1263,7 +1346,7 @@
                         </div>
 
                         <!-- Chamas -->
-                        <div class="style-btn" onclick="selectCombatStyle('flame', this)"
+                        <div class="style-btn type-flame" onclick="openBreathingDetails('flame')"
                             style="aspect-ratio:1/1; position:relative; overflow:hidden; border-radius:16px; transition:0.3s; background:#1a1a20; border:1px solid #333; height:auto;">
                             <img src="assets/Respirações/2d84f34c62e42db96bfedd71671e99c5-removebg-preview.png"
                                 style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); height:110%; width:auto; opacity:1; pointer-events:none; object-fit:contain; z-index:1;">
@@ -1281,7 +1364,7 @@
                         </div>
 
                         <!-- Fera -->
-                        <div class="style-btn" onclick="selectCombatStyle('beast', this)"
+                        <div class="style-btn type-beast" onclick="openBreathingDetails('beast')"
                             style="aspect-ratio:1/1; position:relative; overflow:hidden; border-radius:16px; transition:0.3s; background:#1a1a20; border:1px solid #333; height:auto;">
                             <img src="assets/Respirações/Inosuke3 (1).png"
                                 style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); height:110%; width:auto; opacity:1; pointer-events:none; object-fit:contain; z-index:1;">
@@ -1297,8 +1380,27 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Pedra (Gyomei) - NEW -->
+                        <div class="style-btn type-stone" onclick="openBreathingDetails('stone')"
+                            style="aspect-ratio:1/1; position:relative; overflow:hidden; border-radius:16px; transition:0.3s; background:#1a1a20; border:1px solid #333; height:auto;">
+                            <img src="assets/Respirações/Gyomei-removebg-preview.png"
+                                style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); height:110%; width:auto; opacity:1; pointer-events:none; object-fit:contain; z-index:1;">
+
+                            <div
+                                style="position:absolute; bottom:0; left:0; width:100%; z-index:2; background:linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.6), transparent); padding:2rem 1rem 1rem 1rem; display:flex; flex-direction:column; align-items:center; justify-content:flex-end;">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <div style="background:rgba(120, 120, 120, 0.2); padding:6px; border-radius:50%;"><i
+                                            data-lucide="mountain" style="color:#888; width:20px; height:20px;"></i>
+                                    </div>
+                                    <strong
+                                        style="color:white; font-size:1.4rem; font-family:'Cinzel', serif; letter-spacing:1px;">Pedra</strong>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Vento (Sanemi) -->
-                        <div class="style-btn" onclick="selectCombatStyle('wind', this)"
+                        <div class="style-btn type-wind" onclick="openBreathingDetails('wind')"
                             style="aspect-ratio:1/1; position:relative; overflow:hidden; border-radius:16px; transition:0.3s; background:#1a1a20; border:1px solid #333; height:auto;">
                             <img src="assets/criação_personagem/Sanemi_colored_body-removebg-preview.png"
                                 style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); height:110%; width:auto; opacity:1; pointer-events:none; object-fit:contain; z-index:1;">
@@ -1321,7 +1423,7 @@
 
                 <!-- 2. FORGE (NICHIRIN BLADE) -->
                 <div>
-                    <h4 style="margin-top:0; color:#ddd; margin-bottom:1.5rem;">Sua Lâmina Nichirin</h4>
+
                     <div class="forge-container">
                         <!-- Left: Preview -->
                         <div>
@@ -1538,6 +1640,27 @@
                 <div class="points-box">Pontos: <span id="pointsRemain">27</span></div>
             </div>
 
+            <!-- BONUS SELECTION UI -->
+            <div
+                style="margin-bottom:2rem; background:rgba(255,255,255,0.02); padding:1rem; border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+                <h4 style="margin-top:0; color:#ffd700; margin-bottom:10px; font-size:1rem;">Bônus Racial (+2) <span
+                        style="font-weight:400; color:#888; font-size:0.8rem;">(Escolha 2)</span></h4>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button class="bonus-toggle" data-attr="str" onclick="toggleBonus('str')"
+                        style="padding:5px 10px; border:1px solid #333; background:rgba(255,255,255,0.05); color:#888; border-radius:4px; cursor:pointer;">Força</button>
+                    <button class="bonus-toggle" data-attr="dex" onclick="toggleBonus('dex')"
+                        style="padding:5px 10px; border:1px solid #333; background:rgba(255,255,255,0.05); color:#888; border-radius:4px; cursor:pointer;">Destreza</button>
+                    <button class="bonus-toggle" data-attr="con" onclick="toggleBonus('con')"
+                        style="padding:5px 10px; border:1px solid #333; background:rgba(255,255,255,0.05); color:#888; border-radius:4px; cursor:pointer;">Constituição</button>
+                    <button class="bonus-toggle" data-attr="int" onclick="toggleBonus('int')"
+                        style="padding:5px 10px; border:1px solid #333; background:rgba(255,255,255,0.05); color:#888; border-radius:4px; cursor:pointer;">Inteligência</button>
+                    <button class="bonus-toggle" data-attr="wis" onclick="toggleBonus('wis')"
+                        style="padding:5px 10px; border:1px solid #333; background:rgba(255,255,255,0.05); color:#888; border-radius:4px; cursor:pointer;">Sabedoria</button>
+                    <button class="bonus-toggle" data-attr="cha" onclick="toggleBonus('cha')"
+                        style="padding:5px 10px; border:1px solid #333; background:rgba(255,255,255,0.05); color:#888; border-radius:4px; cursor:pointer;">Carisma</button>
+                </div>
+            </div>
+
             <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap:3rem;">
                 <!-- ATTRIBUTES -->
                 <!-- ATTRIBUTES -->
@@ -1611,6 +1734,25 @@
                         <!-- Populated by JS -->
                         <div class="skill-tag" style="opacity:0.5; font-style:italic;">Selecione um antecedente...</div>
                     </div>
+
+                    <button onclick="openDiceModal()" style="
+                        width:100%; 
+                        margin-top:1.5rem; 
+                        padding:12px; 
+                        background:rgba(255,255,255,0.05); 
+                        border:1px dashed #555; 
+                        color:#ccc; 
+                        border-radius:8px; 
+                        cursor:pointer; 
+                        display:flex; 
+                        align-items:center; 
+                        justify-content:center; 
+                        gap:10px; 
+                        transition:0.3s;
+                    " onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='#999';"
+                        onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.borderColor='#555';">
+                        <i data-lucide="dices" size="18"></i> Girar os Dados / Manual
+                    </button>
                 </div>
             </div>
 
@@ -1698,11 +1840,15 @@
 
         <div class="vital-stats">
             <div class="vital-box">
-                <span class="vital-label">Vida</span>
+                <span class="vital-label">Vida <i data-lucide="info"
+                        style="width:12px; height:12px; opacity:0.7;"></i></span>
+                <div class="calc-tooltip" id="hpTooltip">Calculando...</div>
                 <div class="vital-val" style="color:#d90429;" id="displayHP">24 <span>/24</span></div>
             </div>
             <div class="vital-box">
-                <span class="vital-label">Estamina</span>
+                <span class="vital-label">Estamina <i data-lucide="info"
+                        style="width:12px; height:12px; opacity:0.7;"></i></span>
+                <div class="calc-tooltip" id="peTooltip">Calculando...</div>
                 <div class="vital-val" style="color:#ffb703;" id="displayPE">12 <span>/12</span></div>
             </div>
         </div>
@@ -1717,16 +1863,138 @@
         lucide.createIcons();
 
         // STATE
-        // STATE
         const state = {
-            race: 'Humano',
-            combat: 'water',
+            race: null,
+            combat: null,
             background: null,
             bladeColor: '#00b4d8',
             stats: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 },
             pointsMax: 27,
             pointsSpent: 0
         };
+
+        const raceData = {
+            'Humano': {
+                name: "Humano",
+                img: "assets/criação_personagem/Humano-removebg-preview.png",
+                desc: "A maioria da população. Resilientes e determinados, os humanos enfrentam as trevas com coragem e versatilidade.",
+                hp: "12 + Cons",
+                speed: "9m",
+                bonuses: "+2 em dois Habilidades",
+                features: ["Perícia Extra (2)", "Talento Inicial", "Versatilidade"]
+            },
+            'Marechi': {
+                name: "Marechi",
+                img: "assets/criação_personagem/Sanemi_colored_body-removebg-preview.png",
+                desc: "Portadores de um sangue raro que inebria demônios. Uma bênção e uma maldição, atraindo o perigo por onde passam.",
+                hp: "10 + Cons",
+                speed: "9m",
+                bonuses: "+2 em dois Habilidades",
+                features: ["Sangue Atraente (Isca)", "Sangue Atordoante (Debuff)", "Foco de Demônios"]
+            },
+            'Tsuyoi': {
+                name: "Tsuyoi",
+                img: "assets/criação_personagem/MItsuri-removebg-preview.png",
+                desc: "Humanos com densidade muscular única. Possuem força descomunal e flexibilidade incrível, muitas vezes escondidas sob uma aparência inofensiva.",
+                hp: "14 + Cons",
+                speed: "9m",
+                bonuses: "+2 Força, +2 Destreza",
+                features: ["Força Anormal (Max 22)", "Músculos Enrijecidos (Reação)", "Flexibilidade", "Kawaii (+Carisma)"]
+            }
+        };
+
+        let tempSelectedRace = null;
+
+        function openRaceDetails(raceKey) {
+            tempSelectedRace = raceKey;
+            const data = raceData[raceKey];
+            if (!data) return;
+
+            document.getElementById('rdTitle').innerText = data.name.toUpperCase();
+            document.getElementById('rdImg').src = data.img;
+            document.getElementById('rdDesc').innerText = data.desc;
+
+            // Stats
+            document.getElementById('rdHP').innerText = data.hp;
+            document.getElementById('rdSpeed').innerText = data.speed;
+            document.getElementById('rdBonus').innerText = data.bonuses;
+
+            // Features list
+            const list = document.getElementById('rdFeatures');
+            list.innerHTML = '';
+            data.features.forEach(f => {
+                const li = document.createElement('li');
+                li.style.cssText = "display:flex; align-items:center; gap:10px; margin-bottom:12px; font-size:1rem; color:#ddd;";
+                li.innerHTML = `<i data-lucide="check" style="color:var(--accent-red); width:18px; height:18px;"></i> <span>${f}</span>`;
+                list.appendChild(li);
+            });
+            lucide.createIcons();
+
+            document.getElementById('raceDetailModal').style.display = 'flex';
+        }
+
+        function confirmRace() {
+            // Close modal IMMEDIATELY to prevent "stuck" feeling
+            const modal = document.getElementById('raceDetailModal');
+            if (modal) modal.style.display = 'none';
+
+            if (!tempSelectedRace) {
+                console.error("No temp race selected");
+                return;
+            }
+
+            try {
+                selectRace(tempSelectedRace);
+            } catch (e) {
+                console.error("Selection Error:", e);
+                // Try to recover logic if needed, but at least modal is closed
+            }
+
+            // Auto-unlock next step logic
+            const nextNav = document.getElementById('nav-step-2');
+            if (nextNav) {
+                nextNav.classList.remove('locked');
+                if (state.maxStep < 2) state.maxStep = 2;
+                nextNav.style.animation = "pulse 1s infinite";
+                setTimeout(() => nextNav.style.animation = "", 2000);
+            }
+        }
+
+        // Updated SELECT RACE to handle UI
+        function selectRace(race, element) {
+            console.log('Selecting race:', race);
+
+            // Remove previous selection visual
+            document.querySelectorAll('#step-1 .selection-card').forEach(card => matchRaceCard(card, race));
+
+            state.race = race;
+            state.bonuses = []; // Reset bonuses
+
+            // Auto-apply fixed bonuses for Tsuyoi
+            if (race === 'Tsuyoi') {
+                state.bonuses = ['str', 'dex'];
+            }
+
+            // Update UI Preview
+            updatePreview();
+
+            // If we are already on step 4 or later, refreshing stats display is good
+            if (state.stats) {
+                Object.keys(state.stats).forEach(k => updateStat(k, state.stats[k]));
+            }
+        }
+
+        function matchRaceCard(card, race) {
+            // Helper to find which card corresponds to the race and select/deselect it
+            // We can check the onclick attribute or some data attribute.
+            // Let's rely on the onclick string for now or just text content.
+            const onclick = card.getAttribute('onclick');
+            if (onclick && onclick.includes(`'${race}'`)) {
+                card.classList.add('selected');
+            } else {
+                card.classList.remove('selected');
+            }
+        }
 
         const backgroundData = {
             artista: {
@@ -2054,27 +2322,7 @@
         const COSTS = { 6: -2, 8: 0, 10: 2, 12: 4, 14: 7, 16: 12, 18: 17 };
 
         // --- RACE SELECTION ---
-        function selectRace(race, element) {
-            console.log('Selecting race:', race);
 
-            // Remove previous selection
-            document.querySelectorAll('.selection-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-
-            // Add selection
-            element.classList.add('selected');
-            state.race = race;
-
-            // If Oni selected, show confirmation modal
-            if (race === 'Oni') {
-                console.log('Oni selected, showing confirmation');
-                showOniConfirmation();
-                return;
-            }
-
-            updatePreview();
-        }
 
         // Ensure global scope access
         window.selectRace = selectRace;
@@ -2478,21 +2726,112 @@
             const wName = document.getElementById('swordName').value;
             document.getElementById('displayWeapon').innerText = wName ? `Nichirin (${wName})` : "Nichirin (Padrão)";
 
-            // Calc HP (Base 10 + Con Mod + Race Bonus)
-            // Human: +1, Marechi: 0, Tsuyoi: +2, Oni: +5
-            const conMod = Math.floor((state.stats.con - 10) / 2);
-            let raceBonus = 0;
-            if (state.race === 'Humano') raceBonus = 1;
-            else if (state.race === 'Tsuyoi') raceBonus = 2;
-            else if (state.race === 'Oni') raceBonus = 5;
+            // --- RACE DISPLAY MAPPING ---
+            const raceMap = {
+                'Humano': "Humano",
+                'Tsuyoi': "Tsuyoi",
+                'Marechi': "Marechi",
+                'Oni': "Oni",
+                'Hibrido': "Híbrido"
+            };
+            document.getElementById('displayRace').innerText = raceMap[state.race] || state.race || "-";
 
-            const totalHP = 10 + conMod + raceBonus;
+            // --- BREATHING DISPLAY MAPPING ---
+            const styleMap = {
+                'water': "Respiração da Água",
+                'thunder': "Respiração do Trovão",
+                'beast': "Respiração da Fera",
+                'flame': "Respiração das Chamas",
+                'wind': "Respiração do Vento",
+                'serpent': "Respiração da Serpente",
+                'flower': "Respiração das Flores"
+            };
+            // Use state.combat primarily, fall back to selectedCombatStyle if needed
+            const combatKey = state.combat || selectedCombatStyle;
+            const breathingName = styleMap[combatKey] || "Nenhum";
+            const breathingIcon = (combatKey === 'water' ? 'droplet' :
+                combatKey === 'thunder' ? 'zap' :
+                    combatKey === 'flame' ? 'flame' :
+                        combatKey === 'wind' ? 'wind' :
+                            combatKey === 'beast' ? 'paw-print' : 'sword');
 
+            // Update Breathing UI in sidebar
+            const breathDiv = document.getElementById('displayBreathing');
+            if (breathDiv) {
+                breathDiv.innerHTML = `<i data-lucide="${breathingIcon}" size="12"></i> ${breathingName}`;
+                lucide.createIcons();
+            }
+
+            // --- HP CALCULATION ---
+            // Formula Requested: Race Base + Class Base (Breathing) + Con Mod
+
+            // 1. Race Base
+            let raceBase = 10; // Fallback
+            if (state.race && raceData[state.race]) {
+                raceBase = parseInt(raceData[state.race].hp) || 10;
+            } else if (state.race === 'Oni') {
+                raceBase = 14; // Assessing high base for Oni
+            }
+
+            // 2. Class/Breathing Base
+            let classBase = 0;
+            let className = "Nenhum";
+            // combatKey already defined above
+            if (combatKey && window.BREATHING_CLASS_DB && window.BREATHING_CLASS_DB[combatKey]) {
+                classBase = window.BREATHING_CLASS_DB[combatKey].baseHP || 0;
+                className = window.BREATHING_CLASS_DB[combatKey].name.replace('Respiração ', '');
+            }
+
+            // 3. Constitution Modifier (Effective)
+            const getEffectiveStat = (stat) => {
+                let base = state.stats[stat];
+                if (state.race === 'Tsuyoi' && (stat === 'str' || stat === 'dex')) return base + 2; // Tsuyoi bonus (Str/Dex typically from Desc)
+                // Wait, raceData says Tsuyoi bonus is Str/Dex. But check logic.
+                if (state.bonuses.includes(stat)) return base + 2;
+                return base;
+            };
+
+            const effCon = getEffectiveStat('con');
+            const conMod = Math.floor((effCon - 10) / 2);
+
+            const totalHP = raceBase + classBase + conMod;
+
+            // Update UI
             document.getElementById('displayHP').innerHTML = `${totalHP} <span>/${totalHP}</span>`;
 
-            // Calc PE (1 + Wis Mod? Or fixed?)
-            const totalPE = 1 + Math.max(0, Math.floor((state.stats.wis - 10) / 2));
+            // Tooltip Breakdown
+            const hpTooltip = document.getElementById('hpTooltip');
+            if (hpTooltip) {
+                hpTooltip.innerHTML = `
+                    <div style="font-weight:bold; color:#d90429; margin-bottom:5px;">Cálculo de Vida</div>
+                    <div style="display:flex; justify-content:space-between;"><span>Raça (${state.race || '-'}):</span> <span>${raceBase}</span></div>
+                    <div style="display:flex; justify-content:space-between;"><span>Respiração (${className}):</span> <span>+${classBase}</span></div>
+                    <div style="display:flex; justify-content:space-between;"><span>Mod. Const (${effCon}):</span> <span>${conMod >= 0 ? '+' : ''}${conMod}</span></div>
+                    <hr style="border:0; border-top:1px solid #444; margin:5px 0;">
+                    <div style="display:flex; justify-content:space-between;"><strong>Total:</strong> <strong>${totalHP}</strong></div>
+                `;
+            }
+
+            // --- PE CALCULATION ---
+            // Formula: 1 + Wis Mod (min 0) ??
+            // Usually PE = Proficiency + Wis Mod? Or just Level + Wis Mod?
+            // Let's assume Level 1 (Base 1) + Wis Mod
+            // --- PE CALCULATION ---
+            // Requested: Always 1/1
+            const totalPE = 1;
+
             document.getElementById('displayPE').innerHTML = `${totalPE} <span>/${totalPE}</span>`;
+
+            // Tooltip Breakdown
+            const peTooltip = document.getElementById('peTooltip');
+            if (peTooltip) {
+                peTooltip.innerHTML = `
+                    <div style="font-weight:bold; color:#ffb703; margin-bottom:5px;">Cálculo de Estamina</div>
+                    <div>Base (Inicial): 1</div>
+                    <hr style="border:0; border-top:1px solid #444; margin:5px 0;">
+                    <div><strong>Total: ${totalPE}</strong></div>
+                `;
+            }
         }
 
 
@@ -2501,6 +2840,44 @@
             // Locked check handled by onClick not being on locked ones usually
             state.combat = type;
             // We only have water unlocked so this is simple
+        }
+
+        // --- BONUS LOGIC ---
+        function toggleBonus(stat) {
+            // Check race limits?
+            // Usually Human/Marechi get +2 in two stats. Others might be fixed.
+            // But UI shows "Bonus Racial (+2) (Escolha 2)".
+            // Let's implement generic "Pick 2" logic for now as implied by UI.
+
+            const index = state.bonuses.indexOf(stat);
+            if (index > -1) {
+                // Remove
+                state.bonuses.splice(index, 1);
+                document.querySelector(`button[data-attr="${stat}"]`).classList.remove('active');
+                document.querySelector(`button[data-attr="${stat}"]`).style.background = 'rgba(255,255,255,0.05)';
+                document.querySelector(`button[data-attr="${stat}"]`).style.border = '1px solid #333';
+            } else {
+                // Add
+                if (state.bonuses.length >= 2) {
+                    // Remove first one? Or block?
+                    // Let's remove first one (FIFO) for smoother UX
+                    const first = state.bonuses.shift();
+                    document.querySelector(`button[data-attr="${first}"]`).classList.remove('active');
+                    document.querySelector(`button[data-attr="${first}"]`).style.background = 'rgba(255,255,255,0.05)';
+                    document.querySelector(`button[data-attr="${first}"]`).style.border = '1px solid #333';
+                    // Update the old one display
+                    updateStat(first, state.stats[first]); // Refresh display
+                }
+                state.bonuses.push(stat);
+                document.querySelector(`button[data-attr="${stat}"]`).classList.add('active');
+                document.querySelector(`button[data-attr="${stat}"]`).style.background = 'var(--accent-red)';
+                document.querySelector(`button[data-attr="${stat}"]`).style.border = '1px solid var(--accent-red)';
+            }
+
+            // Refund logic? No, bonus doesn't cost points. It just adds to value.
+            // Update display
+            updateStat(stat, state.stats[stat]); // Refresh current
+            updatePreview();
         }
 
         function selectColor(color, el) {
@@ -2520,45 +2897,98 @@
             }
         }
 
+
+        // --- MANUAL STATS LOGIC ---
+        function openDiceModal() {
+            const modal = document.getElementById('diceRollModal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function applyManualStats() {
+            state.manualMode = true;
+
+            ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach(stat => {
+                const input = document.getElementById('manual-' + stat);
+                if (!input) return;
+
+                let val = parseInt(input.value);
+                if (isNaN(val)) val = 10;
+                // Clamp 
+                if (val > 20) val = 20;
+                if (val < 1) val = 1;
+
+                state.stats[stat] = val;
+
+                // Update UI Sliders
+                const slider = document.querySelector(`input[oninput="updateStat('${stat}', this.value)"]`);
+                if (slider) {
+                    slider.value = val;
+                }
+                const box = document.getElementById('val-' + stat);
+                if (box) box.innerText = val;
+            });
+
+            const ptBox = document.getElementById('pointsRemain');
+            if (ptBox) {
+                ptBox.innerText = "Manual";
+                ptBox.style.color = "#aaa";
+            }
+
+            const modal = document.getElementById('diceRollModal');
+            if (modal) modal.style.display = 'none';
+
+            updatePreview();
+        }
+
         function updateStat(stat, val) {
             val = parseInt(val);
 
-            // Calculate total cost with PROPOSED value
+            // Calculate total cost logic
             let totalCost = 0;
-            ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach(k => {
-                const sVal = k === stat ? val : state.stats[k];
-                totalCost += (typeof COSTS !== 'undefined' ? COSTS[sVal] : 0);
-            });
+            let validCost = true;
 
-            const remaining = state.pointsMax - totalCost;
+            if (!state.manualMode) {
+                ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach(k => {
+                    const sVal = k === stat ? val : state.stats[k];
+                    // Basic Cost Map (Standard Point Buy 5e)
+                    // 8=0, 9=1, 10=2, 11=3, 12=4, 13=5, 14=7, 15=9
+                    // But here user has specific COSTS map defined earlier?
+                    // Line 2305: const COSTS = { 6: -2, 8: 0, 10: 2, 12: 4, 14: 7, 16: 12, 18: 17 };
+                    // It seems the user uses Step 2 (6,8,10,12,14,16,18).
+                    const cost = COSTS[sVal];
+                    if (cost === undefined) validCost = false;
+                    else totalCost += cost;
+                });
 
-            if (remaining < 0) {
-                // Revert to current saved value
-                const inputEl = document.getElementById(`val-${stat}`).previousElementSibling;
-                if (inputEl) inputEl.value = state.stats[stat];
+                const remaining = 27 - totalCost;
 
-                // Show warning
-                const ptBox = document.getElementById('pointsRemain');
-                if (ptBox) {
-                    ptBox.innerText = state.pointsMax - (totalCost - (COSTS[val] || 0) + (COSTS[state.stats[stat]] || 0)); // Re-calc remaining for old value? No, just keep old text.
-                    // Actually if we revert, we don't need to update text because it wasn't updated yet.
-                    ptBox.style.color = 'red';
-                    setTimeout(() => ptBox.style.color = 'var(--accent-red)', 500);
+                if (!validCost || remaining < 0) {
+                    // Revert
+                    const slider = document.querySelector(`input[oninput="updateStat('${stat}', this.value)"]`);
+                    if (slider) slider.value = state.stats[stat];
+
+                    const ptsBox = document.querySelector('.points-box');
+                    if (ptsBox) {
+                        ptsBox.style.color = 'red';
+                        setTimeout(() => ptsBox.style.color = '', 500);
+                    }
+                    return;
                 }
-                return; // Block update
+
+                state.stats[stat] = val;
+                document.getElementById('val-' + stat).textContent = val;
+                document.getElementById('pointsRemain').innerText = remaining;
+                document.getElementById('pointsRemain').style.color = "";
+            } else {
+                // Manual Mode: Just update
+                state.stats[stat] = val;
+                document.getElementById('val-' + stat).textContent = val;
+                document.getElementById('pointsRemain').innerText = "Manual";
             }
 
-            // Update UI
-            const ptBox = document.getElementById('pointsRemain');
-            if (ptBox) {
-                ptBox.innerText = remaining;
-                ptBox.style.color = 'var(--accent-red)';
-            }
-
-            state.stats[stat] = val;
-            document.getElementById(`val-${stat}`).innerText = val;
             updatePreview();
         }
+
 
         let selectedCombatStyle = 'water';
 
@@ -2613,7 +3043,7 @@
         function finishCreation() {
             // Validation
             const name = document.getElementById('inputName').value;
-            if (!name) { alert("Por favor, dê um nome ao seu caçador."); return; }
+            if (!name) { showMsg("Nome Ausente", "Por favor, dê um <strong>Nome</strong> ao seu caçador para finalizar."); return; }
 
             // ... (Rest of logic) ...
             const bgData = backgroundData[state.background];
@@ -2641,8 +3071,89 @@
                 });
             }
 
-            // Skills
+            // Skills & Proficiencies
             let finalSkills = bgData ? bgData.skills.map(s => s.name) : ["Atletismo", "Acrobacia"];
+            let finalProficiencies = {};
+
+            if (bgData && bgData.skills) {
+                bgData.skills.forEach(s => {
+                    finalProficiencies[s.name] = { trained: true };
+                });
+            }
+
+            // --- BREATHING DATA INTEGRATION (NEW) ---
+            const breathData = window.BREATHING_CLASS_DB ? window.BREATHING_CLASS_DB[selectedCombatStyle] : null;
+            let finalSavingThrows = [];
+
+            let finalWeaponProfs = [];
+            let finalArmorProfs = [];
+
+            if (breathData) {
+                // Saving Throws
+                if (breathData.proficiencies && breathData.proficiencies.savingThrows) {
+                    finalSavingThrows = breathData.proficiencies.savingThrows;
+                }
+                // Weapon & Armor Proficiencies (Strings)
+                if (breathData.proficiencies) {
+                    if (breathData.proficiencies.weapons) finalWeaponProfs = breathData.proficiencies.weapons;
+                    if (breathData.proficiencies.armor) finalArmorProfs = breathData.proficiencies.armor;
+                }
+                // Equipment
+                if (breathData.equipment) {
+                    if (breathData.equipment.weapons) {
+                        breathData.equipment.weapons.forEach(w => {
+                            let item = { name: w, type: "weapon", desc: "Equipamento Inicial", dmg: "1d6", props: "Definir", weight: "1.0 kg" };
+
+                            // 1. KATANA (Real Item)
+                            if (w.includes("Katana") || w.includes("Nichirin")) {
+                                item.name = "Katana (Nichirin)";
+                                item.type = "weapon";
+                                item.dmg = "1d8"; // Will be updated by Nichirin System usually, but base 1d8
+                                item.desc = "Espada padrão dos caçadores de demônios.";
+                                item.props = "Versátil (1d10)";
+                            }
+                            // 2. ARMA SIMPLES (Bundle)
+                            else if (w.toLowerCase().includes("simples")) {
+                                item.name = "Escolha: Arma Simples";
+                                item.type = "bundle_weapon";
+                                item.desc = "Use este item para escolher uma arma simples.";
+                                item.props = "filter:simple"; // Used by openBundleSelection
+                            }
+                            // 3. ARMA MARCIAL (Bundle)
+                            else if (w.toLowerCase().includes("marcial") || w.toLowerCase().includes("única")) {
+                                item.name = "Escolha: Arma Marcial/Única";
+                                item.type = "bundle_weapon";
+                                item.desc = "Use este item para escolher uma arma marcial ou única.";
+                                item.props = "filter:martial";
+                            }
+                            // 4. ARMA PESADA (Bundle)
+                            else if (w.toLowerCase().includes("pesada")) {
+                                item.name = "Escolha: Arma Pesada";
+                                item.type = "bundle_weapon";
+                                item.desc = "Use este item para escolher uma arma pesada.";
+                                item.props = "filter:heavy";
+                            }
+
+                            finalInventory.push(item);
+                        });
+                    }
+                    if (breathData.equipment.armor) {
+                        breathData.equipment.armor.forEach(a => {
+                            let item = { name: a, type: "armor", desc: "Equipamento Inicial", ac: "11+des", weight: "2.0 kg" };
+
+                            // UNIFORME (Bundle)
+                            if (a.toLowerCase().includes("uniforme")) {
+                                item.name = "Escolha: Uniforme";
+                                item.type = "bundle_armor";
+                                item.desc = "Use este item para escolher seu uniforme.";
+                                item.props = "filter:light_medium"; // Simplification
+                            }
+
+                            finalInventory.push(item);
+                        });
+                    }
+                }
+            }
 
             // Breathing Names
             const styleMap = {
@@ -2660,7 +3171,9 @@
                 level: 1,
                 hp: parseInt(document.getElementById('displayHP').innerText) || 10,
                 currentHP: parseInt(document.getElementById('displayHP').innerText) || 10,
+                manualMaxHP: parseInt(document.getElementById('displayHP').innerText) || 10, // Force persistence
                 pe: parseInt(document.getElementById('displayPE').innerText) || 1,
+                manualMaxPE: parseInt(document.getElementById('displayPE').innerText) || 1, // Force persistence
                 attributes: state.stats,
                 breathingStyle: {
                     id: selectedCombatStyle,
@@ -2670,6 +3183,10 @@
                 },
                 inventory: finalInventory,
                 skills: finalSkills,
+                proficiencies: finalProficiencies, // Save Proficiencies
+                savingThrows: finalSavingThrows, // Save Saving Throws
+                weaponProfs: finalWeaponProfs, // Save Weapon Profs
+                armorProfs: finalArmorProfs, // Save Armor Profs
                 background: bgData ? bgData : null,
                 yen: 0
             };
@@ -2689,76 +3206,579 @@
     </script>
 
     <!-- THUNDER WIZARD MODAL -->
-    <div id="thunderWizardModal"
-        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:2000; align-items:center; justify-content:center; overflow-y:auto;">
+    <!-- SPECIALIZATION SELECTION MODAL -->
+    <div id="specializationModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:11000; align-items:center; justify-content:center; overflow-y:auto; backdrop-filter:blur(5px);">
         <div
-            style="background:#111; padding:2rem; border-radius:12px; border:1px solid #ffd700; max-width:900px; width:95%; text-align:center; max-height:90vh; overflow-y:auto; position:relative;">
+            style="background:#0f0f13; padding:2.5rem; border-radius:4px; border:1px solid #333; max-width:1000px; width:95%; text-align:center; position:relative; box-shadow:0 0 50px rgba(0,0,0,0.8);">
 
-            <i data-lucide="zap" size="48" style="color:#ffd700; margin-bottom:0.5rem;"></i>
-            <h2 style="font-family:'Cinzel', serif; color:white; margin-bottom:0.5rem;">Caminho do Trovão "Única"</h2>
-            <p style="color:#ccc; margin-bottom:1.5rem; font-size:0.9rem;">A partir do 3º nível, sua jornada se bifurca.
-                Como sua técnica se manifesta?</p>
+            <i id="specIcon" data-lucide="swords" size="48" style="color:#888; margin-bottom:1rem;"></i>
+            <h2 id="specTitle"
+                style="font-family:'Cinzel', serif; color:white; margin-bottom:0.5rem; font-size:2rem; letter-spacing:2px;">
+                ESCOLHA SEU CAMINHO</h2>
+            <p id="specDesc" style="color:#888; margin-bottom:2.5rem; font-size:1.1rem;">Como você manifesta sua
+                técnica?</p>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; text-align:left;">
+            <div
+                style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:30px; text-align:left;">
 
                 <!-- SPECIALIST -->
-                <div
-                    style="background:rgba(255, 215, 0, 0.05); border:1px solid rgba(255, 215, 0, 0.2); padding:1.5rem; border-radius:8px; display:flex; flex-direction:column;">
+                <div class="spec-card"
+                    style="background:rgba(255, 255, 255, 0.02); border:1px solid #333; padding:2rem; transition:all 0.3s; position:relative; overflow:hidden;"
+                    onmouseover="this.style.borderColor='var(--accent-red)'; this.style.background='rgba(255,255,255,0.05)';"
+                    onmouseout="this.style.borderColor='#333'; this.style.background='rgba(255,255,255,0.02)';">
+                    <div
+                        style="position:absolute; top:0; right:0; padding:5px 15px; background:var(--accent-red); color:white; font-size:0.7rem; font-weight:bold; letter-spacing:1px;">
+                        OFENSIVO</div>
+
                     <h3
-                        style="color:#ffd700; margin-top:0; border-bottom:1px solid #555; padding-bottom:10px; margin-bottom:15px;">
-                        Especializado na Primeira Forma</h3>
-                    <p style="font-size:0.85rem; color:#aaa; margin-bottom:15px; font-style:italic;">
-                        Você domina exclusivamente o **Hekireki Issen** e suas variantes.
+                        style="color:white; margin-top:0; font-family:'Cinzel', serif; margin-bottom:15px; font-size:1.4rem;">
+                        <span style="color:var(--accent-red);">Especialista</span> na Primeira Forma
+                    </h3>
+                    <p
+                        style="font-size:0.9rem; color:#aaa; margin-bottom:20px; line-height:1.6; border-left:2px solid var(--accent-red); padding-left:15px;">
+                        Você focou todo seu treinamento em aperfeiçoar uma única forma devastadora. Você causa dano
+                        massivo, mas limita sua versatilidade.
                     </p>
                     <ul
-                        style="color:#ccc; font-size:0.8rem; padding-left:1.2rem; flex:1; display:flex; flex-direction:column; gap:8px;">
-                        <li><strong>Foco Absoluto:</strong> Realiza APENAS a Primeira Forma.</li>
-                        <li><strong>Impulso de Dano:</strong> Ação bônus para fortificar. +1d6 dano para cada 3m movidos
-                            em linha reta (max 3d6). Aumenta para 1d8 no nv12.</li>
-                        <li><strong>Velocidade Letal:</strong> Mover 6m em linha reta concede <strong>Vantagem</strong>
-                            no ataque.</li>
+                        style="color:#ccc; font-size:0.9rem; padding-left:1.2rem; display:flex; flex-direction:column; gap:10px; margin-bottom:25px;">
+                        <li><strong>Foco Absoluto:</strong> Você realiza APENAS a Primeira Forma e suas variantes.</li>
+                        <li><strong>Impulso de Dano:</strong> +1d6 de dano a cada 3m que você se move em linha reta
+                            antes do ataque (Max 3d6).</li>
+                        <li><strong>Velocidade Letal:</strong> Mover 6m ou mais em linha reta concede
+                            <strong>Vantagem</strong> no ataque.
+                        </li>
                     </ul>
-                    <button onclick="confirmThunderWizard('specialist')"
-                        style="margin-top:20px; padding:1rem; background:#ffd700; color:black; border:none; border-radius:6px; font-weight:bold; cursor:pointer; width:100%;">
+                    <button onclick="confirmSpecialization('specialist')"
+                        style="padding:15px; background:transparent; color:var(--accent-red); border:1px solid var(--accent-red); width:100%; font-weight:700; cursor:pointer; font-family:'Cinzel', serif; transition:all 0.3s; letter-spacing:1px;"
+                        onmouseover="this.style.background='var(--accent-red)'; this.style.color='white';"
+                        onmouseout="this.style.background='transparent'; this.style.color='var(--accent-red)';">
                         ESCOLHER ESPECIALISTA
                     </button>
                 </div>
 
                 <!-- VERSED -->
-                <div
-                    style="background:rgba(255, 255, 255, 0.05); border:1px solid rgba(255, 255, 255, 0.2); padding:1.5rem; border-radius:8px; display:flex; flex-direction:column;">
+                <div class="spec-card"
+                    style="background:rgba(255, 255, 255, 0.02); border:1px solid #333; padding:2rem; transition:all 0.3s; position:relative; overflow:hidden;"
+                    onmouseover="this.style.borderColor='#00b4d8'; this.style.background='rgba(255,255,255,0.05)';"
+                    onmouseout="this.style.borderColor='#333'; this.style.background='rgba(255,255,255,0.02)';">
+                    <div
+                        style="position:absolute; top:0; right:0; padding:5px 15px; background:#00b4d8; color:black; font-size:0.7rem; font-weight:bold; letter-spacing:1px;">
+                        TÁTICO</div>
+
                     <h3
-                        style="color:white; margin-top:0; border-bottom:1px solid #555; padding-bottom:10px; margin-bottom:15px;">
-                        Versado em todas as Formas</h3>
-                    <p style="font-size:0.85rem; color:#aaa; margin-bottom:15px; font-style:italic;">
-                        Você controla todas as formas, **EXCETO** a primeira.
+                        style="color:white; margin-top:0; font-family:'Cinzel', serif; margin-bottom:15px; font-size:1.4rem;">
+                        <span style="color:#00b4d8;">Versado</span> em Todas as Formas
+                    </h3>
+                    <p
+                        style="font-size:0.9rem; color:#aaa; margin-bottom:20px; line-height:1.6; border-left:2px solid #00b4d8; padding-left:15px;">
+                        Você domina o arsenal completo de sua respiração. Você ganha defesas aprimoradas e
+                        adaptabilidade para qualquer situação.
                     </p>
                     <ul
-                        style="color:#ccc; font-size:0.8rem; padding-left:1.2rem; flex:1; display:flex; flex-direction:column; gap:8px;">
-                        <li><strong>Defesa Aprimorada:</strong> +1 na CA e +1 no Acerto.</li>
-                        <li><strong>Contra-Ataque Relâmpago:</strong> Reação para atacar inimigo que errou um ataque
-                            corpo-a-corpo contra você.</li>
-                        <li><strong>Carga Estática:</strong> +1d4 de dano elétrico em ataques.</li>
-                        <li><strong>Teleporte Trovão:</strong> Mover-se instantaneamente para ponto visível (1x/turno).
-                        </li>
+                        style="color:#ccc; font-size:0.9rem; padding-left:1.2rem; display:flex; flex-direction:column; gap:10px; margin-bottom:25px;">
+                        <li><strong>Mestre das Formas:</strong> Você usa todas as formas, EXCETO a primeira (limitada
+                            aos especialistas).</li>
+                        <li><strong>Defesa Aprimorada:</strong> Bônus de +1 na CA e +1 nas jogadas de ataque.</li>
+                        <li><strong>Contra-Ataque:</strong> Reação para atacar inimigo que errar um ataque corpo-a-corpo
+                            contra você.</li>
+                        <li><strong>Carga Elemental:</strong> +1d4 de dano extra em todos os ataques.</li>
                     </ul>
-                    <button onclick="confirmThunderWizard('versed')"
-                        style="margin-top:20px; padding:1rem; background:#333; color:white; border:1px solid #777; border-radius:6px; font-weight:bold; cursor:pointer; width:100%;">
+                    <button onclick="confirmSpecialization('versed')"
+                        style="padding:15px; background:transparent; color:#00b4d8; border:1px solid #00b4d8; width:100%; font-weight:700; cursor:pointer; font-family:'Cinzel', serif; transition:all 0.3s; letter-spacing:1px;"
+                        onmouseover="this.style.background='#00b4d8'; this.style.color='black';"
+                        onmouseout="this.style.background='transparent'; this.style.color='#00b4d8';">
                         ESCOLHER VERSADO
                     </button>
                 </div>
 
             </div>
 
-            <button onclick="document.getElementById('thunderWizardModal').style.display='none'"
-                style="margin-top:20px; background:none; border:none; color:#888; cursor:pointer; text-decoration:underline;">Cancelar</button>
+            <button onclick="document.getElementById('specializationModal').style.display='none'"
+                style="margin-top:30px; background:none; border:none; color:#666; cursor:pointer; text-decoration:none; font-size:0.9rem; letter-spacing:1px;">VOLTAR</button>
         </div>
     </div>
 </body>
 
+<!-- FEEDBACK MODAL -->
+<div id="msgModal" class="modal-overlay"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; align-items:center; justify-content:center;">
+    <div class="modal-content"
+        style="background:#1a1a20; padding:2rem; border-radius:12px; border:1px solid #333; max-width:500px; width:90%; text-align:center; box-shadow:0 0 30px rgba(0,0,0,0.5);">
+        <h2 id="msgTitle" style="color:#d90429; font-family:'Cinzel', serif; margin-top:0;">Atenção</h2>
+        <p id="msgBody" style="color:#ccc; line-height:1.6; margin-bottom:2rem;">Mensagem</p>
+        <button onclick="closeMsgModal()"
+            style="background:#d90429; color:white; border:none; padding:10px 25px; border-radius:6px; font-weight:bold; cursor:pointer;">Entendido</button>
+    </div>
+</div>
+
 <script>
     lucide.createIcons();
     initWisteria();
+
+    // --- BREATHING MODAL LOGIC ---
+    const breathingLore = {
+        water: {
+            desc: "O estilo mais comum entre os Caçadores. Caracterizada por sua fluidez e adaptabilidade, permitindo ao usuário transitar entre ataque e defesa com facilidade. É equilibrada e ideal para novatos.",
+            derivations: "Flor, Serpente",
+            img: "assets/Respirações/Tanjirou_manga.png",
+            color: "#00b4d8"
+        },
+        thunder: {
+            desc: "Focada em velocidade explosiva e ataques fulminantes. O usuário concentra toda sua força nas pernas para disparar em alta velocidade, imitando o cair de um raio.",
+            derivations: "Som",
+            img: "assets/Respirações/Zenitsu_colored_body_2 (1).png",
+            color: "#ffb703"
+        },
+        flame: {
+            desc: "Derivada diretamente da Respiração do Sol. Focada em ataques poderosos e singulares que buscam incinerar o oponente com \"espírito ardente\".",
+            derivations: "Amor",
+            img: "assets/Respirações/2d84f34c62e42db96bfedd71671e99c5-removebg-preview.png",
+            color: "#ef233c"
+        },
+        beast: {
+            desc: "Um estilo autodidata que emula o comportamento de feras selvagens. Imprevisível, feroz e baseada em instintos aguçados.",
+            derivations: "Nenhuma (Criação Própria)",
+            img: "assets/Respirações/Inosuke3 (1).png",
+            color: "#888"
+        },
+        stone: {
+            desc: "Imita a solidez da terra e da pedra. Extremamente robusta, focada em defesa impenetrável e ataques de força bruta esmagadora.",
+            derivations: "Nenhuma",
+            img: "assets/Respirações/Gyomei-removebg-preview.png",
+            color: "#777"
+        },
+        wind: {
+            desc: "Ofensiva e agressiva, imitando correntes de ar cortantes. Focada em despedaçar o inimigo com múltiplos golpes.",
+            derivations: "Névoa, Fera",
+            img: "assets/criação_personagem/Sanemi_colored_body-removebg-preview.png",
+            color: "#56ab2f"
+        }
+    };
+
+    let tempBreathingStyle = null;
+
+    const BEAST_FEATURES_LIST = [
+        { level: "1º Nível", title: "Presa Favorita", desc: "Quando você realiza um ataque bem-sucedido contra uma criatura, você pode marcar o alvo como sua presa favorita. Essa marca dura por 1 minuto. Em cada um de seus turnos em que você acerta o seu inimigo favorito, você pode aumentar o seu dano em 1d6. Você tem vantagem em testes de Sabedoria (Sobrevivência) para rastrear e Inteligência para lembrar informações sobre eles. Usos iguais ao bônus de proficiência. (Dano aumenta para 1d8 no 6º nível e 1d10 no 14º nível)." },
+        { level: "1º Nível", title: "Corpo Adaptável", desc: "Seu corpo se torna totalmente maleável, permitindo passar por espaços estreitos que um humano normalmente não conseguiria. Confere vantagem em situações onde flexibilidade é necessária." },
+        { level: "2º Nível", title: "Dilacerar", desc: "Você modifica suas lâminas quebrando-as em serras. Uma vez por turno, ao realizar um ataque, você corta de maneira a ignorar qualquer resistência do alvo até o final do turno. Se o alvo se curar, você perde essa capacidade." },
+        { level: "2º Nível", title: "Defesa Primitiva", desc: "Quando não estiver vestindo armadura, sua CA será 10 + mod Destreza + mod Sabedoria." },
+        { level: "3º Nível", title: "Aliado Favorito \"Única\"", desc: "Sintonia perfeita com um aliado. Marca um aliado ao rodar iniciativa. Vantagens: Se inimigo estiver dilacerado, aliado ignora resistências. Se lutando contra mesma criatura, +2 acerto e dano. Primeiro turno, ambos têm vantagem. Aliado recebe bônus na CA igual à metade do seu bônus de proficiência (mín 1) se estiver a 3m." },
+        { level: "5º Nível", title: "Vínculo da Natureza", desc: "Pode usar a ação \"Esconder\" como ação bônus em terreno natural." },
+        { level: "6º Nível", title: "Ataque de Oportunidade Focado", desc: "Quando inimigo se move para fora do alcance, reação para atacar. Ataque interrompe o movimento. Você pode mover metade do deslocamento." },
+        { level: "9º Nível", title: "Aliado Bestial \"Única\"", desc: "Ações extras com aliado favorito a 9m: <br><strong>Lobo:</strong> Aliado move metade do deslocamento sem ataque oportunidade.<br><strong>Águia:</strong> Ação bônus para dar vantagem no próximo teste de habilidade do aliado.<br><strong>Leão:</strong> Gastar PE para reduzir custo de habilidade do aliado (1 PE = -1 PE custo).<br><strong>Serpente:</strong> Ao aliado tentar decepar, gastar 1 PE (ação bônus) para aumentar dificuldade do teste em +1." },
+        { level: "14º Nível", title: "Time Favorito \"Única\"", desc: "Todo o seu time se torna seu favorito. Ignora resistência a carisma para número de aliados igual ao modificador." },
+        { level: "15º Nível", title: "Mandíbula do Caçador", desc: "Ao marcar Presa Favorita, torna-se predador implacável. Ao causar dano à presa, pode gastar 1 PE para adicionar bônus de dano igual ao bônus de proficiência por toda duração da marca." },
+        { level: "18º Nível", title: "Transposição Vital", desc: "Controle corporal máximo. Ao receber golpe fatal, pode trocar posição de órgãos e evitar a morte (0 PV vira 1 PV). 1x/dia." }
+    ];
+
+    function openBreathingDetails(styleKey) {
+        tempBreathingStyle = styleKey;
+        const dbClass = window.BREATHING_CLASS_DB[styleKey];
+        const lore = breathingLore[styleKey];
+
+        if (!dbClass || !lore) return;
+
+        // Populate Info
+        document.getElementById('bdTitle').innerText = dbClass.name.toUpperCase();
+        document.getElementById('bdDesc').innerText = lore.desc;
+        document.getElementById('bdImg').src = lore.img;
+        document.getElementById('bdImg').style.borderColor = lore.color;
+
+        // Populate Stats
+        document.getElementById('bdHitDie').innerText = "1d" + dbClass.hitDie;
+        let saves = "";
+        if (dbClass.proficiencies && dbClass.proficiencies.savingThrows) {
+            saves = dbClass.proficiencies.savingThrows.join(', ').toUpperCase();
+        }
+        document.getElementById('bdSaves').innerText = saves;
+
+        // Derivations
+        document.getElementById('bdDerivations').innerText = lore.derivations;
+
+        // Build Table
+        const tableBody = document.getElementById('bdTableBody');
+        tableBody.innerHTML = '';
+
+        // We iterate levels 1 to 20
+        Object.keys(dbClass.levels).forEach(lvl => {
+            const lData = dbClass.levels[lvl];
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = "1px solid rgba(255,255,255,0.05)";
+
+            // Level
+            const tdLvl = document.createElement('td');
+            tdLvl.innerText = lvl + "º";
+            tdLvl.style.padding = "10px";
+            tdLvl.style.color = "#888";
+            tr.appendChild(tdLvl);
+
+            // Prof (Calculated: ceil(lvl/4)+1)
+            const prof = Math.ceil(lvl / 4) + 1;
+            const tdProf = document.createElement('td');
+            tdProf.innerText = "+" + prof;
+            tdProf.style.padding = "10px";
+            tdProf.style.color = "#aaa";
+            tr.appendChild(tdProf);
+
+            // PE
+            const tdPE = document.createElement('td');
+            tdPE.innerText = lData.pe || "-";
+            tdPE.style.padding = "10px";
+            tdPE.style.color = "var(--accent-gold)";
+            tr.appendChild(tdPE);
+
+            // Special Columns based on Style
+            if (styleKey === 'stone') {
+                const tdDest = document.createElement('td');
+                tdDest.innerText = lData.destruidor || "-";
+                tdDest.style.padding = "10px";
+                tr.appendChild(tdDest);
+            }
+            if (styleKey === 'thunder') {
+                const tdMove = document.createElement('td');
+                tdMove.innerText = lData.move ? "+" + lData.move + "m" : "-";
+                tdMove.style.padding = "10px";
+                tr.appendChild(tdMove);
+            }
+
+            // User Friendly Features
+            const tdFeat = document.createElement('td');
+            tdFeat.innerText = lData.features ? lData.features.join(', ') : '';
+            tdFeat.style.padding = "10px";
+            tdFeat.style.color = "#ddd";
+            tdFeat.style.fontSize = "0.9rem";
+            tr.appendChild(tdFeat);
+
+            tableBody.appendChild(tr);
+        });
+
+        // Update Headers for Table
+        const headerRow = document.getElementById('bdTableHeader');
+        headerRow.innerHTML = '<th style="text-align:left; padding:10px; color:#666;">Nvl</th><th style="text-align:left; padding:10px; color:#666;">Prof</th><th style="text-align:left; padding:10px; color:var(--accent-gold);">PE</th>';
+        if (styleKey === 'stone') headerRow.innerHTML += '<th style="text-align:left; padding:10px; color:#aaa;">Destruidor</th>';
+        if (styleKey === 'thunder') headerRow.innerHTML += '<th style="text-align:left; padding:10px; color:#aaa;">Mov</th>';
+        headerRow.innerHTML += '<th style="text-align:left; padding:10px; color:#aaa;">Características</th>';
+
+        // --- NEW: POPULATE FOOTER INFO (Equip/Profs) ---
+        const statsFooter = document.getElementById('bdStatsFooter');
+        if (statsFooter) {
+            let profHtml = `
+                <div style="flex:1;">
+                    <h4 style="color:#888; margin-bottom:10px; font-size:0.9rem; text-transform:uppercase;">Proficiências</h4>
+                    <p style="font-size:0.9rem; color:#ccc; margin:5px 0;"><strong style="color:#555;">Armaduras:</strong> ${dbClass.proficiencies.armor.join(', ')}</p>
+                    <p style="font-size:0.9rem; color:#ccc; margin:5px 0;"><strong style="color:#555;">Armas:</strong> ${dbClass.proficiencies.weapons.join(', ')}</p>
+                    <p style="font-size:0.9rem; color:#ccc; margin:5px 0;"><strong style="color:#555;">Perícias (${dbClass.proficiencies.skillsCount}):</strong> ${dbClass.proficiencies.skillsList.join(', ')}</p>
+                </div>
+            `;
+            let equipHtml = `
+                <div style="flex:1; border-left:1px solid #333; padding-left:20px;">
+                    <h4 style="color:#888; margin-bottom:10px; font-size:0.9rem; text-transform:uppercase;">Equipamento Inicial</h4>
+                    <ul style="padding-left:15px; margin:0; font-size:0.9rem; color:#ccc;">
+                        ${dbClass.equipment.weapons.map(w => `<li>${w}</li>`).join('')}
+                        ${dbClass.equipment.armor.map(a => `<li>${a}</li>`).join('')}
+                        <li>Pacote de Aventureiro</li>
+                    </ul>
+                </div>
+            `;
+            statsFooter.innerHTML = `<div style="display:flex; gap:20px; background:rgba(0,0,0,0.3); padding:15px; border-radius:8px; border:1px solid #333;">${profHtml}${equipHtml}</div>`;
+        }
+
+        // --- NEW: POPULATE FEATURES LIST (Dynamic for all, Hardcoded override for Beast) ---
+        const featsContainer = document.getElementById('bdFeaturesList');
+        if (featsContainer) {
+            featsContainer.innerHTML = '';
+            featsContainer.style.display = 'block';
+
+            // Override for Beast (since DB is incomplete for Beast)
+            if (styleKey === 'beast') {
+                BEAST_FEATURES_LIST.forEach(feat => {
+                    const featDiv = document.createElement('div');
+                    featDiv.style.marginBottom = "1.5rem";
+                    featDiv.innerHTML = `
+                        <h4 style="color:var(--accent-red); margin:0 0 5px 0; font-size:1.1rem; font-family:'Cinzel', serif;">${feat.title} <span style="font-size:0.8rem; color:#666; font-family:var(--font-main); margin-left:10px;">${feat.level}</span></h4>
+                        <p style="color:#bbb; font-size:0.95rem; line-height:1.6; margin:0;">${feat.desc}</p>
+                    `;
+                    featsContainer.appendChild(featDiv);
+                });
+            } else {
+                // Dynamic generation from DB
+                if (dbClass.levels) {
+                    Object.keys(dbClass.levels).forEach(lvl => {
+                        const features = dbClass.levels[lvl].features;
+                        if (features && Array.isArray(features) && features.length > 0) {
+                            features.forEach(featName => {
+                                // Try to find description
+                                let desc = window.FEATURE_DESCRIPTIONS[featName];
+
+                                // Fallback for standard mechanics checking
+                                if (!desc) {
+                                    if (featName.includes("Incremento")) desc = "Pode aumentar atributos: +2 em um ou +1 em dois (max 20).";
+                                    else if (featName.includes("Ataque Extra")) desc = "Realiza um ataque adicional com a ação Atacar.";
+                                    else desc = "Uma habilidade poderosa desta respiração.";
+                                }
+
+                                const featDiv = document.createElement('div');
+                                featDiv.style.marginBottom = "1.5rem";
+                                featDiv.innerHTML = `
+                                    <h4 style="color:var(--accent-red); margin:0 0 5px 0; font-size:1.1rem; font-family:'Cinzel', serif;">
+                                        ${featName} <span style="font-size:0.8rem; color:#666; font-family:var(--font-main); margin-left:10px;">${lvl}º Nível</span>
+                                    </h4>
+                                    <p style="color:#bbb; font-size:0.95rem; line-height:1.6; margin:0;">${desc}</p>
+                                `;
+                                featsContainer.appendChild(featDiv);
+                            });
+                        }
+                    });
+                }
+            }
+        }
+
+        // Show Modal
+        document.getElementById('breathingDetailModal').style.display = 'flex';
+        // Reset animation
+        const content = document.querySelector('#breathingDetailModal .modal-content');
+        if (content) {
+            content.style.animation = 'none';
+            content.offsetHeight; /* trigger reflow */
+            content.style.animation = 'modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+        }
+    }
+
+    function confirmBreathing() {
+        if (!tempBreathingStyle) return;
+
+        // Specialization is EXCLUSIVE to Thunder for now (per user request)
+        if (tempBreathingStyle === 'thunder') {
+            const lore = breathingLore[tempBreathingStyle];
+            if (lore) {
+                // Simple fix: use existing Title from detail modal or format styleKey
+                const name = window.BREATHING_CLASS_DB[tempBreathingStyle].name.replace('Respiração ', '');
+                document.getElementById('specTitle').innerText = "CAMINHO " + name.toUpperCase();
+
+                // Show Specialization Modal
+                document.getElementById('breathingDetailModal').style.display = 'none';
+                document.getElementById('specializationModal').style.display = 'flex';
+                lucide.createIcons();
+                return;
+            }
+        }
+
+        // For all other styles, just confirm and select
+        document.getElementById('breathingDetailModal').style.display = 'none';
+
+        // Finalize Selection
+        const btn = document.querySelector(`.style-btn.type-${tempBreathingStyle}`);
+        selectCombatStyle(tempBreathingStyle, btn);
+    }
+
+    function confirmSpecialization(type) {
+        if (!tempBreathingStyle) return;
+
+        state.combatSpecialization = type;
+        console.log("Chosen Spec:", type);
+
+        const btn = document.querySelector(`.style-btn.type-${tempBreathingStyle}`);
+        selectCombatStyle(tempBreathingStyle, btn);
+
+        document.getElementById('specializationModal').style.display = 'none';
+    }
+
+    // --- EXISTING LOGIC REMAINS ---
+    function selectCombatStyle(style, element) {
+        console.log('Selecting style:', style);
+
+        // Visual Update
+        document.querySelectorAll('.style-btn').forEach(btn => {
+            btn.classList.remove('selected');
+            btn.style.boxShadow = 'none';
+            btn.style.borderColor = '#333';
+        });
+
+        if (element) {
+            element.classList.add('selected');
+            const color = breathingLore[style] ? breathingLore[style].color : '#00b4d8';
+            element.style.borderColor = color;
+            element.style.boxShadow = `0 0 20px ${color}40`;
+        }
+
+        state.combat = style;
+
+        // Unlock next step
+        const nextNav = document.getElementById('nav-step-3');
+        if (nextNav) {
+            nextNav.classList.remove('locked');
+            if (state.maxStep < 3) state.maxStep = 3;
+        }
+
+        updatePreview();
+    }
+
+    // Ensure selectCombatStyle is global
+    window.selectCombatStyle = selectCombatStyle;
+    window.showMsg = function (title, body) {
+        const m = document.getElementById('msgModal');
+        document.getElementById('msgTitle').innerText = title;
+        document.getElementById('msgBody').innerHTML = body;
+        m.style.display = 'flex';
+    }
+    window.closeMsgModal = function () {
+        document.getElementById('msgModal').style.display = 'none';
+    }
+
+    // --- BONUS STATE ---
+    state.bonuses = [];
+
+    function toggleBonus(attr) {
+        // Tsuyoi locked
+        if (state.race === 'Tsuyoi') return;
+
+        if (state.bonuses.includes(attr)) {
+            state.bonuses = state.bonuses.filter(x => x !== attr);
+        } else {
+            if (state.bonuses.length >= 2) state.bonuses.shift();
+            state.bonuses.push(attr);
+        }
+        updateBonusVisuals();
+        // Force update all stats to reflect new bonuses
+        ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach(k => updateStat(k, state.stats[k]));
+    }
+
+    function updateBonusVisuals() {
+        document.querySelectorAll('.bonus-toggle').forEach(btn => {
+            const attr = btn.dataset.attr;
+            if (state.bonuses.includes(attr)) {
+                btn.classList.add('selected');
+                btn.style.borderColor = 'var(--accent-red)';
+                btn.style.background = 'rgba(217, 4, 41, 0.2)';
+                btn.style.color = 'white';
+            } else {
+                btn.classList.remove('selected');
+                btn.style.borderColor = '#333';
+                btn.style.background = 'rgba(255,255,255,0.05)';
+            }
+        });
+    }
+
+    // --- NAVIGATION STATE ---
+    state.maxStep = 1; // Start at step 1
+
+    function updateSidebarVisuals() {
+        for (let i = 1; i <= 5; i++) {
+            const nav = document.getElementById(`nav-step-${i}`);
+            if (!nav) continue;
+
+            if (i <= state.maxStep) {
+                nav.classList.remove('locked');
+                // Ensure icon is hidden by CSS rules when not locked, or force hide if needed
+            } else {
+                nav.classList.add('locked');
+            }
+        }
+    }
+
+    // --- OVERRIDE NAVIGATION ---
+    const originalGoToStep = window.goToStep;
+    window.goToStep = function (stepNum) {
+        // Determine current active step
+        let currentStep = 1;
+        document.querySelectorAll('.form-step').forEach((el, idx) => {
+            if (el.classList.contains('active')) currentStep = idx + 1;
+        });
+
+        // Only validate if moving FORWARD from current step
+        // But allowed to go back to any unlocked step
+        if (stepNum > currentStep) {
+            if (!validateCurrentStep(currentStep)) return;
+
+            // If validation passed and we are moving to the immediate next step, unlock it
+            if (stepNum === currentStep + 1) {
+                if (stepNum > state.maxStep) state.maxStep = stepNum;
+            }
+        }
+
+        // Prevent jumping to locked steps via sidebar (Check AFTER potential unlock)
+        if (stepNum > state.maxStep) {
+            // Shake animation or simple return
+            const nav = document.getElementById(`nav-step-${stepNum}`);
+            if (nav) {
+                nav.style.transform = "translateX(5px)";
+                setTimeout(() => nav.style.transform = "none", 100);
+            }
+            return;
+        }
+
+        // Sync maxStep if we validated correctly (covers edge cases)
+        if (stepNum > state.maxStep) state.maxStep = stepNum;
+        updateSidebarVisuals();
+
+        // Execute Navigation
+        // Hide all
+        document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
+        // Show target
+        const target = document.getElementById(`step-${stepNum}`);
+        if (target) target.classList.add('active');
+
+        // Nav Highlight
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        const nav = document.getElementById(`nav-step-${stepNum}`);
+        if (nav) nav.classList.add('active');
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Handlers for specific step ENTERING
+        if (stepNum === 4) { // Attributes
+            // Init Bonuses if needed
+            if (state.race === 'Tsuyoi') {
+                state.bonuses = ['str', 'dex'];
+                updateBonusVisuals();
+                showMsg("Aprimoramento de Habilidade", "Como um <strong>Tsuyoi</strong>, sua fisiologia única lhe garante força e agilidade sobrenaturais.<br><br>Seu bônus (+2 Força / +2 Destreza) foi aplicado automaticamente.");
+            } else {
+                // If Humans/Marechi and not set yet
+                if (state.bonuses.length === 0) {
+                    showMsg("Aprimoramento de Habilidade", `Como <strong>${state.race}</strong>, você pode aprimorar suas habilidades naturais.<br><br>Escolha <strong>2 atributos</strong> para receber um bônus de <strong>+2</strong>.`);
+                }
+            }
+            // Ensure visuals update
+            updateBonusVisuals();
+        }
+    }
+
+    function validateCurrentStep(n) {
+        if (n === 1) { // Race
+            if (!state.race) {
+                showMsg("Raça Não Escolhida", "Por favor, selecione uma <strong>Raça</strong> para continuar.");
+                return false;
+            }
+        }
+        if (n === 2) { // Combat
+            if (!state.combat) {
+                showMsg("Estilo Pendente", "Selecione um <strong>Estilo de Combate</strong>.");
+                return false;
+            }
+        }
+        if (n === 3) { // Background
+            if (!state.background) {
+                showMsg("Antecedente Pendente", "Selecione um <strong>Antecedente</strong> para definir sua história.");
+                return false;
+            }
+        }
+        if (n === 4) { // Attributes
+            let distinctAssigned = 0; // Point buy checks are permissive usually, but let's check bonuses
+            if (state.race !== 'Tsuyoi' && state.bonuses.length < 2) {
+                showMsg("Bônus Pendente", "Você precisa selecionar <strong>2 atributos</strong> para receber o bônus racial de +2.");
+                return false;
+            }
+            // Point constraints? state.remaining >= 0? 
+            // We let them pass if they want, or force?
+            // Let's force spending all points? No, usually not required. 
+            // But check negative remaining
+            let totalCost = 0;
+            // Recalc cost
+            // ... handled in updateStat
+        }
+        return true;
+    }
 
     function initWisteria() {
         const container = document.getElementById('wisteria');
@@ -2783,6 +3803,280 @@
         }
     }
 </script>
+<!-- RACE DETAIL MODAL -->
+<div id="raceDetailModal" class="modal-overlay"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
+    <!-- Main Content Box -->
+    <div class="modal-content"
+        style="background:#0f0f13; width:95%; max-width:1200px; display:flex; border-radius:0px; border:1px solid #333; overflow:hidden; box-shadow:0 0 80px rgba(0,0,0,0.8); flex-direction:row; height: 85vh; position:relative; animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
+
+        <style>
+            @keyframes modalSlideUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(40px) scale(0.98);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+
+            .rd-stat-box {
+                background: rgba(255, 255, 255, 0.03);
+                padding: 1.5rem;
+                border-radius: 0px;
+                border: 1px solid rgba(255, 255, 255, 0.05);
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .rd-stat-box:hover {
+                background: rgba(255, 255, 255, 0.06);
+                transform: translateY(-3px);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+                border-color: rgba(255, 255, 255, 0.1);
+            }
+
+            .rd-stat-box::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 3px;
+                height: 100%;
+                background: currentColor;
+            }
+        </style>
+
+        <!-- Left Image (Expanded) -->
+        <div
+            style="flex:1.1; background:#000; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+            <div
+                style="position:absolute; top:0; left:0; width:100%; height:100%; background:radial-gradient(circle at center, rgba(217, 4, 41, 0.15), transparent 60%); z-index:1;">
+            </div>
+            <img id="rdImg" src=""
+                style="width:100%; height:100%; object-fit:cover; object-position:top center; opacity:0.9; transition: transform 6s ease-out;"
+                onload="this.style.transform='scale(1.05)'">
+            <!-- Gradient Overlay for seamless blend -->
+            <div
+                style="position:absolute; bottom:0; left:0; width:100%; height:40%; background:linear-gradient(to top, #0f0f13 0%, transparent 100%); z-index:2;">
+            </div>
+            <div
+                style="position:absolute; top:0; right:0; width:20%; height:100%; background:linear-gradient(to left, #0f0f13 0%, transparent 100%); z-index:2;">
+            </div>
+        </div>
+
+        <!-- Right Info (Expanded & Interactive) -->
+        <div style="flex:1.4; padding:4rem; display:flex; flex-direction:column; position:relative; overflow-y:auto;">
+            <!-- Styled Close Button -->
+            <button onclick="document.getElementById('raceDetailModal').style.display='none'"
+                style="position:absolute; top:30px; right:30px; background:rgba(0,0,0,0.5); border:1px solid #444; color:#fff; cursor:pointer; width:44px; height:44px; display:flex; align-items:center; justify-content:center; transition:all 0.2s; z-index:10;"
+                onmouseover="this.style.borderColor='var(--accent-red)'; this.style.backgroundColor='#d90429';"
+                onmouseout="this.style.borderColor='#444'; this.style.backgroundColor='rgba(0,0,0,0.5)';">
+                <i data-lucide="x" size="24"></i>
+            </button>
+
+            <h2 id="rdTitle"
+                style="font-family:'Cinzel', serif; font-size:4rem; margin:0 0 1rem 0; color:white; letter-spacing:4px; text-shadow:0 0 20px rgba(0,0,0,0.5);">
+                RAÇA</h2>
+            <div style="width:60px; height:3px; background:var(--accent-red); margin-bottom:2rem;"></div>
+
+            <p id="rdDesc"
+                style="color:#bbb; line-height:1.8; font-size:1.1rem; margin-bottom:3rem; font-style:italic; max-width:90%;">
+                Descrição...</p>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:2rem; margin-bottom:3rem;">
+                <div class="rd-stat-box" style="color:var(--accent-red);">
+                    <div style="font-size:0.85rem; color:#888; uppercase; letter-spacing:1px; margin-bottom:5px;">Vida
+                        Inicial</div>
+                    <div id="rdHP" style="font-size:1.8rem; color:#eee; font-weight:700; font-family:'Cinzel', serif;">
+                        12</div>
+                </div>
+                <div class="rd-stat-box" style="color:#ffb703;">
+                    <div style="font-size:0.85rem; color:#888; uppercase; letter-spacing:1px; margin-bottom:5px;">
+                        Deslocamento</div>
+                    <div id="rdSpeed"
+                        style="font-size:1.8rem; color:#eee; font-weight:700; font-family:'Cinzel', serif;">9m</div>
+                </div>
+                <div class="rd-stat-box"
+                    style="grid-column:span 2; color:#00b4d8; display:flex; align-items:center; justify-content:space-between;">
+                    <div>
+                        <div style="font-size:0.85rem; color:#888; uppercase; letter-spacing:1px; margin-bottom:5px;">
+                            Bônus de Atributo</div>
+                        <div id="rdBonus"
+                            style="font-size:1.4rem; color:#eee; font-weight:700; font-family:'Cinzel', serif;">+2 em
+                            dois</div>
+                    </div>
+                    <i data-lucide="arrow-up-circle" style="opacity:0.2; width:40px; height:40px;"></i>
+                </div>
+            </div>
+
+            <div style="margin-bottom:3rem; flex:1;">
+                <h4
+                    style="color:#666; margin-bottom:1.5rem; text-transform:uppercase; font-size:0.9rem; letter-spacing:2px; border-bottom:1px solid #333; padding-bottom:10px; display:inline-block;">
+                    Características da Linhagem</h4>
+                <ul id="rdFeatures" style="color:#ccc; padding:0; list-style:none;">
+                    <!-- JS injects here with custom format -->
+                </ul>
+            </div>
+
+            <button onclick="confirmRace()"
+                style="margin-top:auto; background:var(--accent-red); color:white; border:none; padding:1.2rem; font-weight:700; letter-spacing:2px; border-radius:0px; cursor:pointer; font-family:'Cinzel', serif; transition:all 0.3s; font-size:1.2rem; display:flex; align-items:center; justify-content:center; gap:10px; text-transform:uppercase; box-shadow:0 0 20px rgba(217,4,41,0.2);"
+                onmouseover="this.style.background='#ff1f4b'; this.style.letterSpacing='4px'; this.style.boxShadow='0 0 40px rgba(217,4,41,0.4)';"
+                onmouseout="this.style.background='var(--accent-red)'; this.style.letterSpacing='2px'; this.style.boxShadow='0 0 20px rgba(217,4,41,0.2)';">
+                <span>Confirmar Escolha</span> <i data-lucide="chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- DICE ROLL / MANUAL STATS MODAL -->
+<div id="diceRollModal" class="modal-overlay"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10002; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
+    <div class="modal-content"
+        style="background:#131318; border:1px solid #333; padding:2rem; width:500px; max-width:90%; border-radius:12px; position:relative; animation: modalSlideUp 0.3s ease-out;">
+        <button onclick="document.getElementById('diceRollModal').style.display='none'"
+            style="position:absolute; top:15px; right:15px; background:none; border:none; color:#666; cursor:pointer;">
+            <i data-lucide="x"></i>
+        </button>
+        <h2 style="font-family:'Cinzel', serif; color:#eee; margin-top:0;">Rolagem de Atributos</h2>
+        <p style="color:#aaa; font-size:0.9rem; margin-bottom:1.5rem; line-height:1.5;">
+            Para definir seus atributos, role <strong>4 dados de 6 lados (4d6)</strong>.
+            <br>Descarte o menor resultado e some os outros três.
+            <br>Repita 6 vezes e insira os valores abaixo em cada atributo desejado.
+        </p>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-bottom:1.5rem;">
+            <!-- Inputs -->
+            ${['str','dex','con','int','wis','cha'].map(s => `
+            <div style="background:rgba(0,0,0,0.2); padding:10px; border-radius:6px; border:1px solid #333;">
+                <label
+                    style="display:block; color:#666; font-size:0.8rem; text-transform:uppercase; margin-bottom:5px;">${s.toUpperCase()}</label>
+                <input type="number" id="manual-${s}" value="10" min="3" max="20"
+                    style="width:100%; background:transparent; border:none; color:white; font-size:1.5rem; font-weight:bold; text-align:center;">
+            </div>
+            `).join('')}
+        </div>
+
+        <div style="display:flex; justify-content:center; gap:10px;">
+            <button onclick="applyManualStats()" class="confirm-btn"
+                style="width:100%; justify-content:center; margin:0;">
+                Aplicar Atributos Manuais
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- BREATHING DETAIL MODAL -->
+<div id="breathingDetailModal" class="modal-overlay"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:10000; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
+    <div class="modal-content"
+        style="background:#0f0f13; width:95%; max-width:1400px; display:flex; border-radius:0px; border:1px solid #333; overflow:hidden; box-shadow:0 0 80px rgba(0,0,0,0.8); flex-direction:row; height: 90vh; position:relative; animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
+
+        <!-- Left Image -->
+        <div
+            style="flex:1; background:#000; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; border-right:1px solid #222;">
+            <div
+                style="position:absolute; top:0; left:0; width:100%; height:100%; background:radial-gradient(circle at center, rgba(255,255,255, 0.05), transparent 60%); z-index:1;">
+            </div>
+            <img id="bdImg" src=""
+                style="width:100%; height:100%; object-fit:cover; object-position:center; opacity:0.8; transition: transform 6s ease-out; border-left:10px solid transparent;"
+                onload="this.style.transform='scale(1.05)'">
+            <div
+                style="position:absolute; bottom:0; left:0; width:100%; height:40%; background:linear-gradient(to top, #0f0f13 0%, transparent 100%); z-index:2;">
+            </div>
+        </div>
+
+        <!-- Right Content -->
+        <div style="flex:1.5; display:flex; flex-direction:column; position:relative; overflow:hidden;">
+            <!-- Close Button -->
+            <button onclick="document.getElementById('breathingDetailModal').style.display='none'"
+                style="position:absolute; top:20px; right:30px; background:rgba(0,0,0,0.5); border:1px solid #444; color:#fff; cursor:pointer; width:44px; height:44px; display:flex; align-items:center; justify-content:center; transition:all 0.2s; z-index:100;"
+                onmouseover="this.style.borderColor='var(--accent-red)'; this.style.backgroundColor='#d90429';"
+                onmouseout="this.style.borderColor='#444'; this.style.backgroundColor='rgba(0,0,0,0.5)';">
+                <i data-lucide="x" size="24"></i>
+            </button>
+
+            <!-- Scrollable Area -->
+            <div style="overflow-y:auto; padding:3rem; flex:1; scrollbar-width:thin; scrollbar-color:#333 #111;">
+
+                <!-- ID Header -->
+                <h2 id="bdTitle"
+                    style="font-family:'Cinzel', serif; font-size:3rem; margin:0 0 1rem 0; color:white; letter-spacing:4px; text-shadow:0 0 20px rgba(0,0,0,0.5);">
+                    BREATHING</h2>
+                <div
+                    style="width:100%; height:1px; background:linear-gradient(90deg, var(--accent-red), transparent); margin-bottom:1.5rem;">
+                </div>
+
+                <p id="bdDesc"
+                    style="color:#bbb; line-height:1.8; font-size:1.1rem; margin-bottom:2rem; font-style:italic; border-left:3px solid #333; padding-left:20px;">
+                    Descrição...
+                </p>
+
+                <!-- Stats Grid -->
+                <div
+                    style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1.5rem; margin-bottom:3rem;">
+                    <div class="vital-box">
+                        <div class="vital-label">Dado de Vida</div>
+                        <div class="vital-val" id="bdHitDie" style="color:var(--accent-red);">1d10</div>
+                    </div>
+                    <div class="vital-box">
+                        <div class="vital-label">Testes de Resistência</div>
+                        <div class="vital-val" id="bdSaves" style="font-size:1rem; margin-top:10px;">FOR, DES</div>
+                    </div>
+                    <div class="vital-box">
+                        <div class="vital-label">Derivado de</div>
+                        <div class="vital-val" id="bdDerivations" style="font-size:1rem; margin-top:10px; color:#aaa;">-
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progression Table -->
+                <h3
+                    style="color:#ddd; font-family:'Cinzel', serif; margin-bottom:1rem; display:flex; align-items:center; gap:10px;">
+                    <i data-lucide="trending-up" style="color:var(--accent-red);"></i> Evolução da Respiração
+                </h3>
+
+                <div
+                    style="background:rgba(255,255,255,0.02); border:1px solid #333; border-radius:8px; overflow:hidden;">
+                    <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+                        <thead style="background:rgba(0,0,0,0.3); border-bottom:1px solid #444;">
+                            <tr id="bdTableHeader">
+                                <!-- Dynamic Headers -->
+                            </tr>
+                        </thead>
+                        <tbody id="bdTableBody">
+                            <!-- Dynamic Rows -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- NEW: Stats Footer -->
+                <div id="bdStatsFooter" style="margin-top:20px;"></div>
+
+                <!-- NEW: Features List -->
+                <div id="bdFeaturesList"
+                    style="margin-top:30px; border-top:1px solid #333; padding-top:20px; display:none;"></div>
+
+                <div style="height:50px;"></div>
+            </div>
+
+            <!-- Footer Action -->
+            <div
+                style="padding:20px 40px; border-top:1px solid #333; background:#0f0f13; display:flex; justify-content:flex-end; align-items:center;">
+                <button onclick="confirmBreathing()"
+                    style="background:var(--accent-red); color:white; border:none; padding:15px 40px; font-weight:700; letter-spacing:2px; cursor:pointer; font-family:'Cinzel', serif; transition:all 0.3s; font-size:1.1rem; display:flex; align-items:center; gap:10px; clip-path: polygon(10% 0, 100% 0, 100% 100%, 0% 100%);"
+                    onmouseover="this.style.background='#ff1f4b'; this.style.paddingLeft='50px';"
+                    onmouseout="this.style.background='var(--accent-red)'; this.style.paddingLeft='40px';">
+                    <span>CONFIRMAR ESTILO</span> <i data-lucide="sword"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 
 </html>

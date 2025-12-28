@@ -352,15 +352,15 @@ window.selectBackground = function (bg) {
 }
 
 function validateStep1() {
-    if (nameInput.value && ageInput.value && selectedRace && selectedBackground) {
-        nextBtn.removeAttribute('disabled');
-    } else {
-        nextBtn.setAttribute('disabled', 'true');
-    }
+    // Legacy check kept for internal state if needed, but not for disabling button
+    // We now validate on click
 }
 
-nameInput.addEventListener('input', validateStep1);
-ageInput.addEventListener('input', validateStep1);
+// Ensure button is not disabled initially if it was
+if (nextBtn) nextBtn.removeAttribute('disabled');
+
+nameInput.addEventListener('input', () => { }); // No-op now
+ageInput.addEventListener('input', () => { });
 
 // Helper to update Visual Path
 function updateProgress(stepIndex) {
@@ -376,10 +376,42 @@ function updateProgress(stepIndex) {
 }
 
 nextBtn.addEventListener('click', () => {
+    // 1. Explicit Validation
+    if (!nameInput.value.trim()) {
+        showMsg("Dados Incompletos", "Por favor, digite o <strong>Nome</strong> do seu personagem.");
+        return;
+    }
+    if (!ageInput.value || parseInt(ageInput.value) <= 0) {
+        showMsg("Dados Incompletos", "Por favor, defina uma <strong>Idade</strong> válida.");
+        return;
+    }
+    if (!selectedRace) {
+        showMsg("Raça Não Escolhida", "Você deve selecionar uma <strong>Raça</strong> (Humano, Marechi, etc.) antes de prosseguir.");
+        return;
+    }
+    if (!selectedBackground) {
+        showMsg("Antecedente Não Escolhido", "Você deve selecionar um <strong>Antecedente</strong> para definir sua história.");
+        return;
+    }
+
+    // 2. Transition
     document.getElementById('step1').classList.add('hidden');
     document.getElementById('step2-roll').classList.remove('hidden');
-    // document.querySelector('.step-indicator').innerText = "Passo 2: O Destino"; // OLD
     updateProgress(2);
+
+    // 3. Explanation Modal
+    // Wait a brief moment for transition
+    setTimeout(() => {
+        let msg = "";
+        if (selectedRace === 'Tsuyoi') {
+            msg = `Como um <strong>Tsuyoi</strong>, sua fisiologia única lhe garante força e agilidade sobrenaturais.<br><br>
+                   Seu aprimoramento (+2 Força / +2 Destreza) já foi selecionado automaticamente.`;
+        } else {
+            msg = `Como <strong>${selectedRace}</strong>, você pode aprimorar suas habilidades naturais.<br><br>
+                   Na próxima tela, após rolar os dados, <strong>escolha 2 atributos</strong> para receber um bônus de <strong>+2</strong>.`;
+        }
+        showMsg("Aprimoramento de Habilidade", msg);
+    }, 500);
 });
 
 // --- STEP 2: ROLLING LOGIC (StrictMode) ---
@@ -492,22 +524,29 @@ window.drop = function (ev) {
 // --- BONUS UI LOGIC ---
 function setupBonusUI() {
     const container = document.getElementById('bonusToggles');
+    // Maintain specific order for consistency
+    const attributesMapKeys = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
     const attributesMap = {
         str: "Força", dex: "Destreza", con: "Constituição",
         int: "Inteligência", wis: "Sabedoria", cha: "Carisma"
     };
 
     container.innerHTML = '';
-    Object.keys(attributesMap).forEach(key => {
+
+    attributesMapKeys.forEach(key => {
         const btn = document.createElement('div');
         btn.className = 'bonus-btn';
         btn.innerHTML = `${attributesMap[key]} +2`;
+        btn.dataset.attr = key; // Critical for selectors
         btn.onclick = () => toggleBonus(key, btn);
         container.appendChild(btn);
     });
 }
 
 function toggleBonus(attr, btnElement) {
+    // Prevent manual changes for Tsuyoi
+    if (selectedRace === 'Tsuyoi') return;
+
     // If already selected, deselect
     if (state.bonuses.includes(attr)) {
         state.bonuses = state.bonuses.filter(x => x !== attr);
@@ -515,23 +554,11 @@ function toggleBonus(attr, btnElement) {
     } else {
         // If limit reached (2), remove the first one (FIFO) to allow swift changes
         if (state.bonuses.length >= 2) {
-            const removedAttr = state.bonuses.shift(); // Remove the oldest
-            // Find button for removed attribute and uncheck it
-            // Since we don't have direct ref map easily accessible here without query, let's query
-            // Or better, we can just rebuild UI or toggle class. 
-            // To be efficient, we search the DOM.
-            // Actually, the button text contains the attr name, but let's assume we can match based on structure.
-            // Simplest: Iterate all buttons, uncheck if not in new list.
+            state.bonuses.shift(); // Remove the oldest
         }
 
         state.bonuses.push(attr);
-
-        // Update ALL buttons classes to match state
-        const allBtns = document.querySelectorAll('.bonus-btn');
-        // This relies on the mapped index or text match.
-        // Actually, let's just re-run setupBonusUI? No, that destroys elements.
-        // We modify visual state based on data.
-        updateBonusVisuals(); // Helper below
+        updateBonusVisuals();
     }
     recalculateState();
 }
@@ -539,15 +566,24 @@ function toggleBonus(attr, btnElement) {
 function updateBonusVisuals() {
     const container = document.getElementById('bonusToggles');
     const kids = container.children;
-    // We kept order in setupBonusUI: str, dex, con, int, wis, cha
-    const attributesMapKeys = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 
     for (let i = 0; i < kids.length; i++) {
-        const key = attributesMapKeys[i];
-        if (state.bonuses.includes(key)) {
+        // Use dataset to match strictly
+        const btnFn = kids[i].dataset.attr;
+
+        if (state.bonuses.includes(btnFn)) {
             kids[i].classList.add('active');
         } else {
             kids[i].classList.remove('active');
+        }
+
+        // Visual Lock for Tsuyoi
+        if (selectedRace === 'Tsuyoi') {
+            kids[i].style.cursor = 'not-allowed';
+            if (!state.bonuses.includes(btnFn)) kids[i].style.opacity = '0.5';
+        } else {
+            kids[i].style.cursor = 'pointer';
+            kids[i].style.opacity = '1';
         }
     }
 }
@@ -555,6 +591,20 @@ function updateBonusVisuals() {
 
 // --- CALCULATIONS & VALIDATION ---
 function recalculateState() {
+    // Race Logic for Bonuses (Enforce before calculation)
+    if (selectedRace === 'Tsuyoi') {
+        const targetBonuses = ['str', 'dex'];
+        // Check if current state matches rigid requirement
+        const isCorrect = state.bonuses.length === 2 &&
+            state.bonuses.includes('str') &&
+            state.bonuses.includes('dex');
+
+        if (!isCorrect) {
+            state.bonuses = [...targetBonuses];
+            updateBonusVisuals();
+        }
+    }
+
     const stats = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
     let filledCount = 0;
 
@@ -621,6 +671,7 @@ function recalculateState() {
     }
 
     // Validations
+    // Validations
     const nextStepBtn = document.getElementById('finishStep2');
 
     // Check if ALL assignments are made
@@ -630,15 +681,36 @@ function recalculateState() {
     // Validation Rule
     let bonusValid = (state.bonuses.length === 2);
 
+    // We no longer rely on disabling the button, we trigger validation on click. 
+    // However, for UX, we can visually indicate readiness or update text.
     if (distinctAssigned === 6 && bonusValid) {
-        nextStepBtn.removeAttribute('disabled');
+        // nextStepBtn.removeAttribute('disabled'); // Removed logic
         nextStepBtn.innerText = "Ir para: Respiração";
-        nextStepBtn.onclick = goToNextPage;
+        nextStepBtn.style.opacity = '1';
+        nextStepBtn.style.cursor = 'pointer';
         updateFooterPreview();
     } else {
-        nextStepBtn.setAttribute('disabled', 'true');
+        // nextStepBtn.setAttribute('disabled', 'true'); // Removed logic
         nextStepBtn.innerText = distinctAssigned < 6 ? "Distribua os Atributos" : "Escolha 2 Bônus";
+        nextStepBtn.style.opacity = '0.7'; // Visual hint only
     }
+
+    // Attach click handler if not already attached (or ensure it handles validation inside)
+    // NOTE: we need to ensure we don't attach multiple listeners. 
+    // Best practice: Assign onclick directly here or ensure the static listener checks state.
+    // The previous code did: nextStepBtn.onclick = goToNextPage; 
+    // Let's change this to a robust check.
+    nextStepBtn.onclick = function () {
+        if (distinctAssigned < 6) {
+            showMsg("Atributos Pendentes", "Você precisa distribuir <strong>todos os 6 valores</strong> de atributos para continuar.");
+            return;
+        }
+        if (!bonusValid) {
+            showMsg("Bônus Pendente", "Você precisa selecionar <strong>2 atributos</strong> para receber o bônus de +2.");
+            return;
+        }
+        goToNextPage();
+    };
 }
 
 function updateFooterPreview() {
