@@ -1,5 +1,14 @@
 /* DASHBOARD JS - MODULAR & POLISHED */
 
+// SKILL DATABASE
+const ALL_SKILLS = [
+    "Acrobacia", "Adestrar Animais", "Arcanismo", "Atletismo",
+    "Atuação", "Enganação", "Furtividade", "História",
+    "Intimidação", "Intuição", "Investigação", "Medicina",
+    "Natureza", "Percepção", "Persuasão", "Prestidigitação",
+    "Religião", "Sobrevivência"
+];
+
 let humanData = {};
 let currentBreathingStyle = 'water';
 let combatState = { block: false, dodge: false };
@@ -29,6 +38,8 @@ function loadHuman() {
         }
         // Ensure stats exist
         if (!humanData.stats) humanData.stats = { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 };
+        if (!humanData.attacks) humanData.attacks = [];
+        if (!humanData.inventory) humanData.inventory = [];
 
         if (!humanData.level) humanData.level = 1;
     } else {
@@ -46,6 +57,18 @@ function loadHuman() {
 
 function initDashboard() {
     loadHuman();
+    console.log("DASHBOARD INIT - Human Loaded:", humanData);
+
+    // TUTORIAL CHECK (Top Priority)
+    // If never seen tutorial OR (proficiencies are few and not marked complete)
+    const profCount = humanData.proficiencies ? humanData.proficiencies.length : 0;
+    if (!humanData.tutorialComplete && !humanData.skillTutorialSeen) {
+        console.log("Triggering Tutorial: Not Complete");
+        setTimeout(showSkillTutorial, 500); // Small delay to ensure DOM readiness
+    } else if (profCount <= 4 && !humanData.skillTutorialSeen) {
+        console.log("Triggering Tutorial: Low Skills");
+        setTimeout(showSkillTutorial, 500);
+    }
 
     // UI Elements
     const nameEl = document.getElementById('dispName');
@@ -110,7 +133,164 @@ function initDashboard() {
         humanData.details = {};
         if (document.getElementById('detailName')) document.getElementById('detailName').value = humanData.name || "";
     }
+    // Check for Tutorial (Skill Selection)
+    if (!humanData.tutorialComplete && !humanData.skillTutorialSeen) {
+        showSkillTutorial();
+    }
 }
+
+// TUTORIAL MODAL LOGIC
+function showSkillTutorial() {
+    // Check if modal exists, if not create it
+    let modal = document.getElementById('skillTutorialModal');
+    if (!modal) {
+        createSkillTutorialModal();
+        modal = document.getElementById('skillTutorialModal');
+    }
+
+    // Reset inputs
+    const checks = modal.querySelectorAll('input[type="checkbox"]');
+    checks.forEach(c => c.checked = false);
+    updateTutorialCount();
+
+    modal.style.display = 'flex';
+}
+
+function createSkillTutorialModal() {
+    // Redefine locally to ensure availability
+    const LOCAL_ALL_SKILLS = [
+        "Acrobacia", "Adestrar Animais", "Arcanismo", "Atletismo",
+        "Atuação", "Enganação", "Furtividade", "História",
+        "Intimidação", "Intuição", "Investigação", "Medicina",
+        "Natureza", "Percepção", "Persuasão", "Prestidigitação",
+        "Religião", "Sobrevivência"
+    ];
+
+    const div = document.createElement('div');
+    div.id = 'skillTutorialModal';
+    div.className = 'modal-overlay';
+    div.style.display = 'none';
+    div.style.alignItems = 'center';
+    div.style.justifyContent = 'center';
+    div.style.background = 'rgba(0,0,0,0.95)';
+    div.style.zIndex = '9999999'; // Force top
+    div.style.position = 'fixed'; // Force fixed
+    div.style.top = '0';
+    div.style.left = '0';
+    div.style.width = '100vw';
+    div.style.height = '100vh';
+
+    // Sort skills for better UX
+    const sortedSkills = [...LOCAL_ALL_SKILLS].sort();
+
+    // Already have some proficiencies? (e.g. from background)
+    const currentProfs = humanData.proficiencies || [];
+
+    let skillsHTML = '';
+    sortedSkills.forEach(skill => {
+        const isAlready = currentProfs.includes(skill);
+        const disabledAttr = isAlready ? 'disabled checked' : '';
+        const labelStyle = isAlready ? 'color:#888; cursor:not-allowed;' : 'color:#ccc; cursor:pointer;';
+        const alreadyBadge = isAlready ? '<span style="font-size:0.7em; color:#00b4d8; margin-left:5px;">(Antecedente)</span>' : '';
+
+        skillsHTML += `
+            <label style="display:flex; align-items:center; gap:10px; padding:10px; background:rgba(255,255,255,0.05); border-radius:6px; ${labelStyle} user-select:none;">
+                <input type="checkbox" value="${skill}" ${disabledAttr} onchange="updateTutorialCount()" style="accent-color:#00b4d8; transform:scale(1.3); cursor:pointer;">
+                ${skill}
+                ${alreadyBadge}
+            </label>
+        `;
+    });
+
+    div.innerHTML = `
+        <div class="modal-content" style="background:#141418; padding:40px; width:700px; max-width:95%; border:1px solid #333; border-radius:12px; box-shadow:0 0 50px rgba(0,0,0,0.9);">
+            <div style="text-align:center; margin-bottom:30px;">
+                <h2 style="font-family:'Cinzel', serif; color:#00b4d8; margin:0 0 10px 0; font-size:2.5rem;">Bem-vindo Jogador</h2>
+                <p style="color:#aaa; font-size:1.1rem;">Para concluir a criação do seu personagem, escolha <strong>4 perícias</strong> adicionais.</p>
+            </div>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; max-height:50vh; overflow-y:auto; padding:10px; margin-bottom:30px; background:rgba(0,0,0,0.2); border-radius:8px;">
+                ${skillsHTML}
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #333; padding-top:20px;">
+                <div style="color:#888; font-size:1rem;">Selecionadas: <span id="tutSkillCount" style="color:#fff; font-weight:bold;">0</span> / 4</div>
+                <button id="btnFinishTutorial" onclick="finishSkillTutorial()" disabled 
+                    style="background:#333; color:#666; border:none; padding:12px 40px; border-radius:6px; font-weight:bold; font-size:1.1rem; cursor:not-allowed; transition:0.3s; letter-spacing:1px;">
+                    CONFIRMAR
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(div);
+}
+
+window.updateTutorialCount = function () {
+    const modal = document.getElementById('skillTutorialModal');
+    if (!modal) return;
+
+    // Only count ENABLED checkboxes (user selections), exclude background ones
+    const checkboxes = Array.from(modal.querySelectorAll('input[type="checkbox"]:not([disabled])'));
+    const checked = checkboxes.filter(c => c.checked);
+
+    // Update counter
+    document.getElementById('tutSkillCount').innerText = checked.length;
+
+    const btn = document.getElementById('btnFinishTutorial');
+
+    // Limit to 4
+    if (checked.length > 4) {
+        // visually warn? or prevent?
+        // Let's prevent the last one checked
+        // But for simplicity let's just disabling invalid state
+    }
+
+    if (checked.length === 4) {
+        btn.disabled = false;
+        btn.style.background = '#00b4d8';
+        btn.style.color = '#fff';
+        btn.style.cursor = 'pointer';
+        btn.style.boxShadow = '0 0 15px rgba(0, 180, 216, 0.4)';
+
+        // Disable unchecked ones?
+        checkboxes.forEach(c => {
+            if (!c.checked) c.disabled = true;
+        });
+    } else {
+        btn.disabled = true;
+        btn.style.background = '#333';
+        btn.style.color = '#666';
+        btn.style.cursor = 'not-allowed';
+        btn.style.boxShadow = 'none';
+
+        // Re-enable all (unless it was > 4)
+        checkboxes.forEach(c => c.disabled = false);
+    }
+};
+
+window.finishSkillTutorial = function () {
+    const modal = document.getElementById('skillTutorialModal');
+    const checked = Array.from(modal.querySelectorAll('input[type="checkbox"]:checked:not([disabled])'));
+
+    if (checked.length !== 4) return;
+
+    if (!humanData.proficiencies) humanData.proficiencies = [];
+
+    checked.forEach(c => {
+        humanData.proficiencies.push(c.value);
+    });
+
+    humanData.skillTutorialSeen = true;
+    humanData.tutorialComplete = true; // Mark full tutorial as done
+    saveHuman();
+
+    modal.style.display = 'none';
+
+    // Refresh UI
+    if (typeof renderProficiencies === 'function') renderProficiencies();
+    showToast("Perícias salvas com sucesso!", "success");
+};
 
 window.updateCharDetail = function (field, value) {
     if (!humanData.details) humanData.details = {};
@@ -379,8 +559,14 @@ function updateLevel(newLvl) {
 
     if (newLvl !== humanData.level) {
         humanData.level = newLvl;
-        humanData.peMax = newLvl; // Rule: PE = Level
-        humanData.pe = humanData.peMax;
+
+        // Ensure PE follows level rule
+        delete humanData.manualMaxPE;
+        humanData.peMax = newLvl;
+        humanData.currentPE = newLvl; // Refill to new max
+
+        // Legacy support if .pe is used elsewhere
+        humanData.pe = humanData.currentPE;
 
         showToast(`Nível alterado para ${newLvl}`, "success");
 
@@ -516,10 +702,14 @@ function showLevelUpModal(targetLvl) {
 }
 
 function confirmLevelUp(lvl, mode, val1, val2, count = 1) {
+    const modal = document.getElementById('levelUpModal');
+    if (modal) modal.style.display = 'none';
+
     let hpGain = 0;
 
     if (mode === 'avg') {
         hpGain = val1; // Pre-calculated total
+        applyLevelUp(lvl, hpGain); // Instant apply for avg
     } else {
         // Roll: val1 = die, val2 = con, count = levels
         const die = val1;
@@ -534,21 +724,156 @@ function confirmLevelUp(lvl, mode, val1, val2, count = 1) {
         }
         hpGain = totalRoll;
 
-        let msg = count > 1
-            ? `🎲 Rolagens: ${rolls.join(', ')}\n`
-            : `🎲 Dado: ${rolls[0]}\n`;
+        // Trigger 3D Dice and wait for user to close to apply? 
+        // Or apply in background but show visual?
+        // Let's show visual.
+        showLevelUpDice(rolls, conPerLvl * count, hpGain, lvl);
+    }
+}
 
-        msg += `+ Con Total: ${conPerLvl * count}\n\nTotal Ganho: +${hpGain} PV!`;
-        alert(msg);
+// Global callback for closing overlay
+let pendingLevelUpData = null;
+let pendingAttackData = null;
+
+function applyLevelUp(lvl, hpGain) {
+    // Apply Changes: Update manualMaxHP to persist over auto-calc
+    if (!humanData.manualMaxHP) {
+        humanData.manualMaxHP = humanData.maxHP || 20;
     }
 
-    // Apply Changes
-    humanData.hpMax = (humanData.hpMax || 0) + hpGain;
-    humanData.hp = humanData.hpMax; // Heal Full
+    humanData.manualMaxHP += hpGain;
+    humanData.currentHP = humanData.manualMaxHP; // Heal Full
 
     updateLevel(lvl);
-    document.getElementById('levelUpModal').style.display = 'none';
-    showFlashMessage(`Nível ${lvl}! +${hpGain} PV | ${lvl} PE`);
+    if (typeof showToast === 'function') {
+        showToast(`Nível ${lvl}! +${hpGain} PV | ${lvl} PE`, "success");
+    }
+}
+
+function showLevelUpDice(rolls, conTotal, totalGain, lvl) {
+    const overlay = document.getElementById('diceOverlay');
+    const diceDiv = document.getElementById('diceElement');
+    const resDisplay = document.getElementById('diceResultDisplay');
+    const infoPanel = document.getElementById('diceInfoPanel');
+    const glow = document.querySelector('.dice-glow');
+
+    if (!overlay) {
+        // Fallback if overlay fails to load
+        alert(`Rolagem: ${rolls.join(', ')}\nTotal: +${totalGain} HP`);
+        applyLevelUp(lvl, totalGain);
+        return;
+    }
+
+    // Prepare Data for Close
+    pendingLevelUpData = { lvl, hpGain: totalGain };
+
+    // Reset State
+    resDisplay.classList.remove('show', 'crit', 'fail');
+    resDisplay.style.opacity = '0';
+    infoPanel.style.display = 'none';
+    infoPanel.style.opacity = '0';
+    diceDiv.classList.remove('rolling');
+    void diceDiv.offsetWidth; // trigger reflow
+
+    // Show Overlay
+    overlay.classList.add('show');
+
+    // Start Rolling Animation
+    diceDiv.classList.add('rolling');
+
+    // Play Sound if available
+    // const audio = new Audio('assets/dice_roll.mp3'); audio.play();
+
+    // After 1s (End of spin)
+    setTimeout(() => {
+        // Show Number
+        const finalVal = rolls.reduce((a, b) => a + b, 0); // Show sum of dice? Or just first die? 
+        // User asked for "jogasse um dado 3d". If multiple levels, maybe show sum of dice on face?
+        // A d20 face showing '15' is fine.
+
+        let faceVal = finalVal;
+        // Cap visual to 20 or just show number? CSS face font adjusts.
+        document.querySelector('.dice-face').innerText = faceVal;
+
+        resDisplay.innerText = faceVal;
+        resDisplay.classList.add('show');
+
+        // Crit/Fail visual logic (based on average die size?)
+        // Let's just make it look cool uniformly for HP.
+        resDisplay.classList.add('crit'); // Always celebrate Level Up
+
+        // Show Details Panel
+        document.getElementById('diceInfoTitle').innerText = `NÍVEL ${lvl} ALCANÇADO`;
+        document.getElementById('diceInfoDesc').innerHTML = `
+            <div style="font-size:0.9rem; color:#aaa; margin-bottom:5px;">Dados: [${rolls.join(', ')}]</div>
+            <div style="font-size:0.9rem; color:#aaa;">+ Bônus CON: ${conTotal}</div>
+        `;
+        document.getElementById('diceInfoValue').innerText = `+${totalGain} PV`; // Total Gain
+
+        infoPanel.style.display = 'block';
+        setTimeout(() => infoPanel.style.opacity = '1', 100);
+
+    }, 1000);
+}
+
+window.closeDiceOverlay = function () {
+    const overlay = document.getElementById('diceOverlay');
+    if (overlay) overlay.classList.remove('show');
+
+    if (pendingLevelUpData) {
+        applyLevelUp(pendingLevelUpData.lvl, pendingLevelUpData.hpGain);
+        pendingLevelUpData = null;
+    } else if (pendingAttackData) {
+        showCombatResult(pendingAttackData.name, pendingAttackData.rollData);
+        pendingAttackData = null;
+    }
+};
+
+function showAttackDice(name, rollData) {
+    const overlay = document.getElementById('diceOverlay');
+    const diceDiv = document.getElementById('diceElement');
+    const resDisplay = document.getElementById('diceResultDisplay');
+    const infoPanel = document.getElementById('diceInfoPanel');
+
+    if (!overlay) {
+        showCombatResult(name, rollData);
+        return;
+    }
+
+    pendingAttackData = { name, rollData };
+
+    // Reset State
+    resDisplay.classList.remove('show', 'crit', 'fail');
+    resDisplay.style.opacity = '0';
+    infoPanel.style.display = 'none';
+    infoPanel.style.opacity = '0';
+    diceDiv.classList.remove('rolling');
+    void diceDiv.offsetWidth; // trigger reflow
+
+    // Show Overlay
+    overlay.classList.add('show');
+    diceDiv.classList.add('rolling');
+
+    // After 1s
+    setTimeout(() => {
+        const hitVal = rollData.hit;
+        document.querySelector('.dice-face').innerText = hitVal;
+
+        resDisplay.innerText = hitVal;
+        resDisplay.classList.add('show');
+
+        if (hitVal === 20) resDisplay.classList.add('crit');
+        if (hitVal === 1) resDisplay.classList.add('fail');
+
+        // Show Details Panel
+        document.getElementById('diceInfoTitle').innerText = name.toUpperCase();
+        document.getElementById('diceInfoDesc').innerText = "TESTE DE ACERTO";
+        document.getElementById('diceInfoValue').innerText = hitVal;
+
+        infoPanel.style.display = 'block';
+        setTimeout(() => infoPanel.style.opacity = '1', 100);
+
+    }, 1000);
 }
 
 function getConMod() {
@@ -1730,44 +2055,181 @@ function renderAttacks() {
     const list = document.getElementById('attacksList');
     if (!list) return;
     list.innerHTML = "";
-    humanData.attacks.forEach((a, i) => {
-        const row = document.createElement('div');
-        row.className = 'attack-row';
-        row.innerHTML = `
-            <div class="atk-info">
-                <div class="atk-name">${a.name}</div>
-                <div class="atk-meta">${a.type} • ${a.damage}</div>
-            </div>
-            <div class="atk-actions">
-                <button class="roll-atk-btn" onclick="rollAttack(${i})">ATACAR</button>
-                <button class="del-atk-btn" onclick="deleteAttack(${i})"><i data-lucide="trash-2"></i></button>
+
+    const attacks = humanData.attacks || [];
+
+    if (attacks.length === 0) {
+        list.innerHTML = `
+            <div style="text-align:center; padding:3rem; color:#666; width:100%;">
+                <i data-lucide="sword" size="48" style="opacity:0.3; margin-bottom:1rem;"></i>
+                <p>Nenhum ataque registrado.</p>
+                <div style="display:flex; justify-content:center; gap:10px; margin-top:15px;">
+                    <button class="forge-btn" style="width:auto; padding:8px 16px; font-size:0.9rem;" onclick="openAttackModal()">Criar Ataque</button>
+                    <!-- Quick Presets -->
+                    <button class="forge-btn" style="width:auto; padding:8px 16px; font-size:0.9rem; background:#333; border-color:#444;" onclick="quickAddKatana()">+ Katana</button>
+                </div>
             </div>
         `;
-        list.appendChild(row);
+        if (window.lucide) lucide.createIcons();
+        return;
+    }
+
+    let html = '<div class="attack-grid">';
+
+    attacks.forEach((atk, index) => {
+        // Dynamic Icon Logic
+        let icon = 'crosshair';
+        const lowerName = (atk.name || '').toLowerCase();
+        if (lowerName.includes('corte') || lowerName.includes('lâmina') || lowerName.includes('espada') || lowerName.includes('katana')) icon = 'sword';
+        else if (lowerName.includes('soco') || lowerName.includes('punho') || lowerName.includes('impacto')) icon = 'hand-metal';
+        else if (lowerName.includes('fogo') || lowerName.includes('chama') || lowerName.includes('solar')) icon = 'flame';
+        else if (lowerName.includes('gelo') || lowerName.includes('frio') || lowerName.includes('água')) icon = 'droplet';
+        else if (lowerName.includes('trovão') || lowerName.includes('raio') || lowerName.includes('relâmpago')) icon = 'zap';
+        else if (lowerName.includes('vento') || lowerName.includes('ar')) icon = 'wind';
+        else if (lowerName.includes('garra')) icon = 'scissors';
+        else if (lowerName.includes('flecha') || lowerName.includes('arco')) icon = 'target';
+
+        html += `
+            <div class="attack-card-3d" style="--i:${index}">
+                <i data-lucide="${icon}" class="attack-bg-icon"></i>
+                
+                <h3 class="card-title">${atk.name}</h3>
+                <div class="card-meta">${atk.damage}</div>
+                <div class="card-desc">${atk.type}</div>
+
+                <div class="card-actions">
+                    <button class="atk-btn-3d atk-btn-roll" onclick="rollAttack(${index})">
+                        <i data-lucide="dices"></i> ROLAR
+                    </button>
+                    <!-- Edit Button -->
+                    <button class="atk-btn-3d atk-btn-del" onclick="editAttack(${index})" title="Editar" style="background:rgba(255,255,255,0.1); color:#00b4d8;">
+                        <i data-lucide="pencil"></i>
+                    </button>
+                    <button class="atk-btn-3d atk-btn-del" onclick="deleteAttack(${index})" title="Excluir">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                </div>
+            </div>
+        `;
     });
+
+    html += '</div>';
+    list.innerHTML = html;
     if (window.lucide) lucide.createIcons();
 }
+
+// Quick Helper
+window.quickAddKatana = function () {
+    humanData.attacks.push({ name: "Espada Nichirin", damage: "1d8+2", type: "Cortante" });
+    saveHuman();
+    renderAttacks();
+    showToast("Katana adicionada!", "success");
+};
 
 
 function rollAttack(idx) {
     const atk = humanData.attacks[idx];
-    const rollData = parseAndRoll(atk.damage, atk.type);
+    if (!atk) return;
 
-    // Hit Roll logic
-    // Assuming Proficiency + Attribute mod logic is wanted eventually, 
-    // but for now just raw d20 or we can ask user to add bonus in name/type
-    // keeping it simple d20 for "isAttack" flag
-    const hit = Math.floor(Math.random() * 20) + 1;
-    rollData.hit = hit;
-    rollData.isAttack = true;
+    // 1. Roll Hit (d20 + Bonus)
+    // For now simple d20, assuming bonus is visual or applied mentally, or use atkBonus if present?
+    // Let's use atk.atkBonus if available
+    const bonus = atk.atkBonus || 0;
+    const d20 = Math.floor(Math.random() * 20) + 1;
+    const hitTotal = d20 + bonus;
 
-    showCombatResult(atk.name, rollData);
+    // 2. Check Crit
+    const threshold = atk.critThreshold || 20;
+    const isCrit = d20 >= threshold;
+    const mult = isCrit ? (atk.critMult || 2) : 1;
+
+    // 3. Roll Base Damage
+    const baseRes = parseAndRoll(atk.damage, atk.type, mult);
+    let totalDmg = baseRes.total;
+
+    // Build Visuals
+    let fullExpr = `<div style="display:flex; flex-direction:column; gap:8px; width:100%; text-align:left;">`;
+
+    // Critical Badge
+    if (isCrit) {
+        fullExpr += `<div style="background:linear-gradient(90deg, #d90429, #ef233c); color:white; font-weight:bold; text-align:center; padding:5px; border-radius:4px; margin-bottom:10px; text-transform:uppercase; letter-spacing:2px; font-size:1.2rem; text-shadow:0 1px 3px rgba(0,0,0,0.5);">CRÍTICO! (x${mult})</div>`;
+    }
+
+    // Base Row
+    fullExpr += `
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; padding-bottom:5px;">
+            <div>
+                <strong style="color:white; font-size:1.1rem;">Base</strong>
+                <span class="dmg-badge ${getDamageTypeClass(baseRes.type)}">${baseRes.type}</span>
+            </div>
+            <div style="text-align:right;">
+                <div style="color:white; font-size:1.1rem; font-weight:bold;">${baseRes.total}</div>
+                <div style="color:#666; font-size:0.75rem;">${baseRes.expr}</div>
+            </div>
+        </div>
+    `;
+
+    // 4. Roll Extra Damages
+    if (atk.extraDmg && Array.isArray(atk.extraDmg)) {
+        atk.extraDmg.forEach(extra => {
+            const extRes = parseAndRoll(extra.damage, extra.type, mult);
+            totalDmg += extRes.total;
+            fullExpr += `
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #222; padding-bottom:5px;">
+                    <div>
+                        <span style="color:#aaa;">Extra</span>
+                        <span class="dmg-badge ${getDamageTypeClass(extRes.type)}">${extRes.type}</span>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="color:#ccc; font-weight:bold;">+${extRes.total}</div>
+                        <div style="color:#555; font-size:0.75rem;">${extRes.expr}</div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    fullExpr += `</div>`; // End container
+
+    // Prepare Result Data
+    const rollData = {
+        total: totalDmg, // Sum of all damages
+        expr: fullExpr,  // HTML breakdown
+        type: "DANO MISTO", // Generic tag
+        isAttack: true,
+        hit: hitTotal,   // The Hit Value (d20 + bonus)
+        rawDie: d20,     // The raw d20 roll (for Crit/Fail visual)
+        isCrit: isCrit,
+        atkName: atk.name
+    };
+
+    showAttackDice(atk.name, rollData);
 }
 
 // --- COMBAT HELPERS ---
-function parseAndRoll(str, extraType) {
+
+function getDamageTypeClass(type) {
+    if (!type) return '';
+    const t = type.toLowerCase();
+    if (t.includes('fogo') || t.includes('chama')) return 'dmg-type-fogo';
+    if (t.includes('frio') || t.includes('gelo') || t.includes('água')) return 'dmg-type-frio';
+    if (t.includes('elétrico') || t.includes('trovão') || t.includes('raio')) return 'dmg-type-elétrico';
+    if (t.includes('veneno') || t.includes('ácido')) return 'dmg-type-veneno';
+    if (t.includes('radiante') || t.includes('luz')) return 'dmg-type-radiante';
+    if (t.includes('necrótico') || t.includes('trevas')) return 'dmg-type-necrótico';
+    if (t.includes('psíquico')) return 'dmg-type-psíquico';
+    if (t.includes('primordial') || t.includes('força')) return 'dmg-type-primordial';
+    // Physical
+    if (t.includes('cortante')) return 'dmg-type-cortante';
+    if (t.includes('perfurante')) return 'dmg-type-perfurante';
+    if (t.includes('concussão') || t.includes('contundente')) return 'dmg-type-concussão';
+    if (t.includes('balístico')) return 'dmg-type-balístico';
+
+    return 'dmg-type-concussão'; // Default
+}
+
+function parseAndRoll(str, extraType, diceMult = 1) {
     // match XdY(+/-Z)
-    // str example: "2d10 Frio"
     const regex = /(\d+)d(\d+)(?:\s*([+-])\s*(\d+))?/;
     const match = str.match(regex);
 
@@ -1777,7 +2239,8 @@ function parseAndRoll(str, extraType) {
     let type = extraType || "";
 
     if (match) {
-        const count = parseInt(match[1]);
+        // Apply Crit Multiplier to Dice Count ONLY
+        const count = parseInt(match[1]) * diceMult;
         const sides = parseInt(match[2]);
         const modSign = match[3];
         const modVal = match[4] ? parseInt(match[4]) : 0;
@@ -1794,7 +2257,9 @@ function parseAndRoll(str, extraType) {
         // Improve expr string
         let modStr = "";
         if (modSign && modVal) modStr = ` ${modSign} ${modVal}`;
-        expr = `${count}d${sides}${modStr} [${details.join(', ')}]${modStr}`;
+
+        const detailsStr = details.length > 5 ? `[${details.slice(0, 5).join(', ')}...]` : `[${details.join(', ')}]`;
+        expr = `${count}d${sides}${modStr} ${detailsStr}`; // Show multiplied dice count
     } else {
         // Fallback checks
         const flat = parseInt(str);
@@ -1852,33 +2317,157 @@ function closeCombatModal() {
 }
 
 
+// --- ATTACK MODAL LOGIC (Extended) ---
+
+let editingAttackIndex = -1;
+
 function openAttackModal() {
     const modal = document.getElementById('attackModal');
     if (modal) {
         modal.style.display = 'flex';
+        // Clear for new
+        editingAttackIndex = -1;
         document.getElementById('atkNameInput').value = '';
         document.getElementById('atkDmgInput').value = '';
+        document.getElementById('atkTypeInput').value = '';
+
+        // New Fields Clear
+        document.getElementById('atkCritInput').value = '20';
+        document.getElementById('atkMultInput').value = '2';
+        document.getElementById('atkBonusInput').value = '0';
+        document.getElementById('atkRangeInput').value = '';
+
+        document.getElementById('extraDmgContainer').innerHTML = ''; // Clear extras
+
+        const btn = document.getElementById('btnConfirmAttack');
+        if (btn) btn.innerText = "CRIAR ATAQUE";
+    }
+}
+
+function editAttack(idx) {
+    const modal = document.getElementById('attackModal');
+    const atk = humanData.attacks[idx];
+    if (modal && atk) {
+        modal.style.display = 'flex';
+        editingAttackIndex = idx;
+
+        document.getElementById('atkNameInput').value = atk.name;
+        document.getElementById('atkDmgInput').value = atk.damage;
+        document.getElementById('atkTypeInput').value = atk.type;
+
+        // New Fields Load
+        document.getElementById('atkCritInput').value = atk.critThreshold || 20;
+        document.getElementById('atkMultInput').value = atk.critMult || 2;
+        document.getElementById('atkBonusInput').value = atk.atkBonus || 0;
+        document.getElementById('atkRangeInput').value = atk.range || '';
+
+        // Load Extras
+        const container = document.getElementById('extraDmgContainer');
+        container.innerHTML = '';
+        if (atk.extraDmg && Array.isArray(atk.extraDmg)) {
+            atk.extraDmg.forEach(extra => addExtraDmgRow(extra.damage, extra.type));
+        }
+
+        const btn = document.getElementById('btnConfirmAttack');
+        if (btn) btn.innerText = "SALVAR ALTERAÇÃO";
     }
 }
 
 function closeAttackModal() {
     const modal = document.getElementById('attackModal');
     if (modal) modal.style.display = 'none';
+    editingAttackIndex = -1;
+}
+
+function addExtraDmgRow(dmgVal = '', typeVal = '') {
+    const container = document.getElementById('extraDmgContainer');
+    const div = document.createElement('div');
+    div.className = 'extra-dmg-row';
+    div.style.display = 'grid';
+    div.style.gridTemplateColumns = '1fr 1fr auto';
+    div.style.gap = '10px';
+    div.style.alignItems = 'center';
+    div.style.background = '#111';
+    div.style.padding = '10px';
+    div.style.borderRadius = '6px';
+    div.style.border = '1px solid #333';
+
+    div.innerHTML = `
+        <input type="text" class="ds-input extra-dmg-val" value="${dmgVal}" placeholder="Ex: 1d6" style="background:#0a0a0a; border:1px solid #333; color:white; padding:8px; border-radius:4px; width:100%;">
+        <select class="ds-input extra-type-val" style="background:#0a0a0a; border:1px solid #333; color:white; padding:8px; border-radius:4px; width:100%; cursor:pointer;">
+            <option value="" disabled ${!typeVal ? 'selected' : ''}>Tipo...</option>
+            <optgroup label="Físicos Padrão">
+                <option value="Cortante" ${typeVal === 'Cortante' ? 'selected' : ''}>Cortante</option>
+                <option value="Concussão" ${typeVal === 'Concussão' ? 'selected' : ''}>Concussão</option>
+                <option value="Perfurante" ${typeVal === 'Perfurante' ? 'selected' : ''}>Perfurante</option>
+                <option value="Balístico" ${typeVal === 'Balístico' ? 'selected' : ''}>Balístico</option>
+            </optgroup>
+            <optgroup label="Elementais & Especiais">
+                <option value="Ácido" ${typeVal === 'Ácido' ? 'selected' : ''}>Ácido</option>
+                <option value="Elétrico" ${typeVal === 'Elétrico' ? 'selected' : ''}>Elétrico</option>
+                <option value="Fogo" ${typeVal === 'Fogo' ? 'selected' : ''}>Fogo</option>
+                <option value="Frio" ${typeVal === 'Frio' ? 'selected' : ''}>Frio</option>
+                <option value="Necrótico" ${typeVal === 'Necrótico' ? 'selected' : ''}>Necrótico</option>
+                <option value="Psíquico" ${typeVal === 'Psíquico' ? 'selected' : ''}>Psíquico</option>
+                <option value="Primordial" ${typeVal === 'Primordial' ? 'selected' : ''}>Primordial</option>
+                <option value="Trovejante" ${typeVal === 'Trovejante' ? 'selected' : ''}>Trovejante</option>
+                <option value="Veneno" ${typeVal === 'Veneno' ? 'selected' : ''}>Veneno</option>
+                <option value="Radiante" ${typeVal === 'Radiante' ? 'selected' : ''}>Radiante</option>
+            </optgroup>
+        </select>
+        <button onclick="this.parentElement.remove()" style="background:#d90429; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; font-weight:bold;">X</button>
+    `;
+    container.appendChild(div);
 }
 
 function confirmAddAttack() {
     const name = document.getElementById('atkNameInput').value;
     const dmg = document.getElementById('atkDmgInput').value;
     const type = document.getElementById('atkTypeInput').value;
-    if (!name || !dmg) {
-        showToast("Preencha campos!", "error");
+
+    // New Fields
+    const critThreshold = parseInt(document.getElementById('atkCritInput').value) || 20;
+    const critMult = parseInt(document.getElementById('atkMultInput').value) || 2;
+    const atkBonus = parseInt(document.getElementById('atkBonusInput').value) || 0;
+    const range = document.getElementById('atkRangeInput').value;
+
+    const extraRows = document.querySelectorAll('.extra-dmg-row');
+    const extraDmg = [];
+    extraRows.forEach(row => {
+        const d = row.querySelector('.extra-dmg-val').value;
+        const t = row.querySelector('.extra-type-val').value;
+        if (d && t) extraDmg.push({ damage: d, type: t });
+    });
+
+    if (!name || !dmg || !type) {
+        showToast("Preencha campos obrigatórios (Nome, Dano, Tipo Base)!", "error");
         return;
     }
-    humanData.attacks.push({ name, damage: dmg, type });
+
+    if (!humanData.attacks) humanData.attacks = [];
+
+    const atkObj = {
+        name,
+        damage: dmg,
+        type,
+        critThreshold,
+        critMult,
+        atkBonus,
+        range,
+        extraDmg
+    };
+
+    if (editingAttackIndex >= 0) {
+        humanData.attacks[editingAttackIndex] = atkObj;
+        showToast("Ataque atualizado!", "success");
+    } else {
+        humanData.attacks.push(atkObj);
+        showToast("Ataque criado!", "success");
+    }
+
     saveHuman();
     renderAttacks();
     closeAttackModal();
-    showToast("Ataque criado!", "success");
 }
 
 function deleteAttack(idx) {
@@ -2495,7 +3084,7 @@ window.setAttackPreset = function (type) {
     } else if (type === 'unarmed') {
         nameEl.value = "Golpe Desarmado";
         dmgEl.value = "1d4+2";
-        typeEl.value = "Contundente";
+        typeEl.value = "Concussão";
     } else if (type === 'bow') {
         nameEl.value = "Disparo de Arco";
         dmgEl.value = "1d8+2";

@@ -13,21 +13,24 @@
         :root {
             --accent-primary: #00b4d8;
             --accent-secondary: #d90429;
+            --accent-gold: #ffd700;
             --bg-dark: #050505;
-            --glass-bg: rgba(20, 20, 20, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-bg: rgba(20, 20, 25, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --card-hover-bg: rgba(30, 30, 35, 0.85);
+            --text-main: #e0e0e0;
         }
 
         body {
             background-color: var(--bg-dark);
-            color: #fff;
+            color: var(--text-main);
             font-family: 'Outfit', sans-serif;
             margin: 0;
             overflow-x: hidden;
             min-height: 100vh;
         }
 
-        /* Wisteria Background */
+        /* --- BACKGROUND --- */
         #wisteria-bg {
             position: fixed;
             top: 0;
@@ -37,11 +40,24 @@
             pointer-events: none;
             z-index: -1;
             background:
-                radial-gradient(circle at 20% 20%, rgba(157, 78, 221, 0.1), transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(0, 180, 216, 0.1), transparent 50%);
+                radial-gradient(circle at 15% 50%, rgba(76, 29, 149, 0.15), transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(217, 4, 41, 0.1), transparent 40%),
+                linear-gradient(to bottom, #020202, #0a0a0e);
         }
 
-        /* Layout */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            opacity: 0.04;
+        }
+
+        /* --- LAYOUT --- */
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -54,163 +70,228 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 3rem;
+            margin-bottom: 4rem;
         }
 
         .page-title {
             font-family: 'Cinzel', serif;
-            font-size: 3rem;
-            background: linear-gradient(to right, #fff, #ccc);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin: 0;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
+            letter-spacing: -1px;
         }
 
         .btn-back {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--glass-border);
-            padding: 10px 20px;
+            padding: 12px 28px;
             border-radius: 50px;
-            color: #ccc;
+            color: #aaa;
             cursor: pointer;
             transition: 0.3s;
             display: flex;
             align-items: center;
             gap: 8px;
             text-decoration: none;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
         }
 
         .btn-back:hover {
             background: rgba(255, 255, 255, 0.1);
             color: #fff;
-            border-color: #fff;
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
-        /* Grid */
+        /* --- GRID --- */
         .campaign-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 30px;
         }
 
-        /* Cards */
+        /* --- PREMIUM CARD --- */
         .camp-card {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(16px);
             border-radius: 16px;
-            padding: 1.5rem;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            padding: 2rem;
+            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
             position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            height: 220px;
+            height: 260px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
+        /* Top Accent Line */
         .camp-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-            opacity: 0.7;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+            opacity: 0.3;
+            transition: 0.5s;
         }
 
         .camp-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
-            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-8px) scale(1.01);
+            background: var(--card-hover-bg);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 180, 216, 0.1);
+        }
+
+        .camp-card:hover::before {
+            opacity: 1;
+            box-shadow: 0 0 15px var(--accent-primary);
         }
 
         .camp-name {
             font-family: 'Cinzel', serif;
-            font-size: 1.4rem;
+            font-size: 1.8rem;
             margin-bottom: 5px;
             color: #fff;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
         }
 
         .camp-dm {
             color: #888;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
             margin-bottom: auto;
+        }
+
+        .camp-players {
+            display: flex;
+            gap: -8px;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .player-avatar {
+            width: 32px;
+            height: 32px;
+            background: #222;
+            border-radius: 50%;
+            border: 2px solid #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #fff;
+            font-weight: 700;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
         }
 
         .camp-actions {
             display: flex;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 25px;
+            opacity: 0.7;
+            transform: translateY(5px);
+            transition: all 0.4s ease;
+        }
+
+        .camp-card:hover .camp-actions {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .action-btn {
-            flex: 1;
             padding: 10px;
             border-radius: 8px;
-            border: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: #ccc;
             cursor: pointer;
-            font-weight: 600;
-            font-family: 'Outfit', sans-serif;
             transition: 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
         .btn-enter {
-            background: linear-gradient(135deg, #222, #333);
-            color: white;
-            border: 1px solid #444;
+            flex: 1;
+            background: linear-gradient(135deg, rgba(0, 180, 216, 0.2), rgba(0, 119, 182, 0.2));
+            border-color: rgba(0, 180, 216, 0.3);
+            color: #8ecae6;
+            font-weight: 600;
+            font-family: 'Cinzel', serif;
         }
 
         .btn-enter:hover {
-            background: #444;
-            border-color: #666;
+            background: linear-gradient(135deg, rgba(0, 180, 216, 0.4), rgba(0, 119, 182, 0.4));
+            border-color: var(--accent-primary);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(0, 180, 216, 0.2);
         }
 
-        .btn-invite {
-            background: transparent;
-            border: 1px solid var(--accent-primary);
-            color: var(--accent-primary);
-            width: 40px;
-            flex: none;
-            /* Icon only */
-        }
-
-        .btn-invite:hover {
-            background: var(--accent-primary);
-            color: #000;
-        }
-
+        /* --- NEW CAMP CARD --- */
         .new-camp-card {
             border: 2px dashed rgba(255, 255, 255, 0.1);
-            background: transparent;
+            background: rgba(255, 255, 255, 0.015);
             align-items: center;
             justify-content: center;
-            color: #666;
+            color: #555;
             cursor: pointer;
+            transition: 0.4s;
+            position: relative;
         }
 
         .new-camp-card:hover {
-            border-color: var(--accent-primary);
-            color: var(--accent-primary);
-            background: rgba(0, 180, 216, 0.05);
+            border-color: var(--accent-gold);
+            color: #fff;
+            background: rgba(255, 215, 0, 0.02);
+            box-shadow: inset 0 0 30px rgba(255, 215, 0, 0.05);
         }
 
-        /* Modal */
+        .new-camp-plus {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            transition: 0.4s;
+            color: #555;
+        }
+
+        .new-camp-card:hover .new-camp-plus {
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+        }
+
+        /* --- MODAL --- */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             backdrop-filter: blur(8px);
             z-index: 100;
             display: none;
@@ -220,68 +301,91 @@
             transition: opacity 0.3s;
         }
 
-        .modal-box {
-            background: #111;
-            border: 1px solid #333;
-            padding: 2.5rem;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 450px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-            transform: scale(0.95);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
         .modal-open .modal-overlay {
             display: flex;
             opacity: 1;
+        }
+
+        .modal-box {
+            background: #0f0f12;
+            border: 1px solid var(--glass-border);
+            padding: 3rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 480px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+            transform: scale(0.95);
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
         }
 
         .modal-open .modal-box {
             transform: scale(1);
         }
 
+        /* Modal Border Glow */
+        .modal-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-secondary), transparent);
+        }
+
         .input-field {
             width: 100%;
-            padding: 12px;
-            background: #222;
-            border: 1px solid #333;
+            padding: 14px;
+            background: #08080a;
+            border: 1px solid #222;
             color: white;
-            border-radius: 6px;
-            margin-bottom: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
             font-family: inherit;
+            transition: 0.3s;
+            box-sizing: border-box;
         }
 
         .input-field:focus {
             outline: none;
             border-color: var(--accent-primary);
+            box-shadow: 0 0 15px rgba(0, 180, 216, 0.15);
+            background: #0a0a0e;
         }
 
         label {
             display: block;
             margin-bottom: 8px;
-            color: #888;
-            font-size: 0.9rem;
+            color: #777;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
         }
 
         .btn-main {
             width: 100%;
-            padding: 14px;
-            background: var(--accent-secondary);
+            padding: 16px;
+            background: linear-gradient(135deg, var(--accent-secondary), #a0001e);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(217, 4, 41, 0.3);
+            box-shadow: 0 5px 20px rgba(217, 4, 41, 0.3);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             transition: 0.3s;
+            font-size: 0.9rem;
+            font-family: 'Cinzel', serif;
         }
 
         .btn-main:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(217, 4, 41, 0.5);
+            box-shadow: 0 10px 30px rgba(217, 4, 41, 0.5);
+            filter: brightness(1.2);
         }
 
         /* Char Select Grid */
@@ -290,8 +394,8 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px;
-            background: #1a1a1a;
-            border: 1px solid #333;
+            background: #131316;
+            border: 1px solid #222;
             border-radius: 8px;
             margin-bottom: 8px;
             cursor: pointer;
@@ -300,13 +404,27 @@
 
         .char-select-item:hover {
             border-color: var(--accent-primary);
-            background: #222;
+            background: rgba(0, 180, 216, 0.05);
+            transform: translateX(4px);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
 
 <body>
     <div id="wisteria-bg"></div>
+    <div class="noise-overlay"></div>
 
     <div class="container">
         <div class="header">
@@ -415,18 +533,18 @@
                 // Players Avatars
                 let playerCircles = "";
                 c.players.slice(0, 4).forEach(p => {
-                    playerCircles += `<div style="width:24px; height:24px; background:#333; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; border:1px solid #555;">${p.name[0]}</div>`;
+                    playerCircles += `<div class="player-avatar" title="${p.name}">${p.name[0]}</div>`;
                 });
-                if (c.players.length > 4) playerCircles += `<div style="font-size:10px; color:#888;">+${c.players.length - 4}</div>`;
+                if (c.players.length > 4) playerCircles += `<div class="player-avatar" style="background:#333; color:#888;">+${c.players.length - 4}</div>`;
 
                 card.innerHTML = `
                     <div class="camp-name">${c.name}</div>
                     <div class="camp-dm">
-                        <i data-lucide="crown" size="14" style="color:#ffd700;"></i> 
+                        <i data-lucide="crown" size="14" style="color:var(--accent-gold);"></i> 
                         ${c.dmName}
                     </div>
                     
-                    <div style="margin-top:auto; display:flex; gap:5px; align-items:center;">
+                    <div class="camp-players">
                         ${playerCircles || '<span style="font-size:0.8rem; color:#444;">Nenhum jogador</span>'}
                     </div>
 
@@ -437,7 +555,7 @@
                          <button class="action-btn btn-invite" title="Copiar Convite" onclick="copyInvite('${c.id}')">
                             <i data-lucide="link"></i>
                          </button>
-                         <button class="action-btn btn-invite" title="Apagar Campanha" onclick="deleteCamp('${c.id}', '${c.name}')" style="border-color:#d90429; color:#d90429;">
+                         <button class="action-btn btn-delete" title="Apagar Campanha" onclick="deleteCamp('${c.id}', '${c.name}')">
                             <i data-lucide="trash-2"></i>
                          </button>
                     </div>
@@ -446,8 +564,10 @@
                 // Implementing "Join" via a small text button
                 const selfJoin = document.createElement('div');
                 selfJoin.innerHTML = '<i data-lucide="user-plus" size="16"></i>';
-                selfJoin.style.position = 'absolute'; selfJoin.style.top = '15px'; selfJoin.style.right = '15px';
-                selfJoin.style.cursor = 'pointer'; selfJoin.style.color = '#666';
+                selfJoin.style.position = 'absolute'; selfJoin.style.top = '25px'; selfJoin.style.right = '25px';
+                selfJoin.style.cursor = 'pointer'; selfJoin.style.color = '#555'; selfJoin.style.transition = '0.3s';
+                selfJoin.onmouseover = () => selfJoin.style.color = '#fff';
+                selfJoin.onmouseout = () => selfJoin.style.color = '#555';
                 selfJoin.onclick = (e) => { e.stopPropagation(); openJoinModal(c.id); };
                 selfJoin.title = "Adicionar Personagem Local";
                 card.appendChild(selfJoin);
@@ -457,10 +577,20 @@
 
             // New
             const newCard = document.createElement('div');
+            newCard.className = 'new-camp-card camp-card'; // Reuse camp-card for size, override styles with new-camp-card
+            // Reset camp-card specific styles that conflict if any, or just use new-camp-card separately if it has its own size
+            // In CSS, new-camp-card has flex properties? 
+            // My CSS for new-camp-card has 'align-items: center; justify-content: center;'
+            // But camp-card has 'display: flex; flex-direction: column;'
+            // The cascade should work if new-camp-card is last. 
+            // Actually, let's keep it clean.
             newCard.className = 'camp-card new-camp-card';
+
             newCard.innerHTML = `
-                <i data-lucide="plus-circle" size="40" style="margin-bottom:10px; opacity:0.7;"></i>
-                <div style="font-weight:600;">Nova Campanha</div>
+                <div class="new-camp-plus">
+                    <i data-lucide="plus" size="32"></i>
+                </div>
+                <div style="font-weight:600; font-family:'Cinzel', serif; letter-spacing:1px;">NOVA CAMPANHA</div>
             `;
             newCard.onclick = () => toggleModal('createModalWrapper', true);
             grid.appendChild(newCard);

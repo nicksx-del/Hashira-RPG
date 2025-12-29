@@ -1421,60 +1421,8 @@
                         disponíveis em níveis superiores.</div>
                 </div>
 
-                <!-- 2. FORGE (NICHIRIN BLADE) -->
-                <div>
-
-                    <div class="forge-container">
-                        <!-- Left: Preview -->
-                        <div>
-                            <div class="blade-preview-box">
-                                <div id="bladeGlow" class="preview-glow"
-                                    style="background:#00b4d8; box-shadow:0 0 15px #00b4d8;"></div>
-                            </div>
-                            <input type="text" id="swordName" class="ds-input" placeholder="Nome da Espada (Opcional)"
-                                oninput="updatePreview()">
-                        </div>
-
-                        <!-- Right: Colors -->
-                        <div>
-                            <label style="color:#aaa; font-size:0.9rem;">Cor do Minério</label>
-                            <div class="colors-row" style="flex-wrap:wrap;">
-                                <!-- Standard Colors -->
-                                <div class="color-dot selected" style="background:#00b4d8;"
-                                    onclick="selectColor('#00b4d8', this)"></div> <!-- Blue -->
-                                <div class="color-dot" style="background:#ef233c;"
-                                    onclick="selectColor('#ef233c', this)"></div> <!-- Red -->
-                                <div class="color-dot" style="background:#ffb703;"
-                                    onclick="selectColor('#ffb703', this)"></div> <!-- Yellow -->
-                                <div class="color-dot" style="background:#56ab2f;"
-                                    onclick="selectColor('#56ab2f', this)"></div> <!-- Green -->
-                                <div class="color-dot" style="background:#7b8cde;"
-                                    onclick="selectColor('#7b8cde', this)"></div> <!-- Indigo -->
-                                <div class="color-dot" style="background:#f72585;"
-                                    onclick="selectColor('#f72585', this)"></div> <!-- Pink -->
-                                <div class="color-dot" style="background:#7209b7;"
-                                    onclick="selectColor('#7209b7', this)"></div> <!-- Purple -->
-                                <div class="color-dot" style="background:#3f37c9;"
-                                    onclick="selectColor('#3f37c9', this)"></div> <!-- Deep Blue -->
-                            </div>
-
-                            <label
-                                style="color:#aaa; font-size:0.9rem; margin-top:10px; display:block;">Especiais</label>
-                            <div class="colors-row">
-                                <div class="color-dot" style="background:#333; border:1px solid #555;"
-                                    onclick="selectColor('#333333', this)"></div> <!-- Black -->
-                                <div class="color-dot" style="background:#e0e0e0;"
-                                    onclick="selectColor('#e0e0e0', this)"></div> <!-- White -->
-
-                                <!-- RGB RAINBOW OPTION -->
-                                <div class="color-dot"
-                                    style="background: linear-gradient(0deg, red, orange, yellow, green, blue, indigo, violet); border: 2px solid white;"
-                                    onclick="selectColor('rgb', this)" title="Arco-íris Dinâmico">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- 2. FORGE REMOVED -->
+                <!-- Nichirin selection is now handled in the Dashboard Forge tab -->
 
             </div>
 
@@ -1963,6 +1911,11 @@
         // Updated SELECT RACE to handle UI
         function selectRace(race, element) {
             console.log('Selecting race:', race);
+
+            if (race === 'Oni') {
+                showOniConfirmation();
+                return;
+            }
 
             // Remove previous selection visual
             document.querySelectorAll('#step-1 .selection-card').forEach(card => matchRaceCard(card, race));
@@ -2721,10 +2674,6 @@
             // Name
             const name = document.getElementById('inputName').value;
             document.getElementById('displayName').innerText = name || "Sem Nome";
-
-            // Weapon Name
-            const wName = document.getElementById('swordName').value;
-            document.getElementById('displayWeapon').innerText = wName ? `Nichirin (${wName})` : "Nichirin (Padrão)";
 
             // --- RACE DISPLAY MAPPING ---
             const raceMap = {

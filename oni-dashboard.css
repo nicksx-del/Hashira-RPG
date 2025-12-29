@@ -1226,3 +1226,570 @@ body {
     color: #d90429;
     font-weight: bold;
 }
+
+/* --- 3D COMBAT STYLES --- */
+.atk-controls {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 2rem;
+}
+
+.attack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    perspective: 1000px;
+    padding: 20px;
+}
+
+.attack-card-3d {
+    background: linear-gradient(135deg, rgba(20, 0, 0, 0.9), rgba(10, 0, 0, 0.95));
+    border: 1px solid #333;
+    border-radius: 16px;
+    height: 220px;
+    position: relative;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    transform-style: preserve-3d;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+}
+
+/* Red Glow Hover Effect - Adapted for Theming */
+.attack-card-3d:hover {
+    transform: rotateY(10deg) rotateX(5deg) scale(1.05) translateY(-10px);
+    border-color: var(--accent-primary, var(--accent-red));
+    box-shadow: -15px 15px 40px var(--accent-glow, rgba(187, 10, 30, 0.2)), 0 0 20px var(--accent-glow, rgba(187, 10, 30, 0.1));
+    z-index: 10;
+}
+
+.attack-bg-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) translateZ(-20px);
+    font-size: 8rem;
+    opacity: 0.05;
+    color: var(--accent-primary, var(--accent-red));
+    pointer-events: none;
+    transition: 0.4s;
+}
+
+.attack-card-3d:hover .attack-bg-icon {
+    opacity: 0.15;
+    transform: translate(-50%, -50%) translateZ(10px) scale(1.2);
+}
+
+.card-title {
+    transform: translateZ(40px);
+    color: white;
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    margin: 0 0 5px 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    position: relative;
+}
+
+.card-meta {
+    transform: translateZ(30px);
+    color: var(--accent-cyan);
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    margin-bottom: 20px;
+}
+
+.card-desc {
+    transform: translateZ(20px);
+    color: #888;
+    font-size: 0.8rem;
+    max-width: 80%;
+    line-height: 1.4;
+}
+
+.card-actions {
+    position: absolute;
+    bottom: 20px;
+    display: flex;
+    gap: 15px;
+    transform: translateZ(50px) translateY(20px);
+    opacity: 0;
+    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.attack-card-3d:hover .card-actions {
+    opacity: 1;
+    transform: translateZ(50px) translateY(0);
+}
+
+.atk-btn-3d {
+    border: none;
+    border-radius: 50px;
+    padding: 10px 24px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.2s;
+    font-size: 0.9rem;
+}
+
+.atk-btn-roll {
+    background: linear-gradient(90deg, var(--accent-primary, #d90429), var(--accent-glow, #ef233c));
+    color: white;
+}
+
+.atk-btn-roll:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px var(--accent-glow, rgba(217, 4, 41, 0.6));
+}
+
+.atk-btn-del {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+    padding: 10px 14px;
+    /* Icon onlyish */
+}
+
+.atk-btn-del:hover {
+    background: rgba(255, 0, 0, 0.2);
+    color: #ff595e;
+}
+
+/* Floating Clean Animation */
+.attack-card-3d {
+    animation: floatCard 6s ease-in-out infinite;
+    animation-delay: calc(var(--i) * 0.2s);
+}
+
+@keyframes floatCard {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+/* --- DAMAGE TYPE VISUALS --- */
+.dmg-badge {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    margin-left: 5px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* FOGO - Animated Rising Fire */
+.dmg-type-fogo,
+.dmg-type-chama {
+    position: relative;
+    overflow: hidden;
+    color: white;
+    background: linear-gradient(0deg, #a30000, #ff4d00);
+    border: 1px solid #ff7b00;
+    box-shadow: 0 0 10px #ff4d00;
+}
+
+.dmg-type-fogo::before,
+.dmg-type-chama::before {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(0deg, transparent 20%, rgba(255, 200, 0, 0.6) 50%, transparent 100%);
+    animation: riseFire 1.5s infinite linear;
+}
+
+@keyframes riseFire {
+    0% {
+        top: 100%;
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    100% {
+        top: -100%;
+        opacity: 0;
+    }
+}
+
+/* FRIO / GELO - Falling Snowflakes */
+.dmg-type-frio,
+.dmg-type-gelo,
+.dmg-type-água {
+    position: relative;
+    overflow: hidden;
+    background: #0077b6;
+    border: 1px solid #90e0ef;
+    box-shadow: 0 0 5px #00b4d8;
+}
+
+.dmg-type-frio::after,
+.dmg-type-gelo::after,
+.dmg-type-água::after {
+    content: "❄ ❄ ❄";
+    position: absolute;
+    top: -15px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.7);
+    animation: fallSnow 2s infinite linear;
+    line-height: normal;
+}
+
+@keyframes fallSnow {
+    0% {
+        top: -15px;
+        transform: translateX(-2px);
+    }
+
+    50% {
+        transform: translateX(2px);
+    }
+
+    100% {
+        top: 100%;
+        transform: translateX(-2px);
+    }
+}
+
+/* ELÉTRICO / TROVÃO - Falling Lightning */
+.dmg-type-elétrico,
+.dmg-type-trovão,
+.dmg-type-raio {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #ffd60a, #ffc300);
+    color: #000 !important;
+    border: 1px solid #ffff3f;
+    box-shadow: 0 0 10px #ffc300;
+}
+
+.dmg-type-elétrico::after,
+.dmg-type-trovão::after,
+.dmg-type-raio::after {
+    content: "⚡";
+    position: absolute;
+    top: -20px;
+    left: 20%;
+    font-size: 14px;
+    color: #fff;
+    text-shadow: 0 0 5px #ff0;
+    animation: strikeBolt 0.8s infinite linear;
+}
+
+.dmg-type-elétrico::before,
+.dmg-type-trovão::before,
+.dmg-type-raio::before {
+    content: "⚡";
+    position: absolute;
+    top: -20px;
+    right: 20%;
+    font-size: 12px;
+    color: white;
+    text-shadow: 0 0 5px #ff0;
+    animation: strikeBolt 1.2s infinite linear 0.4s;
+}
+
+@keyframes strikeBolt {
+    0% {
+        top: -20px;
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    40% {
+        top: 120%;
+        opacity: 1;
+    }
+
+    41% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* VENENO / ÁCIDO */
+.dmg-type-veneno,
+.dmg-type-ácido {
+    background: linear-gradient(135deg, #70e000, #38b000);
+    border: 1px solid #ccff33;
+    animation: pulseGreen 2s infinite;
+}
+
+/* NECRÓTICO */
+.dmg-type-necrótico,
+.dmg-type-trevas {
+    background: linear-gradient(135deg, #240046, #10002b);
+    border: 1px solid #5a189a;
+    box-shadow: 0 0 10px #3c096c;
+}
+
+/* RADIANTE / PSÍQUICO */
+.dmg-type-radiante,
+.dmg-type-psíquico,
+.dmg-type-luz {
+    background: linear-gradient(135deg, #ff9e00, #ff0);
+    border: 1px solid #fff;
+    color: black !important;
+    box-shadow: 0 0 15px white;
+}
+
+/* FORCE / PRIMORDIAL - Ultimate Sun Theme */
+.dmg-type-primordial,
+.dmg-type-força {
+    position: relative;
+    overflow: hidden;
+    color: #fff !important;
+    background: #ffaa00;
+    border: 1px solid #ffd000;
+    box-shadow: 0 0 15px #ff8800, inset 0 0 10px #ffea00;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+    z-index: 1;
+}
+
+/* Rotating Rays */
+.dmg-type-primordial::before,
+.dmg-type-força::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg,
+            transparent 0deg,
+            rgba(255, 230, 0, 0.4) 20deg,
+            transparent 40deg,
+            rgba(255, 160, 0, 0.4) 60deg,
+            transparent 80deg,
+            rgba(255, 230, 0, 0.4) 100deg,
+            transparent 120deg,
+            rgba(255, 160, 0, 0.4) 140deg,
+            transparent 160deg,
+            rgba(255, 230, 0, 0.4) 180deg,
+            transparent 200deg,
+            rgba(255, 160, 0, 0.4) 220deg,
+            transparent 240deg,
+            rgba(255, 230, 0, 0.4) 260deg,
+            transparent 280deg,
+            rgba(255, 160, 0, 0.4) 300deg,
+            transparent 320deg,
+            rgba(255, 230, 0, 0.4) 340deg,
+            transparent 360deg);
+    transform: translate(-50%, -50%);
+    animation: rotateRays 10s infinite linear;
+    z-index: -1;
+}
+
+/* Pulsing Core Overlay */
+.dmg-type-primordial::after,
+.dmg-type-força::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60%;
+    height: 60%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 200, 0, 0) 70%);
+    transform: translate(-50%, -50%);
+    animation: corePulse 2s infinite ease-in-out;
+    mix-blend-mode: overlay;
+    z-index: -1;
+}
+
+@keyframes rotateRays {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+@keyframes corePulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0.6;
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0.6;
+    }
+}
+
+/* PHYSICAL - Slash X for Cortante */
+.dmg-type-cortante {
+    background: #495057;
+    border: 1px solid #adb5bd;
+    position: relative;
+    overflow: hidden;
+}
+
+.dmg-type-cortante::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120%;
+    height: 2px;
+    background: white;
+    transform: translate(-50%, -50%) rotate(45deg);
+    animation: slash1 2s infinite;
+    box-shadow: 0 0 5px white;
+}
+
+.dmg-type-cortante::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120%;
+    height: 2px;
+    background: white;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    animation: slash2 2s infinite;
+    box-shadow: 0 0 5px white;
+}
+
+@keyframes slash1 {
+    0% {
+        width: 0;
+        opacity: 0;
+    }
+
+    10% {
+        width: 120%;
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes slash2 {
+    0% {
+        width: 0;
+        opacity: 0;
+    }
+
+    15% {
+        width: 0;
+        opacity: 0;
+    }
+
+    /* Delay slightly */
+    25% {
+        width: 120%;
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.dmg-type-perfurante {
+    background: #343a40;
+    border: 1px solid #ced4da;
+    position: relative;
+}
+
+.dmg-type-perfurante::after {
+    content: "◎";
+    font-size: 10px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    animation: puncture 2s infinite;
+}
+
+@keyframes puncture {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+    }
+
+    10% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+    }
+}
+
+.dmg-type-concussão {
+    background: #212529;
+    border: 1px solid #6c757d;
+}
+
+.dmg-type-balístico {
+    background: #000;
+    border: 1px solid #495057;
+}
+
+/* GENERIC ANIMATIONS */
+@keyframes pulseGreen {
+    0% {
+        box-shadow: 0 0 5px #70e000;
+    }
+
+    50% {
+        box-shadow: 0 0 15px #ccff33;
+    }
+
+    100% {
+        box-shadow: 0 0 5px #70e000;
+    }
+}

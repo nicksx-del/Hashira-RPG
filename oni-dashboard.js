@@ -44,32 +44,57 @@ function loadChar() {
 }
 
 function initDashboard() {
-    loadChar();
+    try {
+        loadChar();
 
-    // UI Elements
-    if (document.getElementById('dispName')) document.getElementById('dispName').innerText = charData.name || "Oni";
-    if (document.getElementById('dispRank')) document.getElementById('dispRank').innerText = charData.rank || "Oni Inferior";
-    if (document.getElementById('dispLevel')) document.getElementById('dispLevel').innerText = charData.level;
+        // UI Elements
+        if (document.getElementById('dispName')) document.getElementById('dispName').innerText = charData.name || "Oni";
 
-    updateVitalsUI();
-    renderAttributes();
-    renderProficiencies();
-    renderAttacks();
+        // Display Race | Power (Kekkijutsu)
+        if (document.getElementById('dispRank')) {
+            const KEKK_MAP = {
+                'ice': 'Criocinese',
+                'swamp': 'Pântano',
+                'arrow': 'Vetores',
+                'sound': 'Ondas Sonoras',
+                'shadow': 'Sombras',
+                'blood_manip': 'Manipulação de Sangue'
+            };
+            const powerName = KEKK_MAP[charData.kekkijutsu] || charData.kekkijutsu || 'Sem Kekkijutsu';
+            const raceName = charData.race || "Oni";
 
-    // Inventory
-    if (typeof renderInventory === 'function') renderInventory();
+            // Console log for debugging (Viewable in DevTools usually, but helpful if user checks console)
+            console.log("Oni Init:", raceName, powerName, charData.kekkijutsu);
 
-    if (window.lucide) lucide.createIcons();
+            document.getElementById('dispRank').innerText = `${raceName} | ${powerName}`;
+        }
 
-    // update Path UI
-    if (document.getElementById('oniPathSelect')) document.getElementById('oniPathSelect').value = charData.oniPath || "";
-    // update Instinct UI
-    if (document.getElementById('dispInstinctDC')) document.getElementById('dispInstinctDC').innerText = charData.instinctDC || 12;
-    // update Devoured UI
-    if (document.getElementById('dispDevoured')) document.getElementById('dispDevoured').innerText = charData.devouredCount || 0;
+        if (document.getElementById('dispLevel')) document.getElementById('dispLevel').innerText = charData.level;
 
-    // update Particularities UI
-    renderParticularities();
+        updateVitalsUI();
+        renderAttributes();
+        renderProficiencies();
+        renderAttacks();
+
+        // Inventory
+        if (typeof renderInventory === 'function') renderInventory();
+
+        if (window.lucide) lucide.createIcons();
+
+        // update Path UI
+        if (document.getElementById('oniPathSelect')) document.getElementById('oniPathSelect').value = charData.oniPath || "";
+        // update Instinct UI
+        if (document.getElementById('dispInstinctDC')) document.getElementById('dispInstinctDC').innerText = charData.instinctDC || 12;
+        // update Devoured UI
+        if (document.getElementById('dispDevoured')) document.getElementById('dispDevoured').innerText = charData.devouredCount || 0;
+
+        // update Particularities UI
+        renderParticularities();
+
+    } catch (e) {
+        alert("Erro no Dashboard: " + e.message);
+        console.error(e);
+    }
 }
 
 // --- CONSTANTS ---
@@ -449,20 +474,57 @@ function renderAttacks() {
     if (!list) return;
     list.innerHTML = '';
 
-    (charData.attacks || []).forEach(atk => {
-        list.innerHTML += `
-            <div class="attack-row" style="background:#111; border:1px solid #333; padding:10px; margin-bottom:5px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
-                <div class="atk-info">
-                    <span class="atk-name" style="font-weight:bold; color:#fff;">${atk.name}</span>
-                    <span class="atk-meta" style="font-size:0.8rem; color:#888;">${atk.damage} - ${atk.type}</span>
-                </div>
-                <div>
-                     <button class="roll-atk-btn" onclick="showToast('Ataque ${atk.name}: Rolando dados...', 'success')">Rolar</button>
-                     <button class="del-atk-btn" onclick="deleteAttack(${atk.id})">X</button>
+    const attacks = charData.attacks || [];
+
+    if (attacks.length === 0) {
+        list.innerHTML = `
+            <div style="text-align:center; padding:3rem; color:#666; width:100%;">
+                <i data-lucide="swords" size="48" style="opacity:0.3; margin-bottom:1rem;"></i>
+                <p>Nenhum ataque registrado.</p>
+                <button class="devour-btn" style="width:auto; margin:1rem auto;" onclick="openAttackModal()">Criar Ataque</button>
+            </div>
+        `;
+        if (window.lucide) lucide.createIcons();
+        return;
+    }
+
+    let html = '<div class="attack-grid">';
+
+    attacks.forEach((atk, index) => {
+        // Dynamic Icon Logic
+        let icon = 'crosshair';
+        const lowerName = (atk.name || '').toLowerCase();
+        if (lowerName.includes('corte') || lowerName.includes('lâmina') || lowerName.includes('espada')) icon = 'sword';
+        else if (lowerName.includes('soco') || lowerName.includes('punho') || lowerName.includes('impacto')) icon = 'hand-metal';
+        else if (lowerName.includes('fogo') || lowerName.includes('chama')) icon = 'flame';
+        else if (lowerName.includes('gelo') || lowerName.includes('frio')) icon = 'snowflake';
+        else if (lowerName.includes('sangue')) icon = 'droplet';
+        else if (lowerName.includes('garra')) icon = 'scissors'; // pseudo-claw
+
+        html += `
+            <div class="attack-card-3d" style="--i:${index}">
+                <i data-lucide="${icon}" class="attack-bg-icon"></i>
+                
+                <h3 class="card-title">${atk.name}</h3>
+                <div class="card-meta">${atk.damage}</div>
+                <div class="card-desc">${atk.type}</div>
+
+                <div class="card-actions">
+                    <button class="atk-btn-3d atk-btn-roll" onclick="showToast('Rolando ${atk.name}...', 'success')">
+                        <i data-lucide="dices"></i> ROLAR
+                    </button>
+                    <button class="atk-btn-3d atk-btn-del" onclick="deleteAttack(${atk.id})" title="Excluir">
+                        <i data-lucide="trash-2"></i>
+                    </button>
                 </div>
             </div>
         `;
     });
+
+    html += '</div>';
+    list.innerHTML = html;
+
+    if (window.lucide) lucide.createIcons();
 }
 
 function deleteAttack(id) {

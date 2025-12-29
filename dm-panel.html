@@ -3,544 +3,988 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel do Mestre | Demon Slayer RPG</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="ultra-dice.css">
-    <link rel="stylesheet" href="mobile.css">
+    <title>Painel do Mestre - Demon Slayer RPG</title>
+    <!-- Use the same CSS file name as established -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --bg-dark: #0a0a0f;
-            --panel-bg: #1a1a24;
-            --border: #2a2a3a;
-            --primary: #9d4edd;
-            --primary-light: #c77dff;
-            --primary-glow: rgba(157, 78, 221, 0.5);
-            --wisteria: #b19cd9;
-            --gold: #ffd60a;
-            --blood-red: #dc143c;
+            /* WISTERIA THEME */
+            --primary: #a855f7;
+            --primary-dark: #7e22ce;
+            --primary-light: #d8b4fe;
+            --bg-dark: #0f0e13;
+            --surface-dark: #18181b;
+            --border-dark: #27272a;
+            --accent-purple: #c084fc;
             --danger: #ef4444;
-            --text-main: #f0f0f5;
-            --text-muted: #9ca3af;
-            --glass-bg: rgba(26, 26, 36, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-bg: rgba(24, 24, 27, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+
+            /* Status Colors */
+            --hp-high: #22c55e;
+            --hp-mid: #eab308;
+            --hp-low: #ef4444;
+            --blood-red: #b91c1c;
+
+            /* Global */
+            --font-display: 'Cinzel', serif;
+            --font-body: 'Lato', sans-serif;
+        }
+
+        [data-theme="wisteria"] {
+            --primary: #70d6ff;
+            --primary-light: #a8e6cf;
+            --accent: #ff97b7;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
+            font-family: var(--font-body);
             background-color: var(--bg-dark);
-            background-image:
-                radial-gradient(circle at 20% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.06) 0%, transparent 50%),
-                url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50,20 Q60,30 50,40 Q40,30 50,20 Z' fill='%239333ea' opacity='0.03'/%3E%3Cpath d='M20,50 Q30,60 20,70 Q10,60 20,50 Z' fill='%23ec4899' opacity='0.03'/%3E%3Cpath d='M80,50 Q90,60 80,70 Q70,60 80,50 Z' fill='%239333ea' opacity='0.03'/%3E%3C/svg%3E");
-            color: var(--text-main);
-            font-family: 'Outfit', sans-serif;
+            color: #e4e4e7;
             margin: 0;
             height: 100vh;
             overflow: hidden;
-            display: grid;
-            grid-template-columns: 280px 1fr 340px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* WISTERIA LAYOUT UTILS */
+        .wis-layout {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
             position: relative;
         }
 
-        /* Blood Moon Glow */
-        body::before {
-            content: "";
-            position: absolute;
-            top: -50%;
-            right: 10%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(220, 38, 38, 0.15) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 1;
-            animation: pulseBloodMoon 8s ease-in-out infinite;
+        .wis-sidebar {
+            width: 320px;
+            background: var(--surface-dark);
+            border-right: 1px solid var(--border-dark);
+            display: flex;
+            flex-direction: column;
+            z-index: 20;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5);
+            flex-shrink: 0;
         }
 
-        @keyframes pulseBloodMoon {
-
-            0%,
-            100% {
-                opacity: 0.3;
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 0.5;
-                transform: scale(1.1);
-            }
+        .wis-sidebar.right {
+            border-right: none;
+            border-left: 1px solid var(--border-dark);
         }
 
-        /* Wisteria Petals Floating */
-        body::after {
-            content: "";
+        .wis-header {
+            height: 60px;
+            border-bottom: 1px solid var(--border-dark);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            background: var(--surface-dark);
+        }
+
+        .wis-title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            color: #a1a1aa;
+        }
+
+        .wis-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        /* WISTERIA CARDS (Log/Iniciativa) */
+        .wis-card {
+            background: rgba(31, 31, 35, 0.5);
+            border: 1px solid var(--border-dark);
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .wis-card:hover {
+            border-color: var(--primary);
+            background: rgba(31, 31, 35, 0.8);
+        }
+
+        /* WISTERIA ARENA CENTER */
+        .wis-arena-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background-color: #0a0a0c;
+            overflow: hidden;
+        }
+
+        .wis-arena-bg {
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.4) 120%);
+            background-image:
+                linear-gradient(rgba(168, 85, 247, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(168, 85, 247, 0.05) 1px, transparent 1px);
+            background-size: 60px 60px;
             pointer-events: none;
-            z-index: 9;
         }
 
-        /* --- COMMON --- */
-        ::-webkit-scrollbar {
-            width: 6px;
+        .wis-arena-radial {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(168, 85, 247, 0.05) 0%, transparent 70%);
+            pointer-events: none;
         }
 
-        ::-webkit-scrollbar-track {
-            background: var(--bg-dark);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #333;
-            border-radius: 3px;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, rgba(39, 39, 50, 0.9) 0%, rgba(30, 30, 40, 0.8) 100%);
-            border: 1px solid rgba(157, 78, 221, 0.3);
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 8px;
+        /* TOKENS (Updated Wisteria Style) */
+        .wis-token {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 20px;
+            z-index: 10;
+        }
+
+        .wis-token:hover {
+            transform: scale(1.05);
+            z-index: 50;
+        }
+
+        .wis-token.active {
+            transform: scale(1.1);
+            z-index: 40;
+        }
+
+        .wis-token-img-box {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--border-dark);
+            background: #111;
             position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(157, 78, 221, 0.2), transparent);
-            transition: 0.5s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn:hover {
-            border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(157, 78, 221, 0.4);
-            transform: translateY(-2px);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            border-color: var(--primary-light);
-            box-shadow: 0 4px 12px rgba(157, 78, 221, 0.3);
-        }
-
-        .btn-primary:hover {
-            box-shadow: 0 6px 20px rgba(157, 78, 221, 0.5);
-            transform: translateY(-2px) scale(1.02);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, rgba(220, 20, 60, 0.2) 0%, rgba(239, 68, 68, 0.1) 100%);
-            border-color: rgba(220, 20, 60, 0.4);
-            color: var(--blood-red);
-        }
-
-        .btn-danger:hover {
-            border-color: var(--blood-red);
-            box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3);
-        }
-
-        /* --- LEFT: LOG (RESULTADOS) --- */
-        .col-left {
-            background: linear-gradient(to bottom, rgba(10, 10, 15, 0.95) 0%, rgba(15, 15, 20, 0.98) 100%);
-            border-right: 1px solid rgba(157, 78, 221, 0.2);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            backdrop-filter: blur(20px);
-            z-index: 20;
-            /* Elevate above background effects */
-        }
-
-        .col-left::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 1px;
-            height: 100%;
-            background: linear-gradient(to bottom, transparent, var(--primary-glow), transparent);
-            opacity: 0.5;
-        }
-
-        .panel-header {
-            padding: 15px;
-            border-bottom: 2px solid;
-            border-image: linear-gradient(90deg, transparent, var(--primary), transparent) 1;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            position: relative;
-        }
-
-        .panel-header::before {
-            content: "⚔";
-            position: absolute;
-            left: -5px;
-            color: var(--gold);
-            font-size: 0.7rem;
-            opacity: 0.6;
-        }
-
-        .log-feed {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .log-card {
-            background: linear-gradient(135deg, rgba(24, 24, 27, 0.95) 0%, rgba(39, 39, 42, 0.8) 100%);
-            border: 1px solid #27272a;
-            border-left: 3px solid var(--primary);
-            border-radius: 8px;
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            backdrop-filter: blur(10px);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .log-card::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.1), transparent);
-            transition: 0.5s;
-        }
-
-        .log-card:hover::before {
-            left: 100%;
-        }
-
-        .dice-icon {
-            width: 40px;
-            height: 44px;
-            background: #27272a;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Cinzel', serif;
-            font-weight: 700;
-            color: #fff;
-            font-size: 1.1rem;
-            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-            margin-right: 10px;
         }
 
-        .log-content {
-            flex: 1;
+        .wis-token.active .wis-token-img-box {
+            border-color: var(--primary);
+            box-shadow: 0 0 40px rgba(168, 85, 247, 0.6), 0 0 80px rgba(168, 85, 247, 0.3);
+            animation: pulse-aura 2s infinite;
         }
 
-        .log-title {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #fff;
-            margin-bottom: 2px;
-        }
-
-        .log-detail {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .log-total {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: var(--primary);
-            text-align: right;
-        }
-
-        /* --- CENTER: COMBAT (INICIATIVA) --- */
-        .col-center {
-            display: flex;
-            flex-direction: column;
-            background: radial-gradient(ellipse at top, rgba(157, 78, 221, 0.03) 0%, rgba(0, 0, 0, 0.95) 50%);
-            position: relative;
-            z-index: 20;
-            /* Elevate above background effects */
-        }
-
-        .col-center::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M100,30 L110,50 L130,55 L110,65 L105,85 L100,65 L90,55 L95,45 Z' fill='%239d4edd' opacity='0.02'/%3E%3C/svg%3E");
-            pointer-events: none;
-            opacity: 0.5;
-        }
-
-        .combat-header {
-            padding: 20px;
-            border-bottom: 2px solid;
-            border-image: linear-gradient(90deg, transparent, var(--primary), var(--wisteria), transparent) 1;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(135deg, rgba(26, 26, 36, 0.9) 0%, rgba(20, 20, 30, 0.8) 100%);
-            backdrop-filter: blur(20px);
-            position: relative;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .combat-header::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--primary-glow), transparent);
-            filter: blur(4px);
-        }
-
-        .page-title {
-            font-family: 'Cinzel', serif;
-            font-size: 1.5rem;
-            color: #fff;
-            margin: 0;
-            text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .page-title::before {
-            content: "⚔";
-            color: var(--gold);
-            font-size: 1.2rem;
-            animation: glowPulse 3s ease-in-out infinite;
-            filter: drop-shadow(0 0 8px var(--gold));
-        }
-
-        @keyframes glowPulse {
-
-            0%,
-            100% {
-                opacity: 0.6;
+        @keyframes pulse-aura {
+            0% {
+                box-shadow: 0 0 40px rgba(168, 85, 247, 0.6);
             }
 
             50% {
-                opacity: 1;
+                box-shadow: 0 0 60px rgba(168, 85, 247, 0.9);
+            }
+
+            100% {
+                box-shadow: 0 0 40px rgba(168, 85, 247, 0.6);
             }
         }
 
-        .combat-list {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .init-row {
-            display: flex;
-            align-items: center;
-            background: linear-gradient(90deg, rgba(24, 24, 27, 0.6) 0%, rgba(18, 18, 21, 0.4) 100%);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 10px 15px;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            margin-bottom: 6px;
-            position: relative;
-        }
-
-        /* Oni Marker - Blood Effect */
-        .init-row[data-type="oni"]::after {
-            content: "鬼";
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: rgba(220, 38, 38, 0.3);
-            font-size: 2rem;
-            font-weight: bold;
-            pointer-events: none;
-            text-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
-        }
-
-        .init-row:hover {
-            background: linear-gradient(90deg, rgba(39, 39, 50, 0.9) 0%, rgba(30, 30, 40, 0.7) 100%);
-            transform: translateX(6px);
-            border-color: rgba(157, 78, 221, 0.5);
-            box-shadow: 0 4px 12px rgba(157, 78, 221, 0.2);
-        }
-
-        .init-row.active-turn {
-            border: 2px solid var(--primary);
-            background: linear-gradient(90deg, rgba(157, 78, 221, 0.15) 0%, rgba(157, 78, 221, 0.05) 100%);
-            box-shadow: 0 0 20px rgba(157, 78, 221, 0.4), inset 0 0 30px rgba(157, 78, 221, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Breathing Animation */
-        .init-row.active-turn::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
+        .wis-token-img {
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transform: translateX(-100%);
-            animation: breathingShine 3s infinite;
-        }
-
-        @keyframes breathingShine {
-            0% {
-                transform: translateX(-100%);
-            }
-
-            50% {
-                transform: translateX(100%);
-            }
-
-            100% {
-                transform: translateX(100%);
-            }
-        }
-
-        .init-row.selected {
-            border-left: 4px solid var(--wisteria);
-            background: linear-gradient(90deg, rgba(177, 156, 217, 0.1) 0%, rgba(177, 156, 217, 0.03) 100%);
-            box-shadow: 0 2px 8px rgba(177, 156, 217, 0.3);
-        }
-
-        .avatar-sm {
-            width: 40px;
-            height: 40px;
-            border-radius: 6px;
-            background: #333;
-            margin-right: 15px;
+            border-radius: 50%;
             background-size: cover;
             background-position: center;
         }
 
-        .row-info {
-            flex: 1;
-        }
-
-        .row-name {
-            font-weight: 700;
-            font-size: 1rem;
-            color: #fff;
-        }
-
-        .row-meta {
-            font-size: 0.8rem;
-            color: #71717a;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        /* --- INITIATIVE INPUT --- */
-        .init-input {
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid transparent;
-            border-radius: 4px;
-            color: #a1a1aa;
-            width: 40px;
-            text-align: center;
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin-right: 15px;
-            padding: 4px 0;
-            transition: 0.2s;
-            font-family: 'Outfit', sans-serif;
-        }
-
-        .init-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            color: #fff;
-            background: #000;
-        }
-
-        .attack-roll-btn:hover {
-            border-color: var(--primary);
-            color: #fff;
-        }
-
-        /* Remove arrows */
-        .init-input::-webkit-outer-spin-button,
-        .init-input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        .active-turn .init-input {
-            color: #fff;
-            text-shadow: 0 0 10px var(--primary);
-        }
-
-        .hp-bar-mini {
-            width: 80px;
+        .wis-token-bar {
+            width: 90px;
             height: 6px;
-            background: #333;
+            background: #111;
             border-radius: 3px;
+            margin-top: 8px;
             overflow: hidden;
-            margin-top: 5px;
+            border: 1px solid #333;
+            position: relative;
         }
 
-        .hp-fill-mini {
+        .wis-token-bar-fill {
             height: 100%;
-            background: #ef4444;
-            transition: width 0.3s ease;
+            transition: width 0.3s;
         }
 
+        .wis-token-name {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-top: -12px;
+            /* Overlap bottom of token */
+            z-index: 2;
+            font-weight: 700;
+        }
 
-        /* --- RIGHT: INSPECTOR (DETALHES) --- */
-        .col-right {
-            background: linear-gradient(to bottom, rgba(26, 26, 36, 0.95) 0%, rgba(20, 20, 30, 0.98) 100%);
-            border-left: 1px solid rgba(157, 78, 221, 0.2);
+        /* ACTION DOCK (Floating) */
+        .wis-dock {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            background: #18181b;
+            padding: 8px;
+            border-radius: 16px;
+            border: 1px solid var(--border-dark);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            z-index: 100;
+        }
+
+        .wis-dock-btn {
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
+            background: #27272a;
+            color: #a1a1aa;
             display: flex;
             flex-direction: column;
-            position: relative;
-            backdrop-filter: blur(20px);
-            z-index: 20;
-            /* Elevate above background effects */
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s;
         }
 
-        .col-right::before {
-            content: '';
+        .wis-dock-btn:hover {
+            background: #3f3f46;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .wis-dock-btn.primary {
+            background: linear-gradient(to bottom, var(--primary), var(--primary-dark));
+            color: #fff;
+            height: 80px;
+            width: 80px;
+            margin-top: -30px;
+            /* Pop up */
+            box-shadow: 0 10px 20px rgba(168, 85, 247, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .wis-dock-btn.primary:hover {
+            transform: translateY(-5px) scale(1.05);
+            filter: brightness(1.1);
+        }
+
+        .wis-dock-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        /* HEADER & NAV */
+        .dm-nav {
+            height: 50px;
+            background: var(--surface-dark);
+            border-bottom: 1px solid var(--border-dark);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 20px;
+            z-index: 50;
+        }
+
+        .nav-tab {
+            color: #71717a;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            cursor: pointer;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .nav-tab:hover {
+            color: #d4d4d8;
+        }
+
+        .nav-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        /* --- NAVIGATION --- */
+        .dm-nav {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            background: rgba(10, 10, 15, 0.9);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 100;
+            padding: 0 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-tab {
+            padding: 10px 24px;
+            border-radius: 8px;
+            color: #888;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid transparent;
+            font-size: 0.9rem;
+        }
+
+        .nav-tab:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-tab.active {
+            color: #fff;
+            background: rgba(157, 78, 221, 0.15);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(157, 78, 221, 0.2);
+        }
+
+        /* --- VIEWS --- */
+        .view-section {
+            flex: 1;
+            display: none;
+            /* Hidden by default */
+            overflow: hidden;
+            width: 100%;
+            height: calc(100vh - 60px);
+            position: relative;
+        }
+
+        .view-section.active {
+            display: flex;
+            /* Flex to keep column layout working */
+            flex-direction: column;
+            animation: fadeInView 0.3s ease;
+        }
+
+        @keyframes fadeInView {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- VISUALS --- */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            opacity: 0.04;
+        }
+
+        /* --- LAYOUT OVERRIDES FOR TABS --- */
+        .col-left,
+        .col-right,
+        .col-center {
+            width: 100%;
+            height: 100%;
+            border: none;
+            /* Remove borders in full view */
+            background: transparent;
+            /* Let background show through */
+        }
+
+        /* Adjust Log Feed to fit new full width nicely */
+        .col-left {
+            max-width: 800px;
+            margin: 0 auto;
+            border-left: 1px solid var(--glass-border);
+            border-right: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        /* Adjust Inspector to fit new full width nicely */
+        .col-right {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            /* Example split for Personagens tab? Or stay column? */
+            /* Actually, user wanted tabs. Let's keep existing internal structure but centered */
+            display: flex;
+            max-width: 900px;
+            background: rgba(0, 0, 0, 0.2);
+            border-left: 1px solid var(--glass-border);
+            border-right: 1px solid var(--glass-border);
+        }
+
+        .col-center {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* --- HEADERS --- */
+        .panel-header {
+            height: 60px;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.2);
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+
+        .panel-header i {
+            color: var(--primary);
+            margin-right: 10px;
+        }
+
+        .page-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            color: #fff;
+            margin: 0;
+            text-shadow: 0 0 10px rgba(157, 78, 221, 0.5);
+        }
+
+        .combat-header {
+            padding: 15px 25px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(20, 20, 25, 0.6);
+        }
+
+        /* --- LOG FEED --- */
+        .log-feed {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .log-item,
+        .log-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid var(--primary);
+            padding: 12px;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.85rem;
+            animation: fadeIn 0.3s ease;
+            position: relative;
+        }
+
+        .log-card.crit {
+            border-color: var(--gold);
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .log-card.fail {
+            border-color: var(--blood-red);
+            background: rgba(220, 20, 60, 0.05);
+        }
+
+        /* --- VISUAL COMBAT ARENA --- */
+
+        /* 1. TOP RAIL (TIMELINE) */
+        .combat-rail {
+            height: 100px;
+            background: rgba(10, 10, 15, 0.8);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            gap: 20px;
+            overflow-x: auto;
+            position: relative;
+            backdrop-filter: blur(5px);
+            z-index: 20;
+        }
+
+        .rail-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid #333;
+            background-size: cover;
+            background-position: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            opacity: 0.5;
+            filter: grayscale(0.8);
+            flex-shrink: 0;
+        }
+
+        .rail-avatar.active {
+            width: 80px;
+            height: 80px;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px var(--primary-glow);
+            opacity: 1;
+            filter: grayscale(0);
+            z-index: 10;
+        }
+
+        .rail-avatar.next {
+            opacity: 0.8;
+            filter: grayscale(0.3);
+            border-color: #666;
+        }
+
+        .rail-connector {
+            height: 2px;
+            background: #333;
+            flex: 1;
+            min-width: 20px;
+            display: none;
+            /* Simplification: Just avatars for now */
+        }
+
+        /* 2. THE STAGE (GRID) */
+        .combat-stage {
+            flex: 1;
+            background-color: #050508;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Center the tokens for now, pseudo-positioning */
+        }
+
+        /* Spotlight & Dimming */
+        .combat-stage.spotlight-mode .token-group:not(.active) {
+            opacity: 0.4;
+            filter: grayscale(0.6) blur(1px);
+            transform: scale(0.95);
+        }
+
+        .combat-stage.spotlight-mode .token-group.active {
+            z-index: 100;
+            filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.8));
+        }
+
+        /* Token Styles override/additions */
+        .token-group {
+            position: relative;
+            /* Changed from absolute to relative for flex layout */
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+            margin: 15px;
+            /* Better spacing */
+        }
+
+        .token-group:hover {
+            z-index: 50;
+            transform: translateY(-5px);
+        }
+
+        /* Token Quick Actions Overlay */
+        .token-quick-overlay {
             position: absolute;
             top: 0;
             left: 0;
-            width: 1px;
+            width: 100%;
             height: 100%;
-            background: linear-gradient(to bottom, transparent, var(--primary-glow), transparent);
-            opacity: 0.5;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            opacity: 0;
+            transition: 0.2s;
+            backdrop-filter: blur(2px);
+        }
+
+        .token-group:hover .token-quick-overlay {
+            opacity: 1;
+        }
+
+        .token-btn-mini {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .token-btn-mini:hover {
+            transform: scale(1.1);
+            background: #fff;
+            color: #000;
+        }
+
+        .token-btn-mini.heal:hover {
+            background: var(--hp-high);
+            color: #fff;
+            border-color: var(--hp-high);
+        }
+
+        .token-btn-mini.dmg:hover {
+            background: var(--hp-low);
+            color: #fff;
+            border-color: var(--hp-low);
+        }
+
+        .token-ring {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            padding: 4px;
+            /* Gap for ring */
+            background: conic-gradient(var(--hp-high) 0% 100%);
+            /* Dynamic HP fill */
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+            transition: transform 0.3s;
+        }
+
+        .token-ring[data-hp-state="low"] {
+            background: conic-gradient(var(--hp-low) 0% 100%);
+        }
+
+        .token-ring[data-hp-state="mid"] {
+            background: conic-gradient(var(--hp-mid) 0% 100%);
+        }
+
+        .token-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            background-color: #111;
+            border: 3px solid #000;
+        }
+
+        .token-active-glow {
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            right: -15px;
+            bottom: -15px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            opacity: 0;
+            animation: pulse-ring 2s infinite;
+            pointer-events: none;
+        }
+
+        .token-group.active .token-active-glow {
+            opacity: 1;
+        }
+
+        .token-group.active .token-ring {
+            transform: scale(1.1);
+        }
+
+        .token-name {
+            margin-top: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: #fff;
+            font-weight: 600;
+            border: 1px solid #333;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            pointer-events: none;
+            /* Let clicks pass to token */
+        }
+
+        .token-hp-bar {
+            width: 80px;
+            height: 4px;
+            background: #222;
+            margin-top: 4px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .token-hp-val {
+            height: 100%;
+            background: var(--hp-high);
+            transition: width 0.3s;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+                box-shadow: 0 0 0 0 rgba(157, 78, 221, 0.7);
+            }
+
+            50% {
+                opacity: 1;
+                box-shadow: 0 0 20px 10px rgba(157, 78, 221, 0);
+            }
+
+            100% {
+                transform: scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* 3. BOTTOM DOCK */
+        .combat-dock {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            background: rgba(15, 15, 20, 0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+
+        .dock-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #2a2a35, #1a1a20);
+            border: 1px solid #444;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .dock-btn svg {
+            margin-bottom: 2px;
+        }
+
+        .dock-btn:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            color: var(--primary-light);
+            background: linear-gradient(135deg, #3a3a45, #2a2a30);
+        }
+
+        .dock-btn.main-action {
+            background: linear-gradient(135deg, var(--primary), #5b21b6);
+            border: none;
+            box-shadow: 0 0 15px var(--primary-glow);
+            width: 60px;
+            height: 60px;
+            margin-top: -10px;
+            /* Pop out */
+        }
+
+        .dock-btn.main-action:hover {
+            transform: translateY(-8px) scale(1.05);
+            filter: brightness(1.2);
+        }
+
+        /* Floating Damage Text */
+        .damage-number {
+            position: absolute;
+            font-size: 2rem;
+            font-weight: 800;
+            animation: floatUp 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            pointer-events: none;
+            text-shadow: 2px 2px 0 #000;
+            z-index: 200;
+        }
+
+        .damage-number.heal {
+            color: #4ade80;
+            text-shadow: 0 0 10px #4ade80;
+        }
+
+        .damage-number.dmg {
+            color: #ef4444;
+            text-shadow: 0 0 10px #ef4444;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0.5);
+                opacity: 0;
+            }
+
+            20% {
+                opacity: 1;
+                transform: translateY(-20px) scale(1.2);
+            }
+
+            100% {
+                transform: translateY(-80px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* Turn Announcer Banner */
+        .turn-announcer {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid var(--primary);
+            padding: 20px 60px;
+            color: #fff;
+            text-align: center;
+            border-radius: 12px;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .turn-announcer.show {
+            animation: announcePop 2.5s ease-in-out forwards;
+        }
+
+        @keyframes announcePop {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+
+            15% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+
+            20% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            80% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(1.2);
+                filter: blur(10px);
+            }
+        }
+
+        /* Token Legibility Boost */
+        .token-name {
+            margin-top: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            /* Larger */
+            color: #fff;
+            font-weight: 800;
+            /* Bolder */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            text-shadow: 0 2px 4px #000;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        /* --- INSPECTOR --- */
+        .inspector-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            color: #777;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            text-transform: uppercase;
+            transition: 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: #ccc;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .tab-btn.active {
+            color: var(--primary-light);
+            border-bottom-color: var(--primary);
+            background: rgba(157, 78, 221, 0.05);
         }
 
         .inspector-content {
@@ -549,11 +993,12 @@
             flex: 1;
         }
 
-        /* Top Profile */
         .profile-card {
             display: flex;
             gap: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
         }
 
         .profile-img {
@@ -563,6 +1008,7 @@
             background: #333;
             object-fit: cover;
             border: 1px solid #444;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
         }
 
         .profile-info {
@@ -570,23 +1016,6 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-        }
-
-        .row-vitals {
-            display: flex;
-            align-items: center;
-            font-size: 0.75rem;
-            gap: 4px;
-        }
-
-        .init-display {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--text-main);
-            min-width: 50px;
-            text-align: right;
-            font-family: 'Cinzel', serif;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         .profile-name {
@@ -597,1247 +1026,725 @@
         }
 
         .profile-class {
-            font-size: 0.85rem;
             color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-size: 0.9rem;
+            margin-top: 4px;
         }
 
-        /* --- ORDEM PARANORMAL INSPECTOR STYLE --- */
-        .inspector-header {
-            position: relative;
+        .attr-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
             margin-bottom: 20px;
-            text-align: left;
+        }
+
+        .attr-box {
+            background: #1a1a20;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .attr-val {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .attr-label {
+            font-size: 0.7rem;
+            color: #777;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        /* Conditions Grid */
+        .conditions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-top: 15px;
+        }
+
+        .cond-badge {
+            font-size: 0.7rem;
+            padding: 4px;
+            background: #222;
+            border: 1px solid #333;
+            border-radius: 4px;
+            text-align: center;
+            color: #777;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .cond-badge:hover {
+            border-color: #555;
+            color: #ddd;
+        }
+
+        .cond-badge.active {
+            background: rgba(220, 20, 60, 0.2);
+            border-color: var(--blood-red);
+            color: var(--blood-red);
+            font-weight: 700;
+        }
+
+        /* Bestiary Grid */
+        .bestiary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 10px;
+            padding: 10px 0;
+        }
+
+        .mob-card {
+            background: #1a1a20;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mob-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            background: #222;
+        }
+
+        .mob-card-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #000;
+            margin-bottom: 8px;
+            object-fit: cover;
+            border: 2px solid #333;
+        }
+
+        .mob-card-name {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .mob-card-meta {
+            font-size: 0.7rem;
+            color: #777;
+        }
+
+        .mob-card-add {
+            margin-top: 8px;
+            width: 100%;
+            background: #333;
+            border: none;
+            color: #fff;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            padding: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .mob-card-add:hover {
+            background: var(--primary);
+        }
+
+        /* General UI */
+        .btn {
+            background: linear-gradient(135deg, rgba(39, 39, 50, 0.9) 0%, rgba(30, 30, 40, 0.8) 100%);
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border: none;
+        }
+
+        .btn-danger {
+            border-color: var(--blood-red);
+            background: rgba(220, 20, 60, 0.1);
+            color: var(--blood-red);
         }
 
         .ordem-bar-row {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: linear-gradient(135deg, rgba(24, 24, 31, 0.95) 0%, rgba(20, 20, 27, 0.9) 100%);
-            border: 1px solid rgba(157, 78, 221, 0.2);
-            margin-bottom: 10px;
-            height: 40px;
-            border-radius: 6px;
+            background: #111;
+            height: 32px;
+            border-radius: 4px;
+            margin-bottom: 8px;
             overflow: hidden;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-        }
-
-        .ordem-bar-btn {
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-            border: none;
-            border-right: 1px solid rgba(157, 78, 221, 0.2);
-            width: 35px;
-            height: 100%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-            font-weight: 700;
-            transition: all 0.2s;
-            backdrop-filter: blur(5px);
-        }
-
-        .ordem-bar-btn:hover {
-            background: rgba(157, 78, 221, 0.3);
-            color: var(--primary-light);
-            box-shadow: inset 0 0 10px rgba(157, 78, 221, 0.2);
-        }
-
-        .ordem-bar-btn.last {
-            border-right: none;
-            border-left: 1px solid rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
         }
 
         .ordem-bar-display {
             flex: 1;
-            text-align: center;
-            color: #fff;
-            font-weight: 700;
-            font-size: 1rem;
             position: relative;
-            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-shadow: 1px 1px 2px #000;
         }
 
         .ordem-bar-fill {
             position: absolute;
-            top: 0;
             left: 0;
+            top: 0;
             height: 100%;
             z-index: 0;
             transition: width 0.3s;
         }
 
-        .text-overlay {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            gap: 5px;
-        }
-
         .bar-red {
-            background: #b91c1c;
+            background: var(--blood-red);
         }
 
-        /* Dark Red */
         .bar-purple {
             background: #7c3aed;
         }
 
-        /* Purple/Blue for PE */
-        .bar-orange {
-            background: #c2410c;
+        .text-overlay {
+            position: relative;
+            z-index: 1;
         }
 
-        /* Orange */
-
-        /* Attributes Grid */
-        .attr-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 5px;
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .attr-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .attr-val {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid #333;
+        .ordem-bar-btn {
+            width: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #fff;
-            background: #111;
-        }
-
-        .attr-label {
-            font-size: 0.6rem;
-            color: #71717a;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Secondary Stats */
-        .sec-stats {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-            border-top: 1px solid #333;
-            border-bottom: 1px solid #333;
-            padding: 15px 0;
-        }
-
-        .sec-stat-box {
-            text-align: center;
-        }
-
-        .sec-stat-label {
-            font-size: 0.7rem;
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
             color: #aaa;
-            margin-bottom: 4px;
-            text-transform: uppercase;
+            font-size: 10px;
         }
 
-        .sec-stat-val {
-            font-size: 1.4rem;
-            font-weight: 700;
+        .ordem-bar-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
             color: #fff;
         }
 
-        /* Attacks Accordion */
         .acc-item {
-            background: #27272a;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
+            background: #222;
             border-radius: 6px;
             overflow: hidden;
         }
 
         .acc-header {
-            padding: 12px;
+            padding: 10px;
+            cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            cursor: pointer;
-            background: #1f1f22;
         }
 
         .acc-header:hover {
-            background: #2a2a2d;
-        }
-
-        /* --- AGENT GRID VIEW --- */
-        .agent-grid-container {
-            padding: 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            overflow-y: auto;
-            flex: 1;
-            display: none;
-            /* Hidden by default */
-        }
-
-        .agent-grid-container.active {
-            display: grid;
-        }
-
-        .agent-card {
-            background: linear-gradient(135deg, rgba(26, 26, 36, 0.95) 0%, rgba(20, 20, 30, 0.9) 100%);
-            border: 1px solid rgba(157, 78, 221, 0.3);
-            border-radius: 12px;
-            padding: 18px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            backdrop-filter: blur(15px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .agent-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--primary), transparent);
-            opacity: 0;
-            transition: 0.3s;
-        }
-
-        .agent-card:hover {
-            border-color: var(--primary-light);
-            box-shadow: 0 8px 24px rgba(157, 78, 221, 0.3);
-            transform: translateY(-4px);
-        }
-
-        .agent-card:hover::before {
-            opacity: 1;
-        }
-
-        .agent-header {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 5px;
-        }
-
-        .agent-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 4px;
             background: #333;
-            object-fit: cover;
-        }
-
-        .agent-details {
-            flex: 1;
-        }
-
-        .agent-name {
-            font-weight: 700;
-            color: #fff;
-            font-size: 1rem;
-        }
-
-        .agent-meta {
-            font-size: 0.75rem;
-            color: var(--primary);
-            text-transform: uppercase;
-        }
-
-        .agent-bars .ordem-bar-row {
-            height: 28px;
-            margin-bottom: 5px;
-        }
-
-        .agent-bars .ordem-bar-display {
-            font-size: 0.8rem;
-        }
-
-        .agent-bars .text-overlay {
-            font-size: 0.8rem;
-        }
-
-        /* Reuse attr-grid but smaller */
-        .agent-attrs {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 2px;
-            text-align: center;
-            margin: 10px 0;
-        }
-
-        .agent-attr-val {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .agent-attr-lbl {
-            font-size: 0.6rem;
-            color: #777;
-        }
-
-        .agent-footer {
-            border-top: 1px solid #333;
-            padding-top: 10px;
-            display: flex;
-            justify-content: space-between;
-            text-align: center;
-        }
-
-        .af-box {
-            font-size: 0.7rem;
-            color: #aaa;
-        }
-
-        .af-val {
-            font-size: 1.1rem;
-            color: #fff;
-            font-weight: 700;
-            display: block;
-        }
-
-        .tab-btn {
-            background: transparent;
-            border: none;
-            color: #71717a;
-            font-weight: 600;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            font-family: 'Outfit', sans-serif;
-        }
-
-        .tab-btn.active {
-            color: #fff;
-            border-color: var(--primary);
-        }
-
-        /* --- 3D DICE OVERLAY --- */
-        #diceOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(2px);
-            z-index: 9999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            perspective: 1000px;
-        }
-
-        #diceOverlay.active {
-            display: flex;
-        }
-
-        .dice-3d-wrap {
-            width: 100px;
-            height: 100px;
-            position: relative;
-            transform-style: preserve-3d;
-            animation: spinDice 1s infinite linear;
-        }
-
-        .dice-3d-wrap.stopping {
-            animation: landDice 0.5s ease-out forwards;
-        }
-
-        /* Approximate D20 shape with CSS is hard, using a spinning cube with "20" faces for "lite" 3d effect 
-           Or simpler: A 3D container rotating wildly that settles. */
-        .d20-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: rgba(147, 51, 234, 0.9);
-            border: 2px solid #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: #fff;
-            font-weight: 800;
-            backface-visibility: visible;
-        }
-
-        /* Simple cube simulation for "spin" effect */
-        .f1 {
-            transform: rotateY(0deg) translateZ(50px);
-        }
-
-        .f2 {
-            transform: rotateY(90deg) translateZ(50px);
-        }
-
-        .f3 {
-            transform: rotateY(180deg) translateZ(50px);
-        }
-
-        .f4 {
-            transform: rotateY(-90deg) translateZ(50px);
-        }
-
-        .f5 {
-            transform: rotateX(90deg) translateZ(50px);
-        }
-
-        .f6 {
-            transform: rotateX(-90deg) translateZ(50px);
-        }
-
-        @keyframes spinDice {
-            0% {
-                transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
-            }
-
-            100% {
-                transform: rotateX(720deg) rotateY(360deg) rotateZ(360deg);
-            }
-        }
-
-        #diceResultDisplay {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4rem;
-            color: #fff;
-            font-weight: 900;
-            text-shadow: 0 0 20px var(--primary);
-            opacity: 0;
-            transform: scale(0.5);
-            transition: 0.3s;
-        }
-
-        #diceResultDisplay.show {
-            opacity: 1;
-            transform: scale(1.5);
-        }
-
-        /* Bestiary List Items */
-        .mob-item {
-            background: #27272a;
-            border-radius: 6px;
-            padding: 10px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid transparent;
-            cursor: pointer;
-        }
-
-        .mob-item:hover {
-            border-color: #666;
-            background: #333;
-        }
-
-        .mob-name {
-            font-weight: 600;
-            color: #fff;
-        }
-
-        .mob-meta {
-            font-size: 0.75rem;
-            color: #aaa;
-        }
-
-        /* --- CONDITIONS MODAL --- */
-        .cond-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-
-        .cond-btn {
-            background: #27272a;
-            border: 1px solid #333;
-            padding: 10px;
-            border-radius: 6px;
-            color: #ccc;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.8rem;
-            transition: 0.2s;
-        }
-
-        .cond-btn:hover {
-            background: #3f3f46;
-            border-color: #555;
-        }
-
-        .cond-btn.active {
-            background: rgba(147, 51, 234, 0.2);
-            border-color: var(--primary);
-            color: #fff;
-        }
-
-        .cond-icon {
-            width: 16px;
-            height: 16px;
-        }
-
-        .cond-badge {
-            display: inline-flex;
-            width: 18px;
-            height: 18px;
-            background: #333;
-            border-radius: 50%;
-            align-items: center;
-            justify-content: center;
-            margin-left: 2px;
-            border: 1px solid #555;
-        }
-
-        .cond-badge svg {
-            width: 10px;
-            height: 10px;
-            color: #fff;
         }
 
         .d-input {
-            width: 100%;
-            background: #27272a;
+            background: #111;
             border: 1px solid #333;
             color: #fff;
             padding: 8px;
             border-radius: 4px;
-            font-family: 'Outfit', sans-serif;
+            font-family: inherit;
         }
 
         .d-input:focus {
-            border-color: var(--primary);
             outline: none;
+            border-color: var(--primary);
         }
 
-        /* --- TOAST NOTIFICATION --- */
-        #toast {
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* DICE SYSTEM & TOAST (Restored) */
+        .dice-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .dice-wrapper {
+            perspective: 600px;
+            width: 100px;
+            height: 100px;
+            margin-bottom: 50px;
+        }
+
+        .dice-cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: translateZ(-50px);
+            transition: transform 1s;
+        }
+
+        .dice-face {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: var(--surface-dark);
+            border: 2px solid var(--primary);
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.5) inset;
+        }
+
+        .dice-face.front {
+            transform: rotateY(0deg) translateZ(50px);
+        }
+
+        .dice-face.right {
+            transform: rotateY(90deg) translateZ(50px);
+        }
+
+        .dice-face.back {
+            transform: rotateY(180deg) translateZ(50px);
+        }
+
+        .dice-face.left {
+            transform: rotateY(-90deg) translateZ(50px);
+        }
+
+        .dice-face.top {
+            transform: rotateX(90deg) translateZ(50px);
+        }
+
+        .dice-face.bottom {
+            transform: rotateX(-90deg) translateZ(50px);
+        }
+
+        #diceResultDisplay {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #fff;
+            font-family: var(--font-display);
+            text-shadow: 0 0 20px var(--primary);
+            min-height: 60px;
+        }
+
+        #diceAttackInfo {
+            font-size: 1.2rem;
+            color: #aaa;
+            margin-top: 10px;
+        }
+
+        /* TOAST */
+        .toast {
             position: fixed;
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
             background: #18181b;
-            border: 1px solid var(--primary);
+            border: 1px solid var(--border-dark);
+            padding: 12px 24px;
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
             color: #fff;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-            z-index: 10000;
+            font-size: 0.9rem;
             opacity: 0;
-            transition: 0.3s;
-            pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 10000;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        #toast.show {
-            opacity: 1;
+        .toast.show {
             transform: translateX(-50%) translateY(0);
+            opacity: 1;
         }
 
-        /* --- MODALS --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-        }
-
-        .modal-box {
-            background: var(--panel-bg);
-            border: 1px solid var(--primary);
-            border-radius: 12px;
-            padding: 20px;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 0 30px rgba(157, 78, 221, 0.3);
-        }
-
-        /* === PREMIUM D20 DICE OVERLAY === */
-        #diceOverlay {
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(ellipse at center, rgba(20, 10, 30, 0.95) 0%, rgba(0, 0, 0, 0.98) 100%);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            z-index: 50000;
-            backdrop-filter: blur(8px);
-            cursor: pointer;
-        }
-
-        #diceOverlay.show {
-            display: flex;
-            animation: overlayFadeIn 0.3s ease-out;
-        }
-
-        @keyframes overlayFadeIn {
+        @keyframes fadeIn {
             from {
                 opacity: 0;
+                transform: translateY(5px);
             }
 
             to {
                 opacity: 1;
-            }
-        }
-
-        /* Floating particles background */
-        #diceOverlay::before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-image:
-                radial-gradient(2px 2px at 20px 30px, rgba(168, 85, 247, 0.4), transparent),
-                radial-gradient(2px 2px at 40px 70px, rgba(139, 92, 246, 0.3), transparent),
-                radial-gradient(3px 3px at 50px 160px, rgba(168, 85, 247, 0.5), transparent),
-                radial-gradient(2px 2px at 90px 40px, rgba(192, 132, 252, 0.4), transparent),
-                radial-gradient(3px 3px at 130px 80px, rgba(168, 85, 247, 0.3), transparent),
-                radial-gradient(2px 2px at 160px 120px, rgba(139, 92, 246, 0.5), transparent);
-            background-repeat: repeat;
-            background-size: 200px 200px;
-            animation: particleFloat 20s linear infinite;
-            opacity: 0.6;
-        }
-
-        @keyframes particleFloat {
-            0% {
                 transform: translateY(0);
-            }
-
-            100% {
-                transform: translateY(-200px);
-            }
-        }
-
-        /* Main dice container */
-        .dice-scene {
-            width: 180px;
-            height: 180px;
-            perspective: 800px;
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        /* The d20 icosahedron */
-        .dice-d20 {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            animation: diceFloat 3s ease-in-out infinite;
-        }
-
-        .dice-d20.rolling {
-            animation: diceRoll 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        @keyframes diceFloat {
-
-            0%,
-            100% {
-                transform: translateY(0) rotateY(0deg);
-            }
-
-            50% {
-                transform: translateY(-10px) rotateY(5deg);
-            }
-        }
-
-        @keyframes diceRoll {
-            0% {
-                transform: rotateX(0) rotateY(0) rotateZ(0) scale(0.8);
-            }
-
-            20% {
-                transform: rotateX(360deg) rotateY(180deg) rotateZ(90deg) scale(1.1);
-            }
-
-            40% {
-                transform: rotateX(720deg) rotateY(360deg) rotateZ(180deg) scale(1);
-            }
-
-            60% {
-                transform: rotateX(1080deg) rotateY(540deg) rotateZ(270deg) scale(1.05);
-            }
-
-            80% {
-                transform: rotateX(1440deg) rotateY(720deg) rotateZ(360deg) scale(1);
-            }
-
-            100% {
-                transform: rotateX(1800deg) rotateY(900deg) rotateZ(0deg) scale(1);
-            }
-        }
-
-        /* D20 face - simplified cube representation */
-        .dice-face {
-            position: absolute;
-            width: 180px;
-            height: 180px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Cinzel', serif;
-            font-size: 4rem;
-            font-weight: 900;
-            color: #fff;
-            text-shadow: 0 0 30px var(--primary), 0 0 60px var(--primary);
-            background: linear-gradient(145deg,
-                    rgba(88, 28, 135, 0.9) 0%,
-                    rgba(126, 34, 206, 0.8) 50%,
-                    rgba(147, 51, 234, 0.7) 100%);
-            border: 3px solid rgba(168, 85, 247, 0.8);
-            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
-            box-shadow:
-                inset 0 0 40px rgba(168, 85, 247, 0.3),
-                0 0 50px rgba(168, 85, 247, 0.5);
-        }
-
-        .dice-face.front {
-            transform: translateZ(90px);
-        }
-
-        .dice-face.back {
-            transform: rotateY(180deg) translateZ(90px);
-        }
-
-        .dice-face.right {
-            transform: rotateY(90deg) translateZ(90px);
-        }
-
-        .dice-face.left {
-            transform: rotateY(-90deg) translateZ(90px);
-        }
-
-        .dice-face.top {
-            transform: rotateX(90deg) translateZ(90px);
-        }
-
-        .dice-face.bottom {
-            transform: rotateX(-90deg) translateZ(90px);
-        }
-
-        /* Glow ring around dice */
-        .dice-glow {
-            position: absolute;
-            width: 220px;
-            height: 220px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, transparent 70%);
-            animation: glowPulse 2s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        @keyframes glowPulse {
-
-            0%,
-            100% {
-                opacity: 0.5;
-                transform: translate(-50%, -50%) scale(1);
-            }
-
-            50% {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1.2);
-            }
-        }
-
-        /* Result display */
-        #diceResultDisplay {
-            font-family: 'Cinzel', serif;
-            font-size: 5rem;
-            font-weight: 900;
-            color: transparent;
-            background: linear-gradient(180deg, #fff 0%, #e0aaff 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            text-shadow: 0 0 40px rgba(168, 85, 247, 0.8);
-            opacity: 0;
-            transform: scale(0.5);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            z-index: 10;
-        }
-
-        #diceResultDisplay.show {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        #diceResultDisplay.crit {
-            background: linear-gradient(180deg, #ffd60a 0%, #ff8800 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            animation: critGlow 0.5s ease-in-out infinite alternate;
-        }
-
-        #diceResultDisplay.fail {
-            background: linear-gradient(180deg, #ef4444 0%, #7f1d1d 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-        }
-
-        @keyframes critGlow {
-            from {
-                text-shadow: 0 0 30px rgba(255, 214, 10, 0.5);
-            }
-
-            to {
-                text-shadow: 0 0 60px rgba(255, 136, 0, 1);
-            }
-        }
-
-        /* Attack info display */
-        .dice-attack-info {
-            text-align: center;
-            color: #aaa;
-            font-size: 1rem;
-            margin-top: 20px;
-            max-width: 400px;
-        }
-
-        .dice-attack-info .attacker-name {
-            color: var(--primary-light);
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-
-        .dice-attack-info .damage-display {
-            color: #ef4444;
-            font-size: 2rem;
-            font-weight: 700;
-            margin-top: 10px;
-        }
-
-        .dice-attack-info .breakdown {
-            color: #666;
-            font-size: 0.9rem;
-            margin-top: 5px;
-        }
-
-        /* Click to close hint */
-        .dice-close-hint {
-            position: absolute;
-            bottom: 30px;
-            color: #555;
-            font-size: 0.8rem;
-            animation: hintPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes hintPulse {
-
-            0%,
-            100% {
-                opacity: 0.5;
-            }
-
-            50% {
-                opacity: 1;
             }
         }
     </style>
 </head>
 
-<body>
-    <!-- TOAST -->
-    <div id="toast"><i data-lucide="check-circle" style="color:var(--primary);"></i><span id="toastMsg">Ação
-            realizada!</span></div>
+<body data-theme="blood-moon">
+    <div class="noise-overlay"></div>
 
-    <!-- LEFT: LOG -->
-    <div class="col-left">
-        <div class="panel-header">
-            Resultados
-            <button class="btn" style="padding:4px 8px;" onclick="clearLog()"><i data-lucide="trash-2"
-                    size="14"></i></button>
+    <!-- NAVIGATION BAR -->
+    <nav class="dm-nav">
+        <div class="nav-tab active" onclick="switchView('combat')">Combate</div>
+        <div class="nav-tab" onclick="switchView('chars')">Personagens</div>
+        <div class="nav-tab" onclick="switchView('story')">História</div>
+        <div style="margin-left:auto; display:flex; gap:10px;">
+            <button class="btn btn-danger" onclick="window.location.href='campaign-hub.html'"
+                style="padding:4px 10px; font-size:0.8rem;">Sair</button>
         </div>
-        <div class="log-feed" id="logFeed">
-            <!-- Log Cards -->
-        </div>
-    </div>
+    </nav>
 
-    <!-- CENTER: TRACKER -->
-    <div class="col-center">
-        <div class="combat-header">
-            <div>
-                <button class="tab-btn active" onclick="switchCenterTab('combat')" id="tabCombat">COMBATE</button>
-                <button class="tab-btn" onclick="switchCenterTab('agents')" id="tabAgents">AGENTES</button>
-                <span id="serverStatus" title="Desconectado"
-                    style="display:inline-block; width:10px; height:10px; background:#ef4444; border-radius:50%; margin-left:10px; box-shadow:0 0 5px #ef4444;"></span>
+    <!-- VIEW: HISTORY (Log) -->
+    <div id="view-story" class="view-section">
+        <div class="col-left">
+            <div class="panel-header">
+                <span><i data-lucide="scroll-text"></i> Histórico</span>
+                <span style="font-size:0.8rem; opacity:0.6;">Chat & Logs</span>
             </div>
-            <div style="display:flex; gap:10px;">
-                <!-- Agents Tab specific actions -->
-                <button id="btnAddAgent" class="btn" style="display:none;" onclick="openAddAgentModal()">
-                    <i data-lucide="user-plus" size="14"></i> Add Agente
-                </button>
-                <button id="btnRest" class="btn btn-danger" style="display:none;" onclick="triggerLongRest()">
-                    <i data-lucide="moon" size="14"></i> Descanso
-                </button>
-
-                <!-- Combat Tab specific actions -->
-                <div id="combatActions" style="display:flex; gap:10px;">
-                    <button class="btn btn-primary" onclick="openAddCreatureModal()">
-                        <i data-lucide="skull" size="14"></i> + Criatura
-                    </button>
-                    <button class="btn" style="border:1px solid var(--primary);"
-                        onclick="window.CampaignSystem.startCombat(CAMP_ID); loadCampaign(CAMP_ID);">
-                        Iniciativa
-                    </button>
-                    <button class="btn" onclick="window.CampaignSystem.nextTurn(CAMP_ID); loadCampaign(CAMP_ID);">
-                        Próximo Turno <i data-lucide="skip-forward" size="14" style="margin-left:5px;"></i>
-                    </button>
+            <div class="log-feed" id="logFeed">
+                <div class="log-item">
+                    <span class="log-time">10:00</span>
+                    <span>Bem-vindo ao Demon Slayer RPG.</span>
                 </div>
             </div>
-        </div>
-
-        <!-- View 1: List -->
-        <div class="combat-list" id="combatList">
-            <!-- Rows -->
-        </div>
-
-        <!-- View 2: Grid -->
-        <div class="agent-grid-container" id="agentGrid"></div>
-    </div>
-
-    <!-- RIGHT: INSPECTOR & BESTIARY -->
-    <div class="col-right">
-        <!-- TABS HEADER -->
-        <div style="padding: 10px 20px; border-bottom:1px solid #333; display:flex; gap:15px;">
-            <button class="tab-btn active" id="btnInsp" onclick="switchRightTab('inspector')">INSPETOR</button>
-            <button class="tab-btn" id="btnBest" onclick="switchRightTab('bestiary')">BESTIÁRIO</button>
-        </div>
-
-        <!-- CONDITIONS BUTTON -->
-        <div style="display:flex; gap:10px; margin-bottom:15px;">
-            <button class="btn" style="flex:1; border-style:dashed; opacity:0.8;" onclick="openConditionsModal()">
-                <i data-lucide="sparkles" size="14"></i> Condições
-            </button>
-            <button class="btn" style="flex:1; border-style:dashed; opacity:0.8;" onclick="toggleReaction()">
-                <i data-lucide="shield-alert" size="14"></i> Reação
-            </button>
-        </div>
-
-        <div id="reactionStatus"
-            style="display:none; background:#7f1d1d; color:#fff; padding:5px; text-align:center; border-radius:4px; margin-bottom:10px; font-weight:bold; font-size:0.8rem;">
-            ⚠️ REAÇÃO USADA
-        </div>
-
-        <!-- INSPECTOR CONTENT -->
-        <div id="inspectorPanel" class="inspector-content">
-            <div id="inspector">
-                <div style="text-align:center; color:#555; margin-top:50px;">Selecione um personagem</div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Enviar mensagem ou comando (/roll 1d20)...">
+                <button class="btn-send" onclick="sendChat()"><i data-lucide="send"></i></button>
             </div>
-        </div>
-
-        <!-- BESTIARY CONTENT -->
-        <div id="bestiaryPanel" class="inspector-content" style="display:none;">
-            <div style="margin-bottom:15px; display:flex; gap:10px;">
-                <input type="text" id="mobSearch" placeholder="Buscar..." class="init-input"
-                    style="width:100%; text-align:left; padding:8px;" onkeyup="renderBestiaryTab()">
-                <button class="btn btn-primary" style="width:50px;" onclick="openCustomMobModal()"
-                    title="Criar Monstro">+</button>
-            </div>
-            <div id="bestiaryList"></div>
         </div>
     </div>
 
-    <!-- ADD AGENT MODAL (Was Invite Modal) -->
-    <div id="addAgentModal"
-        style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9000; display:none; align-items:center; justify-content:center;">
-        <div style="background:#18181b; padding:20px; border-radius:10px; width:400px; border:1px solid #333;">
-            <h3 style="color:#fff; margin-bottom:15px;">Adicionar Agente</h3>
-            <div id="addAgentList" style="max-height:300px; overflow-y:auto; margin-bottom:15px;">
-                <!-- List -->
+    <!-- VIEW: COMBAT (Wisteria Master Dashboard Layout) -->
+    <div id="view-combat" class="view-section active" style="height: calc(100vh - 50px); padding: 0;">
+        <div class="wis-layout">
+
+            <!-- LEFT SIDEBAR: LOG/RESULTS -->
+            <div class="wis-sidebar">
+                <div class="wis-header">
+                    <span class="wis-title">Resultados</span>
+                    <button class="btn-icon" onclick="clearLog()" title="Limpar"><i data-lucide="trash-2"
+                            size="16"></i></button>
+                </div>
+                <div class="wis-scroll" id="logFeed">
+                    <!-- Log Cards Injected Here -->
+                    <div style="text-align:center; padding:20px; color:#555;">
+                        <i data-lucide="history" size="48" style="opacity:0.2;"></i>
+                    </div>
+                </div>
             </div>
-            <button class="btn" onclick="document.getElementById('addAgentModal').style.display='none'"
+
+            <!-- CENTER: ARENA STAGE -->
+            <div class="wis-arena-container">
+                <div class="wis-arena-bg"></div>
+                <div class="wis-arena-radial"></div>
+
+                <!-- Arena Header / Turn Info -->
+                <div
+                    style="position:absolute; top:20px; left:50%; transform:translateX(-50%); z-index:20; display:flex; align-items:center; gap:20px;">
+                    <div class="flex-col center">
+                        <span
+                            style="font-size:0.65rem; color:#71717a; text-transform:uppercase; letter-spacing:0.1em;">ROUND</span>
+                        <span style="font-family:'Cinzel'; font-size:1.5rem; font-weight:700; color:#fff;"
+                            id="roundDisplay">1</span>
+                    </div>
+                    <div class="flex center"
+                        style="background:rgba(24,24,27,0.8); border:1px solid #3f3f46; border-radius:30px; padding:4px 20px; height:50px;">
+                        <span style="font-size:0.8rem; color:#a1a1aa; margin-right:10px;">TURNO ATUAL</span>
+                        <div id="turnDisplay"
+                            style="color:#d8b4fe; font-weight:700; font-family:'Cinzel'; font-size:1.1rem;">-</div>
+                    </div>
+                </div>
+
+                <!-- Floating Damage/Heal Container -->
+                <div id="damageLayer" style="position:absolute; inset:0; pointer-events:none; z-index:200;"></div>
+
+                <!-- THE STAGE (Tokens) -->
+                <div id="combatStage"
+                    style="flex:1; display:flex; align-items:center; justify-content:center; position:relative; z-index:10;">
+                    <!-- Tokens Injected Here -->
+                </div>
+
+                <!-- ACTION DOCK -->
+                <div class="wis-dock">
+                    <div class="wis-dock-btn" onclick="performMove()" title="Mover">
+                        <i data-lucide="footprints" size="24"></i>
+                        <span class="wis-dock-label">Mover</span>
+                    </div>
+                    <div class="wis-dock-btn primary" onclick="openAttackModal()" title="Atacar">
+                        <i data-lucide="sword" size="32"></i>
+                        <span class="wis-dock-label">Atacar</span>
+                    </div>
+                    <div class="wis-dock-btn" onclick="performSkill()" title="Habilidade">
+                        <i data-lucide="zap" size="24"></i>
+                        <span class="wis-dock-label">Hab.</span>
+                    </div>
+                    <div style="width:1px; background:#3f3f46; margin:0 4px;"></div>
+                    <div class="wis-dock-btn" onclick="nextTurn()" style="color:#ef4444;" title="Passar Turno">
+                        <i data-lucide="skip-forward" size="24"></i>
+                        <span class="wis-dock-label">Passar</span>
+                    </div>
+                </div>
+
+                <!-- Bottom Left Tools (Combat Control) -->
+                <div
+                    style="position:absolute; bottom:20px; left:20px; display:flex; flex-direction:column; gap:10px; z-index:50;">
+                    <div class="wis-dock-btn" style="width:40px; height:40px; border-radius:50%; color:var(--hp-high);"
+                        onclick="startCombat()" title="Iniciar Combate">
+                        <i data-lucide="swords" size="18"></i>
+                    </div>
+                    <div class="wis-dock-btn" style="width:40px; height:40px; border-radius:50%; color:#c084fc;"
+                        onclick="rollInitiativeAll()" title="Rolar Iniciativa (NPCs)">
+                        <i data-lucide="dices" size="18"></i>
+                    </div>
+                    <div class="wis-dock-btn" style="width:40px; height:40px; border-radius:50%; color:var(--danger);"
+                        onclick="endCombat()" title="Encerrar Combate">
+                        <i data-lucide="stop-circle" size="18"></i>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT SIDEBAR: INSPECTOR -->
+            <div class="wis-sidebar right" id="inspectorSidebar">
+                <div class="wis-header">
+                    <span class="wis-title">Inspetor</span>
+                    <span class="wis-title" style="color:#52525b; cursor:pointer;"
+                        onclick="switchView('chars')">Bestiário</span>
+                </div>
+                <!-- Inspector Content -->
+                <div id="inspector" class="wis-scroll">
+                    <div style="text-align:center; color:#555; margin-top:40px;">Selecione um token</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- VIEW: CHARACTERS (Inspector) -->
+    <div id="view-chars" class="view-section">
+        <div class="col-right">
+            <div class="inspector-tabs">
+                <div class="tab-btn active" onclick="switchInspectorTab('sheet', this)">Ficha</div>
+                <div class="tab-btn" onclick="switchInspectorTab('bestiary', this)">Bestiário</div>
+            </div>
+
+            <div id="inspectorContainer" class="inspector-content">
+                <div id="inspector">
+                    <div style="text-align:center; color:#555; margin-top:50px;">
+                        <i data-lucide="user-search" size="48" style="opacity:0.2; margin-bottom:10px;"></i>
+                        <br>Selecione um personagem na aba Combate para ver detalhes aqui.
+                        <br><br>
+                        <!-- Maybe add a search/list here too? -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bestiary List Hidden by Default -->
+            <div id="bestiaryContainer" class="inspector-content" style="display:none;">
+                <input type="text" id="mobSearch" placeholder="Buscar criatura..." class="d-input"
+                    style="margin-bottom:10px; width:100%; border-radius:10px; text-align:left;"
+                    onkeyup="renderBestiaryTab()">
+                <div id="bestiaryList" style="display:flex; flex-direction:column; gap:5px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <div id="diceOverlay" class="dice-overlay" onclick="closeDiceOverlay()">
+        <div class="dice-wrapper">
+            <div id="diceCube" class="dice-cube">
+                <div class="dice-face front">20</div>
+                <div class="dice-face back">1</div>
+                <div class="dice-face right">5</div>
+                <div class="dice-face left">15</div>
+                <div class="dice-face top">10</div>
+                <div class="dice-face bottom">2</div>
+            </div>
+        </div>
+        <div id="diceResultDisplay"></div>
+        <div id="diceAttackInfo"></div>
+    </div>
+
+    <!-- ADD CREATURE MODAL -->
+    <div id="addCreatureModal" class="modal-overlay">
+        <div class="modal-box">
+            <h2 style="font-family:'Cinzel', serif; margin-top:0;">Adicionar Criatura</h2>
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <button class="btn btn-primary" style="flex:1;"
+                    onclick="switchRightTab('bestiary'); closeModal('addCreatureModal')">Do Bestiário</button>
+                <button class="btn" style="flex:1;" onclick="openCustomMobModal(); closeModal('addCreatureModal')">Criar
+                    Nova</button>
+            </div>
+            <button class="btn btn-danger" onclick="closeModal('addCreatureModal')"
                 style="width:100%;">Cancelar</button>
         </div>
     </div>
 
-    <!-- CONDITIONS MODAL -->
-    <div id="condModal"
-        style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9010; display:none; align-items:center; justify-content:center;">
-        <div
-            style="background:#18181b; padding:20px; border-radius:10px; width:450px; border:1px solid #333; box-shadow:0 0 30px rgba(0,0,0,0.5);">
-            <h3 style="color:#fff; margin-bottom:15px; display:flex; justify-content:space-between;">
-                Condições
-                <span id="condTargetName" style="color:var(--primary); font-size:0.9rem;"></span>
-            </h3>
-            <div class="cond-grid" id="condGrid">
-                <!-- JS will fill -->
-            </div>
-            <div style="margin-top:20px; text-align:right;">
-                <button class="btn" onclick="document.getElementById('condModal').style.display='none'">Fechar</button>
-            </div>
-        </div>
-    </div>
+    <!-- CUSTOM MOB MODAL -->
+    <div id="customMobModal" class="modal-overlay" style="z-index:110;">
+        <div class="modal-box" style="width:600px; max-width:95%;">
+            <h2 style="font-family:'Cinzel', serif; margin-top:0;">Criar Monstro Personalizado</h2>
 
-    <!-- CUSTOM MONSTER MODAL -->
-    <div id="customMobModal"
-        style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9020; display:none; align-items:center; justify-content:center;">
-        <div
-            style="background:#18181b; padding:20px; border-radius:10px; width:500px; border:1px solid #333; max-height:80vh; overflow-y:auto;">
-            <h3 style="color:#fff; margin-bottom:15px;">Criar Criatura Customizada</h3>
-
-            <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px; margin-bottom:10px;">
-                <input id="cmName" type="text" placeholder="Nome da Criatura" class="d-input">
-                <input id="cmCR" type="text" placeholder="Rank/ND" class="d-input">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
+                <div>
+                    <label>Nome</label>
+                    <input type="text" id="cmName" class="d-input" style="width:100%;">
+                </div>
+                <div>
+                    <label>CR (Desafio)</label>
+                    <input type="text" id="cmCR" class="d-input" style="width:100%;">
+                </div>
+                <div>
+                    <label>HP Máximo</label>
+                    <input type="number" id="cmHP" class="d-input" style="width:100%;">
+                </div>
+                <div>
+                    <label>CA (Defesa)</label>
+                    <input type="number" id="cmAC" class="d-input" style="width:100%;">
+                </div>
             </div>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:10px;">
-                <input id="cmHP" type="number" placeholder="HP Máx" class="d-input">
-                <input id="cmAC" type="number" placeholder="Defesa" class="d-input">
-                <input id="cmInit" type="number" placeholder="Inic. Bonus" class="d-input">
-            </div>
-
-            <h4 style="color:#aaa; font-size:0.8rem; margin:10px 0 5px 0;">ATAQUES</h4>
-            <div id="cmAttacksList">
-                <!-- Dynamic Attacks -->
-            </div>
-            <button class="btn" style="width:100%; margin-bottom:20px; border-style:dashed;"
-                onclick="addCustomAttackRow()">+ Adicionar Ataque</button>
+            <div style="margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:5px;">Ataques / Ações</div>
+            <div id="cmAttacksList" style="max-height:150px; overflow-y:auto; margin-bottom:10px;"></div>
+            <button class="btn" onclick="addCustomAttackRow()"
+                style="margin-bottom:20px; width:100%; border-style:dashed;">+ Adicionar Ataque</button>
 
             <div style="display:flex; justify-content:flex-end; gap:10px;">
-                <button class="btn"
+                <button class="btn btn-danger"
                     onclick="document.getElementById('customMobModal').style.display='none'">Cancelar</button>
-                <button class="btn btn-primary" onclick="saveCustomMob()">Salvar</button>
+                <button class="btn btn-primary" onclick="saveCustomMob()">Salvar & Adicionar</button>
             </div>
         </div>
     </div>
 
-    <!-- ULTRA PREMIUM DICE OVERLAY -->
-    <div id="diceOverlay" onclick="closeDiceOverlay()">
-        <div class="dice-scene">
-            <div class="dice-glow"></div>
-            <div class="dice-d20" id="diceCube">
-                <div class="dice-face">?</div>
-            </div>
-        </div>
-        <div id="diceResultDisplay"></div>
-        <div class="dice-attack-info" id="diceAttackInfo"></div>
-        <div class="dice-close-hint">Clique para fechar</div>
+
+    <div id="toast" class="toast">
+        <div id="toastMsg">Notificação</div>
     </div>
 
-    <!-- ADD CREATURE MODAL -->
-    <div id="addCreatureModal" class="modal-overlay" style="display:none; opacity:0;">
-        <div class="modal-box">
-            <h2 style="margin-top:0; color:var(--primary);">Adicionar Criatura</h2>
-            <div id="addCreatureList" style="max-height:300px; overflow-y:auto; margin-bottom:20px;">
-                <!-- JS Injected -->
-            </div>
-            <button class="btn btn-danger" onclick="toggleModal('addCreatureModal', false)">Cancelar</button>
-        </div>
+    <!-- SERVER STATUS INDICATOR -->
+    <div id="serverStatus" title="Offline"
+        style="position:fixed; bottom:20px; right:20px; width:12px; height:12px; background:#ef4444; border-radius:50%; box-shadow:0 0 5px #ef4444; z-index:9999; transition:0.3s; cursor:help;">
     </div>
 
-    <!-- INVITE LINK MODAL -->
-    <div id="inviteLinkModal" class="modal-overlay" style="display:none; opacity:0;">
-        <div class="modal-box" style="text-align:center;">
-            <h2 style="margin-top:0; color:var(--primary);">Convidar Jogadores</h2>
-            <p>Envie este link para seus jogadores:</p>
-            <div style="background:#222; padding:10px; border-radius:6px; font-family:monospace; margin:15px 0; word-break:break-all;"
-                id="inviteLinkDisplay">
-                ...
-            </div>
-            <button class="btn btn-primary" onclick="copyInviteLink()">Copiar Link</button>
-            <button class="btn btn-danger" onclick="toggleModal('inviteLinkModal', false)"
-                style="margin-top:10px;">Fechar</button>
-        </div>
-    </div>
-
-
-
-    <!-- SCRIPTS -->
-    <!-- SCRIPTS -->
+    <script src="breathing_db.js"></script>
+    <script src="breathing_class_db.js"></script>
     <script src="bestiary_db.js"></script>
     <script src="campaign.js"></script>
     <script>
-        // --- GLOBALS ---
-        const urlParams = new URLSearchParams(window.location.search);
-        const CAMP_ID = urlParams.get('id');
+        const CAMP_ID = new URLSearchParams(window.location.search).get('id');
         let currentCamp = null;
         let selectedId = null;
 
-        // --- ADD CREATURE LOGIC ---
-        const BESTIARY = [
-            { id: 'oni_weak', name: "Oni Fraco", maxHP: 20, ac: 12, xp: 50, stats: { str: 14, dex: 12, con: 14, int: 8, wis: 10, cha: 6 }, actions: ["Garras (1d6+2)"] },
-            { id: 'oni_avg', name: "Oni Médio", maxHP: 45, ac: 14, xp: 200, stats: { str: 16, dex: 14, con: 16, int: 10, wis: 12, cha: 8 }, actions: ["Soco Devastador (1d8+3)", "Regeneração (5HP)"] },
-            { id: 'oni_strong', name: "Oni Forte", maxHP: 80, ac: 16, xp: 500, stats: { str: 18, dex: 16, con: 18, int: 12, wis: 14, cha: 10 }, actions: ["Arte de Sangue (3d6)", "Eviscerar (2d6+4)"] },
-            { id: 'kizuki_lower', name: "Lua Inferior", maxHP: 150, ac: 18, xp: 2000, stats: { str: 20, dex: 20, con: 20, int: 16, wis: 16, cha: 16 }, actions: ["Técnica Mortal (4d8)", "Velocidade Divina"] },
-        ];
-
-        function openAddCreatureModal() {
-            const list = document.getElementById('addCreatureList');
-            list.innerHTML = '';
-
-            BESTIARY.forEach(mob => {
-                const el = document.createElement('div');
-                el.className = 'mob-item';
-                el.innerHTML = `
-    <div class="mob-name">${mob.name}</div>
-    <div class="mob-meta">HP: ${mob.maxHP} | AC: ${mob.ac} | XP: ${mob.xp}</div>
-    `;
-                el.onclick = () => {
-                    const newMob = window.CampaignSystem.addMonster(CAMP_ID, mob);
-                    if (newMob) {
-                        showToast(`Criatura adicionada: ${newMob.name}`);
-                        toggleModal('addCreatureModal', false);
-                        loadCampaign(CAMP_ID);
-                        // Notify Server? Not strictly needed for players unless we show monsters on their screen eventually
-                    }
-                };
-                list.appendChild(el);
-            });
-
-            toggleModal('addCreatureModal', true);
-        }
-
-        // --- INVITE LOGIC ---
-        function openInviteLinkModal() {
-            const url = window.location.origin + window.location.pathname.replace('dm-panel.html', 'campaign-hub.html') +
-                '?join=' + CAMP_ID;
-            document.getElementById('inviteLinkDisplay').innerText = url;
-            toggleModal('inviteLinkModal', true);
-        }
-
-        function copyInviteLink() {
-            const text = document.getElementById('inviteLinkDisplay').innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                showToast("Link copiado!");
-            });
-        }
-
-        // Ensure buttons are hooked up
-        // We will do this via inline onclicks or searching DOM in toggleModal,
-        // but best ensures the buttons in Header call these functions.
-
-        function toggleModal(id, show) {
-            const el = document.getElementById(id);
-            if (show) {
-                el.style.display = 'flex';
-                setTimeout(() => el.style.opacity = '1', 10);
-            } else {
-                el.style.opacity = '0';
-                setTimeout(() => el.style.display = 'none', 300);
-            }
-        }
-        lucide.createIcons();
-
-
-        // Initialize
-        function switchRightTab(t) {
-            rightTab = t;
-            document.getElementById('btnInsp').className = t === 'inspector' ? 'tab-btn active' : 'tab-btn';
-            document.getElementById('btnBest').className = t === 'bestiary' ? 'tab-btn active' : 'tab-btn';
-
-            document.getElementById('inspectorPanel').style.display = t === 'inspector' ? 'block' : 'none';
-            document.getElementById('bestiaryPanel').style.display = t === 'bestiary' ? 'block' : 'none';
-        }
-
-        let centerTab = 'combat';
-        function switchCenterTab(t) {
-            centerTab = t;
-            document.getElementById('tabCombat').className = t === 'combat' ? 'tab-btn active' : 'tab-btn';
-            document.getElementById('tabAgents').className = t === 'agents' ? 'tab-btn active' : 'tab-btn';
-
-            // Toggle Views
-            document.getElementById('combatList').style.display = t === 'combat' ? 'flex' : 'none'; // logic uses flex column
-            document.getElementById('agentGrid').className = t === 'agents' ? 'agent-grid-container active' :
-                'agent-grid-container';
-
-            // Toggle Actions
-            // combatActions contains Initiative/Next Turn
-            const combatActions = document.getElementById('combatActions');
-            if (combatActions) combatActions.style.display = t === 'combat' ? 'flex' : 'none';
-
-            const btnAddAgent = document.getElementById('btnAddAgent');
-            if (btnAddAgent) btnAddAgent.style.display = t === 'agents' ? 'block' : 'none';
-
-            const btnRest = document.getElementById('btnRest');
-            if (btnRest) btnRest.style.display = t === 'agents' ? 'block' : 'none';
-
-            if (t === 'agents') renderAgentGrid(); // Ensure grid is fresh
-        }
-
-        // Initialize
         window.onload = function () {
-            // Check ID
-            const params = new URLSearchParams(window.location.search);
-            const id = params.get('id');
-
-            if (!id) {
-                // Check if we can auto-create or redirect
-                const list = window.CampaignSystem.getCampaigns();
-                if (list.length > 0) {
-                    window.location.search = `?id=${list[0].id}`;
-                } else {
-                    const newId = window.CampaignSystem.createCampaign("Nova Campanha", "Mestre");
-                    window.location.search = `?id=${newId}`;
-                }
+            if (!CAMP_ID) {
+                alert("ID da campanha não fornecido!");
+                window.location.href = 'campaign-hub.html';
                 return;
             }
 
             // Connect WS
-            window.CampaignSystem.connectServer(id);
+            // Note: window.CampaignSystem might need campaign.js to be fully loaded
+            if (window.CampaignSystem && window.CampaignSystem.connectServer) {
+                window.CampaignSystem.connectServer(CAMP_ID);
+            }
 
-            loadCampaign(id);
+            loadData();
 
             // Initialize Tabs
-            switchCenterTab('combat');
             renderBestiaryTab();
+            switchView('combat');
 
-            lucide.createIcons();
+            // --- LISTENERS FOR REAL-TIME SYNC ---
+            window.addEventListener('server-status', (e) => {
+                const ind = document.getElementById('serverStatus');
+                if (e.detail === 'online') {
+                    ind.style.background = '#2ecc71';
+                    ind.style.boxShadow = '0 0 5px #2ecc71';
+                    ind.title = "Online";
+                    showToast('Servidor Conectado');
+                } else {
+                    ind.style.background = '#ef4444';
+                    ind.style.boxShadow = '0 0 5px #ef4444';
+                    ind.title = "Offline";
+                }
+            });
+
+            window.addEventListener('character-synced', (e) => {
+                // Determine update source
+                const update = e.detail;
+                if (!currentCamp) return;
+
+                // 1. Try to find in players
+                let p = currentCamp.players.find(x => x.charId === update.id);
+                if (p) {
+                    // Update Local Data
+                    Object.assign(p, update);
+                    // Force a save to keep sync
+                    window.CampaignSystem.saveCampaigns(window.CampaignSystem.getCampaigns());
+
+                    renderCombatList();
+                    // If selected, re-render
+                    if (selectedId === update.id) renderInspector(p);
+                    showToast(`Sync: ${p.name}`);
+                }
+            });
+
+            if (window.lucide) lucide.createIcons();
         };
 
 
         function loadData() {
+            if (!window.CampaignSystem) return;
             currentCamp = window.CampaignSystem.getCampaignById(CAMP_ID);
             if (!currentCamp) return;
 
-            const cn = document.getElementById('campaignName');
-            if (cn) cn.innerText = currentCamp.name.toUpperCase();
+            // const cn = document.getElementById('campaignName');
+            // if (cn) cn.innerText = currentCamp.name.toUpperCase();
 
             renderCombatList();
-            renderAgentGrid(); // Added this line
+            // renderAgentGrid(); // Not using agent grid in this layout for now
 
             // If selection exists, re-render inspector
             if (selectedId) {
@@ -1846,284 +1753,368 @@
             }
 
             updateLog(); // Initial log render
-            updateReactionStatus(); // Update reaction status on data load
+            // updateReactionStatus(); 
         }
-
-        // CENTER TAB SWITCH LOGIC UPDATED
-        let activeCenterTab = 'combat';
-        function switchCenterTab(tab) {
-            activeCenterTab = tab;
-            document.getElementById('tabCombat').className = tab === 'combat' ? 'tab-btn active' : 'tab-btn';
-            document.getElementById('tabAgents').className = tab === 'agents' ? 'tab-btn active' : 'tab-btn';
-
-            document.getElementById('combatList').style.display = tab === 'combat' ? 'flex' : 'none';
-            document.getElementById('combatActions').style.display = tab === 'combat' ? 'flex' : 'none';
-
-            document.getElementById('agentGrid').className = tab === 'agents' ? 'agent-grid-container active' :
-                'agent-grid-container';
-            document.getElementById('btnAddAgent').style.display = tab === 'agents' ? 'block' : 'none';
-            document.getElementById('btnRest').style.display = tab === 'agents' ? 'block' : 'none';
-        }
-
-        function openAddAgentModal() {
-            const modal = document.getElementById('addAgentModal');
-            const list = document.getElementById('addAgentList');
-            modal.style.display = 'flex';
-            list.innerHTML = "Carregando...";
-
-            // Get all chars
-            const raw = localStorage.getItem('demonSlayerSaveSlots');
-            const allChars = raw ? JSON.parse(raw) : [];
-
-            // Filter out existing
-            const existingIds = currentCamp.players.map(p => p.charId);
-            const candidates = allChars.filter(c => !existingIds.includes(c.id));
-
-            list.innerHTML = "";
-            if (candidates.length === 0) {
-                list.innerHTML = "<div style='color:#777; text-align:center;'>Nenhum personagem disponível.</div>";
-                return;
-            }
-
-            candidates.forEach(c => {
-                const row = document.createElement('div');
-                row.className = 'mob-item'; // Reuse mob-item class for consistent list style
-                row.innerHTML = `
-    <div style="display:flex; align-items:center; gap:10px;">
-        <div class="avatar-sm"
-            style="background-image: url('https://ui-avatars.com/api/?name=${c.name}&background=random')"></div>
-        <div>
-            <div class="mob-name">${c.name}</div>
-            <div class="mob-meta">${c.rank || "Mizunoto"} - Nível ${c.level || 1}</div>
-        </div>
-    </div>
-    <button class="btn btn-primary" style="font-size:0.75rem; padding:4px 8px;">+</button>
-    `;
-
-                row.onclick = () => {
-                    try {
-                        window.CampaignSystem.addPlayerToCampaign(CAMP_ID, c);
-
-                        // Switch to combat tab if combat is active, otherwise Agents
-                        if (currentCamp.combat.active) {
-                            switchCenterTab('combat');
-                        } else {
-                            switchCenterTab('agents');
-                        }
-
-                        loadData();
-                        showToast(`Agente adicionado: ${c.name}`);
-                        document.getElementById('addAgentModal').style.display = 'none';
-
-                        // Auto-scroll logic if added to combat
-                        if (currentCamp.combat.active) {
-                            setTimeout(() => {
-                                const cl = document.getElementById('combatList');
-                                if (cl) cl.scrollTop = cl.scrollHeight;
-                            }, 100);
-                        }
-                    } catch (err) {
-                        alert("Erro ao adicionar agente: " + err.message);
-                    }
-                };
-                list.appendChild(row);
-            });
-        }
-
 
         // --- RENDERERS ---
 
-        function renderCombatList() {
-            const list = document.getElementById('combatList');
-            list.innerHTML = "";
+        // --- RENDERERS (Wisteria Adapted) ---
 
-            // Determine order
+        function renderCombatList() {
+            // Target the Wisteria Stage
+            const stage = document.getElementById('combatStage');
+            const turnDisplay = document.getElementById('turnDisplay');
+            if (!stage) return;
+            stage.innerHTML = "";
+
+            // Logic: Determine order...
             let entities = getAllEntities();
-            if (currentCamp.combat.active && currentCamp.combat.order.length > 0) {
-                // Sort by combat order
+            if (!currentCamp.combat.active) {
+                // If combat not active, just sort by init descending
+                entities.sort((a, b) => (b.initiative || 0) - (a.initiative || 0));
+                if (turnDisplay) turnDisplay.innerText = "COMBATE PAUSADO";
+                if (turnDisplay) turnDisplay.style.color = "#71717a";
+            } else {
+                // Use combat order
                 const ordered = [];
                 currentCamp.combat.order.forEach(id => {
                     const e = entities.find(x => (x.id === id || x.charId === id));
                     if (e) ordered.push(e);
                 });
-                // Add any not in order (newly added?)
                 entities.forEach(e => {
                     if (!ordered.find(x => (x.id || x.charId) === (e.id || e.charId))) ordered.push(e);
                 });
                 entities = ordered;
-            } else {
-                // Sort randomly or by name
-                entities.sort((a, b) => b.initiative - a.initiative);
+
+                // Update Turn Header
+                const activeId = currentCamp.combat.order[currentCamp.combat.turnIndex];
+                const activeEnt = getEntity(activeId);
+                if (turnDisplay && activeEnt) {
+                    turnDisplay.innerText = activeEnt.name.toUpperCase();
+                    turnDisplay.style.color = "#d8b4fe"; // Primary focus
+                }
             }
 
-            entities.forEach((e, idx) => {
+            // Render Tokens into the center stage
+            // We use a centered flex grid container
+            const grid = document.createElement('div');
+            grid.style.cssText = "display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:20px; width:100%; max-width:1000px;";
+            stage.appendChild(grid);
+
+            entities.forEach(e => {
                 const id = e.id || e.charId;
                 const isTurn = currentCamp.combat.active && currentCamp.combat.order[currentCamp.combat.turnIndex] === id;
                 const isSelected = selectedId === id;
+                const hpPct = e.maxHP ? (e.currentHP / e.maxHP) * 100 : 0;
 
-                const row = document.createElement('div');
-                row.className = `init-row ${isTurn ? 'active-turn' : ''} ${isSelected ? 'selected' : ''}`;
-                if (e.isNPC) row.setAttribute('data-type', 'oni');
-                row.onclick = () => selectEntity(id);
+                // Color Logic
+                let barColor = "var(--hp-high)";
+                if (hpPct <= 50) barColor = "var(--hp-mid)";
+                if (hpPct <= 25) barColor = "var(--hp-low)";
 
-                const hpPct = (e.currentHP / e.maxHP) * 100;
-                const pePct = e.maxPE ? (e.currentPE / e.maxPE) * 100 : 0;
+                const token = document.createElement('div');
+                token.className = `wis-token ${isTurn ? 'active' : ''}`;
+                if (isSelected) {
+                    token.style.transform = "scale(1.15)";
+                    token.style.filter = "brightness(1.2)";
+                }
+                token.onclick = (ev) => { ev.stopPropagation(); selectEntity(id); };
 
-                row.innerHTML = `
-    <div class="avatar-sm"
-        style="background-image: url('https://ui-avatars.com/api/?name=${e.name}&background=random')"></div>
-    <div class="row-info">
-        <div class="row-name">${e.name} ${renderConditionIcons(e.conditions || [])}</div>
-        <div class="row-vitals">
-            <span style="color:#ef4444; font-weight:600; font-size:0.75rem;">${e.currentHP} / ${e.maxHP}</span>
-            ${e.maxPE ? `<span
-                style="color:#a855f7; font-weight:600; font-size:0.75rem; margin-left:8px;">${e.currentPE} /
-                ${e.maxPE}</span>` : ''}
-            <span style="color:#999; font-size:0.7rem; margin-left:8px;">CA ${e.ac}</span>
-        </div>
-        <div class="hp-bar-mini">
-            <div class="hp-fill-mini" style="width:${hpPct}%"></div>
-        </div>
-    </div>
-    <input type="number" class="init-input" value="${e.initiative || 0}" onclick="event.stopPropagation()"
-        onchange="updateInit('${id}', this.value, ${e.isNPC})">
-    `;
-                list.appendChild(row);
+                token.innerHTML = `
+                    <div class="wis-token-img-box">
+                        <div class="wis-token-img" style="background-image: url('https://ui-avatars.com/api/?name=${e.name}&background=random')"></div>
+                        ${isTurn ? `<div style="position:absolute; inset:-5px; border-radius:50%; border:2px solid var(--primary); animation:pulse-slow 2s infinite;"></div>` : ''}
+                    </div>
+                    
+                    <div class="wis-token-name">${e.name}</div>
+                    
+                    <div class="wis-token-bar">
+                        <div class="wis-token-bar-fill" style="width:${hpPct}%; background-color:${barColor};"></div>
+                    </div>
+
+                    <!-- Quick Actions Overlay (Hidden until hover) -->
+                    <div class="token-quick-overlay">
+                         <div class="token-btn-mini dmg" onclick="event.stopPropagation(); modStat('${id}', 'hp', -5, event)" title="-5 HP">-</div>
+                         <div class="token-btn-mini heal" onclick="event.stopPropagation(); modStat('${id}', 'hp', 5, event)" title="+5 HP">+</div>
+                    </div>
+                `;
+
+                grid.appendChild(token);
             });
+
+            if (window.lucide) lucide.createIcons();
+            // Check for turn announcement if implemented
+            if (typeof checkForTurnAnnouncement === 'function') checkForTurnAnnouncement();
+        }
+
+        // --- COMBAT HELPERS ---
+
+        let lastAnnouncedTurnId = null;
+
+        function modStat(id, stat, delta, event) {
+            if (!currentCamp) return;
+            const ent = getEntity(id);
+            if (!ent) return;
+
+            // Visual feedback
+            if (stat === 'hp' && event) {
+                showFloatingNumber(event.clientX, event.clientY, delta);
+            }
+
+            if (stat === 'hp') {
+                let newHP = (ent.currentHP || 0) + delta;
+                if (newHP > ent.maxHP) newHP = ent.maxHP;
+                if (newHP < 0) newHP = 0;
+                ent.currentHP = newHP;
+            }
+
+            // Sync
+            if (ent.isNPC) {
+                // Update mob in campaign
+                const mobIdx = currentCamp.monsters.findIndex(m => m.id === id);
+                if (mobIdx >= 0) currentCamp.monsters[mobIdx] = ent;
+                window.CampaignSystem.saveCampaigns();
+                window.CampaignSystem.sendUpdate(CAMP_ID, { type: 'combat-update' });
+            } else {
+                // Update player
+                window.CampaignSystem.updateEntity(CAMP_ID, id, ent);
+            }
+            renderCombatList(); // Optimistic update
+            if (selectedId === id) renderInspector(ent);
+        }
+
+        function showFloatingNumber(x, y, val) {
+            const el = document.createElement('div');
+            el.className = `damage-number ${val > 0 ? 'heal' : 'dmg'}`;
+            el.textContent = val > 0 ? `+${val}` : val;
+
+            // Adjust position slightly random
+            const rx = x + (Math.random() * 40 - 20);
+            const ry = y + (Math.random() * 40 - 20);
+
+            el.style.left = rx + 'px';
+            el.style.top = ry + 'px';
+
+            // Ensure appended to damageLayer if exists, else body
+            const layer = document.getElementById('damageLayer');
+            if (layer) layer.appendChild(el);
+            else document.body.appendChild(el);
+
+            setTimeout(() => el.remove(), 1200);
+        }
+
+        function checkForTurnAnnouncement() {
+            if (!currentCamp.combat.active) return;
+            const currentId = currentCamp.combat.order[currentCamp.combat.turnIndex];
+            if (currentId && currentId !== lastAnnouncedTurnId) {
+                lastAnnouncedTurnId = currentId;
+                const ent = getEntity(currentId);
+                if (ent) announceTurn(ent.name);
+            }
+        }
+
+        // --- COMBAT CONTROL ---
+
+        function startCombat() {
+            if (!currentCamp) return;
+            currentCamp.combat.active = true;
+            currentCamp.combat.turnIndex = 0;
+            currentCamp.combat.round = 1;
+
+            // Re-calc order based on initiative
+            let entities = getAllEntities();
+            entities.sort((a, b) => (b.initiative || 0) - (a.initiative || 0));
+            currentCamp.combat.order = entities.map(e => e.id || e.charId);
+
+            window.CampaignSystem.saveCampaigns();
+            window.CampaignSystem.sendUpdate(CAMP_ID, { type: 'combat-start' });
+            renderCombatList();
+            showToast("Combate Iniciado!");
+        }
+
+        function endCombat() {
+            if (!currentCamp) return;
+            if (!confirm("Encerrar combate?")) return;
+            currentCamp.combat.active = false;
+            currentCamp.combat.order = [];
+            currentCamp.combat.turnIndex = 0;
+
+            window.CampaignSystem.saveCampaigns();
+            window.CampaignSystem.sendUpdate(CAMP_ID, { type: 'combat-end' });
+            renderCombatList();
+            showToast("Combate Finalizado");
+        }
+
+        function nextTurn() {
+            if (!currentCamp || !currentCamp.combat.active) return;
+
+            const orderLen = currentCamp.combat.order.length;
+            if (orderLen === 0) return;
+
+            currentCamp.combat.turnIndex++;
+            if (currentCamp.combat.turnIndex >= orderLen) {
+                currentCamp.combat.turnIndex = 0;
+                currentCamp.combat.round++;
+                const rDisplay = document.getElementById('roundDisplay');
+                if (rDisplay) rDisplay.innerText = currentCamp.combat.round;
+                showToast(`Round ${currentCamp.combat.round} Iniciado`);
+            }
+
+            window.CampaignSystem.saveCampaigns();
+            window.CampaignSystem.sendUpdate(CAMP_ID, { type: 'turn-change' });
+            renderCombatList();
+
+            const activeId = currentCamp.combat.order[currentCamp.combat.turnIndex];
+            const ent = getEntity(activeId);
+            if (ent) announceTurn(ent.name);
+        }
+
+        function rollInitiativeAll() {
+            if (!currentCamp) return;
+            let entities = getAllEntities();
+            entities.forEach(e => {
+                if (e.isNPC) {
+                    // Simple DnD roll: d20 + generic mod (let's say +2 for mobs if no stat)
+                    const mod = Math.floor(((e.stats?.dex || 10) - 10) / 2); // if stats exist
+                    e.initiative = Math.floor(Math.random() * 20) + 1 + (mod || 0);
+                }
+                // Players usually roll their own, but DM can auto-roll for them if needed
+                // For now, only roll NPCs to avoid overwriting player inputs
+            });
+            window.CampaignSystem.saveCampaigns();
+            renderCombatList();
+            showToast("Iniciativa Rolada (NPCs)");
+        }
+
+        function announceTurn(name) {
+            const el = document.getElementById('turnAnnouncer');
+            const nameEl = document.getElementById('announcerName');
+            if (!el || !nameEl) return;
+
+            nameEl.textContent = name;
+
+            // Re-trigger animation
+            el.classList.remove('show');
+            void el.offsetWidth; // trigger reflow
+            el.classList.add('show');
+        }
+
+        function updateInit(id, val, isNPC) {
+            if (!currentCamp) return;
+            const ent = getEntity(id);
+            if (!ent) return;
+            ent.initiative = parseInt(val) || 0;
+
+            if (ent.isNPC) {
+                const mobIdx = currentCamp.monsters.findIndex(m => m.id === id);
+                if (mobIdx >= 0) currentCamp.monsters[mobIdx] = ent;
+                window.CampaignSystem.saveCampaigns();
+            } else {
+                window.CampaignSystem.updateEntity(CAMP_ID, id, ent);
+            }
+            // Debounced sync or just save? Usually init changes happen in batch.
+            // visual update
+            // renderCombatList(); // Maybe don't re-render on every keystroke, let onchange handle it
+        }
+
+        // Helper for small dot indicator of conditions
+        function renderConditionDot(conds) {
+            if (!conds || conds.length === 0) return "";
+            return `<span style="display:inline-block; width:6px; height:6px; background:#ef4444; border-radius:50%; margin-left:4px; box-shadow:0 0 5px #ef4444;" title="${conds.join(', ')}"></span>`;
         }
 
         function renderInspector(e) {
             const box = document.getElementById('inspector');
-            if (!box) {
-                console.error("Inspector element not found!");
-                return;
-            }
-            if (!e) {
-                box.innerHTML = '<div style="text-align:center; color:#555; margin-top:50px;">Selecione um personagem</div>';
-                return;
-            }
+            if (!box) return;
 
-            console.log("Rendering inspector for:", e.name, e);
+            if (!e) {
+                box.innerHTML = '<div style="text-align:center; color:#555; margin-top:50px;">Selecione um token</div>';
+                return;
+            }
 
             const hpPct = e.maxHP ? (e.currentHP / e.maxHP) * 100 : 0;
-            const pePct = e.maxPE ? (e.currentPE / e.maxPE) * 100 : 0;
-            const id = e.id || e.charId;
-            const isNPC = e.isNPC;
+            const pePct = e.maxPE ? (e.currentPE / e.maxPE) * 100 : 0; // Assuming PE support
 
-            // Stats defaults
-            const s = e.stats || { str: 0, dex: 0, con: 0, int: 0, wis: 0 };
-            const speed = e.speed || "9m";
-
+            // Wisteria Sidebar Content
             box.innerHTML = `
-    <div class="profile-card">
-        <img src="https://ui-avatars.com/api/?name=${e.name}&background=random" class="profile-img">
-        <div class="profile-info">
-            <div class="profile-name">${e.name}</div>
-            <div class="profile-class">${isNPC ? e.type || 'Oni' : e.rank}</div>
-        </div>
-        ${!isNPC ? `<button class="btn btn-primary" style="margin-left:auto; padding:6px 12px;"
-            onclick="openCharacterSheet('${e.charId}')">
-            <i data-lucide="external-link" size="14"></i> Ver Ficha
-        </button>` : ''}
-    </div>
-
-    <!-- ORDEM BARS -->
-    <!-- HP -->
-    <div class="ordem-bar-row" style="border-color: #7f1d1d;">
-        <div class="ordem-bar-btn" onclick="modStat('${id}', 'hp', -5)">
-            <<< /div>
-                <div class="ordem-bar-btn" onclick="modStat('${id}', 'hp', -1)">
-                    << /div>
-                        <div class="ordem-bar-display">
-                            <div class="ordem-bar-fill bar-red" style="width:${hpPct}%"></div>
-                            <div class="text-overlay"><span>${e.currentHP}</span><span style="opacity:0.6">/
-                                    ${e.maxHP}</span></div>
+                <div style="padding:16px;">
+                    <!-- HEADER -->
+                    <div style="display:flex; align-items:center; gap:16px; margin-bottom:24px;">
+                        <div style="width:64px; height:64px; border-radius:50%; border:2px solid var(--primary); background:url('https://ui-avatars.com/api/?name=${e.name}&background=random'); background-size:cover;"></div>
+                        <div>
+                            <div style="font-family:var(--font-display); font-size:1.1rem; font-weight:700; color:#fff;">${e.name}</div>
+                            <div style="font-size:0.75rem; color:var(--primary-light); background:rgba(168, 85, 247, 0.1); display:inline-block; padding:2px 8px; border-radius:4px; margin-top:4px;">Lvl ${e.level || 1} ${e.race || 'Humano'}</div>
                         </div>
-                        <div class="ordem-bar-btn last" onclick="modStat('${id}', 'hp', 1)">></div>
-                        <div class="ordem-bar-btn last" onclick="modStat('${id}', 'hp', 5)">>></div>
+                    </div>
+
+                    <!-- BARS -->
+                    <div style="margin-bottom:16px;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#a1a1aa; margin-bottom:4px;">
+                            <span>VIDA</span>
+                            <span style="color:#fff;">${e.currentHP || 0} / ${e.maxHP || 0}</span>
+                        </div>
+                        <div style="height:8px; background:#27272a; border-radius:4px; overflow:hidden;">
+                            <div style="width:${hpPct}%; height:100%; background:linear-gradient(90deg, #16a34a, #4ade80);"></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:24px;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#a1a1aa; margin-bottom:4px;">
+                            <span>FÔLEGO / PE</span>
+                            <span style="color:#fff;">${e.currentPE || 0} / ${e.maxPE || 0}</span>
+                        </div>
+                        <div style="height:8px; background:#27272a; border-radius:4px; overflow:hidden;">
+                            <div style="width:${pePct}%; height:100%; background:#3b82f6;"></div>
+                        </div>
+                    </div>
+
+                    <!-- STATS GRID -->
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1px; background:var(--border-dark); border:1px solid var(--border-dark); border-radius:8px; overflow:hidden; margin-bottom:24px;">
+                        <div style="background:var(--surface-dark); padding:10px; text-align:center;">
+                            <div style="font-size:0.6rem; color:#71717a; font-weight:700;">DEFESA</div>
+                            <div style="font-size:1.1rem; color:#fff; font-weight:700;">${e.ac || 10}</div>
+                        </div>
+                        <div style="background:var(--surface-dark); padding:10px; text-align:center;">
+                            <div style="font-size:0.6rem; color:#71717a; font-weight:700;">DESL.</div>
+                            <div style="font-size:1.1rem; color:#fff; font-weight:700;">9m</div>
+                        </div>
+                        <div style="background:var(--surface-dark); padding:10px; text-align:center;">
+                            <div style="font-size:0.6rem; color:#71717a; font-weight:700;">INIC.</div>
+                            <div style="font-size:1.1rem; color:#fff; font-weight:700;">${e.initiative > 0 ? '+' + e.initiative : e.initiative}</div>
+                        </div>
+                    </div>
+
+                    <!-- ACTIONS / CONDITIONS -->
+                    <div style="margin-bottom:20px;">
+                         <div style="font-size:0.75rem; color:#71717a; font-weight:700; margin-bottom:8px; text-transform:uppercase;">Condições</div>
+                         <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                            ${(e.conditions && e.conditions.length > 0) ? e.conditions.map(c => `<span style="background:#ef4444; color:#fff; font-size:0.7rem; padding:2px 8px; border-radius:4px;">${c}</span>`).join('') : '<span style="color:#52525b; font-size:0.8rem;">Nenhuma</span>'}
+                         </div>
+                    </div>
+
+                    <div>
+                         <div style="font-size:0.75rem; color:#71717a; font-weight:700; margin-bottom:8px; text-transform:uppercase;">Ações Rápidas</div>
+                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                            <button style="padding:8px; background:#27272a; border:1px solid #3f3f46; color:#ef4444; border-radius:6px; font-weight:700;" onclick="modStat('${e.id || e.charId}', 'hp', -5, event)">-5 HP</button>
+                            <button style="padding:8px; background:#27272a; border:1px solid #3f3f46; color:#22c55e; border-radius:6px; font-weight:700;" onclick="modStat('${e.id || e.charId}', 'hp', 5, event)">+5 HP</button>
+                         </div>
+                    </div>
                 </div>
 
-                <!-- PE -->
-                <div class="ordem-bar-row" style="border-color: #5b21b6;">
-                    <div class="ordem-bar-btn" onclick="modStat('${id}', 'pe', -5)">
-                        <<< /div>
-                            <div class="ordem-bar-btn" onclick="modStat('${id}', 'pe', -1)">
-                                << /div>
-                                    <div class="ordem-bar-display">
-                                        <div class="ordem-bar-fill bar-purple" style="width:${pePct}%"></div>
-                                        <div class="text-overlay"><span>${e.currentPE}</span><span style="opacity:0.6">/
-                                                ${e.maxPE}</span></div>
-                                    </div>
-                                    <div class="ordem-bar-btn last" onclick="modStat('${id}', 'pe', 1)">></div>
-                                    <div class="ordem-bar-btn last" onclick="modStat('${id}', 'pe', 5)">>></div>
-                            </div>
+    <!-- ATTACKS LIST -->
+    <div style="margin-top:10px;">
+        <div style="font-size:0.8rem; color:#777; margin-bottom:5px;">Ataques e Ações</div>
+        <div id="inspectorAttacks"></div>
+    </div>
 
-                            <!-- TABS (Visual only for now) -->
-                            <div class="insp-tabs" style="margin-top:15px;">
-                                <div class="insp-tab" style="color:#aaa;">ATRIBUTOS</div>
-                                <div class="insp-tab active">COMBATE</div>
-                                <div class="insp-tab" style="color:#aaa;">RITUAIS</div>
-                            </div>
-
-                            <!-- ATTRIBUTES GRID -->
-                            <div class="attr-grid">
-                                <div class="attr-box">
-                                    <div class="attr-val">${s.agi || s.dex || 0}</div>
-                                    <div class="attr-label">AGI</div>
-                                </div>
-                                <div class="attr-box">
-                                    <div class="attr-val">${s.str || 0}</div>
-                                    <div class="attr-label">FOR</div>
-                                </div>
-                                <div class="attr-box">
-                                    <div class="attr-val">${s.int || 0}</div>
-                                    <div class="attr-label">INT</div>
-                                </div>
-                                <div class="attr-box">
-                                    <div class="attr-val">${s.pre || s.wis || 0}</div>
-                                    <div class="attr-label">PRE</div>
-                                </div>
-                                <div class="attr-box">
-                                    <div class="attr-val">${s.vig || s.con || 0}</div>
-                                    <div class="attr-label">VIG</div>
-                                </div>
-                            </div>
-
-                            <!-- SECONDARY STATS (DEF / SPEED) -->
-                            <div class="sec-stats">
-                                <div class="sec-stat-box">
-                                    <div class="sec-stat-label">DEFESA</div>
-                                    <div class="sec-stat-val">${e.ac}</div>
-                                </div>
-                                <div class="sec-stat-box">
-                                    <div class="sec-stat-label">BLOQUEIO</div>
-                                    <div class="sec-stat-val">0</div>
-                                </div>
-                                <div class="sec-stat-box">
-                                    <div class="sec-stat-label">ESQUIVA</div>
-                                    <div class="sec-stat-val">0</div>
-                                </div>
-                                <div class="sec-stat-box">
-                                    <div class="sec-stat-label">DESL.</div>
-                                    <div class="sec-stat-val" style="font-size:1rem; margin-top:5px;">${speed}</div>
-                                </div>
-                            </div>
-
-                            <!-- ATTACKS LIST -->
-                            <div style="margin-top:10px;">
-                                <div style="font-size:0.8rem; color:#777; margin-bottom:5px;">Ataques e Ações (Clique
-                                    para Rolar)</div>
-                                <div id="inspectorAttacks"></div>
-                            </div>
-
-                            <!-- REMOVE BUTTON -->
-                            <div style="margin-top:20px; padding-top:15px; border-top:1px solid #333;">
-                                <button class="btn btn-danger" style="width:100%;"
-                                    onclick="removeEntityFromCombat('${id}', ${isNPC})">
-                                    <i data-lucide="trash-2" size="14"></i> Remover do Combate
-                                </button>
-                            </div>
-                            `;
+    <!-- REMOVE BUTTON -->
+    <div style="margin-top:20px; padding-top:15px; border-top:1px solid #333;">
+        <button class="btn btn-danger" style="width:100%;"
+            onclick="removeEntityFromCombat('${e.id || e.charId}', ${e.isNPC})">
+            <i data-lucide="trash-2" size="14"></i> Remover do Combate
+        </button>
+    </div>
+    `;
 
             const list = document.getElementById('inspectorAttacks');
             if (isNPC && e.actions) {
@@ -2145,172 +2136,43 @@
             } else {
                 list.innerHTML = "<div style='font-size:0.8rem; color:#555;'>Ficha de jogador. Ações gerenciadas pelo jogador.</div>";
             }
-            lucide.createIcons();
+            if (window.lucide) lucide.createIcons();
         }
 
-        function renderAgentGrid() {
-            const grid = document.getElementById('agentGrid');
-            grid.innerHTML = "";
-            const entities = getAllEntities();
-            // Only show players to match "Analysis General" context usually for Party.
-            const players = entities.filter(e => !e.isNPC);
+        // --- TABS ---
+        function switchRightTab(tab) {
+            document.getElementById('tabStats').className = tab === 'inspector' ? 'tab-btn active' : 'tab-btn';
+            document.getElementById('tabBestiary').className = tab === 'bestiary' ? 'tab-btn active' : 'tab-btn';
 
-            players.forEach(p => {
-                const hpPct = (p.currentHP / p.maxHP) * 100;
-                const pePct = (p.currentPE / p.maxPE) * 100;
-                const s = p.stats || { str: 0, dex: 0, con: 0, int: 0, wis: 0 };
-
-                const card = document.createElement('div');
-                card.className = 'agent-card';
-                card.innerHTML = `
-                            <div class="agent-header">
-                                <img src="https://ui-avatars.com/api/?name=${p.name}&background=random"
-                                    class="agent-avatar">
-                                <div class="agent-details">
-                                    <div class="agent-name">${p.name}</div>
-                                    <div class="agent-meta">${p.rank} <span style="color:#777">•</span>
-                                        ${p.breathingStyle || "Respiração"}</div>
-                                </div>
-                            </div>
-
-                            <div class="agent-attrs">
-                                <div>
-                                    <div class="agent-attr-val">${s.dex || 0}</div>
-                                    <div class="agent-attr-lbl">AGI</div>
-                                </div>
-                                <div>
-                                    <div class="agent-attr-val">${s.str || 0}</div>
-                                    <div class="agent-attr-lbl">FOR</div>
-                                </div>
-                                <div>
-                                    <div class="agent-attr-val">${s.int || 0}</div>
-                                    <div class="agent-attr-lbl">INT</div>
-                                </div>
-                                <div>
-                                    <div class="agent-attr-val">${s.wis || 0}</div>
-                                    <div class="agent-attr-lbl">PRE</div>
-                                </div>
-                                <div>
-                                    <div class="agent-attr-val">${s.con || 0}</div>
-                                    <div class="agent-attr-lbl">VIG</div>
-                                </div>
-                            </div>
-
-                            <div class="row-name">
-                                ${p.name} ${renderConditionIcons(p.conditions)}
-                            </div>
-
-                            <div class="agent-bars">
-                                <!-- HP -->
-                                <div style="font-size:0.6rem; color:#aaa; margin-bottom:2px; text-align:center;">VIDA
-                                </div>
-                                <div class="ordem-bar-row" style="border-color:#7f1d1d;">
-                                    <div class="ordem-bar-display">
-                                        <div class="ordem-bar-fill bar-red" style="width:${hpPct}%"></div>
-                                        <div class="text-overlay"><span>${p.currentHP}</span><span style="opacity:0.6">/
-                                                ${p.maxHP}</span></div>
-                                    </div>
-                                </div>
-                                <!-- PE -->
-                                <div style="font-size:0.6rem; color:#aaa; margin-bottom:2px; text-align:center;">
-                                    SANIDADE/PE</div>
-                                <div class="ordem-bar-row" style="border-color:#5b21b6;">
-                                    <div class="ordem-bar-display">
-                                        <div class="ordem-bar-fill bar-purple" style="width:${pePct}%"></div>
-                                        <div class="text-overlay"><span>${p.currentPE}</span><span style="opacity:0.6">/
-                                                ${p.maxPE}</span></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="agent-footer">
-                                <div class="af-box"><span class="af-val">${p.ac}</span> DEFESA</div>
-                                <div class="af-box"><span class="af-val">0</span> BLOQUEIO</div>
-                                <div class="af-box"><span class="af-val">0</span> ESQUIVA</div>
-                                <div class="af-box"><span class="af-val">${p.speed || "9m"}</span> DESL.</div>
-                            </div>
-                            `;
-                grid.appendChild(card);
-            });
-            lucide.createIcons();
+            document.getElementById('inspector').style.display = tab === 'inspector' ? 'block' : 'none';
+            document.getElementById('bestiaryContainer').style.display = tab === 'bestiary' ? 'block' : 'none';
         }
 
-        function updateLog() {
-            if (!currentCamp || !currentCamp.log) return;
-            const feed = document.getElementById('logFeed');
-            // Check if log length changed
-            // For simplicity, just wipe and redraw bottom 20
-            feed.innerHTML = "";
-
-            currentCamp.log.slice().reverse().forEach(l => {
-                const card = document.createElement('div');
-                card.className = 'log-card';
-                // Try parse result from msg if it has format "Result: 23"
-                // Or just show text.
-                // Assuming format from performAttack
-
-                let icon = '<div class="dice-icon"><i data-lucide="message-square"></i></div>';
-                let total = "";
-
-                if (l.msg.includes("Rolagem")) {
-                    // Primitive regex to extract total
-                    const match = l.msg.match(/<strong>(\d+)<\/strong>/);
-                    const val = match ? match[1] : "?";
-                    icon = `<div class="dice-icon" style="background:#222; border:1px solid #444;">
-                                        ${val}</div>`;
-                }
-
-                card.innerHTML = `
-                                    ${icon}
-                                    <div class="log-content">
-                                        <div class="log-detail" style="font-size:0.7rem; color:#666;">${l.time}</div>
-                                        <div class="log-title" style="font-size:0.8rem; color:#ccc;">${l.msg}</div>
-                                    </div>
-                                    `;
-                feed.appendChild(card);
-            });
-            lucide.createIcons();
-        }
 
         // --- ACTIONS ---
         function selectEntity(id) {
             selectedId = id;
-            console.log("Selected entity:", id);
-
-            // Switch to inspector tab automatically
             switchRightTab('inspector');
-
-            // Immediately render the inspector for this entity
             const ent = getEntity(id);
             if (ent) {
                 renderInspector(ent);
             }
-
-            // Also refresh the combat list to show selection
             renderCombatList();
-            lucide.createIcons();
         }
 
         function openCharacterSheet(charId) {
-            // Load the character from save slots and set it as active
             const raw = localStorage.getItem('demonSlayerSaveSlots');
-            if (!raw) {
-                alert('Nenhum personagem encontrado!');
-                return;
-            }
+            if (!raw) return;
             const chars = JSON.parse(raw);
             const char = chars.find(c => c.id === charId);
-            if (!char) {
-                alert('Personagem não encontrado!');
-                return;
-            }
-            // Set as active character for dashboard
+            if (!char) return;
             localStorage.setItem('demonSlayerChar', JSON.stringify(char));
             window.open('dashboard.html', '_blank');
         }
 
         // --- UNIVERSAL UPDATE (PLAYERS & MONSTERS) ---
         function updateStat(id, type, val, isMax = false) {
+            if (!window.CampaignSystem) return;
             const c = window.CampaignSystem.getCampaignById(CAMP_ID);
             if (!c) return;
 
@@ -2352,7 +2214,6 @@
                 // Check if the updated entity is currently selected
                 renderInspector(getEntity(id));
             }
-            lucide.createIcons();
         }
 
         function modStat(id, type, delta) {
@@ -2361,9 +2222,7 @@
 
         function updateInit(id, val, isNPC) {
             const newVal = parseInt(val) || 0;
-            console.log('updateInit:', id, isNPC, newVal);
             window.CampaignSystem.updateEntity(CAMP_ID, id, isNPC, { initiative: newVal });
-            // Just update the campaign data without full re-render to keep focus
             currentCamp = window.CampaignSystem.getCampaignById(CAMP_ID);
         }
 
@@ -2385,21 +2244,21 @@
             // Calculate damage
             let dmgVal = 0;
             try {
-                const parts = dmgStr.split('+');
-                const dice = parts[0].trim().split('d');
-                const n = parseInt(dice[0]);
-                const s = parseInt(dice[1]);
-                const flat = parts[1] ? parseInt(parts[1]) : 0;
-
-                for (let i = 0; i < n; i++) {
-                    dmgVal += Math.floor(Math.random() * s) + 1;
+                // Simple parsing: NdS + M or just NdS
+                const parts = dmgStr.toLowerCase().split('+');
+                const dicePart = parts[0].trim().split('d');
+                if (dicePart.length === 2) {
+                    const n = parseInt(dicePart[0]) || 1;
+                    const s = parseInt(dicePart[1]) || 6;
+                    for (let i = 0; i < n; i++) dmgVal += Math.floor(Math.random() * s) + 1;
                 }
-
+                const flat = parts[1] ? parseInt(parts[1]) : 0;
                 dmgVal += flat;
 
-                if (isCrit) dmgVal *= 2; // Double damage on crit
+                if (isCrit) dmgVal *= 2;
             } catch (e) {
                 console.error("Error calculating damage:", e);
+                dmgVal = 0; // Fallback
             }
 
             // Show the premium dice overlay
@@ -2411,8 +2270,7 @@
             updateLog();
         }
 
-        function showPremiumDice(roll, total, damage, attackerName, attackName, damageFormula,
-            isCrit, isFail) {
+        function showPremiumDice(roll, total, damage, attackerName, attackName, damageFormula, isCrit, isFail) {
             const overlay = document.getElementById('diceOverlay');
             const cube = document.getElementById('diceCube');
             const result = document.getElementById('diceResultDisplay');
@@ -2447,8 +2305,7 @@
                                     style="color:${isCrit ? '#ffd60a' : isFail ? '#ef4444' : '#a855f7'}">${roll}</span>
                                 + ${total - roll}</div>
                             <div class="damage-display">${damage} de dano${isCrit ? ' 🔥' : ''}</div>
-                            <div class="breakdown">${damageFormula}${isCrit ? ' (x2 Crítico!)' : ''}</div>
-                            `;
+                        `;
             }, 1200);
         }
 
@@ -2462,99 +2319,42 @@
             result.className = '';
         }
 
-        // Legacy functions for compatibility
-        function showDiceAnim(callback) {
-            const overlay = document.getElementById('diceOverlay');
-            const cube = document.getElementById('diceCube');
+        function updateLog() {
+            if (!currentCamp || !currentCamp.log) return;
+            const feed = document.getElementById('logFeed');
+            if (!feed) return; // Might not exist if view changed
+            feed.innerHTML = "";
 
-            overlay.classList.add('show');
-            cube.classList.add('rolling');
+            currentCamp.log.slice().reverse().forEach(l => {
+                const card = document.createElement('div');
+                card.className = 'wis-card';
+                if (l.msg.includes("CRÍTICO")) card.style.borderColor = "var(--hp-mid)";
 
-            setTimeout(() => {
-                cube.classList.remove('rolling');
-                callback();
-            }, 1200);
-        }
-
-        function showDiceResult(val) {
-            const result = document.getElementById('diceResultDisplay');
-            result.textContent = val;
-            result.classList.add('show');
-        }
-
-        function renderBestiaryTab() {
-            const list = document.getElementById('bestiaryList');
-            list.innerHTML = "";
-            window.BestiaryDB.forEach(m => {
-                const el = document.createElement('div');
-                el.className = 'mob-item';
-                el.innerHTML = `
-                            <div>
-                                <div class="mob-name">${m.name}</div>
-                                <div class="mob-meta">HP ${m.hp} | CR ${m.cr}</div>
-                            </div>
-                            <button class="btn btn-primary" style="padding:4px 8px;"
-                                onclick="spawnMobById('${m.id}')">+</button>
-                            `;
-                list.appendChild(el);
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                        <span style="font-size:0.65rem; color:#71717a; text-transform:uppercase; font-weight:700;">LOG</span>
+                        <span style="font-size:0.65rem; color:#52525b;">${l.time}</span>
+                    </div>
+                    <div style="font-size:0.8rem; color:#d4d4d8; line-height:1.4;">${l.msg}</div>
+                `;
+                feed.appendChild(card);
             });
         }
 
-        function spawnMobById(id) {
-            try {
-                // Check custom first
-                const customs = JSON.parse(localStorage.getItem('customBestiary') || "[]");
-                let t = customs.find(x => x.id === id);
-                if (!t && window.BestiaryDB) t = window.BestiaryDB.find(x => x.id === id);
-
-                if (t) {
-                    window.CampaignSystem.addMonster(CAMP_ID, t);
-                    // Force switch to combat tab to see the new monster
-                    switchCenterTab('combat');
-                    loadData();
-                    showToast(`Criatura adicionada: ${t.name}`);
-
-                    // Auto-scroll to bottom of combat list
-                    setTimeout(() => {
-                        const cl = document.getElementById('combatList');
-                        if (cl) cl.scrollTop = cl.scrollHeight;
-                    }, 100);
-                } else {
-                    console.error("Spawn Error: Monster template not found", id);
-                    alert("Erro: Monstro não encontrado na base de dados.");
-                }
-            } catch (err) {
-                console.error("Spawn Error:", err);
-                alert("Erro ao adicionar monstro: " + err.message);
-            }
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
         }
 
-        function clearLog() {
-            // Not implemented in campaign.js yet, but harmless
-            currentCamp.log = [];
-            window.CampaignSystem.saveCampaigns(window.CampaignSystem.getCampaigns());
-            updateLog();
+        // --- BESTIARY & HELPERS ---
+        function openAddCreatureModal() {
+            document.getElementById('addCreatureModal').style.display = 'flex';
+            renderBestiaryTab();
         }
 
-        // --- HELPERS ---
-        function getAllEntities() {
-            if (!currentCamp) return [];
-            const players = currentCamp.players || [];
-            const monsters = currentCamp.monsters || [];
-            return [
-                ...players.map(p => ({ ...p, isNPC: false })),
-                ...monsters.map(m => ({ ...m, isNPC: true }))
-            ];
-        }
-        function getEntity(id) {
-            return getAllEntities().find(e => (e.id === id || e.charId === id));
-        }
-
-        /* --- CUSTOM MOB LOGIC --- */
         function openCustomMobModal() {
             document.getElementById('customMobModal').style.display = 'flex';
             document.getElementById('cmAttacksList').innerHTML = "";
-            addCustomAttackRow(); // Add one by default
+            addCustomAttackRow();
         }
 
         function addCustomAttackRow() {
@@ -2597,309 +2397,157 @@
                 custom: true
             };
 
-            // Save to localStorage
             const existing = JSON.parse(localStorage.getItem('customBestiary') || "[]");
             existing.push(newMob);
             localStorage.setItem('customBestiary', JSON.stringify(existing));
 
             document.getElementById('customMobModal').style.display = 'none';
-            renderBestiaryTab(); // Refresh list
+            closeModal('addCreatureModal');
+            // Directly add? Or just let user pick from list
+            window.CampaignSystem.addMonster(CAMP_ID, newMob);
+            loadData();
+            showToast('Monstro criado e adicionado!');
         }
 
         function renderBestiaryTab() {
             const list = document.getElementById('bestiaryList');
-            const search = document.getElementById('mobSearch') ?
-                document.getElementById('mobSearch').value.toLowerCase() : "";
+            if (!list) return;
+            const search = document.getElementById('mobSearch').value.toLowerCase();
             list.innerHTML = "";
 
-            // Merge Standard DB + Custom DB
+            // Use grid class
+            list.className = 'bestiary-grid';
+            list.style.display = 'grid';
+
             const customs = JSON.parse(localStorage.getItem('customBestiary') || "[]");
-            const fullDB = [...customs, ...window.BestiaryDB];
+            const fullDB = [...customs, ...(window.BestiaryDB || [])];
 
-            fullDB
-                .filter(m => m.name.toLowerCase().includes(search))
-                .forEach(m => {
-                    const el = document.createElement('div');
-                    el.className = 'mob-item';
-                    if (m.custom) el.style.borderLeft = "2px solid var(--primary)"; // Visually mark custom
+            const filtered = fullDB.filter(m => m.name.toLowerCase().includes(search));
 
-                    el.innerHTML = `
-                            <div>
-                                <div class="mob-name">${m.name}</div>
-                                <div class="mob-meta">HP ${m.hp || m.maxHP} | CR ${m.cr}</div>
-                            </div>
-                            <div style="display:flex; gap:5px;">
-                                ${m.custom ? `<button class="btn btn-danger" onclick="deleteCustomMob('${m.id}')"
-                                    style="padding:4px;"><i data-lucide="trash-2" size="12"></i></button>` : ''}
-                                <button class="btn btn-primary" style="padding:4px 8px;"
-                                    onclick="spawnMobById('${m.id}')">+</button>
-                            </div>
-                            `;
-                    list.appendChild(el);
-                });
-            lucide.createIcons();
+            filtered.forEach(m => {
+                const el = document.createElement('div');
+                el.className = 'mob-card';
+                el.onclick = () => spawnMobById(m.id);
+                el.innerHTML = `
+                    <div class="mob-card-img" style="background-image: url('https://ui-avatars.com/api/?name=${m.name}&background=random')"></div>
+                    <div class="mob-card-name">${m.name}</div>
+                    <div class="mob-card-meta">CR ${m.cr} • HP ${m.hp}</div>
+                    <button class="mob-card-add" onclick="event.stopPropagation(); spawnMobById('${m.id}')">+ Adicionar</button>
+                `;
+                list.appendChild(el);
+            });
         }
 
-        function deleteCustomMob(id) {
-            if (!confirm("Deletar criatura customizada?")) return;
-            let customs = JSON.parse(localStorage.getItem('customBestiary') || "[]");
-            customs = customs.filter(x => x.id !== id);
-            localStorage.setItem('customBestiary', JSON.stringify(customs));
-            renderBestiaryTab();
+        function spawnMobById(id) {
+            const customs = JSON.parse(localStorage.getItem('customBestiary') || "[]");
+            let t = customs.find(x => x.id === id);
+            if (!t && window.BestiaryDB) t = window.BestiaryDB.find(x => x.id === id);
+
+            if (t) {
+                window.CampaignSystem.addMonster(CAMP_ID, t);
+                closeModal('addCreatureModal');
+                loadData();
+                showToast('Criatura adicionada!');
+            }
         }
 
-        /* --- CONDITIONS LOGIC --- */
-        const CONDITIONS_DB = [
-            { id: 'poisoned', name: 'Envenenado', icon: 'droplet', color: '#10b981' },
-            { id: 'stunned', name: 'Atordoado', icon: 'zap', color: '#fbbf24' },
-            { id: 'prone', name: 'Caído', icon: 'arrow-down', color: '#94a3b8' },
-            { id: 'bleeding', name: 'Sangrando', icon: 'cloud-drizzle', color: '#ef4444' },
-            { id: 'blinded', name: 'Cego', icon: 'eye-off', color: '#555' },
-            { id: 'charmed', name: 'Encantado', icon: 'heart', color: '#ec4899' },
-            { id: 'frightened', name: 'Amedrontado', icon: 'ghost', color: '#fff' },
-            { id: 'grappled', name: 'Agarrado', icon: 'anchor', color: '#a855f7' },
-            { id: 'restrained', name: 'Contido', icon: 'lock', color: '#f59e0b' },
-            { id: 'unconscious', name: 'Inconsciente', icon: 'moon', color: '#888' },
-            { id: 'reaction_used', name: 'Reação Usada', icon: 'shield-alert', color: '#b91c1c' }
-        ];
+        function rollInitiativeAll() {
+            // Standard logic to roll for everyone without initiative
+            if (!currentCamp) return;
 
-        function openConditionsModal() {
-            if (!selectedId) return alert("Selecione alguém primeiro!");
-            const ent = getEntity(selectedId);
-            if (!ent) return;
-
-            document.getElementById('condTargetName').innerText = ent.name;
-            const grid = document.getElementById('condGrid');
-            grid.innerHTML = "";
-
-            CONDITIONS_DB.filter(c => c.id !== 'reaction_used').forEach(c => {
-                const isActive = ent.conditions && ent.conditions.includes(c.id);
-                const btn = document.createElement('div');
-                btn.className = `cond-btn ${isActive ? 'active' : ''}`;
-                btn.innerHTML = `<i data-lucide="${c.icon}"></i> ${c.name}`;
-                btn.onclick = () => toggleCondition(ent.id || ent.charId, ent.isNPC, c.id);
-                grid.appendChild(btn);
+            // Update players? Usually players roll themselves.
+            // Let's roll for all monsters at least.
+            currentCamp.monsters.forEach(m => {
+                const dex = 0; // simplified for now
+                const roll = Math.floor(Math.random() * 20) + 1 + dex;
+                window.CampaignSystem.updateEntity(CAMP_ID, m.id, true, { initiative: roll });
             });
 
-            document.getElementById('condModal').style.display = 'flex';
-            lucide.createIcons();
-        }
+            // Optionally roll for players if they have 0
+            currentCamp.players.forEach(p => {
+                if (!p.initiative) {
+                    const s = p.stats || {};
+                    const dex = s.dex || 0; // mod?
+                    const roll = Math.floor(Math.random() * 20) + 1 + Math.floor((dex - 10) / 2);
+                    window.CampaignSystem.updateEntity(CAMP_ID, p.charId, false, { initiative: roll });
+                }
+            });
 
-        function toggleCondition(id, isNPC, condId) {
-            window.CampaignSystem.toggleCondition(CAMP_ID, id, isNPC, condId);
             loadData();
-            // Re-render modal only if open
-            if (document.getElementById('condModal').style.display === 'flex') openConditionsModal();
-            // Refresh reaction status
-            updateReactionStatus();
+            showToast('Iniciativa Rolada!');
         }
 
-        function toggleReaction() {
-            if (!selectedId) return alert("Selecione alguém primeiro!");
-            const ent = getEntity(selectedId);
-            if (!ent) return;
-            toggleCondition(ent.id || ent.charId, ent.isNPC, 'reaction_used');
-        }
-
-        function updateReactionStatus() {
-            if (!selectedId) {
-                document.getElementById('reactionStatus').style.display = 'none';
-                return;
+        function nextTurn() {
+            if (window.CampaignSystem) {
+                window.CampaignSystem.nextTurn(CAMP_ID);
+                loadData();
             }
-            const ent = getEntity(selectedId);
-            const used = ent && ent.conditions && ent.conditions.includes('reaction_used');
-            document.getElementById('reactionStatus').style.display = used ? 'block' : 'none';
         }
 
-        function triggerLongRest() {
-            if (!confirm("Realizar Descanso Longo? (Recupera HP/PE e remove condições)")) return;
-            window.CampaignSystem.longRest(CAMP_ID);
-            loadData();
+        function clearCombat() {
+            if (!confirm("Limpar todo o combate?")) return;
+            if (window.CampaignSystem) {
+                window.CampaignSystem.clearCombat(CAMP_ID);
+                loadData();
+            }
         }
 
-        // --- HELPER RENDERERS ---
         function renderConditionIcons(conds) {
             if (!conds || conds.length === 0) return "";
-            return conds.map(cid => {
-                const def = CONDITIONS_DB.find(x => x.id === cid);
-                if (!def) return ""; // Reaction used might be hidden or shown differently
-                return `<span class="cond-badge" style="border-color:${def.color}" title="${def.name}"><i
-                                    data-lucide="${def.icon}" style="color:${def.color}"></i></span>`;
-            }).join("");
-        }
-        // --- ATTACK & DICE SYSTEM ---
-        function performAttack(attackerName, attackName, bonus, damageFormula) {
-            // Roll d20 for attack
-            const roll = Math.floor(Math.random() * 20) + 1;
-            const total = roll + bonus;
-
-            // Parse damage formula (e.g., "2d6+3")
-            const damage = rollDamage(damageFormula);
-
-            // Show 3D dice animation
-            showDiceAnimation(roll, total, attackerName, attackName, damage, damageFormula);
-
-            // Log the attack
-            addToLog({
-                type: 'attack',
-                attacker: attackerName,
-                attack: attackName,
-                roll: roll,
-                total: total,
-                damage: damage,
-                damageFormula: damageFormula
-            });
-        }
-
-        function rollDamage(formula) {
-            if (!formula) return 0;
-            // Parse "XdY+Z" format
-            const match = formula.match(/(\d+)d(\d+)([+-]\d+)?/i);
-            if (!match) return parseInt(formula) || 0;
-
-            const numDice = parseInt(match[1]);
-            const dieSize = parseInt(match[2]);
-            const modifier = parseInt(match[3]) || 0;
-
-            let total = modifier;
-            for (let i = 0; i < numDice; i++) { total += Math.floor(Math.random() * dieSize) + 1; }
-            return total;
-        } function showDiceAnimation(roll, total, attackerName, attackName,
-            damage, damageFormula) {
-            const overlay = document.getElementById('diceOverlay'); const
-                cube = document.getElementById('diceCube'); const
-                    result = document.getElementById('diceResultDisplay'); // Set faces to show the roll
-            document.querySelectorAll('.d20-face').forEach(face => {
-                face.textContent = roll;
-            });
-
-            // Show overlay
-            overlay.classList.add('show');
-
-            // Reset animation
-            cube.style.animation = 'none';
-            cube.offsetHeight; // Trigger reflow
-            cube.style.animation = 'diceRoll 1.5s ease-out';
-
-            // After animation, show result
-            setTimeout(() => {
-                result.innerHTML = `
-                                <div style="font-size:1rem; color:#888; margin-bottom:5px;">${attackerName} usa
-                                    ${attackName}</div>
-                                <div>Ataque: <span
-                                        style="color:${roll === 20 ? '#ffd60a' : roll === 1 ? '#ef4444' : 'var(--primary-light)'}">${roll}</span>
-                                    + ${total - roll} = <span style="color:#fff">${total}</span></div>
-                                <div style="margin-top:10px; font-size:2rem; color:#ef4444;">Dano: ${damage} <span
-                                        style="font-size:1rem; color:#888">(${damageFormula})</span></div>
-                                ${roll === 20 ? '<div style="color:#ffd60a; margin-top:10px;">⚔️ CRÍTICO! ⚔️</div>' :
-                        ''}
-                                ${roll === 1 ? '<div style="color:#ef4444; margin-top:10px;">💀 FALHA CRÍTICA! 💀</div>'
-                        : ''}
-                                `;
-            }, 1500);
-
-            // Close on click
-            overlay.onclick = () => {
-                overlay.classList.remove('show');
-                result.innerHTML = '';
-            };
-
-            // Auto-close after 5 seconds
-            setTimeout(() => {
-                overlay.classList.remove('show');
-                result.innerHTML = '';
-            }, 5000);
-        }
-
-        function addToLog(entry) {
-            if (!currentCamp.log) currentCamp.log = [];
-            currentCamp.log.unshift({
-                ...entry,
-                timestamp: new Date().toISOString()
-            });
-            // Keep only last 50 entries
-            if (currentCamp.log.length > 50) currentCamp.log.pop();
-            window.CampaignSystem.saveCampaigns(window.CampaignSystem.getCampaigns());
-            updateLog();
-        }
-
-        function updateLog() {
-            const feed = document.getElementById('logFeed');
-            if (!feed || !currentCamp) return;
-
-            feed.innerHTML = '';
-            const log = currentCamp.log || [];
-
-            log.slice(0, 20).forEach(entry => {
-                const card = document.createElement('div');
-                card.className = 'log-card';
-
-                if (entry.type === 'attack') {
-                    const isCrit = entry.roll === 20;
-                    const isFail = entry.roll === 1;
-                    card.innerHTML = `
-                                <div
-                                    style="font-weight:600; color:${isCrit ? '#ffd60a' : isFail ? '#ef4444' : '#fff'};">
-                                    ${entry.attacker}
-                                </div>
-                                <div style="font-size:0.8rem; color:#888;">
-                                    ${entry.attack} • Rolou ${entry.roll} (${entry.total})
-                                </div>
-                                <div style="color:#ef4444; font-weight:600;">
-                                    ${entry.damage} de dano
-                                </div>
-                                `;
-                } else {
-                    card.innerHTML = `<div style="color:#888;">${JSON.stringify(entry)}</div>`;
-                }
-
-                feed.appendChild(card);
-            });
+            return conds.map(c => `[${c}]`).join(" ");
         }
 
         // --- TOAST HELPER ---
         function showToast(msg) {
             const el = document.getElementById('toast');
             const msgEl = document.getElementById('toastMsg');
-            if (!el || !msgEl) {
-                console.log("Toast:", msg);
-                return;
+            if (el && msgEl) {
+                msgEl.innerText = msg;
+                el.classList.add('show');
+                setTimeout(() => el.classList.remove('show'), 3000);
             }
-            msgEl.innerText = msg;
-            el.classList.add('show');
-            setTimeout(() => el.classList.remove('show'), 3000);
         }
-        // Server Status Listener
-        window.addEventListener('server-status', (e) => {
-            const el = document.getElementById('serverStatus');
-            if (e.detail === 'online') {
-                el.style.background = '#22c55e'; // Green
-                el.style.boxShadow = '0 0 10px #22c55e';
-                el.title = "Online";
-                showToast("Conectado ao Servidor!");
-            } else {
-                el.title = "Offline";
-            }
-        });
 
-        // Character Sync Listener
-        window.addEventListener('character-synced', (e) => {
-            const char = e.detail;
-            // Check if this char is in our campaign
-            if (!currentCamp) return;
-            const player = currentCamp.players.find(p => p.charId === char.id);
-            if (player) {
-                showToast(`Sync: ${char.name} atualizado!`);
-                // Update local reference
-                player.currentHP = char.currentHP;
-                player.maxHP = char.maxHP;
-                player.currentPE = char.currentPE;
-                player.maxPE = char.maxPE;
+        // --- HELPERS ---
+        function getAllEntities() {
+            if (!currentCamp) return [];
+            const players = currentCamp.players || [];
+            const monsters = currentCamp.monsters || [];
+            return [
+                ...players.map(p => ({ ...p, isNPC: false })),
+                ...monsters.map(m => ({ ...m, isNPC: true }))
+            ];
+        }
+        function getEntity(id) {
+            return getAllEntities().find(e => (e.id === id || e.charId === id));
+        }
 
-                // Re-render
-                loadData();
-            }
-        });
+        // --- NEW VIEW SWITCHER ---
+        function switchView(viewName) {
+            // Hide all views
+            document.querySelectorAll('.view-section').forEach(el => {
+                el.classList.remove('active');
+            });
+            // Deselect tabs
+            document.querySelectorAll('.nav-tab').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Show target
+            const targetView = document.getElementById('view-' + viewName);
+            if (targetView) targetView.classList.add('active');
+
+            // Find tab logic (simple match text or index)
+            // Hardcoded for simplicity
+            const tabs = document.querySelectorAll('.nav-tab');
+            if (viewName === 'combat') tabs[0].classList.add('active');
+            if (viewName === 'chars') tabs[1].classList.add('active');
+            if (viewName === 'story') tabs[2].classList.add('active');
+
+            // If switching to chars, ensure icons are rendered
+            if (window.lucide) lucide.createIcons();
+        }
     </script>
+</body>
 
 </html>

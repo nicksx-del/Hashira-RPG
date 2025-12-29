@@ -78,16 +78,16 @@
 
         /* --- CONTAINER --- */
         .creation-container {
-            width: 90%;
-            max-width: 1400px;
-            height: 90vh;
+            width: 100%;
+            max-width: none;
+            height: 100vh;
             display: flex;
             background: rgba(10, 10, 12, 0.8);
-            border: 1px solid #222;
-            border-radius: 20px;
+            border: none;
+            border-radius: 0;
             overflow: hidden;
             backdrop-filter: blur(20px);
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+            box-shadow: none;
             position: relative;
             z-index: 10;
         }
@@ -147,6 +147,25 @@
         .step-item:hover {
             color: white;
             background: rgba(255, 255, 255, 0.03);
+        }
+
+        .step-item.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+            filter: grayscale(1);
+        }
+
+        .lock-icon {
+            margin-left: auto;
+            width: 16px;
+            height: 16px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .step-item.locked .lock-icon {
+            opacity: 1;
         }
 
         .step-item.active {
@@ -219,7 +238,6 @@
             cursor: pointer;
             transition: all 0.4s ease;
             height: 400px;
-            group: card;
         }
 
         .bg-card:hover {
@@ -371,9 +389,10 @@
         .bottom-nav {
             position: absolute;
             bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 2rem 6rem;
+            left: 300px;
+            right: 320px;
+            width: auto;
+            padding: 2rem 4rem;
             display: flex;
             justify-content: space-between;
             background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
@@ -503,6 +522,103 @@
             transform: translateY(-5px);
             font-family: var(--font-display);
         }
+
+        /* --- RIGHT SIDEBAR --- */
+        .sidebar-right {
+            width: 320px;
+            background: linear-gradient(180deg, var(--bg-panel) 0%, #050505 100%);
+            border-left: 1px solid #222;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .preview-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .preview-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #222;
+            border: 2px solid var(--blood-bright);
+            object-fit: cover;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        .summary-table td {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .summary-table td:last-child {
+            text-align: right;
+            color: white;
+            font-weight: bold;
+        }
+
+        .vital-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .vital-label {
+            display: block;
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .vital-val {
+            font-size: 1.8rem;
+            font-family: var(--font-display);
+            font-weight: bold;
+        }
+
+        .vital-val span {
+            font-size: 1rem;
+            color: #555;
+            font-weight: normal;
+        }
+
+        .confirm-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--blood-bright);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: var(--font-display);
+            margin-top: auto;
+        }
+
+        .confirm-btn:hover {
+            box-shadow: 0 0 20px var(--blood-dim);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 
@@ -518,22 +634,27 @@
                 <div class="step-item active" id="nav-step-1" onclick="goToStep(1)">
                     <span class="step-num">01.</span>
                     <span>Caminho</span>
+                    <i data-lucide="lock" class="lock-icon"></i>
                 </div>
-                <div class="step-item" id="nav-step-2" onclick="goToStep(2)">
+                <div class="step-item locked" id="nav-step-2" onclick="goToStep(2)">
                     <span class="step-num">02.</span>
                     <span>Kekkijutsu</span>
+                    <i data-lucide="lock" class="lock-icon"></i>
                 </div>
-                <div class="step-item" id="nav-step-3" onclick="goToStep(3)">
+                <div class="step-item locked" id="nav-step-3" onclick="goToStep(3)">
                     <span class="step-num">03.</span>
                     <span>Particularidades</span>
+                    <i data-lucide="lock" class="lock-icon"></i>
                 </div>
-                <div class="step-item" id="nav-step-4" onclick="goToStep(4)">
+                <div class="step-item locked" id="nav-step-4" onclick="goToStep(4)">
                     <span class="step-num">04.</span>
                     <span>Atributos</span>
+                    <i data-lucide="lock" class="lock-icon"></i>
                 </div>
-                <div class="step-item" id="nav-step-5" onclick="goToStep(5)">
+                <div class="step-item locked" id="nav-step-5" onclick="goToStep(5)">
                     <span class="step-num">05.</span>
                     <span>Identidade</span>
+                    <i data-lucide="lock" class="lock-icon"></i>
                 </div>
             </nav>
         </aside>
@@ -628,6 +749,27 @@
                     <div class="points-box">Pontos: <span id="pointsRemain">27</span></div>
                 </div>
 
+                <!-- BONUS SELECTION UI -->
+                <div
+                    style="margin-bottom:2rem; background:rgba(255,255,255,0.02); padding:1rem; border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+                    <h4 style="margin-top:0; color:var(--blood-bright); margin-bottom:10px; font-size:1rem;">Bônus
+                        Racial (+2) <span style="font-weight:400; color:#888; font-size:0.8rem;">(Escolha 2)</span></h4>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <button class="bonus-toggle" data-attr="str" onclick="toggleBonus('str')"
+                            style="padding:5px 10px; border:1px solid #333; background:rgba(255,255,255,0.05); color:#888; border-radius:4px; cursor:pointer;">Força</button>
+                        <button class="bonus-toggle" data-attr="dex" onclick="toggleBonus('dex')"
+                            style="padding:5px 10px; border:1px solid #333; background:rgba(255,255,255,0.05); color:#888; border-radius:4px; cursor:pointer;">Destreza</button>
+                        <button class="bonus-toggle" data-attr="con" onclick="toggleBonus('con')"
+                            style="padding:5px 10px; border:1px solid #333; background:rgba(255,255,255,0.05); color:#888; border-radius:4px; cursor:pointer;">Constituição</button>
+                        <button class="bonus-toggle" data-attr="int" onclick="toggleBonus('int')"
+                            style="padding:5px 10px; border:1px solid #333; background:rgba(255,255,255,0.05); color:#888; border-radius:4px; cursor:pointer;">Inteligência</button>
+                        <button class="bonus-toggle" data-attr="wis" onclick="toggleBonus('wis')"
+                            style="padding:5px 10px; border:1px solid #333; background:rgba(255,255,255,0.05); color:#888; border-radius:4px; cursor:pointer;">Sabedoria</button>
+                        <button class="bonus-toggle" data-attr="cha" onclick="toggleBonus('cha')"
+                            style="padding:5px 10px; border:1px solid #333; background:rgba(255,255,255,0.05); color:#888; border-radius:4px; cursor:pointer;">Carisma</button>
+                    </div>
+                </div>
+
                 <div style="max-width: 800px; margin: 0 auto;">
                     <!-- STR -->
                     <div class="attr-row">
@@ -689,6 +831,26 @@
                             <div class="attr-val-box" id="val-cha">8</div>
                         </div>
                     </div>
+
+                    <button onclick="openDiceModal()" style="
+                        width:100%; 
+                        max-width: 800px;
+                        margin: 1.5rem auto 0 auto; 
+                        padding:12px; 
+                        background:rgba(255,255,255,0.05); 
+                        border:1px dashed #555; 
+                        color:#ccc; 
+                        border-radius:8px; 
+                        cursor:pointer; 
+                        display:flex; 
+                        align-items:center; 
+                        justify-content:center; 
+                        gap:10px; 
+                        transition:0.3s;
+                    " onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='#999';"
+                        onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.borderColor='#555';">
+                        <i data-lucide="dices" size="18"></i> Girar os Dados / Manual
+                    </button>
                 </div>
             </section>
 
@@ -719,12 +881,162 @@
 
         </main>
 
+        <!-- RIGHT SIDEBAR -->
+        <aside class="sidebar-right">
+            <div class="preview-header">
+                <img src="assets/criação_personagem/Oni-removebg-preview.png" class="preview-avatar" id="previewImg">
+                <div>
+                    <div style="font-size:1.2rem; font-weight:bold; font-family:var(--font-display); color:white;"
+                        id="previewName">Oni Desconhecido</div>
+                    <div style="font-size:0.85rem; color:var(--blood-dim);" id="previewPath">Caminho do Sangue</div>
+                </div>
+            </div>
+
+            <table class="summary-table">
+                <tr>
+                    <td>Raça</td>
+                    <td>Oni</td>
+                </tr>
+                <tr>
+                    <td>Rank</td>
+                    <td>Oni Inferior</td>
+                </tr>
+                <tr>
+                    <td>Kekkijutsu</td>
+                    <td id="previewKekk">Gelo</td>
+                </tr>
+                <tr>
+                    <td>Antecedente</td>
+                    <td id="previewBg">-</td>
+                </tr>
+                <tr>
+                    <td>Deslocamento</td>
+                    <td id="previewSpeed">9m</td>
+                </tr>
+            </table>
+
+            <div style="margin-top:1rem; display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div class="vital-box">
+                    <span class="vital-label">Vida Max</span>
+                    <div class="vital-val" style="color:var(--blood-bright);" id="previewHP">15</div>
+                </div>
+                <div class="vital-box">
+                    <span class="vital-label">Pontos de Sangue</span>
+                    <div class="vital-val" style="color:#a855f7;" id="previewPE">1</div>
+                </div>
+            </div>
+
+            <div style="margin-top:1.5rem;">
+                <span class="vital-label" style="margin-bottom:10px;">Particularidades</span>
+                <div id="previewParts"
+                    style="display:flex; flex-direction:column; gap:8px; font-size:0.9rem; color:#ccc;">
+                    <span style="opacity:0.5; font-style:italic;">Nenhuma selecionada</span>
+                </div>
+            </div>
+
+            <button class="confirm-btn" onclick="finishCreation()">CONFIRMAR CRIAÇÃO</button>
+
+        </aside>
+
         <!-- Navigation Buttons -->
         <footer class="bottom-nav">
             <button class="btn btn-text" id="prevBtn" onclick="prevStep()">Voltar</button>
             <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Próximo <i
                     data-lucide="arrow-right"></i></button>
         </footer>
+    </div>
+
+    <!-- PARTICULARITY DETAIL MODAL -->
+    <div id="partDetailModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:99999; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
+        <div
+            style="background:#111; width:600px; max-width:90%; border-radius:12px; border:1px solid #333; overflow:hidden; display:flex; flex-direction:column; max-height:85vh;">
+            <!-- Header -->
+            <div
+                style="padding:1.5rem; background:#1a1a1a; display:flex; align-items:center; gap:15px; border-bottom:1px solid #333;">
+                <div id="pdIcon"
+                    style="width:50px; height:50px; background:var(--blood-dim); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white;">
+                    <!-- Icon injected here -->
+                </div>
+                <h2 id="pdTitle" style="color:white; margin:0; font-family:var(--font-display); font-size:1.8rem;">
+                    Título</h2>
+            </div>
+
+            <!-- Body -->
+            <div style="padding:2rem; overflow-y:auto; color:#ccc; line-height:1.6; font-size:1.05rem;" id="pdContent">
+                <!-- Text injected here -->
+            </div>
+
+            <!-- Footer -->
+            <div
+                style="padding:1.5rem; background:#1a1a1a; border-top:1px solid #333; display:flex; justify-content:flex-end; gap:10px;">
+                <button onclick="document.getElementById('partDetailModal').style.display='none'"
+                    style="padding:10px 20px; background:transparent; border:1px solid #555; color:#aaa; border-radius:6px; cursor:pointer;">Fechar</button>
+                <button id="pdSelectBtn"
+                    style="padding:10px 25px; background:var(--blood-primary); border:none; color:white; border-radius:6px; cursor:pointer; font-weight:bold; display:flex; align-items:center; gap:8px;">
+                    SELECIONAR
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DICE ROLL MODAL (MANUAL INPUT) -->
+    <div id="diceRollModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:99999; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
+        <div
+            style="background:#111; padding:2rem; border-radius:12px; border:1px solid #333; width:400px; text-align:center;">
+            <h3 style="color:var(--blood-bright); margin-top:0; font-family:var(--font-display);">Atributos Manuais</h3>
+            <p style="color:#888; font-size:0.9rem; margin-bottom:1.5rem;">Insira os valores rolados (ex: 4d6 drop
+                lowest).
+            </p>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:1.5rem;">
+                <!-- Inputs -->
+                <div
+                    style="display:flex; align-items:center; justify-content:space-between; background:#222; padding:8px; border-radius:4px;">
+                    <span style="font-weight:bold; color:#ccc;">FOR</span>
+                    <input type="number" id="manual-str" value="10"
+                        style="width:50px; background:#111; border:1px solid #444; color:white; text-align:center; padding:5px; border-radius:4px;">
+                </div>
+                <div
+                    style="display:flex; align-items:center; justify-content:space-between; background:#222; padding:8px; border-radius:4px;">
+                    <span style="font-weight:bold; color:#ccc;">DES</span>
+                    <input type="number" id="manual-dex" value="10"
+                        style="width:50px; background:#111; border:1px solid #444; color:white; text-align:center; padding:5px; border-radius:4px;">
+                </div>
+                <div
+                    style="display:flex; align-items:center; justify-content:space-between; background:#222; padding:8px; border-radius:4px;">
+                    <span style="font-weight:bold; color:#ccc;">CON</span>
+                    <input type="number" id="manual-con" value="10"
+                        style="width:50px; background:#111; border:1px solid #444; color:white; text-align:center; padding:5px; border-radius:4px;">
+                </div>
+                <div
+                    style="display:flex; align-items:center; justify-content:space-between; background:#222; padding:8px; border-radius:4px;">
+                    <span style="font-weight:bold; color:#ccc;">INT</span>
+                    <input type="number" id="manual-int" value="10"
+                        style="width:50px; background:#111; border:1px solid #444; color:white; text-align:center; padding:5px; border-radius:4px;">
+                </div>
+                <div
+                    style="display:flex; align-items:center; justify-content:space-between; background:#222; padding:8px; border-radius:4px;">
+                    <span style="font-weight:bold; color:#ccc;">SAB</span>
+                    <input type="number" id="manual-wis" value="10"
+                        style="width:50px; background:#111; border:1px solid #444; color:white; text-align:center; padding:5px; border-radius:4px;">
+                </div>
+                <div
+                    style="display:flex; align-items:center; justify-content:space-between; background:#222; padding:8px; border-radius:4px;">
+                    <span style="font-weight:bold; color:#ccc;">CAR</span>
+                    <input type="number" id="manual-cha" value="10"
+                        style="width:50px; background:#111; border:1px solid #444; color:white; text-align:center; padding:5px; border-radius:4px;">
+                </div>
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <button onclick="document.getElementById('diceRollModal').style.display='none'"
+                    style="flex:1; padding:10px; background:rgba(255,255,255,0.1); border:none; color:white; border-radius:4px; cursor:pointer;">Cancelar</button>
+                <button onclick="applyManualStats()"
+                    style="flex:1; padding:10px; background:var(--blood-primary); border:none; color:white; border-radius:4px; cursor:pointer; font-weight:bold;">Aplicar</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -749,13 +1061,90 @@
         // --- LOGIC ---
         let currentStep = 1;
         const totalSteps = 6;
-        const state = {
+
+        // Define State
+        let state = {
             path: 'blood',
             kekkijutsu: 'ice',
             particularities: [],
-            background: 'criminal', // default
-            stats: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 }
+            background: 'criminal',
+            stats: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 },
+            bonuses: [],
+            pointsMax: 27,
+            pointsSpent: 0,
+            manualMode: false,
+            maxStep: 1
         };
+
+        const PARTS = [
+            {
+                id: 'size', name: 'Alteração Corporal', icon: 'maximize',
+                desc: 'Ação para diminuir (15cm) ou aumentar (5m).',
+                full: 'Você possui a habilidade de alterar seu tamanho em diversas situações. Usando uma ação você pode diminuir para até 15 centímetros de altura ou aumentar para até 5 metros de altura. Ao diminuir para uma altura de 15 centímetros, você pode se tornar extremamente ágil e se infiltrar em espaços pequenos, passando despercebido. Já ao aumentar para 5 metros de altura, você se torna imponente e poderoso, capaz de intimidar e dominar o ambiente ao seu redor.'
+            },
+            {
+                id: 'animal', name: 'Aparência Animalesca', icon: 'cat',
+                desc: 'Adquire características de um animal. Requer aprovação.',
+                full: 'Você tem a capacidade de assumir uma aparência muito semelhante à de um animal de sua escolha e adquirir algumas características relacionadas a ele. Por exemplo, se escolher se transformar em uma aranha, poderá aderir às paredes e tecer teias. No entanto, é importante conversar com seu mestre antes de fazer essa escolha, para determinar quais animais são permitidos para a sua transmutação. Além disso, é relevante considerar que você enfrentará um preconceito severo por conta dessas características, o que pode afetar suas interações com outras pessoas.'
+            },
+            {
+                id: 'disturbing', name: 'Aparência Perturbadora', icon: 'ghost',
+                desc: 'Vantagem em testes de Intimidação.',
+                full: 'Você possui a habilidade de assumir uma forma assustadora, o que lhe permite intimidar criaturas com mais facilidade. Se você deseja intimidar uma criatura, você pode fazer um teste com vantagem para isso.'
+            },
+            {
+                id: 'camo', name: 'Camuflagem Adaptativa', icon: 'eye-off',
+                desc: '+2 em Furtividade. Mistura-se ao ambiente.',
+                full: 'Você é capaz de se adaptar ao ambiente ao seu redor, alterando a textura da sua pele ou padrões corporais para se misturar perfeitamente com a paisagem, tornando-se quase invisível para observadores desatentos. Você ganha um bônus de +2 em testes de furtividade.'
+            },
+            {
+                id: 'extend', name: 'Extensão de Membros', icon: 'chevrons-up',
+                desc: 'Aumenta alcance de ataque corpo-a-corpo em 1,5m.',
+                full: 'Você pode estender seus membros, como braços e pernas, para alcançar objetos distantes ou aumentar seu alcance em ataques físicos, permitindo que você lide com ameaças de longa distância com facilidade, você aumenta seu alcance de ataques em 1,5 metros.'
+            },
+            {
+                id: 'charming', name: 'Forma Cativante', icon: 'heart',
+                desc: 'Aparência atraente. Vantagem em Persuasão.',
+                full: 'Você adquire uma aparência muito atraente aos outros, podendo assumir diferentes formas, como a de uma criança inocente ou de um rosto encantador. Isso lhe confere uma vantagem em testes de persuasão.'
+            },
+            {
+                id: 'claws', name: 'Garra Laminada', icon: 'scissors',
+                desc: 'Ataques desarmados causam dano cortante.',
+                full: 'Suas garras são afiadas como lâminas, permitindo que você cause dano cortante em seus ataques corpo-a-corpo.'
+            },
+            {
+                id: 'mimicry', name: 'Mimetismo', icon: 'mic',
+                desc: 'Imita vozes e sons. CD 15 de Intuição.',
+                full: 'Você tem a habilidade de imitar perfeitamente vozes que você escutou e sons de outras criaturas, você deve realizar um teste de intuição CD 15 para distinguir.'
+            },
+            {
+                id: 'limbs', name: 'Múltiplos Membros', icon: 'users',
+                desc: 'Aumenta dano desarmado para 1d10.',
+                full: 'Você possui a capacidade de criar braços ou pernas adicionais, o que intensifica seus ataques desarmados, aumentando seu dano desarmado para 1d10.'
+            },
+            {
+                id: 'steel_skin', name: 'Pele de Aço', icon: 'shield',
+                desc: 'RD 2 contra corte e concussão.',
+                full: 'Você possui uma pele de aço, reduzindo todo o dano cortante e concussão que você sofre em -2.'
+            },
+            {
+                id: 'human_form', name: 'Transformação Humana', icon: 'user',
+                desc: 'Transformação perfeita em humano.',
+                full: 'Você possui a habilidade de se transformar completamente em humano, tornando-se indistinguível dos demais. Essa transformação apenas é perceptível por aqueles que possuem sentidos extrassensoriais.'
+            },
+            {
+                id: 'water_breath', name: 'Respiração Aquática', icon: 'droplet',
+                desc: 'Respira na água e superfície.',
+                full: 'Você possui a capacidade de respirar tanto na água quanto na superfície, sem nenhuma dificuldade ou restrição.'
+            },
+            {
+                id: 'darkvision', name: 'Visão Noturna', icon: 'eye',
+                desc: 'Enxerga na escuridão (preto e branco).',
+                full: 'Você possui a habilidade de enxergar perfeitamente no escuro, como se fosse plena luz do dia. Seus olhos se adaptam rapidamente a condições de pouca luz, permitindo que você veja detalhes sutis e se mova com facilidade em ambientes com iluminação inadequada. No entanto, essa habilidade não permite que você veja cores, apenas enxergando tudo em preto e branco.'
+            }
+        ];
+
+        const COSTS = { 6: -2, 8: 0, 10: 2, 12: 4, 14: 7, 16: 12, 18: 17 };
 
         const backgroundData = {
             artista: {
@@ -908,81 +1297,18 @@
             el.classList.add('selected');
         }
 
-        // ... REST OF LOGIC ...
 
-        // Oni Point Buy Costs (6=-2, 8=0, 10=2, 12=4, 14=7, 16=11, 18=16)
-        // Oni Point Buy Costs
-        const COSTS = { 6: -2, 8: 0, 10: 2, 12: 4, 14: 7, 16: 11, 18: 16 };
-
-        function updateStat(stat, val) {
-            val = parseInt(val);
-            console.log(`Updating ${stat} to ${val}`);
-
-            // Calculate cost of other stats
-            let usedPoints = 0;
-            for (let key in state.stats) {
-                if (key !== stat) {
-                    const sVal = state.stats[key];
-                    // Fallback to 0 if undefined, but warn
-                    const sCost = COSTS[sVal] !== undefined ? COSTS[sVal] : 0;
-                    usedPoints += sCost;
-                }
-            }
-
-            // Check if new value fits in 27 budget
-            const cost = COSTS[val] !== undefined ? COSTS[val] : 0;
-            const newCost = usedPoints + cost;
-
-            console.log(`Used: ${usedPoints}, NewItemCost: ${cost}, Total: ${newCost}`);
-
-            if (newCost > 27) {
-                // Revert input via ID
-                const input = document.getElementById(`input-${stat}`);
-                if (input) input.value = state.stats[stat];
-
-                // Show warning in UI instead of alerting repeatedly
-                const ptLabel = document.getElementById('pointsRemain');
-                const originalText = ptLabel.innerText;
-                ptLabel.innerText = "SEM PONTOS!";
-                ptLabel.style.color = "red";
-                setTimeout(() => {
-                    ptLabel.innerText = 27 - usedPoints - (COSTS[state.stats[stat]] || 0);
-                    ptLabel.style.color = "var(--accent-red)";
-                }, 1000);
-                return;
-            }
-
-            // Valid update
-            state.stats[stat] = val;
-            document.getElementById(`val-${stat}`).innerText = val;
-            document.getElementById('pointsRemain').innerText = 27 - newCost;
-        }
-
-        const PARTS = [
-            { id: 'size', name: 'Alteração Corporal', icon: 'maximize', desc: 'Ação para diminuir (15cm) ou aumentar (5m). Ganha furtividade/agilidade ou força/intimidação.' },
-            { id: 'animal', name: 'Aparência Animalesca', icon: 'cat', desc: 'Adquire características de um animal (ex: teias de aranha). Requer aprovação do Mestre.' },
-            { id: 'disturbing', name: 'Aparência Perturbadora', icon: 'ghost', desc: 'Vantagem em testes de Intimidação contra qualquer criatura.' },
-            { id: 'camo', name: 'Camuflagem Adaptativa', icon: 'eye-off', desc: 'Mistura-se ao ambiente. +2 em testes de Furtividade.' },
-            { id: 'extend', name: 'Extensão de Membros', icon: 'chevrons-up', desc: 'Estica braços/pernas. Aumenta alcance de ataque corpo-a-corpo em 1,5m.' },
-            { id: 'charming', name: 'Forma Cativante', icon: 'heart', desc: 'Aparência inocente ou encantadora. Vantagem em testes de Persuasão.' },
-            { id: 'claws', name: 'Garra Laminada', icon: 'scissors', desc: 'Garras afiadas. Seus ataques desarmados causam dano cortante.' },
-            { id: 'mimicry', name: 'Mimetismo', icon: 'mic', desc: 'Imita vozes e sons perfeitamente. CD 15 de Intuição para distinguir.' },
-            { id: 'limbs', name: 'Múltiplos Membros', icon: 'users', desc: 'Braços ou pernas extras. Aumenta dano desarmado para 1d10.' },
-            { id: 'steel_skin', name: 'Pele de Aço', icon: 'shield', desc: 'Reduz dano cortante e concussão recebido em -2.' },
-            { id: 'human_form', name: 'Transformação Humana', icon: 'user', desc: 'Pode se transformar em humano indistinguível (exceto por sentidos aguçados).' },
-            { id: 'water_breath', name: 'Respiração Aquática', icon: 'droplet', desc: 'Pode respirar na água e na superfície sem restrições.' },
-            { id: 'darkvision', name: 'Visão Noturna', icon: 'eye', desc: 'Enxerga perfeitamente na escuridão (preto e branco).' }
-        ];
 
         // Init Parts
         const pContainer = document.getElementById('particularitiesRef');
         if (pContainer) {
-            pContainer.innerHTML = ''; // Force Clean
-            console.log("Rendering " + PARTS.length + " particularities.");
+            pContainer.innerHTML = '';
             PARTS.forEach(p => {
                 const el = document.createElement('div');
                 el.className = 'part-item';
-                el.onclick = () => togglePart(p.id, el);
+                // CHANGE: onclick opens Modal now
+                el.onclick = () => openPartDetails(p.id);
+                el.id = `part-card-${p.id}`; // Add ID for selector ref
                 el.innerHTML = `
                     <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px; color:white; font-weight:700;">
                         <i data-lucide="${p.icon}" style="width:18px;"></i> ${p.name}
@@ -992,21 +1318,172 @@
                 pContainer.appendChild(el);
             });
         }
-        lucide.createIcons();
 
-        function togglePart(id, el) {
-            if (state.particularities.includes(id)) {
-                state.particularities = state.particularities.filter(x => x !== id);
-                el.classList.remove('selected');
+        let tempPartId = null;
+
+        function openPartDetails(pid) {
+            tempPartId = pid;
+            const part = PARTS.find(p => p.id === pid);
+            if (!part) return;
+
+            document.getElementById('pdTitle').innerText = part.name;
+            document.getElementById('pdIcon').innerHTML = `<i data-lucide="${part.icon}" size="24"></i>`;
+            document.getElementById('pdContent').innerText = part.full;
+
+            // Update Button State
+            const btn = document.getElementById('pdSelectBtn');
+            const isSelected = state.particularities.includes(part.id);
+
+            if (isSelected) {
+                btn.innerHTML = `<i data-lucide="x"></i> REMOVER`;
+                btn.style.background = "#333";
             } else {
-                if (state.particularities.length >= 2) return;
-                state.particularities.push(id);
-                el.classList.add('selected');
+                btn.innerHTML = `<i data-lucide="check"></i> SELECIONAR`;
+                btn.style.background = "var(--blood-primary)";
             }
-            document.getElementById('partCounter').innerText = `${state.particularities.length} / 2 Selecionado(s)`;
+
+            lucide.createIcons();
+            document.getElementById('partDetailModal').style.display = 'flex';
         }
 
-        // --- NAVIGATION ---
+        // Logic bound to the modal button
+        document.getElementById('pdSelectBtn').onclick = function () {
+            if (!tempPartId) return;
+
+            const part = PARTS.find(p => p.id === tempPartId);
+
+            // Toggle Logic
+            if (state.particularities.includes(part.id)) {
+                // Remove
+                state.particularities = state.particularities.filter(x => x !== part.id);
+                // Update UI Card
+                document.getElementById(`part-card-${part.id}`).classList.remove('selected');
+            } else {
+                // Select (Check Limit)
+                if (state.particularities.length >= 2) {
+                    alert("Você já escolheu 2 particularidades.");
+                    return;
+                }
+                state.particularities.push(part.id);
+                document.getElementById(`part-card-${part.id}`).classList.add('selected');
+            }
+
+            document.getElementById('partCounter').innerText = `${state.particularities.length} / 2 Selecionado(s)`;
+
+            // Close Modal or Update Button?
+            // "Ao clicar... mostre tudo... Selecione" -> User likely wants to close after selection?
+            // Or maybe toggle button state? Let's toggle button state to give feedback, then user closes manually or we close.
+            // Let's close for smoother flow.
+            document.getElementById('partDetailModal').style.display = 'none';
+
+            updatePreview();
+        };
+
+        // --- ATTRIBUTE FUNCTIONS ---
+
+        function toggleBonus(stat) {
+            const index = state.bonuses.indexOf(stat);
+            if (index > -1) {
+                state.bonuses.splice(index, 1);
+                document.querySelector(`button[data-attr="${stat}"]`).style.background = 'rgba(255,255,255,0.05)';
+                document.querySelector(`button[data-attr="${stat}"]`).style.border = '1px solid #333';
+            } else {
+                if (state.bonuses.length >= 2) {
+                    const first = state.bonuses.shift();
+                    document.querySelector(`button[data-attr="${first}"]`).style.background = 'rgba(255,255,255,0.05)';
+                    document.querySelector(`button[data-attr="${first}"]`).style.border = '1px solid #333';
+                }
+                state.bonuses.push(stat);
+                document.querySelector(`button[data-attr="${stat}"]`).style.background = 'var(--blood-bright)';
+                document.querySelector(`button[data-attr="${stat}"]`).style.border = '1px solid var(--blood-bright)';
+            }
+            // Recalculate if needed, but bonuses are separate here.
+        }
+
+        function openDiceModal() {
+            document.getElementById('diceRollModal').style.display = 'flex';
+        }
+
+        function applyManualStats() {
+            try {
+                state.manualMode = true;
+                ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach(stat => {
+                    const input = document.getElementById('manual-' + stat);
+                    let val = parseInt(input.value) || 10;
+                    if (val > 20) val = 20; if (val < 1) val = 1;
+                    state.stats[stat] = val;
+
+                    const slider = document.getElementById('input-' + stat);
+                    if (slider) slider.value = val;
+                    const box = document.getElementById('val-' + stat);
+                    if (box) box.innerText = val;
+                });
+                document.getElementById('pointsRemain').innerText = "Manual";
+                document.getElementById('pointsRemain').style.color = "#aaa";
+                document.getElementById('diceRollModal').style.display = 'none';
+            } catch (e) {
+                alert("Erro ao aplicar manual: " + e.message);
+            }
+        }
+
+        function updateStat(stat, val) {
+            try {
+                val = parseInt(val);
+
+                if (state.manualMode) {
+                    state.stats[stat] = val;
+                    document.getElementById('val-' + stat).innerText = val;
+                    return;
+                }
+
+                if (typeof COSTS === 'undefined') { throw new Error("COSTS não definido"); }
+
+                let usedPoints = 0;
+                for (let key in state.stats) {
+                    if (key !== stat) {
+                        const sVal = state.stats[key];
+                        const sCost = COSTS[sVal] !== undefined ? COSTS[sVal] : 0;
+                        usedPoints += sCost;
+                    }
+                }
+
+                const cost = COSTS[val] !== undefined ? COSTS[val] : 0;
+                const newCost = usedPoints + cost;
+
+                if (newCost > 27) {
+                    const input = document.getElementById(`input-${stat}`);
+                    if (input) input.value = state.stats[stat];
+
+                    const ptLabel = document.getElementById('pointsRemain');
+                    ptLabel.innerText = "SEM PONTOS!";
+                    ptLabel.style.color = "red";
+                    setTimeout(() => {
+                        let currentUsed = 0;
+                        for (let key in state.stats) {
+                            const v = state.stats[key];
+                            currentUsed += (COSTS[v] || 0);
+                        }
+                        ptLabel.innerText = 27 - currentUsed;
+                        ptLabel.style.color = "";
+                    }, 1000);
+                    return;
+                }
+
+                state.stats[stat] = val;
+                document.getElementById(`val-${stat}`).innerText = val;
+                document.getElementById('pointsRemain').innerText = 27 - newCost;
+                document.getElementById('pointsRemain').style.color = "";
+            } catch (e) {
+                console.error(e);
+                alert("Erro no atributo: " + e.message);
+            }
+        }
+
+
+
+        lucide.createIcons();
+
+
         function updateUI() {
             // Sections
             document.querySelectorAll('.step-section').forEach(el => el.classList.remove('active'));
@@ -1014,8 +1491,18 @@
 
             // Sidebar
             document.querySelectorAll('.step-item').forEach((el, idx) => {
-                if (idx + 1 === currentStep) el.classList.add('active');
+                const stepNum = idx + 1;
+
+                // Active Class
+                if (stepNum === currentStep) el.classList.add('active');
                 else el.classList.remove('active');
+
+                // Locked Class
+                if (stepNum > state.maxStep) {
+                    el.classList.add('locked');
+                } else {
+                    el.classList.remove('locked');
+                }
             });
 
             // Buttons
@@ -1039,7 +1526,13 @@
                 finishCreation();
                 return;
             }
+
+            // Validation Logic (Optional, but user said "choice one... then press next to release")
+            // We can assume pre-selected defaults (Blood, Ice) are valid.
+
             currentStep++;
+            if (currentStep > state.maxStep) state.maxStep = currentStep;
+
             updateUI();
         }
 
@@ -1051,6 +1544,7 @@
         }
 
         function goToStep(s) {
+            if (s > state.maxStep) return; // Prevent jumping ahead
             currentStep = s;
             updateUI();
         }
@@ -1068,43 +1562,160 @@
         }
 
         function finishCreation() {
-            const selectedBg = state.background ? backgroundData[state.background] : null;
-            const initialItems = selectedBg && selectedBg.items ? selectedBg.items.map(i => ({ ...i, id: Date.now() + Math.random() })) : [];
-            const initialSkills = selectedBg ? selectedBg.skills : [];
+            try {
+                const selectedBg = state.background ? backgroundData[state.background] : null;
+                // Safe access to items/skills
+                const initialItems = (selectedBg && selectedBg.items) ? selectedBg.items.map(i => ({ ...i, id: Date.now() + Math.random() })) : [];
+                const initialSkills = (selectedBg && selectedBg.skills) ? selectedBg.skills : [];
 
-            const char = {
-                name: document.getElementById('oniName').value || 'Oni Desconhecido',
-                race: 'Oni',
-                oniPath: state.path, // Match JS expected property 'oniPath'
-                kekkijutsu: state.kekkijutsu,
-                particularities: PARTS.filter(p => state.particularities.includes(p.id)).map(p => ({ name: p.name, effect: p.desc })),
-                attributes: state.stats,
-                background: selectedBg ? selectedBg.title : 'Desconhecido',
-                proficiencies: initialSkills,
-                level: 1,
-                hp: 15 + Math.floor((state.stats.con - 10) / 2),
-                currentHP: 15 + Math.floor((state.stats.con - 10) / 2),
-                maxPE: 1, // Fixed for Level 1
-                currentPE: 1,
-                inventory: initialItems.length > 0 ? initialItems : [], // Empty array if no items
-                rank: 'Oni Inferior'
-            };
+                // Apply Bonuses
+                const finalAttributes = { ...state.stats };
+                state.bonuses.forEach(b => {
+                    if (finalAttributes[b] !== undefined) finalAttributes[b] += 2;
+                });
 
-            // Save to Save Slots
-            let allChars = JSON.parse(localStorage.getItem('demonSlayerSaveSlots') || '[]');
-            if (allChars.length >= 5) { alert("Limite de personagens atingido."); return; }
+                // Ensure PARTS is available
+                if (typeof PARTS === 'undefined') throw new Error("PARTS data not found");
 
-            allChars.push(char);
-            localStorage.setItem('demonSlayerSaveSlots', JSON.stringify(allChars));
-            localStorage.setItem('demonSlayerChar', JSON.stringify(char));
+                const char = {
+                    name: document.getElementById('oniName').value || 'Oni Desconhecido',
+                    race: 'Oni',
+                    oniPath: state.path,
+                    kekkijutsu: state.kekkijutsu,
+                    particularities: PARTS.filter(p => state.particularities.includes(p.id)).map(p => ({ name: p.name, effect: p.desc || p.full })),
+                    attributes: finalAttributes,
+                    bonuses: state.bonuses,
+                    background: selectedBg ? selectedBg.title : 'Desconhecido',
+                    proficiencies: initialSkills,
+                    level: 1,
+                    hp: 15 + Math.floor(((finalAttributes.con || 10) - 10) / 2),
+                    currentHP: 15 + Math.floor(((finalAttributes.con || 10) - 10) / 2),
+                    maxPE: 1,
+                    currentPE: 1,
+                    inventory: initialItems.length > 0 ? initialItems : [],
+                    rank: 'Oni Inferior'
+                };
 
-            // Redirect
-            window.location.href = 'oni-dashboard.html';
+                // Save to Save Slots
+                let allChars = [];
+                try {
+                    const stored = localStorage.getItem('demonSlayerSaveSlots');
+                    if (stored) allChars = JSON.parse(stored);
+                } catch (e) {
+                    console.error("Error reading slots", e);
+                    allChars = [];
+                }
+
+                if (allChars.length >= 5) { alert("Limite de personagens atingido."); return; }
+
+                allChars.push(char);
+                localStorage.setItem('demonSlayerSaveSlots', JSON.stringify(allChars));
+                localStorage.setItem('demonSlayerChar', JSON.stringify(char)); // Set active
+
+                console.log("Character saved. Redirecting...");
+                // Redirect
+                window.location.href = 'oni-dashboard.html';
+            } catch (err) {
+                console.error(err);
+                alert("Erro ao finalizar criação: " + err.message);
+            }
         }
 
         window.onload = function () {
             updateUI();
         }
+        function updatePreview() {
+            // Name
+            const nameInput = document.getElementById('oniName');
+            const nameDisplay = document.getElementById('previewName');
+            if (nameInput && nameDisplay) {
+                nameDisplay.innerText = nameInput.value || "Oni Desconhecido";
+            }
+
+            // Path
+            const pathDisplay = document.getElementById('previewPath');
+            if (pathDisplay) pathDisplay.innerText = state.path === 'blood' ? 'Caminho do Sangue' : 'Retenção de Carne';
+
+            // Kekkijutsu
+            const kekkDisplay = document.getElementById('previewKekk');
+            const kekkMap = { 'ice': 'Criocinese', 'swamp': 'Pântano', 'arrow': 'Vetores', 'sound': 'Ondas Sonoras', 'shadow': 'Sombras', 'blood_manip': 'Manipulação de Sangue' };
+            if (kekkDisplay) kekkDisplay.innerText = kekkMap[state.kekkijutsu] || state.kekkijutsu;
+
+            // Background
+            const bgDisplay = document.getElementById('previewBg');
+            const bgData = backgroundData ? backgroundData[state.background] : null;
+            if (bgDisplay) bgDisplay.innerText = bgData ? bgData.title : '-';
+
+            // HP Calculation
+            // Base 15 + ((Con - 10) / 2) + Kekkijutsu Bonus? (Assuming no bonus for now unless specified)
+            const con = state.stats.con || 10;
+            const conMod = Math.floor((con - 10) / 2);
+            let hp = 15 + conMod;
+            const hpDisplay = document.getElementById('previewHP');
+            if (hpDisplay) hpDisplay.innerText = hp;
+
+            // Parts
+            const partsDisplay = document.getElementById('previewParts');
+            if (partsDisplay) {
+                if (state.particularities.length === 0) {
+                    partsDisplay.innerHTML = '<span style="opacity:0.5; font-style:italic;">Nenhuma selecionada</span>';
+                } else {
+                    partsDisplay.innerHTML = '';
+                    state.particularities.forEach(pid => {
+                        const part = PARTS.find(p => p.id === pid);
+                        if (part) {
+                            const div = document.createElement('div');
+                            div.innerHTML = `<i data-lucide="${part.icon}" style="width:14px; margin-right:5px; vertical-align:middle;"></i> ${part.name}`;
+                            partsDisplay.appendChild(div);
+                        }
+                    });
+                    lucide.createIcons();
+                }
+            }
+
+            // Speed
+            // Default 9m. Can be modified by parts if we had speed parts.
+            // Ex: If 'size' part selected (Alteração Corporal) implies speed change? (Desc says Agility/Stealth).
+            // For now fixed 9m.
+            const speedDisplay = document.getElementById('previewSpeed');
+            if (speedDisplay) speedDisplay.innerText = "9m";
+
+        }
+
+        // Hook updatePreview into existing functions
+        const originalUpdateStat = updateStat;
+        updateStat = function (stat, val) {
+            originalUpdateStat(stat, val);
+            updatePreview();
+        };
+
+        const originalSelectPath = selectPath;
+        selectPath = function (path, el) {
+            originalSelectPath(path, el);
+            updatePreview();
+        }
+
+        const originalSelectKekk = selectKekk;
+        selectKekk = function (kekk, el) {
+            originalSelectKekk(kekk, el);
+            updatePreview();
+        }
+
+        const originalSelectBg = selectBg;
+        selectBg = function (id, el) {
+            originalSelectBg(id, el);
+            updatePreview();
+        }
+
+        const originalTogglePart = togglePart;
+        togglePart = function (id, el) {
+            originalTogglePart(id, el);
+            updatePreview();
+        }
+
+        // Init
+        setTimeout(updatePreview, 500);
+
     </script>
 </body>
 

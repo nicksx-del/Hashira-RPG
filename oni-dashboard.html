@@ -792,8 +792,26 @@
                 style="width:100%; padding:8px; margin-bottom:10px; background:#222; border:1px solid #444; color:fff;">
             <input type="text" id="atkDmg" placeholder="Dano (ex: 1d6 + 2)"
                 style="width:100%; padding:8px; margin-bottom:10px; background:#222; border:1px solid #444; color:fff;">
-            <input type="text" id="atkType" placeholder="Tipo (Cortante, Perfurante)"
-                style="width:100%; padding:8px; margin-bottom:10px; background:#222; border:1px solid #444; color:fff;">
+            <select id="atkType" class="ds-input"
+                style="width:100%; padding:8px; margin-bottom:10px; background:#222; border:1px solid #444; color:#fff; cursor:pointer;">
+                <option value="" disabled selected>Selecione o Tipo de Dano...</option>
+                <optgroup label="Físicos Padrão">
+                    <option value="Cortante">Cortante (Espadas, Garras)</option>
+                    <option value="Concussão">Concussão (Impacto, Quebra)</option>
+                    <option value="Perfurante">Perfurante (Lanças, Mordidas)</option>
+                </optgroup>
+                <optgroup label="Elementais & Especiais">
+                    <option value="Ácido">Ácido (Corrosivo)</option>
+                    <option value="Elétrico">Elétrico (Relâmpagos)</option>
+                    <option value="Fogo">Fogo (Chamas, Explosões)</option>
+                    <option value="Frio">Frio (Gelo, Água)</option>
+                    <option value="Necrótico">Necrótico (Morte, Vampirismo)</option>
+                    <option value="Psíquico">Psíquico (Mental)</option>
+                    <option value="Primordial">Primordial (Respiração Solar)</option>
+                    <option value="Trovejante">Trovejante (Som/Ondas)</option>
+                    <option value="Veneno">Veneno (Tóxico)</option>
+                </optgroup>
+            </select>
             <button class="devour-btn" onclick="saveNewAttack()">Salvar</button>
             <button onclick="document.getElementById('attackModal').style.display='none'"
                 style="width:100%; padding:10px; background:none; border:none; color:#888; cursor:pointer; margin-top:5px;">Cancelar</button>
