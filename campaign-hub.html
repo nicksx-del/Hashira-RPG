@@ -301,7 +301,7 @@
             transition: opacity 0.3s;
         }
 
-        .modal-open .modal-overlay {
+        .modal-overlay.modal-open {
             display: flex;
             opacity: 1;
         }
@@ -523,7 +523,13 @@
         function renderCampaigns() {
             const grid = document.getElementById('campGrid');
             grid.innerHTML = "";
-            const list = window.CampaignSystem.getCampaigns();
+            let list = [];
+
+            try {
+                if (window.CampaignSystem && window.CampaignSystem.getCampaigns) {
+                    list = window.CampaignSystem.getCampaigns();
+                }
+            } catch (e) { console.error("Error getting campaigns", e); }
 
             // Existing
             list.forEach(c => {
@@ -532,10 +538,12 @@
 
                 // Players Avatars
                 let playerCircles = "";
-                c.players.slice(0, 4).forEach(p => {
-                    playerCircles += `<div class="player-avatar" title="${p.name}">${p.name[0]}</div>`;
-                });
-                if (c.players.length > 4) playerCircles += `<div class="player-avatar" style="background:#333; color:#888;">+${c.players.length - 4}</div>`;
+                if (c.players) {
+                    c.players.slice(0, 4).forEach(p => {
+                        playerCircles += `<div class="player-avatar" title="${p.name}">${p.name[0]}</div>`;
+                    });
+                    if (c.players.length > 4) playerCircles += `<div class="player-avatar" style="background:#333; color:#888;">+${c.players.length - 4}</div>`;
+                }
 
                 card.innerHTML = `
                     <div class="camp-name">${c.name}</div>
@@ -575,15 +583,8 @@
                 grid.appendChild(card);
             });
 
-            // New
+            // New Card (Always render even if list empty)
             const newCard = document.createElement('div');
-            newCard.className = 'new-camp-card camp-card'; // Reuse camp-card for size, override styles with new-camp-card
-            // Reset camp-card specific styles that conflict if any, or just use new-camp-card separately if it has its own size
-            // In CSS, new-camp-card has flex properties? 
-            // My CSS for new-camp-card has 'align-items: center; justify-content: center;'
-            // But camp-card has 'display: flex; flex-direction: column;'
-            // The cascade should work if new-camp-card is last. 
-            // Actually, let's keep it clean.
             newCard.className = 'camp-card new-camp-card';
 
             newCard.innerHTML = `
@@ -644,7 +645,13 @@
             grid.innerHTML = "";
 
             const raw = localStorage.getItem('demonSlayerSaveSlots');
-            const chars = raw ? JSON.parse(raw) : [];
+            let chars = [];
+            try {
+                chars = raw ? JSON.parse(raw) : [];
+            } catch (e) {
+                console.error("Error parsing save slots", e);
+                chars = [];
+            }
 
             if (chars.length === 0) {
                 grid.innerHTML = "<div style='color:#666; padding:20px; text-align:center;'>Nenhum personagem encontrado. Crie um primeiro!</div>";

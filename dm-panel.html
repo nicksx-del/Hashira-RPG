@@ -608,6 +608,26 @@
             filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.8));
         }
 
+        /* MOVE MODE: Disable token interactions so clicks hit the stage */
+        .wis-arena-container.move-mode .wis-token {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        /* Cursor Highlight Box */
+        .cursor-highlight {
+            position: absolute;
+            width: 64px;
+            height: 64px;
+            background: rgba(168, 85, 247, 0.3);
+            border: 2px solid var(--primary);
+            pointer-events: none;
+            z-index: 5;
+            display: none;
+            box-shadow: 0 0 15px var(--primary);
+            transition: all 0.05s linear;
+        }
+
         /* Token Styles override/additions */
         .token-group {
             position: relative;
@@ -1476,8 +1496,16 @@
 
             <!-- CENTER: ARENA STAGE -->
             <div class="wis-arena-container">
-                <div class="wis-arena-bg"></div>
-                <div class="wis-arena-radial"></div>
+                <div class="wis-arena-bg" style="
+                    background-image: 
+                        linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+                    background-size: 64px 64px;
+                    background-position: center;
+                    position: absolute; inset: 0; pointer-events: none; z-index: 0;
+                "></div>
+                <div class="wis-arena-radial" style="position: absolute; inset: 0; pointer-events: none; z-index: 1;">
+                </div>
 
                 <!-- Arena Header / Turn Info -->
                 <div
@@ -1500,29 +1528,31 @@
                 <div id="damageLayer" style="position:absolute; inset:0; pointer-events:none; z-index:200;"></div>
 
                 <!-- THE STAGE (Tokens) -->
-                <div id="combatStage"
-                    style="flex:1; display:flex; align-items:center; justify-content:center; position:relative; z-index:10;">
+                <!-- THE STAGE (Tokens) -->
+                <div id="combatStage" style="position:absolute; inset:0; z-index:10;"
+                    ondragover="event.preventDefault();" ondrop="handleStageDrop(event)"
+                    onclick="handleStageClick(event)" onmousemove="handleStageMouseMove(event)">
+                    <div id="cursorHighlight" class="cursor-highlight"></div>
                     <!-- Tokens Injected Here -->
                 </div>
 
                 <!-- ACTION DOCK -->
                 <div class="wis-dock">
-                    <div class="wis-dock-btn" onclick="performMove()" title="Mover">
-                        <i data-lucide="footprints" size="24"></i>
+                    <div class="wis-dock-btn" onclick="toggleMoveMode()" title="Mover Token (Turno)">
+                        <i data-lucide="move" size="24"></i>
                         <span class="wis-dock-label">Mover</span>
                     </div>
-                    <div class="wis-dock-btn primary" onclick="openAttackModal()" title="Atacar">
-                        <i data-lucide="sword" size="32"></i>
-                        <span class="wis-dock-label">Atacar</span>
+                    <div class="wis-dock-btn primary" onclick="nextTurn()">
+                        <i data-lucide="chevrons-right" size="32"></i>
+                        <span class="wis-dock-label">Turno</span>
                     </div>
-                    <div class="wis-dock-btn" onclick="performSkill()" title="Habilidade">
-                        <i data-lucide="zap" size="24"></i>
-                        <span class="wis-dock-label">Hab.</span>
+                    <div class="wis-dock-btn" onclick="rollInitiativeAll()" title="Rolar Iniciativa">
+                        <i data-lucide="dices" size="24"></i>
+                        <span class="wis-dock-label">Inic.</span>
                     </div>
-                    <div style="width:1px; background:#3f3f46; margin:0 4px;"></div>
-                    <div class="wis-dock-btn" onclick="nextTurn()" style="color:#ef4444;" title="Passar Turno">
-                        <i data-lucide="skip-forward" size="24"></i>
-                        <span class="wis-dock-label">Passar</span>
+                    <div class="wis-dock-btn" onclick="clearCombat()" title="Limpar Combate">
+                        <i data-lucide="trash-2" size="24"></i>
+                        <span class="wis-dock-label">Limpar</span>
                     </div>
                 </div>
 
@@ -1547,14 +1577,38 @@
 
             <!-- RIGHT SIDEBAR: INSPECTOR -->
             <div class="wis-sidebar right" id="inspectorSidebar">
-                <div class="wis-header">
-                    <span class="wis-title">Inspetor</span>
-                    <span class="wis-title" style="color:#52525b; cursor:pointer;"
-                        onclick="switchView('chars')">Bestiário</span>
+                <!-- Sidebar Tabs Header -->
+                <div class="wis-header" style="padding:0; gap:0;">
+                    <div id="sbTabInspector" class="nav-tab active"
+                        style="flex:1; justify-content:center; border-radius:0; height:60px;"
+                        onclick="switchSidebarTab('inspector')">
+                        INSPETOR
+                    </div>
+                    <div id="sbTabBestiary" class="nav-tab"
+                        style="flex:1; justify-content:center; border-radius:0; height:60px;"
+                        onclick="switchSidebarTab('bestiary')">
+                        BESTIÁRIO
+                    </div>
                 </div>
+
                 <!-- Inspector Content -->
-                <div id="inspector" class="wis-scroll">
-                    <div style="text-align:center; color:#555; margin-top:40px;">Selecione um token</div>
+                <div id="sidebarInspector" class="wis-scroll">
+                    <div id="inspector">
+                        <div style="text-align:center; color:#555; margin-top:40px;">Selecione um token</div>
+                    </div>
+                </div>
+
+                <!-- Bestiary Content (Hidden by Default) -->
+                <div id="sidebarBestiary" class="wis-scroll" style="display:none;">
+                    <div style="padding:10px;">
+                        <input type="text" id="sbMobSearch" placeholder="Buscar..." class="d-input"
+                            style="width:100%; border-radius:20px; padding:8px 15px; margin-bottom:15px; background:#0a0a0c; border-color:#333;"
+                            onkeyup="renderSidebarBestiary()">
+
+                        <div id="sbBestiaryList" style="display:flex; flex-direction:column; gap:8px;">
+                            <!-- Sidebar Mobs Injected Here -->
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1796,10 +1850,20 @@
             }
 
             // Render Tokens into the center stage
-            // We use a centered flex grid container
-            const grid = document.createElement('div');
-            grid.style.cssText = "display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:20px; width:100%; max-width:1000px;";
-            stage.appendChild(grid);
+            // We use ABSOLUTE positioning now (Visual Map)
+
+            // Set Stage Handlers
+            stage.ondragover = (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = "copy";
+            };
+            stage.ondrop = (e) => {
+                e.preventDefault();
+                handleStageDrop(e);
+            };
+
+            stage.innerHTML = ""; // Clear
+            // We don't use 'grid' container anymore, just stage as relative parent
 
             entities.forEach(e => {
                 const id = e.id || e.charId;
@@ -1812,12 +1876,35 @@
                 if (hpPct <= 50) barColor = "var(--hp-mid)";
                 if (hpPct <= 25) barColor = "var(--hp-low)";
 
+                // Position
+                const posX = e.x || (stage.clientWidth / 2 - 40); // Default Center
+                const posY = e.y || (stage.clientHeight / 2 - 40);
+
                 const token = document.createElement('div');
                 token.className = `wis-token ${isTurn ? 'active' : ''}`;
+
+                // Absolute Styling
+                token.style.position = 'absolute';
+                token.style.left = posX + 'px';
+                token.style.top = posY + 'px';
+                token.style.margin = '0'; // Remove grid margin
+                token.style.zIndex = isSelected ? 100 : 10;
+
                 if (isSelected) {
                     token.style.transform = "scale(1.15)";
                     token.style.filter = "brightness(1.2)";
                 }
+
+                // Make Token Draggable (Reposition)
+                token.draggable = true;
+                token.ondragstart = (ev) => {
+                    ev.dataTransfer.setData("type", "move");
+                    ev.dataTransfer.setData("id", id);
+                    ev.dataTransfer.setData("offsetX", ev.clientX - token.getBoundingClientRect().left);
+                    ev.dataTransfer.setData("offsetY", ev.clientY - token.getBoundingClientRect().top);
+                    ev.stopPropagation();
+                };
+
                 token.onclick = (ev) => { ev.stopPropagation(); selectEntity(id); };
 
                 token.innerHTML = `
@@ -1839,7 +1926,7 @@
                     </div>
                 `;
 
-                grid.appendChild(token);
+                stage.appendChild(token);
             });
 
             if (window.lucide) lucide.createIcons();
@@ -1948,25 +2035,25 @@
         function nextTurn() {
             if (!currentCamp || !currentCamp.combat.active) return;
 
-            const orderLen = currentCamp.combat.order.length;
-            if (orderLen === 0) return;
-
-            currentCamp.combat.turnIndex++;
-            if (currentCamp.combat.turnIndex >= orderLen) {
-                currentCamp.combat.turnIndex = 0;
-                currentCamp.combat.round++;
-                const rDisplay = document.getElementById('roundDisplay');
-                if (rDisplay) rDisplay.innerText = currentCamp.combat.round;
-                showToast(`Round ${currentCamp.combat.round} Iniciado`);
+            // Ensure order exists
+            if (!currentCamp.combat.order || currentCamp.combat.order.length === 0) {
+                showToast("Ordem de combate vazia!");
+                return;
             }
 
-            window.CampaignSystem.saveCampaigns();
-            window.CampaignSystem.sendUpdate(CAMP_ID, { type: 'turn-change' });
-            renderCombatList();
+            // Logic handled by CampaignSystem, but let's double check here or just call it
+            window.CampaignSystem.nextTurn(CAMP_ID);
 
+            // Reload local data to reflect changes
+            loadData();
+
+            // Visual FEEDBACK
             const activeId = currentCamp.combat.order[currentCamp.combat.turnIndex];
             const ent = getEntity(activeId);
-            if (ent) announceTurn(ent.name);
+            if (ent) {
+                announceTurn(ent.name);
+                showToast(`Turno de: ${ent.name}`);
+            }
         }
 
         function rollInitiativeAll() {
@@ -2152,7 +2239,13 @@
         // --- ACTIONS ---
         function selectEntity(id) {
             selectedId = id;
-            switchRightTab('inspector');
+            // switchRightTab('inspector'); // Old logic for 'chars' view
+
+            // New Logic: If we are in combat view, ensure Inspector Tab is open
+            if (document.getElementById('view-combat').classList.contains('active')) {
+                switchSidebarTab('inspector');
+            }
+
             const ent = getEntity(id);
             if (ent) {
                 renderInspector(ent);
@@ -2404,7 +2497,39 @@
             document.getElementById('customMobModal').style.display = 'none';
             closeModal('addCreatureModal');
             // Directly add? Or just let user pick from list
-            window.CampaignSystem.addMonster(CAMP_ID, newMob);
+            const addedMob = window.CampaignSystem.addMonster(CAMP_ID, newMob);
+
+            if (addedMob) {
+                // POS & INIT FIX
+                const stage = document.getElementById('combatStage');
+                const centerX = stage ? stage.clientWidth / 2 : 100;
+                const centerY = stage ? stage.clientHeight / 2 : 100;
+
+                const gridSize = 64;
+                const finalX = Math.round((centerX - 32) / gridSize) * gridSize;
+                const finalY = Math.round((centerY - 32) / gridSize) * gridSize;
+
+                // Auto-Roll Initiative
+                const init = Math.floor(Math.random() * 20) + 1; // Basic D20 for custom mob
+
+                // Update
+                window.CampaignSystem.updateEntity(CAMP_ID, addedMob.id, true, {
+                    initiative: init,
+                    x: finalX,
+                    y: finalY
+                });
+
+                // Add to Combat Order if Active
+                if (currentCamp && currentCamp.combat && currentCamp.combat.active) {
+                    let entities = getAllEntities();
+                    const me = entities.find(e => e.id === addedMob.id);
+                    if (me) me.initiative = init;
+                    entities.sort((a, b) => (b.initiative || 0) - (a.initiative || 0));
+                    currentCamp.combat.order = entities.map(e => e.id || e.charId);
+                    window.CampaignSystem.saveCampaigns();
+                }
+            }
+
             loadData();
             showToast('Monstro criado e adicionado!');
         }
@@ -2444,10 +2569,48 @@
             if (!t && window.BestiaryDB) t = window.BestiaryDB.find(x => x.id === id);
 
             if (t) {
-                window.CampaignSystem.addMonster(CAMP_ID, t);
+                // 1. Add Monster
+                const newMob = window.CampaignSystem.addMonster(CAMP_ID, t);
+                if (!newMob) return;
+
+                // 2. Default Position (Center & Grid Snapped)
+                const stage = document.getElementById('combatStage');
+                const centerX = stage ? stage.clientWidth / 2 : 100;
+                const centerY = stage ? stage.clientHeight / 2 : 100;
+
+                const gridSize = 64;
+                const finalX = Math.round((centerX - 32) / gridSize) * gridSize;
+                const finalY = Math.round((centerY - 32) / gridSize) * gridSize;
+
+                newMob.x = finalX;
+                newMob.y = finalY;
+
+                // 3. Auto-Roll Initiative
+                const dex = newMob.stats ? (newMob.stats.dex || 10) : 10;
+                const mod = Math.floor((dex - 10) / 2);
+                const init = Math.floor(Math.random() * 20) + 1 + mod;
+                newMob.initiative = init;
+
+                // 4. Update init & coord
+                window.CampaignSystem.updateEntity(CAMP_ID, newMob.id, true, {
+                    initiative: init,
+                    x: finalX,
+                    y: finalY
+                });
+
+                // 5. If Combat Active, Insert into Order
+                if (currentCamp && currentCamp.combat && currentCamp.combat.active) {
+                    let entities = getAllEntities();
+                    const me = entities.find(e => e.id === newMob.id);
+                    if (me) me.initiative = init;
+                    entities.sort((a, b) => (b.initiative || 0) - (a.initiative || 0));
+                    currentCamp.combat.order = entities.map(e => e.id || e.charId);
+                    window.CampaignSystem.saveCampaigns();
+                }
+
                 closeModal('addCreatureModal');
                 loadData();
-                showToast('Criatura adicionada!');
+                showToast(`Criatura adicionada! (Inic: ${init})`);
             }
         }
 
@@ -2522,6 +2685,101 @@
             return getAllEntities().find(e => (e.id === id || e.charId === id));
         }
 
+        // --- SIDEBAR TABS LOGIC ---
+        function switchSidebarTab(tab) {
+            // Update Tab UI
+            document.getElementById('sbTabInspector').classList.toggle('active', tab === 'inspector');
+            document.getElementById('sbTabBestiary').classList.toggle('active', tab === 'bestiary');
+
+            // Show Content
+            document.getElementById('sidebarInspector').style.display = tab === 'inspector' ? 'block' : 'none';
+            document.getElementById('sidebarBestiary').style.display = tab === 'bestiary' ? 'block' : 'none';
+
+            if (tab === 'bestiary') {
+                renderSidebarBestiary();
+            }
+        }
+
+        function renderSidebarBestiary() {
+            const list = document.getElementById('sbBestiaryList');
+            if (!list) return;
+
+            const searchInput = document.getElementById('sbMobSearch');
+            const search = searchInput ? searchInput.value.toLowerCase() : "";
+
+            list.innerHTML = "";
+
+            const customs = JSON.parse(localStorage.getItem('customBestiary') || "[]");
+            const fullDB = [...customs, ...(window.BestiaryDB || [])];
+
+            // Sort by CR (Desafio) then Name
+            fullDB.sort((a, b) => (a.cr || 0) - (b.cr || 0));
+
+            const filtered = fullDB.filter(m => m.name.toLowerCase().includes(search));
+
+            if (filtered.length === 0) {
+                list.innerHTML = "<div style='text-align:center; color:#444; margin-top:20px;'>Nenhuma criatura encontrada.</div>";
+                return;
+            }
+
+            filtered.forEach(m => {
+                const item = document.createElement('div');
+                // Compact "Card-Row" style
+                item.style.cssText = `
+                    display: flex; 
+                    align-items: center; 
+                    gap: 10px; 
+                    padding: 8px; 
+                    background: #18181b; 
+                    border: 1px solid #27272a; 
+                    border-radius: 8px; 
+                    cursor: pointer; 
+                    transition: all 0.2s;
+                `;
+
+                // DRAG & DROP SUPPORT
+                item.setAttribute('draggable', 'true');
+                item.ondragstart = (e) => {
+                    e.dataTransfer.setData("type", "new");
+                    e.dataTransfer.setData("mobId", m.id);
+                    e.dataTransfer.effectAllowed = "copy";
+                };
+
+                item.onmouseenter = () => {
+                    item.style.background = "#27272a";
+                    item.style.borderColor = "#a855f7";
+                };
+                item.onmouseleave = () => {
+                    item.style.background = "#18181b";
+                    item.style.borderColor = "#27272a";
+                };
+
+                // Main Click
+                item.onclick = () => {
+                    spawnMobById(m.id);
+                };
+
+                item.innerHTML = `
+                    <div style="width:32px; height:32px; border-radius:50%; background:url('https://ui-avatars.com/api/?name=${m.name}&background=random'); background-size:cover; border:1px solid #444; flex-shrink:0;"></div>
+                    <div style="flex:1; min-width:0;">
+                        <div style="font-weight:700; color:#e4e4e7; font-size:0.85rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${m.name}</div>
+                        <div style="font-size:0.7rem; color:#71717a;">CR ${m.cr} • HP ${m.hp}</div>
+                    </div>
+                    <div class="add-btn" style="
+                        width:24px; height:24px; 
+                        border-radius:6px; 
+                        background:#27272a; 
+                        color:#a855f7; 
+                        display:flex; align-items:center; justify-content:center;
+                        font-weight:bold; font-size:1.1rem;
+                        transition:0.2s;
+                    " onclick="event.stopPropagation(); spawnMobById('${m.id}')">+</div>
+                `;
+
+                list.appendChild(item);
+            });
+        }
+
         // --- NEW VIEW SWITCHER ---
         function switchView(viewName) {
             // Hide all views
@@ -2540,13 +2798,207 @@
             // Find tab logic (simple match text or index)
             // Hardcoded for simplicity
             const tabs = document.querySelectorAll('.nav-tab');
-            if (viewName === 'combat') tabs[0].classList.add('active');
-            if (viewName === 'chars') tabs[1].classList.add('active');
-            if (viewName === 'story') tabs[2].classList.add('active');
+            // Note: The new sidebar tabs also have .nav-tab class, so we need to be careful with indexing if we use generic selector
+            // Better to iterate or check content. 
+            // The top nav bar has specific onClick logic. We can just rely on that.
+
+            // Re-assert specific top nav tabs active state
+            // Let's assume the top nav are the first 3 .nav-tab
+            // This is fragile but existing code was doing it. 
+            const topNavTabs = document.querySelector('.dm-nav').querySelectorAll('.nav-tab');
+            if (viewName === 'combat') topNavTabs[0].classList.add('active');
+            if (viewName === 'chars') topNavTabs[1].classList.add('active');
+            if (viewName === 'story') topNavTabs[2].classList.add('active');
 
             // If switching to chars, ensure icons are rendered
             if (window.lucide) lucide.createIcons();
         }
+        // --- VISUAL MAP LOGIC ---
+        let isMoveMode = false;
+
+        function toggleMoveMode() {
+            if (!currentCamp || !currentCamp.combat.active) return showToast("Combate não iniciado.");
+            isMoveMode = !isMoveMode;
+
+            const stage = document.getElementById('combatStage');
+            const container = document.querySelector('.wis-arena-container');
+            const highlighter = document.getElementById('cursorHighlight');
+
+            if (isMoveMode) {
+                container.classList.add('move-mode');
+                stage.style.cursor = "crosshair";
+                highlighter.style.display = 'block';
+                showToast("Selecione o destino no mapa...");
+            } else {
+                container.classList.remove('move-mode');
+                stage.style.cursor = "default";
+                highlighter.style.display = 'none';
+                showToast("Modo mover cancelado.");
+            }
+        }
+
+        function handleStageMouseMove(e) {
+            if (!isMoveMode) return;
+            const highlighter = document.getElementById('cursorHighlight');
+            const rect = document.getElementById('combatStage').getBoundingClientRect();
+
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+
+            // Snap Math.floor for box selection
+            const gridSize = 64;
+            x = Math.floor(x / gridSize) * gridSize;
+            y = Math.floor(y / gridSize) * gridSize;
+
+            highlighter.style.left = x + 'px';
+            highlighter.style.top = y + 'px';
+        }
+
+        function handleStageClick(e) {
+            if (!isMoveMode) return;
+
+            // Get Active Entity
+            const activeId = currentCamp.combat.order[currentCamp.combat.turnIndex];
+            if (!activeId) return;
+
+            const rect = document.getElementById('combatStage').getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+
+            // Snap Math.floor (Consistent with Highlight)
+            const gridSize = 64;
+            x = Math.floor(x / gridSize) * gridSize;
+            y = Math.floor(y / gridSize) * gridSize;
+
+            // Boundary
+            const stage = document.getElementById('combatStage');
+            if (x < 0) x = 0;
+            if (y < 0) y = 0;
+            if (x > stage.clientWidth - gridSize) x = stage.clientWidth - gridSize;
+            if (y > stage.clientHeight - gridSize) y = stage.clientHeight - gridSize;
+
+            // Move
+            moveEntity(activeId, x, y);
+
+            // Exit Mode
+            toggleMoveMode();
+            showToast("Movimento realizado!");
+        }
+
+        function handleStageDrop(e) {
+            const type = e.dataTransfer.getData("type");
+            const stage = document.getElementById('combatStage');
+            const rect = stage.getBoundingClientRect();
+
+            // Raw Drop Coords
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+
+            // GRID SNAPPING (64px)
+            const gridSize = 64;
+
+            if (type === "move") {
+                const id = e.dataTransfer.getData("id");
+                const offX = parseFloat(e.dataTransfer.getData("offsetX")) || 0;
+                const offY = parseFloat(e.dataTransfer.getData("offsetY")) || 0;
+
+                // Adjust to top-left of token based on grab offset
+                let finalX = x - offX;
+                let finalY = y - offY;
+
+                // Snap to Grid
+                finalX = Math.round(finalX / gridSize) * gridSize;
+                finalY = Math.round(finalY / gridSize) * gridSize;
+
+                // BOUNDARY CHECKS
+                // Ensure inside stage
+                if (finalX < 0) finalX = 0;
+                if (finalY < 0) finalY = 0;
+                if (finalX > stage.clientWidth - gridSize) finalX = stage.clientWidth - gridSize;
+                if (finalY > stage.clientHeight - gridSize) finalY = stage.clientHeight - gridSize;
+
+                moveEntity(id, finalX, finalY);
+            } else if (type === "new") {
+                const mobId = e.dataTransfer.getData("mobId");
+
+                // Snap new spawns too
+                x = Math.round((x - 32) / gridSize) * gridSize; // center offset approx
+                y = Math.round((y - 32) / gridSize) * gridSize;
+
+                if (x < 0) x = 0;
+                if (y < 0) y = 0;
+                if (x > stage.clientWidth - gridSize) x = stage.clientWidth - gridSize;
+                if (y > stage.clientHeight - gridSize) y = stage.clientHeight - gridSize;
+
+                spawnMobAt(mobId, x, y);
+            }
+        }
+
+        function mouseCoordsToStage(e) {
+            const rect = document.getElementById('combatStage').getBoundingClientRect();
+            return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+        }
+
+        function spawnMobAt(id, x, y) {
+            try {
+                const Customs = JSON.parse(localStorage.getItem('customBestiary') || "[]");
+                let t = Customs.find(x => x.id === id);
+                if (!t && window.BestiaryDB) t = window.BestiaryDB.find(x => x.id === id);
+
+                if (t) {
+                    // Snap if not already snapped (failsafe)
+                    const gridSize = 64;
+                    x = Math.round(x / gridSize) * gridSize;
+                    y = Math.round(y / gridSize) * gridSize;
+
+                    // 1. Add Monster
+                    const newMob = window.CampaignSystem.addMonster(CAMP_ID, t);
+                    if (!newMob) return;
+
+                    newMob.x = x;
+                    newMob.y = y;
+
+                    // 2. Auto-Roll Init
+                    const dex = newMob.stats ? (newMob.stats.dex || 10) : 10;
+                    const mod = Math.floor((dex - 10) / 2);
+                    newMob.initiative = Math.floor(Math.random() * 20) + 1 + mod;
+
+                    // 3. Update init & coord
+                    window.CampaignSystem.updateEntity(CAMP_ID, newMob.id, true, {
+                        initiative: newMob.initiative,
+                        x: x,
+                        y: y
+                    });
+
+                    // 4. Combat Order
+                    if (currentCamp && currentCamp.combat && currentCamp.combat.active) {
+                        let entities = getAllEntities();
+                        const me = entities.find(e => e.id === newMob.id);
+                        if (me) me.initiative = newMob.initiative;
+                        entities.sort((a, b) => (b.initiative || 0) - (a.initiative || 0));
+                        currentCamp.combat.order = entities.map(e => e.id || e.charId);
+                        window.CampaignSystem.saveCampaigns();
+                    }
+
+                    loadData();
+                    showToast(`Criatura adicionada!`);
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function moveEntity(id, x, y) {
+            // Check if NPC or Player
+            const ent = getEntity(id);
+            if (!ent) return;
+
+            window.CampaignSystem.updateEntity(CAMP_ID, id, ent.isNPC, { x, y });
+
+            // Optimistic update
+            ent.x = x;
+            ent.y = y;
+            renderCombatList();
+        }
+
     </script>
 </body>
 

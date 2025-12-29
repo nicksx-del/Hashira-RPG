@@ -9,7 +9,13 @@ window.CampaignSystem = {
     // --- DATA ---
     getCampaigns: function () {
         const raw = localStorage.getItem(CAMP_KEY);
-        return raw ? JSON.parse(raw) : [];
+        if (!raw) return [];
+        try {
+            return JSON.parse(raw);
+        } catch (e) {
+            console.error("Corrupted campaign data:", e);
+            return [];
+        }
     },
 
     saveCampaigns: function (list) {
