@@ -1132,16 +1132,21 @@ window.syncCombatValues = function () {
 // --- RENDER CLASS FEATURES (SIDEBAR) ---
 function renderClassFeatures() {
     const list = document.getElementById('featListContent');
-    if (!list) return;
+    // Also try to render in the new tab if it exists
+    const tabList = document.getElementById('featuresContent');
 
-    list.innerHTML = "";
+    // We target both or prioritize tabList if available
+    const target = tabList || list;
+
+    if (!target) return;
+    target.innerHTML = "";
 
     const db = window.BREATHING_CLASS_DB;
     const style = humanData.breathingStyle || 'water';
     const classData = db ? db[style] : null;
 
     if (!classData || !classData.levels) {
-        list.innerHTML = `<div style="text-align:center; color:#555; padding:20px;">Nenhuma habilidade desbloqueada.</div>`;
+        target.innerHTML = `<div style="text-align:center; color:#555; padding:20px;">Nenhuma habilidade desbloqueada.</div>`;
         return;
     }
 
@@ -1153,33 +1158,53 @@ function renderClassFeatures() {
     }
 
     if (features.length === 0) {
-        list.innerHTML = `<div style="text-align:center; color:#555; padding:20px;">Nenhuma habilidade desbloqueada.</div>`;
+        target.innerHTML = `<div style="text-align:center; color:#555; padding:20px;">Nenhuma habilidade desbloqueada.</div>`;
         return;
     }
 
     features.forEach(fStr => {
-        const item = document.createElement('div');
-        item.style.background = "#222";
-        item.style.padding = "10px";
-        item.style.borderRadius = "6px";
-        item.style.border = "1px solid #444";
-        item.style.fontSize = "0.85rem";
-        item.style.marginBottom = "8px";
+        // Determine Badges & Details
+        let type = 'Passiva'; // Default
+        let summary = 'Habilidade de classe.';
+        let fullDesc = '';
 
-        let desc = "Habilidade da Respiração.";
-
-        // Priority: New DB -> Legacy HunterSystem
+        // Fetch Data
         if (window.FEATURE_DESCRIPTIONS && window.FEATURE_DESCRIPTIONS[fStr]) {
-            desc = window.FEATURE_DESCRIPTIONS[fStr];
+            fullDesc = window.FEATURE_DESCRIPTIONS[fStr];
         } else if (window.HunterSystem && window.HunterSystem.FEAT_DESCRIPTIONS && window.HunterSystem.FEAT_DESCRIPTIONS[fStr]) {
-            desc = window.HunterSystem.FEAT_DESCRIPTIONS[fStr];
+            fullDesc = window.HunterSystem.FEAT_DESCRIPTIONS[fStr];
         }
 
-        item.innerHTML = `
-            <div style="font-weight:700; color:#fff; margin-bottom:4px;">${fStr}</div>
-            <div style="color:#aaa; line-height:1.4;">${desc}</div>
+        // Auto-detect type from text (simple heuristic)
+        if (fullDesc.toLowerCase().includes('reação')) type = 'Reação';
+        else if (fullDesc.toLowerCase().includes('ação bônus')) type = 'Ação Bônus';
+        else if (fullDesc.toLowerCase().includes('ação')) type = 'Ação';
+
+        // Create Summary (First sentence or 50 chars)
+        summary = fullDesc.split('.')[0] + '.';
+        if (summary.length > 60) summary = summary.substring(0, 57) + '...';
+
+        // Badge Color
+        let badgeColor = '#666'; // Passive
+        if (type === 'Ação') badgeColor = '#56ab2f';
+        if (type === 'Ação Bônus') badgeColor = '#4cc9f0';
+        if (type === 'Reação') badgeColor = '#ffd700';
+
+        // CARD HTML
+        const card = document.createElement('div');
+        card.className = 'ability-card';
+        card.onclick = () => card.classList.toggle('expanded');
+
+        card.innerHTML = `
+            <div class="ability-header">
+                <span class="ability-name">${fStr}</span>
+                <span class="ability-badge" style="background:${badgeColor}">${type}</span>
+            </div>
+            <div class="ability-summary">${summary}</div>
+            <div class="ability-details">${fullDesc}</div>
         `;
-        list.appendChild(item);
+
+        target.appendChild(card);
     });
 }
 
@@ -1249,7 +1274,15 @@ function renderHunterOrganization() {
     // Display Updates
     rankEl.textContent = rankName;
     lvlEl.textContent = humanData.level;
-    salaryEl.textContent = typeof salary === 'number' ? salary.toLocaleString('pt-BR') : salary;
+    const salaryText = typeof salary === 'number' ? salary.toLocaleString('pt-BR') : salary;
+    salaryEl.textContent = salaryText;
+
+    // Mobile Salary Sync
+    const mobSal = document.getElementById('mobileSalaryDisplay');
+    if (mobSal) {
+        mobSal.innerHTML = `<i data-lucide="coins" size="16"></i> ${salaryText} Kan`;
+        if (window.lucide) lucide.createIcons();
+    }
 
     // Mission Rank styling
     missionEl.textContent = `Rank ${missionRank}`;
@@ -2896,7 +2929,7 @@ window.renderClassFeaturesInGrimoire = function () {
     const classData = db ? db[styleId] : null;
 
     if (!classData || !classData.levels) {
-        container.innerHTML = '<div style="color:#666; font-style:italic;">Nenhuma habilidade de classe encontrada.</div>';
+        container.innerHTML = '<div style="color:#666; font-style:italic; padding:20px; text-align:center;">Nenhuma habilidade de classe encontrada.</div>';
         return;
     }
 
@@ -2911,73 +2944,62 @@ window.renderClassFeaturesInGrimoire = function () {
             const levelHeader = document.createElement('div');
             levelHeader.style.fontSize = '0.75rem';
             levelHeader.style.color = 'var(--accent-primary)';
-            levelHeader.style.marginTop = '10px';
-            levelHeader.style.marginBottom = '5px';
+            levelHeader.style.marginTop = '15px';
+            levelHeader.style.marginBottom = '8px';
             levelHeader.style.textTransform = 'uppercase';
             levelHeader.style.fontWeight = 'bold';
             levelHeader.style.letterSpacing = '1px';
+            levelHeader.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+            levelHeader.style.paddingBottom = '5px';
             levelHeader.innerText = `Nível ${i}`;
             container.appendChild(levelHeader);
 
             // Features List
             lvlData.features.forEach(featName => {
-                const featDiv = document.createElement('div');
-                featDiv.style.background = 'rgba(255,255,255,0.05)';
-                featDiv.style.marginBottom = '5px';
-                featDiv.style.borderRadius = '6px';
-                featDiv.style.overflow = 'hidden';
-                featDiv.style.border = '1px solid rgba(255,255,255,0.05)';
-                featDiv.style.transition = 'background 0.2s';
+                // Determine Badges & Details
+                let type = 'Passiva'; // Default
+                let summary = "";
+                let fullDesc = "";
 
-                // Header (Clickable)
-                const header = document.createElement('div');
-                header.style.padding = '12px';
-                header.style.cursor = 'pointer';
-                header.style.display = 'flex';
-                header.style.justifyContent = 'space-between';
-                header.style.alignItems = 'center';
-
-                header.onmouseover = () => featDiv.style.background = 'rgba(255,255,255,0.08)';
-                header.onmouseout = () => featDiv.style.background = 'rgba(255,255,255,0.05)';
-
-                header.innerHTML = `
-                    <span style="font-weight:bold; color:#eee; font-size:0.95rem;">${featName}</span> 
-                    <i data-lucide="chevron-down" size="16" style="color:#666"></i>
-                `;
-
-                // Description (Hidden)
-                const desc = document.createElement('div');
-                desc.style.display = 'none';
-                desc.style.padding = '0 12px 12px 12px';
-                desc.style.color = '#ccc';
-                desc.style.fontSize = '0.9rem';
-                desc.style.lineHeight = '1.5';
-
+                // Fetch Data
                 const descText = descDB[featName];
-                const cleanDesc = descText ? descText : "Sem descrição disponível.";
+                fullDesc = descText ? descText : "Sem descrição disponível.";
 
-                desc.innerText = cleanDesc;
+                // Auto-detect type
+                if (fullDesc.toLowerCase().includes('reação')) type = 'Reação';
+                else if (fullDesc.toLowerCase().includes('ação bônus')) type = 'Ação Bônus';
+                else if (fullDesc.toLowerCase().includes('ação')) type = 'Ação';
 
-                // Toggle Logic
-                header.onclick = () => {
-                    const isHidden = desc.style.display === 'none';
-                    desc.style.display = isHidden ? 'block' : 'none';
-                    const icon = header.querySelector('i');
-                    if (icon) {
-                        icon.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
-                        icon.style.transition = 'transform 0.3s';
-                    }
-                };
+                // Create Summary
+                summary = fullDesc.split('.')[0] + '.';
+                if (summary.length > 60) summary = summary.substring(0, 57) + '...';
 
-                featDiv.appendChild(header);
-                featDiv.appendChild(desc);
-                container.appendChild(featDiv);
+                // Badge Color
+                let badgeColor = '#666'; // Passive
+                if (type === 'Ação') badgeColor = '#56ab2f';
+                if (type === 'Ação Bônus') badgeColor = '#4cc9f0';
+                if (type === 'Reação') badgeColor = '#ffd700';
+
+                // CARD HTML
+                const card = document.createElement('div');
+                card.className = 'ability-card';
+                card.onclick = () => card.classList.toggle('expanded');
+
+                card.innerHTML = `
+                    <div class="ability-header">
+                        <span class="ability-name">${featName}</span>
+                        <span class="ability-badge" style="background:${badgeColor}">${type}</span>
+                    </div>
+                    <div class="ability-summary">${summary}</div>
+                    <div class="ability-details">${fullDesc}</div>
+                `;
+                container.appendChild(card);
             });
         }
     }
 
     if (!found) {
-        container.innerHTML = '<div style="color:#666; font-style:italic;">Nenhuma habilidade desbloqueada ainda.</div>';
+        container.innerHTML = '<div style="color:#666; font-style:italic; padding:20px; text-align:center;">Nenhuma habilidade desbloqueada ainda.</div>';
     }
 
     if (window.lucide) lucide.createIcons();

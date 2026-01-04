@@ -376,11 +376,197 @@
             /* Prevent click */
         }
 
-        .selection-card.locked .card-bg-img {
-            transform: none;
+        ``` transform: none;
         }
 
-        /* WIZARD STEPS */
+        /* CORPS ID CARD STYLES */
+        .corps-id-card {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 30px;
+            background: #121216;
+            border: 1px solid #444;
+            padding: 30px;
+            border-radius: 4px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 20%);
+        }
+
+        .corps-id-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #ffd700, transparent);
+            opacity: 0.5;
+        }
+
+        /* LEFT COL */
+        .idc-left {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .avatar-container {
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: #0a0a0a;
+            border: 2px dashed #444;
+            border-radius: 4px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .avatar-container:hover {
+            border-color: #ffd700;
+            background: #151515;
+        }
+
+        .avatar-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #444;
+        }
+
+        .avatar-img-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .vitals-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .vital-input label {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .vital-input input {
+            width: 100%;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 8px;
+            text-align: center;
+            border-radius: 2px;
+            font-size: 0.9rem;
+        }
+
+        /* RIGHT COL */
+        .idc-right {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .idc-header {
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .idc-header label {
+            display: block;
+            font-size: 0.8rem;
+            color: #ffd700;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .idc-name-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            padding: 0;
+        }
+
+        .idc-name-input:focus {
+            outline: none;
+            border-bottom: 1px dashed #555;
+        }
+
+        .idc-section label {
+            display: block;
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        /* TRAITS */
+        .traits-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .trait-tag {
+            background: #222;
+            border: 1px solid #444;
+            color: #888;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.2s;
+            user-select: none;
+        }
+
+        .trait-tag:hover {
+            border-color: #666;
+            color: #ddd;
+        }
+
+        .trait-tag.active {
+            background: var(--accent-red);
+            color: #fff;
+            border-color: var(--accent-red);
+            box-shadow: 0 0 10px rgba(220, 38, 38, 0.4);
+        }
+
+        .idc-textarea {
+            width: 100%;
+            height: 150px;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            color: #ccc;
+            padding: 15px;
+            border-radius: 4px;
+            resize: vertical;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+
+        .idc-textarea:focus {
+            outline: none;
+            border-color: #555;
+        }
+
+        /* CARD STYLES (Old - keep just in case or remove if unused) */
         .form-step {
             display: none;
             animation: fadeIn 0.4s ease-out;
@@ -1013,14 +1199,53 @@
             display: none;
         }
 
+        /* UX ANIMATIONS */
+        @keyframes sealGlow {
+            0% {
+                box-shadow: 0 0 10px var(--accent-red);
+                transform: scale(1);
+            }
+
+            50% {
+                box-shadow: 0 0 40px var(--accent-red), 0 0 80px var(--accent-red);
+                transform: scale(1.05);
+                border-color: white;
+            }
+
+            100% {
+                box-shadow: 0 0 10px var(--accent-red);
+                transform: scale(1);
+            }
+        }
+
+        @keyframes wisteriaSpin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .btn-sealing {
+            animation: sealGlow 1.5s infinite;
+            pointer-events: none;
+            position: relative;
+            overflow: hidden;
+            background: #2a0a10 !important;
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+
+        .btn-sealing i {
+            animation: wisteriaSpin 1s linear infinite;
+            color: #d90429;
+        }
+
         /* WIZARD STEPS ANIMATION */
         .form-step {
             display: none;
             animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-
-        .form-step.active {
-            display: block;
         }
 
         @keyframes fadeInUp {
@@ -1440,124 +1665,8 @@
             <p style="color:#aaa; margin-bottom:1.5rem;">Sua vida antes da espada moldou quem você é. Escolha sua origem
                 para definir perícias.</p>
 
-            <div class="grid-2">
-                <!-- Artista -->
-                <div class="selection-card" onclick="selectBackground('artista', this)">
-                    <img src="assets/backgrounds/bg_artista.png" class="card-bg-img">
-                    <div class="card-text">
-                        <h3>Artista</h3>
-                        <p>Beleza e Emoção. <strong>Atuação</strong> e <strong>Persuasão</strong>.</p>
-                    </div>
-                </div>
-
-                <!-- Brigão -->
-                <div class="selection-card" onclick="selectBackground('brigao', this)">
-                    <img src="assets/backgrounds/bg_brigao.png" class="card-bg-img">
-                    <div class="card-text">
-                        <h3>Brigão</h3>
-                        <p>Vida nas ruas. <strong>Atletismo</strong> e <strong>Intimidação</strong>.</p>
-                    </div>
-                </div>
-
-                <!-- Costureiro -->
-                <div class="selection-card" onclick="selectBackground('costureiro', this)">
-                    <img src="assets/backgrounds/bg_costureiro.png" class="card-bg-img">
-                    <div class="card-text">
-                        <h3>Costureiro</h3>
-                        <p>Mestre dos tecidos. <strong>Enganação</strong> e <strong>Furtividade</strong>.</p>
-                    </div>
-                </div>
-
-                <!-- Cozinheiro -->
-                <div class="selection-card" onclick="selectBackground('cozinheiro', this)">
-                    <img src="assets/backgrounds/bg_cozinheiro.png" class="card-bg-img">
-                    <div class="card-text">
-                        <h3>Cozinheiro</h3>
-                        <p>Sabores que curam. <strong>História</strong> e <strong>Persuasão</strong>.</p>
-                    </div>
-                </div>
-
-                <!-- Estudioso -->
-                <div class="selection-card" onclick="selectBackground('estudioso', this)">
-                    <img src="assets/backgrounds/bg_estudioso.png" class="card-bg-img">
-                    <div class="card-text">
-                        <h3>Estudioso</h3>
-                        <p>Busca pelo saber. <strong>História</strong> e <strong>Intuição</strong>.</p>
-                    </div>
-                </div>
-
-                <!-- Ferreiro -->
-                <div class="selection-card" onclick="selectBackground('ferreiro', this)">
-                    <img src="assets/backgrounds/bg_ferreiro.png" class="card-bg-img">
-                    <div class="card-text">
-                        <h3>Ferreiro</h3>
-                        <p>Mestre da forja. <strong>História</strong> e <strong>Percepção</strong>.</p>
-                    </div>
-                </div>
-
-                <!-- Ladrão -->
-                <div class="selection-card" onclick="selectBackground('ladrao', this)">
-                    <img src="assets/backgrounds/bg_ladrao.png" class="card-bg-img">
-                    <div class="card-text">
-                        <h3>Ladrão</h3>
-                        <p>Vida nas sombras. <strong>Enganação</strong> e <strong>Furtividade</strong>.</p>
-                    </div>
-                </div>
-
-                <!-- Médico -->
-                <div class="selection-card" onclick="selectBackground('medico', this)">
-                    <img src="assets/backgrounds/bg_medico.png" class="card-bg-img">
-                    <div class="card-text">
-                        <h3>Médico</h3>
-                        <p>Dedicação à cura. <strong>Medicina</strong> e <strong>Natureza</strong>.</p>
-                    </div>
-                </div>
-
-                <!-- Ninja -->
-                <div class="selection-card" onclick="selectBackground('ninja', this)">
-                    <img src="assets/backgrounds/bg_ninja.png" class="card-bg-img">
-                    <div class="card-text">
-                        <h3>Ninja</h3>
-                        <p>Guerreiro Shinobi. <strong>Acrobacia</strong> e <strong>Furtividade</strong>.</p>
-                    </div>
-                </div>
-
-                <!-- Órfão -->
-                <div class="selection-card" onclick="selectBackground('orfao', this)">
-                    <img src="assets/backgrounds/bg_orfao.png" class="card-bg-img">
-                    <div class="card-text">
-                        <h3>Órfão</h3>
-                        <p>Sobrevivente urbano. <strong>Natureza</strong> e <strong>Sobrevivência</strong>.</p>
-                    </div>
-                </div>
-
-                <!-- Policial -->
-                <div class="selection-card" onclick="selectBackground('policial', this)">
-                    <img src="assets/backgrounds/bg_policial.png" class="card-bg-img">
-                    <div class="card-text">
-                        <h3>Policial</h3>
-                        <p>Defensor da lei. <strong>Intuição</strong> e <strong>Investigação</strong>.</p>
-                    </div>
-                </div>
-
-                <!-- Religioso -->
-                <div class="selection-card" onclick="selectBackground('religioso', this)">
-                    <img src="assets/backgrounds/bg_religioso.png" class="card-bg-img">
-                    <div class="card-text">
-                        <h3>Religioso</h3>
-                        <p>Luz divina. <strong>História</strong> e <strong>Intuição</strong>.</p>
-                    </div>
-                </div>
-
-                <!-- Selvagem -->
-                <div class="selection-card" onclick="selectBackground('selvagem', this)">
-                    <img src="assets/backgrounds/bg_selvagem.png" class="card-bg-img">
-                    <div class="card-text">
-                        <h3>Selvagem</h3>
-                        <p>Filho da natureza. <strong>Sobrevivência</strong> e <strong>Natureza</strong>.</p>
-                    </div>
-                </div>
-
+            <div class="grid-2" id="backgroundGrid">
+                <!-- Dynamically populated by renderBackgrounds() -->
             </div>
 
 
@@ -1713,45 +1822,126 @@
         <!-- STEP 5: DESCRIPTION & FINISH -->
         <div id="step-5" class="form-step">
             <div class="section-header">
-                <span class="sec-num">05.</span> <span class="sec-title">Descrição e Identidade</span>
+                <span class="sec-num">05.</span> <span class="sec-title">Registro da Corporação</span>
             </div>
 
-            <div style="max-width: 600px; margin: 0 auto;">
-                <div style="margin-bottom: 2rem;">
-                    <label style="display:block; color:#aaa; margin-bottom:10px;">Nome do Caçador</label>
-                    <input type="text" id="inputName" class="ds-input" placeholder="Ex: Tanjiro Kamado"
-                        style="font-size:1.2rem; padding:15px;" oninput="updatePreview()">
-                </div>
+            <!-- ID CARD CONTAINER -->
+            <div class="corps-id-card">
 
-                <div style="margin-bottom: 2rem;">
-                    <label style="display:block; color:#aaa; margin-bottom:10px;">Aparência e História</label>
-                    <textarea class="ds-input" rows="5"
-                        placeholder="Descreva seus olhos, cabelo, cicatrizes e o motivo de se tornar um caçador..."></textarea>
-                </div>
+                <!-- LEFT COL: VISUALS -->
+                <div class="idc-left">
+                    <div class="avatar-container" onclick="document.getElementById('portraitUpload').click()">
+                        <div id="avatarPreview" class="avatar-placeholder">
+                            <i data-lucide="user" size="64" color="rgba(255,255,255,0.2)"></i>
+                            <span style="margin-top:10px; font-size:0.8rem; color:#666;">Enviar Retrato</span>
+                        </div>
+                        <input type="file" id="portraitUpload" accept="image/*" style="display:none;"
+                            onchange="handlePortraitUpload(this)">
+                    </div>
 
-                <!-- INVENTORY SUMMARY -->
-                <div
-                    style="margin-bottom: 2rem; background: #111; padding: 1.5rem; border-radius: 8px; border: 1px solid #333;">
-                    <h4 style="margin-top:0; color:#ddd; margin-bottom:1rem;">Inventário Inicial</h4>
-                    <div style="display:flex; gap:15px; flex-wrap:wrap;">
-                        <div
-                            style="background:#1a1a20; padding:10px 15px; border-radius:8px; display:flex; gap:8px; align-items:center; border:1px solid #333;">
-                            <i data-lucide="backpack" size="16"></i> <span>Mochila</span>
+                    <div class="vitals-grid">
+                        <div class="vital-input">
+                            <label>Idade</label>
+                            <input type="number" id="inputAge" placeholder="16">
                         </div>
-                        <div
-                            style="background:#1a1a20; padding:10px 15px; border-radius:8px; display:flex; gap:8px; align-items:center; border:1px solid #333;">
-                            <i data-lucide="coins" size="16" style="color:#ffd700;"></i> <span>100 Kan</span>
+                        <div class="vital-input">
+                            <label>Altura</label>
+                            <input type="text" id="inputHeight" placeholder="1.65m">
                         </div>
-                        <div
-                            style="background:#1a1a20; padding:10px 15px; border-radius:8px; display:flex; gap:8px; align-items:center; border:1px solid #333;">
-                            <i data-lucide="bandage" size="16" style="color:#ff6b6b;"></i> <span>Curativos (x5)</span>
+                        <div class="vital-input">
+                            <label>Peso</label>
+                            <input type="text" id="inputWeight" placeholder="60kg">
                         </div>
                     </div>
                 </div>
 
-                <button class="confirm-btn" onclick="finishCreation()">
-                    FINALIZAR CRIAÇÃO
+                <!-- RIGHT COL: NARRATIVE -->
+                <div class="idc-right">
+                    <div class="idc-header">
+                        <label>Nome do Caçador</label>
+                        <input type="text" id="inputName" class="idc-name-input" placeholder="Seu Nome"
+                            oninput="updatePreview()">
+                    </div>
+
+                    <div class="idc-section">
+                        <label>Traços de Personalidade</label>
+                        <div class="traits-container" id="traitsContainer">
+                            <!-- JS Generated -->
+                            <div class="trait-tag" onclick="toggleTrait(this)">Determinado</div>
+                            <div class="trait-tag" onclick="toggleTrait(this)">Gentil</div>
+                            <div class="trait-tag" onclick="toggleTrait(this)">Cauteloso</div>
+                            <div class="trait-tag" onclick="toggleTrait(this)">Impulsivo</div>
+                            <div class="trait-tag" onclick="toggleTrait(this)">Estoico</div>
+                            <div class="trait-tag" onclick="toggleTrait(this)">Otimista</div>
+                        </div>
+                    </div>
+
+                    <div class="idc-section">
+                        <label>Companheiro de Ligação (Corvo Kasugai)</label>
+                        <div style="display:flex; gap:15px; align-items:center;">
+                            <!-- Crow Icon -->
+                            <div
+                                style="width:50px; height:50px; background:#1a1a20; border:1px solid #333; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+                                <i data-lucide="bird" size="24" color="#666"></i>
+                            </div>
+
+                            <!-- Inputs -->
+                            <div style="flex:1; display:flex; gap:10px;">
+                                <input type="text" id="inputCrowName" class="ds-input" placeholder="Nome do Corvo"
+                                    style="flex:1; background:#0a0a0a; border:1px solid #333; height:40px;">
+                                <select id="inputCrowPersonality" class="ds-input"
+                                    style="flex:1; background:#0a0a0a; border:1px solid #333; height:40px;">
+                                    <option value="" disabled selected>Personalidade</option>
+                                    <option value="Arrogante">Arrogante</option>
+                                    <option value="Medroso">Medroso</option>
+                                    <option value="Estrito">Estrito</option>
+                                    <option value="Fofoqueiro">Fofoqueiro</option>
+                                    <option value="Mudo">Mudo</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="idc-section" style="flex:1; display:flex; flex-direction:column; gap:15px;">
+                        <label>Histórico & Motivação</label>
+
+                        <div>
+                            <div style="font-size:0.8rem; color:#aaa; margin-bottom:4px;">Motivação</div>
+                            <textarea id="inputMotivation" class="idc-textarea" style="height:80px;"
+                                placeholder="Por que você se tornou um caçador? (Vingança, Proteção, Poder...)"></textarea>
+                        </div>
+
+                        <div>
+                            <div style="font-size:0.8rem; color:#aaa; margin-bottom:4px;">O Treinamento</div>
+                            <textarea id="inputTraining" class="idc-textarea" style="height:80px;"
+                                placeholder="Quem foi seu mestre? Como foi sua Seleção Final?"></textarea>
+                        </div>
+
+                        <div>
+                            <div style="font-size:0.8rem; color:#aaa; margin-bottom:4px;">Peculiaridade</div>
+                            <textarea id="inputPeculiarity" class="idc-textarea" style="height:60px;"
+                                placeholder="Algo único sobre você (Ex: Olfato aguçado, cicatriz, fobia...)"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:center; margin-top:30px;">
+                <button id="btnSealRecord" class="confirm-btn" onclick="finishCreation()"
+                    style="width:auto; padding:15px 50px; font-size:1.2rem; transition: all 0.5s ease;">
+                    SELAR REGISTRO <i data-lucide="scroll" style="margin-left:10px;"></i>
                 </button>
+            </div>
+
+            <!-- WELCOME OVERLAY -->
+            <div id="welcomeOverlay"
+                style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:20000; align-items:center; justify-content:center; flex-direction:column; animation: fadeIn 2s;">
+                <h1
+                    style="font-family:'Cinzel', serif; color:white; font-size:3rem; margin-bottom:20px; text-align:center; animation: slideUp 1s;">
+                    BEM-VINDO À<br><span style="color:var(--accent-red); font-size:4rem;">CORPORAÇÃO</span>
+                </h1>
+                <p style="color:#aaa; font-size:1.2rem; letter-spacing:2px; animation: fadeIn 3s;">Sua jornada começa
+                    agora.</p>
             </div>
 
             <div class="step-nav-btns">
@@ -2224,6 +2414,44 @@
             }
         };
 
+        // --- DYNAMIC BACKGROUND RENDERING ---
+        function renderBackgrounds() {
+            const container = document.getElementById('backgroundGrid');
+            if (!container) return;
+            container.innerHTML = '';
+
+            Object.keys(backgroundData).forEach(key => {
+                const bg = backgroundData[key];
+
+                // USER REQUESTED LOGIC
+                let skillsText = "Nenhuma";
+                if (bg.skills && bg.skills.length > 0) {
+                    skillsText = bg.skills.map(p => p.name).join(', ');
+                }
+
+                const card = document.createElement('div');
+                card.className = 'selection-card';
+                card.onclick = () => selectBackground(key, card);
+
+                const imgPath = `assets/backgrounds/bg_${key}.png`;
+
+                card.innerHTML = `
+                    <img src="${imgPath}" class="card-bg-img" onerror="this.style.display='none'">
+                    <div class="card-text">
+                        <h3>${bg.title}</h3>
+                        <p>${bg.description || ''} <br>
+                        <span style="font-size:0.9rem; color:#bbb; display:block; margin-top:8px;">
+                            <strong style="color:white;">Perícias:</strong> ${skillsText}
+                        </span></p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Initialize Backgrounds
+        renderBackgrounds();
+
         // --- NAVIGATION & LOGIC ---
         function goToStep(stepNum) {
             // Validate if needed?
@@ -2642,6 +2870,53 @@
             lucide.createIcons();
         }
 
+        function updateAvatarPlaceholder() {
+            const ph = document.getElementById('avatarPlaceholder');
+            const style = state.combat || 'water';
+
+            // Lucide Icon mapping
+            let iconName = 'droplets';
+            let color = '#00b4d8';
+
+            if (style === 'flame') { iconName = 'flame'; color = '#ff4d00'; }
+            if (style === 'thunder') { iconName = 'zap'; color = '#ffd700'; }
+            if (style === 'beast') { iconName = 'skull'; color = '#7b8cde'; }
+            if (style === 'wind') { iconName = 'wind'; color = '#56ab2f'; }
+            if (style === 'stone') { iconName = 'hammer'; color = '#a9a9a9'; }
+            if (style === 'mist') { iconName = 'cloud'; color = '#a2d2ff'; }
+            if (style === 'flower') { iconName = 'flower'; color = '#ff69b4'; }
+            if (style === 'serpent') { iconName = 'curly-loop'; color = '#8a2be2'; }
+
+            ph.style.borderColor = color;
+            ph.innerHTML = `<i data-lucide="${iconName}" size="64" color="${color}" style="opacity:0.5;"></i>`;
+            lucide.createIcons();
+        }
+
+        // --- NEW: DYNAMIC THEME COLORS ---
+        function updateThemeColors() {
+            const style = state.combat || 'water';
+            let accent = '#d90429'; // Default Red
+
+            // Color Map
+            switch (style) {
+                case 'water': accent = '#00BFFF'; break;      // Deep Sky Blue
+                case 'flame': accent = '#FF4500'; break;      // Orange Red
+                case 'thunder': accent = '#FFD700'; break;    // Gold
+                case 'beast': accent = '#7B8CDE'; break;      // Slate Blue
+                case 'wind': accent = '#00FF7F'; break;       // Spring Green
+                case 'mist': accent = '#A2D2FF'; break;       // Pale Blue
+                case 'stone': accent = '#A9A9A9'; break;      // Dark Gray
+                case 'flower': accent = '#FF69B4'; break;     // Hot Pink
+                case 'serpent': accent = '#8A2BE2'; break;    // Blue Violet
+                case 'sun': accent = '#FF8C00'; break;        // Dark Orange
+                case 'moon': accent = '#9370DB'; break;       // Medium Purple
+                default: accent = '#d90429'; // Default
+            }
+
+            // Apply to CSS Variable
+            document.documentElement.style.setProperty('--dynamic-accent', accent);
+        }
+
         function confirmOni() {
             // Save current state
             const tempData = {
@@ -2989,15 +3264,31 @@
         }
 
         // --- FINISH CREATION UPDATE ---
+        // --- FINISH CREATION UPDATE ---
         function finishCreation() {
-            // Validation
+            // 1. Validation
             const name = document.getElementById('inputName').value;
-            if (!name) { showMsg("Nome Ausente", "Por favor, dê um <strong>Nome</strong> ao seu caçador para finalizar."); return; }
+            if (!name) {
+                showMsg("Nome Inválido", "Por favor, dê um nome ao seu caçador.");
+                return;
+            }
 
-            // ... (Rest of logic) ...
+            // 2. Aggregate History Fields
+            const motivation = document.getElementById('inputMotivation').value || "Não especificada.";
+            const training = document.getElementById('inputTraining').value || "Treinamento padrão.";
+            const peculiarity = document.getElementById('inputPeculiarity').value || "Nenhuma.";
+
+            const combinedHistory = `**Motivação:** ${motivation}\n\n**Treinamento:** ${training}\n\n**Peculiaridade:** ${peculiarity}`;
+
+            // 3. Vitals
+            const age = document.getElementById('inputAge').value || "16";
+            const height = document.getElementById('inputHeight').value || "1.70m";
+            const weight = document.getElementById('inputWeight').value || "60kg";
+
+            // 4. Background Data
             const bgData = backgroundData[state.background];
 
-            // Build Inventory
+            // 5. Build Inventory
             const defaultItems = [
                 { name: "Mochila", type: "item", weight: "1 kg", desc: "Mochila padrão de caçador." },
                 { name: "100 Kan", type: "item", weight: "0.1 kg", desc: "Moedas miúdas para despesas iniciais." },
@@ -3020,7 +3311,7 @@
                 });
             }
 
-            // Skills & Proficiencies
+            // 6. Skills & Proficiencies
             let finalSkills = bgData ? bgData.skills.map(s => s.name) : ["Atletismo", "Acrobacia"];
             let finalProficiencies = {};
 
@@ -3030,10 +3321,9 @@
                 });
             }
 
-            // --- BREATHING DATA INTEGRATION (NEW) ---
+            // 7. Breathing Data Integration
             const breathData = window.BREATHING_CLASS_DB ? window.BREATHING_CLASS_DB[selectedCombatStyle] : null;
             let finalSavingThrows = [];
-
             let finalWeaponProfs = [];
             let finalArmorProfs = [];
 
@@ -3042,7 +3332,7 @@
                 if (breathData.proficiencies && breathData.proficiencies.savingThrows) {
                     finalSavingThrows = breathData.proficiencies.savingThrows;
                 }
-                // Weapon & Armor Proficiencies (Strings)
+                // Weapon & Armor Proficiencies
                 if (breathData.proficiencies) {
                     if (breathData.proficiencies.weapons) finalWeaponProfs = breathData.proficiencies.weapons;
                     if (breathData.proficiencies.armor) finalArmorProfs = breathData.proficiencies.armor;
@@ -3057,25 +3347,25 @@
                             if (w.includes("Katana") || w.includes("Nichirin")) {
                                 item.name = "Katana (Nichirin)";
                                 item.type = "weapon";
-                                item.dmg = "1d8"; // Will be updated by Nichirin System usually, but base 1d8
+                                item.dmg = "1d8";
                                 item.desc = "Espada padrão dos caçadores de demônios.";
                                 item.props = "Versátil (1d10)";
                             }
-                            // 2. ARMA SIMPLES (Bundle)
+                            // 2. ARMA SIMPLES
                             else if (w.toLowerCase().includes("simples")) {
                                 item.name = "Escolha: Arma Simples";
                                 item.type = "bundle_weapon";
                                 item.desc = "Use este item para escolher uma arma simples.";
-                                item.props = "filter:simple"; // Used by openBundleSelection
+                                item.props = "filter:simple";
                             }
-                            // 3. ARMA MARCIAL (Bundle)
+                            // 3. ARMA MARCIAL
                             else if (w.toLowerCase().includes("marcial") || w.toLowerCase().includes("única")) {
                                 item.name = "Escolha: Arma Marcial/Única";
                                 item.type = "bundle_weapon";
                                 item.desc = "Use este item para escolher uma arma marcial ou única.";
                                 item.props = "filter:martial";
                             }
-                            // 4. ARMA PESADA (Bundle)
+                            // 4. ARMA PESADA
                             else if (w.toLowerCase().includes("pesada")) {
                                 item.name = "Escolha: Arma Pesada";
                                 item.type = "bundle_weapon";
@@ -3090,12 +3380,11 @@
                         breathData.equipment.armor.forEach(a => {
                             let item = { name: a, type: "armor", desc: "Equipamento Inicial", ac: "11+des", weight: "2.0 kg" };
 
-                            // UNIFORME (Bundle)
                             if (a.toLowerCase().includes("uniforme")) {
                                 item.name = "Escolha: Uniforme";
                                 item.type = "bundle_armor";
                                 item.desc = "Use este item para escolher seu uniforme.";
-                                item.props = "filter:light_medium"; // Simplification
+                                item.props = "filter:light_medium";
                             }
 
                             finalInventory.push(item);
@@ -3104,15 +3393,20 @@
                 }
             }
 
-            // Breathing Names
+            // 8. Breathing Names Map
             const styleMap = {
                 'water': "Respiração da Água",
                 'thunder': "Respiração do Trovão",
                 'beast': "Respiração da Fera",
                 'flame': "Respiração das Chamas",
-                'wind': "Respiração do Vento"
+                'wind': "Respiração do Vento",
+                'stone': "Respiração da Pedra",
+                'mist': "Respiração da Névoa",
+                'flower': "Respiração das Flores",
+                'serpent': "Respiração da Serpente"
             };
 
+            // 9. Construct Final Object
             const finalChar = {
                 id: Date.now().toString(),
                 name: name,
@@ -3120,34 +3414,71 @@
                 level: 1,
                 hp: parseInt(document.getElementById('displayHP').innerText) || 10,
                 currentHP: parseInt(document.getElementById('displayHP').innerText) || 10,
-                manualMaxHP: parseInt(document.getElementById('displayHP').innerText) || 10, // Force persistence
+                manualMaxHP: parseInt(document.getElementById('displayHP').innerText) || 10,
                 pe: parseInt(document.getElementById('displayPE').innerText) || 1,
-                manualMaxPE: parseInt(document.getElementById('displayPE').innerText) || 1, // Force persistence
+                manualMaxPE: parseInt(document.getElementById('displayPE').innerText) || 1,
                 attributes: state.stats,
                 breathingStyle: {
                     id: selectedCombatStyle,
-                    name: styleMap[selectedCombatStyle] || "Respiração da Água",
+                    name: styleMap[selectedCombatStyle] || "Respiração desconhecida",
                     icon: "⚔️",
-                    mastery: state.thunderMastery // Save Mastery
+                    mastery: state.thunderMastery
                 },
+
+                // NEW FIELDS
+                history: combinedHistory,
+                age: age,
+                height: height,
+                weight: weight,
+                portrait: state.portrait, // From portrait upload
+                traits: state.traits, // From trait tags
+
+                // Kasugai Crow
+                kasugaiCrow: {
+                    name: document.getElementById('inputCrowName').value || "Não nomeado",
+                    personality: document.getElementById('inputCrowPersonality').value || "Mudo"
+                },
+
                 inventory: finalInventory,
                 skills: finalSkills,
-                proficiencies: finalProficiencies, // Save Proficiencies
-                savingThrows: finalSavingThrows, // Save Saving Throws
-                weaponProfs: finalWeaponProfs, // Save Weapon Profs
-                armorProfs: finalArmorProfs, // Save Armor Profs
+                proficiencies: finalProficiencies,
+                savingThrows: finalSavingThrows,
+                weaponProfs: finalWeaponProfs,
+                armorProfs: finalArmorProfs,
                 background: bgData ? bgData : null,
                 yen: 0
             };
 
-            // Save to LocalStorage Array
-            let allChars = JSON.parse(localStorage.getItem('demonSlayerSaveSlots') || '[]');
-            if (allChars.length >= 5) { alert("Limite de personagens atingido (Máx 5)."); return; }
+            // 10. UX Effects & Save
+            const btn = document.getElementById('btnSealRecord');
+            if (btn) {
+                btn.classList.add('btn-sealing');
+                btn.innerHTML = `SELANDO... <i data-lucide="loader-2"></i>`;
+                lucide.createIcons();
+            }
 
-            allChars.push(finalChar);
-            localStorage.setItem('demonSlayerSaveSlots', JSON.stringify(allChars));
-            localStorage.setItem('demonSlayerChar', JSON.stringify(finalChar));
-            window.location.href = 'dashboard.html';
+            // Fake Delay for immersion
+            setTimeout(() => {
+                // Save to LocalStorage Array
+                let allChars = JSON.parse(localStorage.getItem('demonSlayerSaveSlots') || '[]');
+                if (allChars.length >= 5) { alert("Limite de personagens atingido (Máx 5)."); return; }
+
+                allChars.push(finalChar);
+                localStorage.setItem('demonSlayerSaveSlots', JSON.stringify(allChars));
+                localStorage.setItem('demonSlayerChar', JSON.stringify(finalChar));
+
+                // Show Overlay
+                const overlay = document.getElementById('welcomeOverlay');
+                if (overlay) {
+                    overlay.style.display = 'flex';
+                    // Play sound here if available
+                }
+
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 2500);
+
+            }, 1500);
         }
 
         // Initial Background Selection (None)
@@ -3667,6 +3998,12 @@
         // Show target
         const target = document.getElementById(`step-${stepNum}`);
         if (target) target.classList.add('active');
+
+        // Step 5 Triggers
+        if (stepNum === 5) {
+            if (typeof updateAvatarPlaceholder === 'function') updateAvatarPlaceholder();
+            if (typeof updateThemeColors === 'function') updateThemeColors();
+        }
 
         // Nav Highlight
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));

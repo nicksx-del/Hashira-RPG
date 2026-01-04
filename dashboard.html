@@ -388,6 +388,12 @@
                             <!-- Injected via JS -->
                         </div>
                     </div>
+
+                    <!-- MOBILE SALARY (Hidden on Desktop) -->
+                    <div id="mobileSalaryDisplay" class="mobile-only-salary"
+                        style="display:none; order:10; margin-top:10px; background:rgba(255,215,0,0.1); border:1px solid #ffd700; padding:10px; border-radius:8px; align-items:center; justify-content:center; gap:8px; color:#ffd700; font-weight:bold;">
+                        <!-- JS Injected -->
+                    </div>
                 </div>
 
                 <div class="attributes-grid" id="attrGrid"></div>
@@ -1057,7 +1063,72 @@
             transform: scale(1.1) rotate(5deg);
         }
 
-        /* Animations */
+        /* Ability Cards */
+        .ability-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .ability-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .ability-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .ability-name {
+            font-weight: 700;
+            color: #fff;
+            font-size: 0.95rem;
+        }
+
+        .ability-badge {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #111;
+            letter-spacing: 0.5px;
+        }
+
+        .ability-summary {
+            color: #aaa;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            display: block;
+        }
+
+        .ability-details {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ccc;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .ability-card.expanded .ability-details {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        .ability-card.expanded .ability-summary {
+            display: none;
+        }
+
+        /* CARD STYLES */
         @keyframes pulse-ring {
             0% {
                 transform: translate(-50%, -50%) scale(0.8);
@@ -1242,6 +1313,190 @@
         </div>
         <div class="dice-close-hint">Clique para continuar</div>
     </div>
+    <!-- MOBILE BOTTOM NAVIGATION -->
+    <nav class="bottom-nav-bar" style="display:none;">
+        <div class="nav-item-mobile active" onclick="showSection('overview'); activateMobile(this)">
+            <i data-lucide="layout-dashboard"></i>
+            <span>Início</span>
+        </div>
+        <div class="nav-item-mobile" onclick="showSection('inventory'); activateMobile(this)">
+            <i data-lucide="scroll-text"></i>
+            <span>Ficha</span>
+        </div>
+        <div class="nav-item-mobile" onclick="showSection('attacks'); activateMobile(this)">
+            <i data-lucide="swords"></i>
+            <span>Combate</span>
+        </div>
+        <div class="nav-item-mobile" onclick="window.location.href='campaign-hub.html'">
+            <i data-lucide="map"></i>
+            <span>Mapa</span>
+        </div>
+        <div class="nav-item-mobile" onclick="toggleMobileMenu()">
+            <i data-lucide="menu"></i>
+            <span>Menu</span>
+        </div>
+    </nav>
+    <style>
+        @media (max-width: 768px) {
+
+            .sidebar-left,
+            .sidebar-right {
+                display: none !important;
+            }
+
+            .bottom-nav-bar {
+                display: flex !important;
+                position: fixed;
+                bottom: 0px;
+                left: 0;
+                width: 100%;
+                height: 70px;
+                background: rgba(15, 15, 19, 0.85);
+                backdrop-filter: blur(12px);
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                justify-content: space-around;
+                align-items: center;
+                z-index: 10000;
+                padding-bottom: 5px;
+                /* Safe area */
+            }
+
+            .nav-item-mobile {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                color: #888;
+                font-size: 0.7rem;
+                gap: 4px;
+                cursor: pointer;
+                flex: 1;
+                transition: all 0.3s;
+            }
+
+            .nav-item-mobile.active {
+                color: var(--accent-primary);
+                transform: translateY(-2px);
+            }
+
+            .nav-item-mobile.active svg {
+                stroke: var(--accent-primary);
+                filter: drop-shadow(0 0 8px var(--accent-primary));
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+                padding: 10px !important;
+                /* Reduced padding */
+                padding-bottom: 90px !important;
+            }
+
+            /* --- RESPONSIVE OVERVIEW GRID --- */
+
+            /* 1. Char Header Reordering */
+            .char-header-panel {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 15px !important;
+                padding: 1rem !important;
+            }
+
+            /* Move Vitals to Top */
+            .vital-card.red {
+                order: 1;
+            }
+
+            /* HP */
+            .vital-card.blue {
+                order: 2;
+            }
+
+            /* PE */
+
+            /* Name Row */
+            .char-header-panel>div:first-child {
+                order: 3;
+            }
+
+            /* Name/Rank */
+
+            /* Stats Grid (AC/Speed) */
+            .char-header-panel>div:nth-child(2) {
+                order: 4;
+                grid-template-columns: 1fr 1fr !important;
+                /* 2 cols instead of 4 */
+            }
+
+            /* Proficiencies */
+            #proficiencies-container {
+                order: 5;
+            }
+
+            /* 2. Attributes Grid */
+            #attrGrid {
+                grid-template-columns: 1fr !important;
+                /* Single Column */
+                gap: 10px !important;
+            }
+
+            .attr-column {
+                padding: 10px !important;
+                /* Compact */
+            }
+
+            /* Typography Boosts */
+            .vital-values {
+                font-size: 1.1rem !important;
+            }
+
+            #dispAC,
+            #dispSpeed {
+                font-size: 1.6rem !important;
+            }
+
+            #currHP,
+            #maxHP,
+            #currPE,
+            #maxPE {
+                font-size: 1.2rem !important;
+                font-weight: 800;
+            }
+        }
+    </style>
+    <script>
+        function activateMobile(el) {
+            document.querySelectorAll('.nav-item-mobile').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+        }
+        function toggleMobileMenu() {
+            // Simple logic for now, redirect or show modal. 
+            // Reuse Exit logic for consistency as per Sidebar
+            if (confirm("Sair do Painel?")) window.location.href = 'index.html';
+        }
+
+        // Ensure active tab sync
+        const originalShow = window.showSection;
+        window.showSection = function (id) {
+            if (window.innerWidth < 768) {
+                // Remove active from all
+                document.querySelectorAll('.nav-item-mobile').forEach(n => n.classList.remove('active'));
+                // Try to find matching icon logic is implicit in click handlers, but if called externally:
+                // We can map IDs to indexes but simple click handler sets active is enough for user interaction.
+            }
+            // Call original
+            // Re-implement basic showSection logic here if original is overwritten or accessible
+            document.querySelectorAll('.dashboard-section').forEach(s => s.classList.remove('active-tab'));
+            const t = document.getElementById(id);
+            if (t) t.classList.add('active-tab');
+
+            // Sidebar sync
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const n = document.getElementById('nav-' + id);
+            if (n) n.classList.add('active');
+
+            if (window.lucide) lucide.createIcons();
+        }
+    </script>
 </body>
 
 </html>
