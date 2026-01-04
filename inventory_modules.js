@@ -347,14 +347,58 @@ function populateItemModal() {
     if (window.lucide) window.lucide.createIcons();
 }
 
+// NEW: Inventory Status Update logic
+window.updateInventoryStatus = function () {
+    // Wealth
+    const wealthEl = document.getElementById('invWealth');
+    if (wealthEl) {
+        // Format with thousand separators (e.g. 200.000)
+        let money = charData.money || 0;
+        let formatted = money.toLocaleString('pt-BR');
+        wealthEl.innerHTML = `<i data-lucide="coins" style="width:16px; height:16px;"></i> <span>${formatted} Ienes</span>`;
+    }
+
+    // Weight
+    const weightEl = document.getElementById('invWeight');
+    if (weightEl) {
+        let totalWeight = 0;
+        if (charData.inventory) {
+            charData.inventory.forEach(item => {
+                totalWeight += parseFloat(item.weight) || 0;
+            });
+        }
+
+        let str = (charData.attributes ? charData.attributes.str : 10);
+        let maxWeight = str * 15; // D&D rule or custom
+
+        // Check overload
+        let isOver = totalWeight > maxWeight;
+        let color = isOver ? '#ff595e' : '#aaa';
+        let iconColor = isOver ? '#ff595e' : 'currentColor';
+        let alertIcon = isOver ? '<i data-lucide="alert-triangle" style="width:14px; margin-left:5px;"></i>' : '';
+
+        weightEl.style.color = color;
+        weightEl.innerHTML = `
+            <i data-lucide="weight" style="width:16px; height:16px; color:${iconColor}"></i>
+            <span>${totalWeight.toFixed(1)} / ${maxWeight} kg</span>
+            ${alertIcon}
+        `;
+    }
+
+    if (window.lucide) window.lucide.createIcons();
+};
+
 window.renderInventory = function () {
     const grid = document.getElementById('inventoryGrid');
     if (!grid) return;
 
     grid.innerHTML = '';
 
-    let totalWeight = 0;
-    const maxWeight = (charData.attributes.str || 10) * 15; // D&D 5e Standard Carrying Capacity (Str * 15 lbs -> transformed roughly to kg or kept raw unit for now, logic varies but sticking to standard multiplier)
+    // Trigger Status Update
+    if (typeof updateInventoryStatus === 'function') updateInventoryStatus();
+
+    let totalWeight = 0; // Keeping local calc for capacity UI if still used elsewhere
+    const maxWeight = (charData.attributes.str || 10) * 15;
 
     const VALID_INV_TYPES = ['weapon', 'armor', 'consumable', 'adventure', 'misc'];
 
@@ -381,7 +425,7 @@ window.renderInventory = function () {
         grid.appendChild(card);
     });
 
-    // Update Capacity UI
+    // Update Capacity UI (Old Sidebar one, keeping for compatibility)
     if (typeof updateCapacity === 'function') updateCapacity(totalWeight, maxWeight);
 
     // Initial Empty State
@@ -584,6 +628,7 @@ window.toggleEquip = function (index) {
 
     if (typeof saveState === 'function') saveState();
     renderInventory();
+    if (window.innerWidth < 768 && typeof closeDetailDrawer === 'function') closeDetailDrawer();
     if (typeof window.syncCombatValues === 'function') window.syncCombatValues();
     else if (typeof calcDefense === 'function') calcDefense();
 };
@@ -907,6 +952,7 @@ window.useItem = function (index) {
 
                 renderInventory();
                 showFlashMessage(`+${finalValue} Ienes`);
+                if (window.innerWidth < 768 && typeof closeDetailDrawer === 'function') closeDetailDrawer();
             }
         }
         else if (item.value) {
@@ -919,6 +965,7 @@ window.useItem = function (index) {
                     if (typeof saveHuman === 'function') saveHuman();
                     renderInventory();
                     showFlashMessage(`+${val} Ienes`);
+                    if (window.innerWidth < 768 && typeof closeDetailDrawer === 'function') closeDetailDrawer();
                 }
             }
         }
@@ -950,6 +997,7 @@ window.useItem = function (index) {
                 if (typeof saveHuman === 'function') saveHuman();
                 renderInventory();
                 showFlashMessage(`Curado: +${heal} PV`);
+                if (window.innerWidth < 768 && typeof closeDetailDrawer === 'function') closeDetailDrawer();
             }
             return;
         }

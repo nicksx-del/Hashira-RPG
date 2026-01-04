@@ -884,52 +884,75 @@ function getConMod() {
 // Header Interactions
 
 // Header Interactions
-function changeHP(modeOrDelta) {
-    let delta = 0;
+// NEW VITALS LOGIC (Unified Mobile/Desktop)
 
-    // Check if using new V2 logic (string 'add'/'sub') or legacy delta (number)
-    if (typeof modeOrDelta === 'string') {
-        const input = document.getElementById('hpModInput');
-        const val = input && input.value ? parseInt(input.value) : 1; // Default to 1 if empty
+let rapidChangeInterval = null;
 
-        if (modeOrDelta === 'sub') delta = -val;
-        else if (modeOrDelta === 'add') delta = val;
-
-        // Clear input after use? Optional. Let's keep it for repeated dmg.
-    } else {
-        delta = modeOrDelta;
+function changeVital(type, amount) {
+    if (type === 'hp') {
+        if (!humanData.currentHP && humanData.currentHP !== 0) humanData.currentHP = humanData.maxHP;
+        humanData.currentHP += amount;
+        if (humanData.currentHP < 0) humanData.currentHP = 0;
+        if (humanData.currentHP > humanData.maxHP) humanData.currentHP = humanData.maxHP;
+    } else if (type === 'pe') {
+        if (humanData.currentPE === undefined) humanData.currentPE = humanData.maxPE;
+        humanData.currentPE += amount;
+        if (humanData.currentPE < 0) humanData.currentPE = 0;
+        if (humanData.currentPE > humanData.maxPE) humanData.currentPE = humanData.maxPE;
     }
-
-    if (!humanData.currentHP && humanData.currentHP !== 0) humanData.currentHP = humanData.maxHP;
-    humanData.currentHP += delta;
-    if (humanData.currentHP < 0) humanData.currentHP = 0;
-    if (humanData.currentHP > humanData.maxHP) humanData.currentHP = humanData.maxHP;
-
     saveHuman();
     updateVitalsUI();
 }
 
-function changePE(modeOrDelta) {
-    let delta = 0;
+function startRapidChange(type, dir) {
+    if (rapidChangeInterval) stopRapidChange();
+    const amount = dir === 'add' ? 5 : -5; // Fast increment/decrement
+    // Immediate first tick
+    changeVital(type, dir === 'add' ? 1 : -1);
 
-    if (typeof modeOrDelta === 'string') {
-        const input = document.getElementById('peModInput');
-        const val = input && input.value ? parseInt(input.value) : 1;
-
-        if (modeOrDelta === 'sub') delta = -val;
-        else if (modeOrDelta === 'add') delta = val;
-    } else {
-        delta = modeOrDelta;
-    }
-
-    if (humanData.currentPE === undefined) humanData.currentPE = humanData.maxPE;
-    humanData.currentPE += delta;
-    if (humanData.currentPE < 0) humanData.currentPE = 0;
-    if (humanData.currentPE > humanData.maxPE) humanData.currentPE = humanData.maxPE;
-
-    saveHuman();
-    updateVitalsUI();
+    // Hold delay then rapid
+    setTimeout(() => {
+        if (rapidChangeInterval) return; // Prevent double
+        rapidChangeInterval = setInterval(() => {
+            changeVital(type, amount);
+        }, 150);
+    }, 300);
 }
+
+function stopRapidChange() {
+    if (rapidChangeInterval) {
+        clearInterval(rapidChangeInterval);
+        rapidChangeInterval = null;
+    }
+}
+
+function editVital(type) {
+    const currentMax = type === 'hp' ? humanData.maxHP : humanData.maxPE;
+    const label = type === 'hp' ? "Vida Máxima" : "Energia Máxima";
+
+    const newVal = prompt(`Definir novo valor para ${label}:`, currentMax);
+    if (newVal !== null && newVal.trim() !== "") {
+        const parsed = parseInt(newVal);
+        if (!isNaN(parsed) && parsed > 0) {
+            if (type === 'hp') {
+                humanData.maxHP = parsed;
+                if (humanData.currentHP > parsed) humanData.currentHP = parsed;
+                // Update Manual Max if used
+                humanData.manualMaxHP = parsed;
+            } else {
+                humanData.maxPE = parsed;
+                if (humanData.currentPE > parsed) humanData.currentPE = parsed;
+            }
+            saveHuman();
+            updateVitalsUI();
+            showToast(`${label} atualizada para ${parsed}.`);
+        }
+    }
+}
+
+// Keep legacy wrapper if needed, but HTML now calls changeVital direct
+function changeHP(mode) { changeVital('hp', mode === 'add' ? 1 : -1); }
+function changePE(mode) { changeVital('pe', mode === 'add' ? 1 : -1); }
 
 function toggleLevelSelector() {
     const selector = document.getElementById('levelSelector');
@@ -1301,7 +1324,7 @@ function renderHunterOrganization() {
     // Mobile Salary Sync
     const mobSal = document.getElementById('mobileSalaryDisplay');
     if (mobSal) {
-        mobSal.innerHTML = `<i data-lucide="coins" size="16"></i> ${salaryText} Kan`;
+        mobSal.innerHTML = `<i data-lucide="coins" size="16"></i> ${salaryText} Ienes`;
         if (window.lucide) lucide.createIcons();
     }
 
@@ -1377,7 +1400,7 @@ window.completeMission = function () {
     if (yenDisplay) yenDisplay.textContent = humanData.yen.toLocaleString('pt-BR');
 
     // 5. Feedback
-    showToast(`Missão Completa! +${salary.toLocaleString('pt-BR')} Kan recebidos.`, "success");
+    showToast(`Missão Completa! +${salary.toLocaleString('pt-BR')} Ienes recebidos.`, "success");
 };
 
 // --- NEW PROFICIENCY RENDER ---
@@ -3194,4 +3217,90 @@ function renderProficiencies() {
     }
 
     if (window.lucide) lucide.createIcons();
+}
+
+// --- MISSION / SALARY SYSTEM ---
+function completeMission() {
+    // 1. Initialize State if missing
+    if (typeof charData.pendingSalary === 'undefined') {
+        charData.pendingSalary = true; // Simulating available for first time
+    }
+
+    // 2. Check if available
+    if (!charData.pendingSalary) {
+        showToast("Nenhum pagamento pendente.", "error");
+        return;
+    }
+
+    // 3. Calculate Amount logic (Based on Rank)
+    const rank = (charData.info.rank || "Mizunoto").toLowerCase();
+    let amount = 20000; // Base Mizunoto
+
+    const salaries = {
+        'mizunoto': 20000,
+        'mizunoe': 25000,
+        'kanoto': 30000,
+        'kanoe': 40000,
+        'tsuchinoto': 50000,
+        'tsuchinoe': 60000,
+        'hinoto': 80000,
+        'hinoe': 100000,
+        'kinoto': 150000,
+        'kinoe': 200000,
+        'hashira': 500000
+    };
+
+    // Find best match
+    for (const [r, val] of Object.entries(salaries)) {
+        if (rank.includes(r)) {
+            amount = val;
+            break;
+        }
+    }
+
+    // 4. Add to Balance
+    charData.money = (charData.money || 0) + amount;
+    charData.pendingSalary = false;
+    saveChar(); // Persist
+
+    // 5. Update UI
+    if (window.updateInventoryStatus) window.updateInventoryStatus();
+
+    // Update Sidebar
+    const sideDisplay = document.getElementById('salaryDisplay');
+    if (sideDisplay) {
+        // Just flash effects, value is static "Monthly" usually, but let's update if it was 0
+        // Or if we track "Pending" visually
+    }
+
+    // Update Mobile Button styling
+    const mobBtn = document.getElementById('mobileSalaryDisplay');
+    if (mobBtn) {
+        mobBtn.innerHTML = `
+            <i data-lucide="check-circle" size="16"></i>
+            <span>Salário Resgatado</span>
+        `;
+        mobBtn.style.borderColor = '#22c55e';
+        mobBtn.style.color = '#22c55e';
+        mobBtn.style.background = 'rgba(34, 197, 94, 0.1)';
+        mobBtn.onclick = null; // Disable click
+    }
+
+    // REFRESH INVENTORY IF OPEN
+    if (document.getElementById('inventory').classList.contains('active-tab')) {
+        renderInventory();
+    }
+
+    // 6. Feedback
+    if (window.lucide) lucide.createIcons();
+    showToast(`Salário resgatado: +${amount.toLocaleString('pt-BR')} Ienes`, "success");
+
+    // Play sound? (Optional)
+}
+
+// Function to reset logic (Dev helper or Monthly Timer)
+function resetSalary() {
+    charData.pendingSalary = true;
+    saveChar();
+    console.log("Salary Reset");
 }

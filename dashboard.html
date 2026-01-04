@@ -224,7 +224,7 @@
                 <div class="char-header-panel"
                     style="background: #16161a; border: 1px solid #333; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 15px;">
 
-                    <!-- TOP ROW: Name, Rank, Level -->
+                    <!-- 1. IDENTITY ROW: Name, Rank, Level -->
                     <div
                         style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 15px;">
                         <div style="display: flex; align-items: center; gap: 15px;">
@@ -267,7 +267,107 @@
                         </div>
                     </div>
 
-                    <!-- NEW STATS ROW with COMBAT ACTIONS -->
+                    <!-- 2. VITAL: HP - COMPACT OVERLAY DESIGN -->
+                    <div class="vital-card minimalist red"
+                        style="padding:0; overflow:hidden; border-radius:12px; height:50px; position:relative; margin-bottom:5px; background:#1a1a1a; box-shadow:0 4px 10px rgba(0,0,0,0.3);">
+                        <div id="hpNormalState" style="width:100%; height:100%;">
+
+                            <!-- Background Track -->
+                            <div class="vital-bar-track"
+                                style="position:absolute; width:100%; height:100%; background:rgba(0,0,0,0.3); z-index:0;">
+                            </div>
+
+                            <!-- Fill Bar -->
+                            <div class="vital-bar-fill hp"
+                                style="position:absolute; height:100%; width:100%; background:linear-gradient(90deg, #d90429, #ef4444); z-index:0; transition:width 0.3s ease;">
+                            </div>
+
+                            <!-- Overlay Content -->
+                            <div
+                                style="position:absolute; width:100%; height:100%; display:flex; align-items:center; justify-content:space-between; z-index:2; padding:0 5px;">
+
+                                <!-- Minus Button -->
+                                <button onclick="changeVital('hp', -1)"
+                                    style="width:40px; height:40px; border-radius:8px; border:none; background:rgba(0,0,0,0.2); color:white; display:flex; align-items:center; justify-content:center; cursor:pointer; backdrop-filter:blur(2px);">
+                                    <i data-lucide="minus" style="width:18px;"></i>
+                                </button>
+
+                                <!-- Central Text (Click to Edit) -->
+                                <div onclick="editVital('hp')"
+                                    style="display:flex; flex-direction:column; align-items:center; cursor:pointer; text-shadow:0 2px 4px rgba(0,0,0,0.8);">
+                                    <span
+                                        style="font-size:0.75rem; font-weight:700; color:rgba(255,255,255,0.8); letter-spacing:1px;">VIDA</span>
+                                    <span style="font-size:1.1rem; font-weight:800; color:white;">
+                                        <span id="currHP">17</span> / <span id="maxHP">17</span>
+                                    </span>
+                                </div>
+
+                                <!-- Plus Button -->
+                                <button onclick="changeVital('hp', 1)"
+                                    style="width:40px; height:40px; border-radius:8px; border:none; background:rgba(0,0,0,0.2); color:white; display:flex; align-items:center; justify-content:center; cursor:pointer; backdrop-filter:blur(2px);">
+                                    <i data-lucide="plus" style="width:18px;"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Dying State Wrapper -->
+                        <div id="dyingStateUI"
+                            style="display:none; position:absolute; inset:0; background:rgba(20,0,0,0.9); z-index:10; flex-direction:column; align-items:center; justify-content:center;">
+                            <div
+                                style="font-family:'Cinzel', serif; color:#ff595e; font-weight:bold; letter-spacing:2px; animation: pulse 1.5s infinite; font-size:0.9rem;">
+                                MORRENDO</div>
+                            <button onclick="revivePlayer()"
+                                style="margin-top:2px; background:#ff595e; color:white; border:none; padding:4px 12px; font-size:0.8rem; border-radius:4px;">REVIVER</button>
+                        </div>
+                    </div>
+
+                    <!-- 3. VITAL: PE - COMPACT OVERLAY DESIGN -->
+                    <div class="vital-card minimalist blue"
+                        style="padding:0; overflow:hidden; border-radius:12px; height:50px; position:relative; margin-bottom:15px; background:#1a1a1a; box-shadow:0 4px 10px rgba(0,0,0,0.3);">
+
+                        <!-- Background Track -->
+                        <div class="vital-bar-track"
+                            style="position:absolute; width:100%; height:100%; background:rgba(0,0,0,0.3); z-index:0;">
+                        </div>
+
+                        <!-- Fill Bar -->
+                        <div class="vital-bar-fill pe"
+                            style="position:absolute; height:100%; width:100%; background:linear-gradient(90deg, #00b4d8, #48cae4); z-index:0; transition:width 0.3s ease;">
+                        </div>
+
+                        <!-- Overlay Content -->
+                        <div
+                            style="position:absolute; width:100%; height:100%; display:flex; align-items:center; justify-content:space-between; z-index:2; padding:0 5px;">
+
+                            <!-- Minus Button -->
+                            <button onclick="changeVital('pe', -1)"
+                                style="width:40px; height:40px; border-radius:8px; border:none; background:rgba(0,0,0,0.2); color:white; display:flex; align-items:center; justify-content:center; cursor:pointer; backdrop-filter:blur(2px);">
+                                <i data-lucide="minus" style="width:18px;"></i>
+                            </button>
+
+                            <!-- Central Text (Click to Edit) -->
+                            <div onclick="editVital('pe')"
+                                style="display:flex; flex-direction:column; align-items:center; cursor:pointer; text-shadow:0 2px 4px rgba(0,0,0,0.8);">
+                                <span
+                                    style="font-size:0.75rem; font-weight:700; color:rgba(255,255,255,0.8); letter-spacing:1px;">ENERGIA</span>
+                                <span style="font-size:1.1rem; font-weight:800; color:white;">
+                                    <span id="currPE">1</span> / <span id="maxPE">1</span>
+                                </span>
+                            </div>
+
+                            <!-- Plus Button -->
+                            <button onclick="changeVital('pe', 1)"
+                                style="width:40px; height:40px; border-radius:8px; border:none; background:rgba(0,0,0,0.2); color:white; display:flex; align-items:center; justify-content:center; cursor:pointer; backdrop-filter:blur(2px);">
+                                <i data-lucide="plus" style="width:18px;"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- OLD HP SECTION (REMOVED) -->
+                    <!-- OLD PE SECTION (REMOVED) -->
+
+
+                    <!-- 4. STATS ROW with COMBAT ACTIONS -->
                     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px;">
                         <div class="vital-box" onclick="editAC()"
                             style="cursor:pointer; text-align: center; padding: 10px; background:linear-gradient(135deg, rgba(255,255,255,0.05), rgba(0,0,0,0.5));"
@@ -295,89 +395,7 @@
                         </button>
                     </div>
 
-                    <!-- VITAL: HP -->
-                    <div class="vital-card minimalist red">
-                        <div class="vital-header">
-                            <span class="vital-title">VIDA (HP)</span>
-                            <span class="vital-values" onclick="editVital('hp')" title="Editar Máximo"><span
-                                    id="currHP">17</span> / <span id="maxHP">17</span></span>
-                        </div>
-
-                        <!-- NORMAL STATE -->
-                        <div id="hpNormalState">
-                            <div class="vital-bar-container">
-                                <div class="vital-bar-track">
-                                    <div class="vital-bar-fill hp" style="width: 100%;"></div>
-                                </div>
-                                <div class="vital-controls">
-                                    <button onclick="changeHP('sub')" class="vital-btn minus">-</button>
-                                    <button onclick="changeHP('add')" class="vital-btn plus">+</button>
-                                </div>
-                            </div>
-                            <div class="vital-footer">
-                                <input type="number" id="hpModInput" value="1" class="vital-mod-input">
-                            </div>
-                        </div>
-
-                        <!-- DYING STATE (Hidden by default) -->
-                        <div id="dyingStateUI"
-                            style="display:none; flex-direction:column; align-items:center; gap:10px; padding:10px 0;">
-                            <div
-                                style="font-family:'Cinzel', serif; color:#ff595e; font-weight:bold; letter-spacing:2px; animation: pulse 1.5s infinite;">
-                                MORRENDO</div>
-                            <div style="display:flex; gap:15px; margin-bottom:5px;">
-                                <label
-                                    style="display:flex; flex-direction:column; align-items:center; gap:5px; font-size:0.7rem; color:#888;">
-                                    <input type="checkbox" class="death-save"
-                                        style="accent-color:#ff595e; width:18px; height:18px;">
-                                    Falha 1
-                                </label>
-                                <label
-                                    style="display:flex; flex-direction:column; align-items:center; gap:5px; font-size:0.7rem; color:#888;">
-                                    <input type="checkbox" class="death-save"
-                                        style="accent-color:#ff595e; width:18px; height:18px;">
-                                    Falha 2
-                                </label>
-                                <label
-                                    style="display:flex; flex-direction:column; align-items:center; gap:5px; font-size:0.7rem; color:#888;">
-                                    <input type="checkbox" class="death-save"
-                                        style="accent-color:#ff595e; width:18px; height:18px;">
-                                    Falha 3
-                                </label>
-                            </div>
-                            <button onclick="revivePlayer()"
-                                style="background:#ff595e; color:white; border:none; padding:8px 24px; border-radius:6px; font-weight:bold; cursor:pointer; box-shadow:0 0 15px rgba(255, 89, 94, 0.4);">
-                                REVIVER (1 PV)
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- VITAL: PE -->
-                    <div class="vital-card minimalist blue">
-                        <div class="vital-header">
-                            <span class="vital-title">ENERGIA (PE)</span>
-                            <span class="vital-values" onclick="editVital('pe')" title="Editar Máximo"><span
-                                    id="currPE">1</span> / <span id="maxPE">1</span></span>
-                        </div>
-                        <div class="vital-bar-container">
-                            <div class="vital-bar-track">
-                                <div class="vital-bar-fill pe" style="width: 100%;"></div>
-                            </div>
-                            <div class="vital-controls">
-                                <button onclick="changePE('sub')" class="vital-btn minus">-</button>
-                                <button onclick="changePE('add')" class="vital-btn plus">+</button>
-                            </div>
-                        </div>
-                        <div class="vital-footer">
-                            <input type="number" id="peModInput" value="1" class="vital-mod-input">
-                        </div>
-                    </div>
-
-                    <!-- OLD HP SECTION (REMOVED) -->
-                    <!-- OLD PE SECTION (REMOVED) -->
-
-
-                    <!-- PROFICIENCIES ROW (NEW) -->
+                    <!-- 5. PROFICIENCIES ROW -->
                     <div id="proficiencies-container"
                         style="background: rgba(255,255,255,0.03); border-radius: 8px; padding: 10px; margin-top: 10px; display: flex; flex-direction: column; gap: 5px; border: 1px solid rgba(255,255,255,0.05);">
                         <span
@@ -389,7 +407,7 @@
                         </div>
                     </div>
 
-                    <!-- MOBILE SALARY (Hidden on Desktop) -->
+                    <!-- 6. MOBILE SALARY (Hidden on Desktop) -->
                     <div id="mobileSalaryDisplay" class="mobile-only-salary"
                         style="display:none; order:10; margin-top:10px; background:rgba(255,215,0,0.1); border:1px solid #ffd700; padding:10px; border-radius:8px; align-items:center; justify-content:center; gap:8px; color:#ffd700; font-weight:bold;">
                         <!-- JS Injected -->
@@ -404,6 +422,21 @@
             <div class="section-header">
                 <span class="sec-title">Inventário</span>
                 <i data-lucide="backpack" color="#00b4d8"></i>
+            </div>
+
+            <!-- NEW: INVENTORY STATUS BAR -->
+            <div id="invStatusBar"
+                style="display:flex; justify-content:space-between; background:rgba(0,0,0,0.3); padding:10px 15px; border-radius:8px; margin-bottom:15px; border:1px solid rgba(255,255,255,0.05);">
+                <!-- Wealth -->
+                <div id="invWealth" style="display:flex; align-items:center; gap:8px; color:#ffd700; font-weight:bold;">
+                    <i data-lucide="coins" style="width:16px; height:16px;"></i>
+                    <span>200.000 Ienes</span>
+                </div>
+                <!-- Weight -->
+                <div id="invWeight" style="display:flex; align-items:center; gap:8px; color:#aaa; font-size:0.9rem;">
+                    <i data-lucide="weight" style="width:16px; height:16px;"></i>
+                    <span>0 / 60 kg</span>
+                </div>
             </div>
 
             <div class="inventory-controls">
@@ -500,6 +533,12 @@
                 </button>
             </div>
             <div id="attacksList"></div>
+
+            <!-- MOBILE FAB (Combat) -->
+            <button id="mobileAtkBtn" onclick="openAttackModal()"
+                style="display: none; position: fixed; bottom: 85px; right: 20px; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #d90429, #ef233c); color: white; border: none; box-shadow: 0 4px 15px rgba(217, 4, 41, 0.4); z-index: 9999; align-items: center; justify-content: center; cursor: pointer;">
+                <i data-lucide="plus" style="width: 28px; height: 28px; stroke-width: 3;"></i>
+            </button>
         </section>
 
         <!-- SECTION: FORGE -->
@@ -629,7 +668,7 @@
                     style="font-size:1.4rem; color:#ffd700; font-weight:bold; display:flex; align-items:center; justify-content:center; gap:5px;">
                     <i data-lucide="coins" size="20"></i> <span id="salaryDisplay">20.000</span>
                 </div>
-                <div style="font-size:0.75rem; color:#666; margin-top:5px;">Kan</div>
+                <div style="font-size:0.75rem; color:#666; margin-top:5px;">Ienes</div>
             </div>
 
             <!-- MISSION LEVEL -->
@@ -1331,8 +1370,8 @@
             <span>Início</span>
         </div>
         <div class="nav-item-mobile" onclick="showSection('inventory'); activateMobile(this)">
-            <i data-lucide="scroll-text"></i>
-            <span>Ficha</span>
+            <i data-lucide="backpack"></i>
+            <span>Inventário</span>
         </div>
         <div class="nav-item-mobile" onclick="showSection('attacks'); activateMobile(this)">
             <i data-lucide="swords"></i>
@@ -1413,29 +1452,32 @@
             }
 
             /* Move Vitals to Top */
-            .vital-card.red {
+            /* 1. Identity Row (First Child) */
+            .char-header-panel>div:first-child {
                 order: 1;
+                border-bottom: none !important;
+                /* Remove separator line in mobile layout if needed, or keep */
+                margin-bottom: 0 !important;
+                padding-bottom: 10px !important;
             }
 
-            /* HP */
-            .vital-card.blue {
+            /* 2. VITAL: HP */
+            .vital-card.red {
                 order: 2;
             }
 
-            /* PE */
-
-            /* Name Row */
-            .char-header-panel>div:first-child {
+            /* 3. VITAL: PE */
+            .vital-card.blue {
                 order: 3;
             }
 
-            /* Name/Rank */
-
-            /* Stats Grid (AC/Speed) */
-            .char-header-panel>div:nth-child(2) {
+            /* 4. Stats Grid (4th Child) */
+            .char-header-panel>div:nth-child(4) {
                 order: 4;
                 grid-template-columns: 1fr 1fr !important;
-                /* 2 cols instead of 4 */
+                /* 2 cols */
+                gap: 10px !important;
+                margin-top: 10px;
             }
 
             /* Proficiencies */
@@ -1483,7 +1525,8 @@
             }
 
             /* Show FAB on Mobile */
-            #mobileAddBtn {
+            #mobileAddBtn,
+            #mobileAtkBtn {
                 display: flex !important;
                 animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             }
