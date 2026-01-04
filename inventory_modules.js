@@ -134,6 +134,28 @@ window.filterModal = function (type, btn) {
                 b.onclick = (e) => filterSubModal(s.id, e.target);
                 subContainer.appendChild(b);
             });
+
+            // LINK TO FORGE
+            const forgeBtn = document.createElement('button');
+            forgeBtn.className = 'cat-btn sub-cat-btn';
+            forgeBtn.style.background = 'rgba(255, 215, 0, 0.2)';
+            forgeBtn.style.border = '1px solid #ffd700';
+            forgeBtn.style.color = '#ffd700';
+            forgeBtn.style.fontWeight = 'bold';
+            forgeBtn.style.marginLeft = 'auto'; // Push to right
+            forgeBtn.innerHTML = '<i data-lucide="hammer" style="width:14px;"></i> Forjar';
+            forgeBtn.onclick = () => {
+                // Close Item Modal
+                const m = document.getElementById('itemModal');
+                if (m) {
+                    m.classList.remove('open');
+                    setTimeout(() => m.style.display = 'none', 300);
+                }
+                // Navigate
+                if (window.showSection) showSection('forge');
+            };
+            subContainer.appendChild(forgeBtn);
+
             window.currentSubFilter = 'all';
         } else if (type === 'consumable') {
             const subs = [
@@ -358,6 +380,13 @@ window.updateInventoryStatus = function () {
         wealthEl.innerHTML = `<i data-lucide="coins" style="width:16px; height:16px;"></i> <span>${formatted} Ienes</span>`;
     }
 
+    // Ores
+    const oresEl = document.getElementById('invOres');
+    if (oresEl) {
+        let ores = charData.ores || 0;
+        oresEl.innerHTML = `<i data-lucide="mountain" style="width:16px; height:16px;"></i> <span>${ores} Minérios</span>`;
+    }
+
     // Weight
     const weightEl = document.getElementById('invWeight');
     if (weightEl) {
@@ -386,6 +415,56 @@ window.updateInventoryStatus = function () {
     }
 
     if (window.lucide) window.lucide.createIcons();
+};
+
+window.editResource = function (type) {
+    let currentVal = type === 'money' ? (charData.money || 0) : (charData.ores || 0);
+    let label = type === 'money' ? 'Ienes' : 'Minérios';
+
+    let input = prompt(`Editar ${label}\nAtual: ${currentVal}\n\nDigite o novo valor total ("500")\nOU use + / - para somar/subtrair ("+100", "-50"):`);
+
+    if (input === null) return; // Cancelled
+    input = input.trim();
+    if (input === "") return;
+
+    let finalVal = currentVal;
+
+    // Check for relative operator
+    if (input.startsWith('+') || input.startsWith('-')) {
+        let delta = parseInt(input);
+        if (!isNaN(delta)) {
+            finalVal += delta;
+        }
+    } else {
+        // Absolute value
+        let val = parseInt(input);
+        if (!isNaN(val)) {
+            finalVal = val;
+        }
+    }
+
+    // Safety check
+    if (finalVal < 0) finalVal = 0;
+
+    // Apply
+    if (type === 'money') charData.money = finalVal;
+    else charData.ores = finalVal;
+
+    // Save & Render
+    if (typeof saveHuman === 'function') saveHuman();
+    if (typeof updateInventoryStatus === 'function') updateInventoryStatus();
+
+    // Also re-render forge if visible (to update costs)
+    const forgeSec = document.getElementById('forge');
+    if (forgeSec && forgeSec.classList.contains('active-tab') && typeof renderForge === 'function') {
+        renderForge();
+    }
+
+    const diff = finalVal - currentVal;
+    if (diff !== 0) {
+        let op = diff > 0 ? '+' : '';
+        showToast(`${label} atualizado: ${op}${diff}`, 'success');
+    }
 };
 
 window.renderInventory = function () {

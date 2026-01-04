@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="nichirin_forge.css">
     <link rel="stylesheet" href="breathing.css">
     <link rel="stylesheet" href="mobile.css">
+    <link rel="stylesheet" href="custom_effects.css">
     <link rel="stylesheet" href="ultra-dice.css">
 
     <style>
@@ -428,9 +429,16 @@
             <div id="invStatusBar"
                 style="display:flex; justify-content:space-between; background:rgba(0,0,0,0.3); padding:10px 15px; border-radius:8px; margin-bottom:15px; border:1px solid rgba(255,255,255,0.05);">
                 <!-- Wealth -->
-                <div id="invWealth" style="display:flex; align-items:center; gap:8px; color:#ffd700; font-weight:bold;">
+                <div id="invWealth" onclick="editResource('money')" title="Clique para editar"
+                    style="display:flex; align-items:center; gap:8px; color:#ffd700; font-weight:bold; cursor:pointer; padding:5px; border-radius:4px; transition:background 0.2s;">
                     <i data-lucide="coins" style="width:16px; height:16px;"></i>
                     <span>200.000 Ienes</span>
+                </div>
+                <!-- Ores -->
+                <div id="invOres" onclick="editResource('ores')" title="Clique para editar"
+                    style="display:flex; align-items:center; gap:8px; color:#aaa; font-weight:bold; cursor:pointer; padding:5px; border-radius:4px; transition:background 0.2s;">
+                    <i data-lucide="mountain" style="width:16px; height:16px;"></i>
+                    <span>0 Minérios</span>
                 </div>
                 <!-- Weight -->
                 <div id="invWeight" style="display:flex; align-items:center; gap:8px; color:#aaa; font-size:0.9rem;">
@@ -543,65 +551,16 @@
 
         <!-- SECTION: FORGE -->
         <section id="forge" class="dashboard-section">
-            <div class="section-header">
-                <span class="sec-title" style="color:#ffd700">Forja Nichirin</span>
+            <!-- Dynamic Content Injected by renderForge() -->
+            <div style="text-align:center; padding:50px; color:#666;">
+                <i data-lucide="loader-2" class="spin"></i> Carregando Forja...
             </div>
-            <div class="nichirin-wrapper">
-                <div class="heat-glow"></div>
+        </section>
 
-                <!-- NEW: Sword Visualization with Layers -->
-                <div class="sword-stage">
-                    <div class="sword-container" id="swordContainer">
-                        <!-- Blade Group -->
-                        <div class="blade-group">
-                            <div class="blade" id="swordBlade">
-                                <div class="blade-color-layer" id="swordColorLayer"></div>
-                                <div class="hamon"></div>
-                                <div class="engraving" id="bladeEngraving"></div>
-                            </div>
-                            <div class="habaki"></div>
-                        </div>
-                        <!-- Guard -->
-                        <div class="tsuba" id="swordTsuba"></div>
-                        <!-- Handle -->
-                        <div class="tsuka" id="swordTsuka">
-                            <div class="tsuka-ito"></div> <!-- Wrap -->
-                            <div class="samegawa"></div> <!-- Skin under wrap -->
-                        </div>
-                        <div class="kashira"></div> <!-- Buttcap -->
-                    </div>
-                </div>
-
-                <!-- NEW: Forge UI Wrapper -->
-                <div class="forge-ui" id="forgeUI">
-
-                    <!-- STEP 1: Mode Selection -->
-                    <div id="forgeModeSelect" class="forge-step active">
-                        <h3 style="color:white; margin-bottom:1rem;">Escolha seu Caminho</h3>
-                        <div class="mode-cards">
-                            <div class="mode-card" onclick="selectForgeMode('destiny')">
-                                <i data-lucide="sparkles" size="32" color="#ffd700"></i>
-                                <h4>Destino</h4>
-                                <p>Responda ao chamado da sua alma. A espada escolhe você.</p>
-                            </div>
-                            <div class="mode-card" onclick="selectForgeMode('blacksmith')">
-                                <i data-lucide="hammer" size="32" color="#d90429"></i>
-                                <h4>Ferreiro</h4>
-                                <p>Forje cada detalhe com suas próprias mãos.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- QUIZ UI -->
-                    <div id="forgeQuizUI"></div>
-
-                    <!-- HAMMERING UI -->
-                    <div id="forgeHammerUI"></div>
-
-                    <!-- RESULT UI -->
-                    <div id="forgeResultUI"></div>
-                </div>
-            </div>
+        <!-- RESULT UI -->
+        <div id="forgeResultUI"></div>
+        </div>
+        </div>
         </section>
 
         <!-- SECTION: STORE (PREMIUM) -->
@@ -804,10 +763,26 @@
         .feat-list-container::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
+
+        /* Toast Container Base Styles */
+        #toastContainer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+            /* Allow clicks through empty container */
+        }
+
+        #toastContainer>* {
+            pointer-events: auto;
+        }
     </style>
 
-    <div id="toastContainer"
-        style="position:fixed; bottom:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:10px;">
+    <div id="toastContainer">
     </div>
 
     <!-- ATTACK MODAL -->
@@ -1557,6 +1532,25 @@
                 min-height: 44px;
                 margin: 0 5px;
                 /* Extra spacing */
+            }
+
+            /* Toast Mobile Override */
+            #toastContainer {
+                bottom: 90px !important;
+                left: 20px;
+                right: 20px;
+                align-items: center;
+            }
+
+            /* Forge Mobile Layout */
+            .forge-container {
+                display: flex !important;
+                flex-direction: column !important;
+                height: auto !important;
+            }
+
+            .recipe-list {
+                max-height: 200px;
             }
         }
     </style>

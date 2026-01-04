@@ -129,6 +129,11 @@ window.rollAttack = function (index) {
     // Parse and roll damage
     const damageResult = rollDamageString(attack.damage);
 
+    // Check for Psychic Type for visual effect
+    if (attack.type && (attack.type.toLowerCase().includes('psíquico') || attack.type.toLowerCase().includes('mental'))) {
+        triggerPsychicEffect();
+    }
+
     // Show 3D dice animation
     show3DDiceRoll(attackRoll, 20, () => {
         // After animation, show results
@@ -218,6 +223,23 @@ function showAttackResult(html) {
     }, 5000);
 
     if (window.lucide) window.lucide.createIcons();
+}
+
+// === VISUAL EFFECTS ===
+function triggerPsychicEffect() {
+    const overlay = document.createElement('div');
+    overlay.className = 'psychic-effect';
+    overlay.innerHTML = `
+        <div class="psychic-wave"></div>
+        <div class="psychic-wave"></div>
+        <div class="psychic-wave"></div>
+    `;
+    document.body.appendChild(overlay);
+
+    // Auto remove
+    setTimeout(() => {
+        overlay.remove();
+    }, 2000);
 }
 
 // === UTILITÁRIOS DE DADOS ===

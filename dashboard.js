@@ -93,6 +93,7 @@ function initDashboard() {
     renderBackgroundSkills();
     if (window.renderClassFeaturesInGrimoire) window.renderClassFeaturesInGrimoire(); // NEW TAB
     renderAttacks();
+    if (typeof renderForge === 'function') renderForge();
     renderStore();
 
     // Render Proficiencies (Background & others)
@@ -2750,6 +2751,279 @@ function finishForging(color) {
     showToast("Forja Completa!", "success");
 }
 
+// === NICHIRIN FORGE SYSTEM ===
+const WEAPON_RECIPES = [
+    {
+        name: "Nichirin Katana",
+        desc: "A arma padrão dos Caçadores de Demônios. Equilibrada e letal.",
+        cost: 5000,
+        ores: 2,
+        dmg: "1d8",
+        type: "Cortante",
+        icon: "sword",
+        color: "#00b4d8"
+    },
+    {
+        name: "Nichirin Dupla",
+        desc: "Estilo Tengen Uzui. Extravagante e rápida.",
+        cost: 8000,
+        ores: 4,
+        dmg: "1d6",
+        type: "Cortante (Dupla)",
+        icon: "swords",
+        color: "#d90429"
+    },
+    {
+        name: "Montante Nichirin",
+        desc: "Estilo Gyomei. Uma lâmina massiva para força bruta.",
+        cost: 10000,
+        ores: 5,
+        dmg: "2d6",
+        type: "Cortante (Pesada)",
+        icon: "axe", // close enough placeholder
+        color: "#808080"
+    },
+    {
+        name: "Foice e Corrente",
+        desc: "Uma arma exótica para combate a média distância.",
+        cost: 12000,
+        ores: 6, // Inferred from progression (approx 2k/ore)
+        dmg: "1d6+1d4",
+        type: "Perfurante/Cortante",
+        icon: "link",
+        color: "#ffd700"
+    }
+];
+
+let selectedRecipeIndex = 0;
+
+window.renderForge = function () {
+    const forgeSection = document.getElementById('forge');
+    if (!forgeSection) return;
+
+    // Ensure Ores and Money exist
+    if (typeof charData.money === 'undefined') charData.money = 0; // Legacy support
+    if (typeof charData.ores === 'undefined') charData.ores = 0;
+
+    // Base Layout
+    forgeSection.innerHTML = `
+        <div class="section-header">
+            <span class="sec-title show-on-scroll" style="color:#ffd700">Forja Nichirin</span>
+            <div style="display:flex; gap:15px; font-weight:bold; font-size:0.9rem;">
+                <div onclick="editResource('money')" title="Editar Ienes" style="color:#ffd700; cursor:pointer; display:flex; align-items:center; gap:5px; padding:5px; border-radius:4px; transition:background 0.2s;">
+                    <i data-lucide="coins" style="width:14px;"></i> ${charData.money.toLocaleString('pt-BR')}
+                </div>
+                <div onclick="editResource('ores')" title="Editar Minérios" style="color:#aaa; cursor:pointer; display:flex; align-items:center; gap:5px; padding:5px; border-radius:4px; transition:background 0.2s;">
+                    <i data-lucide="mountain" style="width:14px;"></i> ${charData.ores} Minérios
+                </div>
+            </div>
+        </div>
+
+        <div class="forge-container" style="display:grid; grid-template-columns: 1fr 1.5fr; gap:20px; height: 500px;">
+            <!-- LEFT: Recipe List -->
+            <div class="recipe-list" style="background:#16161a; border:1px solid #333; border-radius:12px; overflow-y:auto; padding:10px;">
+                ${WEAPON_RECIPES.map((recipe, index) => {
+        const isSelected = index === selectedRecipeIndex;
+        return `
+                        <div onclick="selectRecipe(${index})" 
+                            style="padding:15px; margin-bottom:10px; background:${isSelected ? 'rgba(255, 215, 0, 0.1)' : '#111'}; border:1px solid ${isSelected ? '#ffd700' : '#333'}; border-radius:8px; cursor:pointer; transition:0.2s;">
+                            <div style="font-weight:bold; color:${isSelected ? '#ffd700' : '#fff'}; margin-bottom:5px;">${recipe.name}</div>
+                            <div style="font-size:0.8rem; color:#888;">${recipe.cost.toLocaleString('pt-BR')} Ienes • ${recipe.ores} Minérios</div>
+                        </div>
+                    `;
+    }).join('')}
+            </div>
+
+            <!-- RIGHT: Details Pane -->
+            <div class="recipe-details" id="forgeDetails" style="background:#111; border:1px solid #333; border-radius:12px; padding:20px; display:flex; flex-direction:column; align-items:center; text-align:center; position:relative;">
+                ${renderForgeDetails(selectedRecipeIndex)}
+            </div>
+        </div>
+    `;
+
+    if (window.lucide) window.lucide.createIcons();
+};
+
+window.selectRecipe = function (index) {
+    selectedRecipeIndex = index;
+    renderForge(); // Re-render to update selection state
+};
+
+function renderForgeDetails(index) {
+    const recipe = WEAPON_RECIPES[index];
+    const canAfford = charData.money >= recipe.cost && charData.ores >= recipe.ores;
+
+    // Placeholder Image Logic (Dynamic SVG based on type ideally, but using icons/divs for now)
+    let visual = `<div style="width:120px; height:120px; background:linear-gradient(135deg, ${recipe.color}44, #000); border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:20px; box-shadow:0 0 30px ${recipe.color}44;">
+        <i data-lucide="${recipe.icon}" style="width:64px; height:64px; color:${recipe.color};"></i>
+    </div>`;
+
+    return `
+        ${visual}
+        <h2 style="color:white; margin:0 0 10px 0; font-family:'Cinzel', serif;">${recipe.name}</h2>
+        <p style="color:#aaa; margin-bottom:20px; font-style:italic;">"${recipe.desc}"</p>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; width:100%; margin-bottom:20px; background:#1a1a1a; padding:15px; border-radius:8px;">
+            <div>
+                <div style="font-size:0.7rem; color:#666; text-transform:uppercase;">Dano</div>
+                <div style="font-weight:bold; color:white;">${recipe.dmg}</div>
+            </div>
+            <div>
+                <div style="font-size:0.7rem; color:#666; text-transform:uppercase;">Tipo</div>
+                <div style="font-weight:bold; color:white;">${recipe.type}</div>
+            </div>
+        </div>
+
+        <div style="display:flex; gap:20px; margin-bottom:30px;">
+            <div style="text-align:center;">
+                <div style="font-size:0.8rem; color:${charData.money >= recipe.cost ? '#888' : '#ef4444'};">Custo</div>
+                <div style="font-weight:bold; color:${charData.money >= recipe.cost ? '#ffd700' : '#ef4444'}; font-size:1.2rem;">${recipe.cost.toLocaleString('pt-BR')} ¥</div>
+            </div>
+            <div style="text-align:center;">
+                <div style="font-size:0.8rem; color:${charData.ores >= recipe.ores ? '#888' : '#ef4444'};">Minérios</div>
+                <div style="font-weight:bold; color:${charData.ores >= recipe.ores ? '#aaa' : '#ef4444'}; font-size:1.2rem;">${recipe.ores}</div>
+            </div>
+        </div>
+
+        <button onclick="forgeItem(${index})" disabled="${!canAfford}"
+            style="width:100%; padding:15px; border-radius:8px; border:none; font-weight:bold; font-size:1rem; cursor:${canAfford ? 'pointer' : 'not-allowed'};
+            background: ${canAfford ? 'linear-gradient(135deg, #d90429, #ef233c)' : '#333'}; 
+            color: ${canAfford ? 'white' : '#666'};
+            box-shadow: ${canAfford ? '0 4px 15px rgba(217, 4, 41, 0.4)' : 'none'};
+            transition:0.3s;">
+            ${canAfford ? '<i data-lucide="hammer"></i> FORJAR ARMA' : 'RECURSOS INSUFICIENTES'}
+        </button>
+    `;
+}
+
+window.forgeItem = function (index) {
+    const recipe = WEAPON_RECIPES[index];
+
+    if (charData.money < recipe.cost || charData.ores < recipe.ores) {
+        showToast("Recursos insuficientes!", "error");
+        return;
+    }
+
+    if (confirm(`Forjar ${recipe.name} por ${recipe.cost} Ienes e ${recipe.ores} Minérios?`)) {
+        // Deduct Resources
+        charData.money -= recipe.cost;
+        charData.ores -= recipe.ores;
+
+        // Determine Blade Color based on Breathing Style
+        const styleMap = { 'water': 'Azul', 'thunder': 'Amarelo', 'flame': 'Vermelho', 'beast': 'Índigo', 'stone': 'Cinza', 'mist': 'Turquesa', 'flower': 'Rosa', 'serpent': 'Roxo', 'love': 'Rosa Claro', 'sound': 'Âmbar', 'moon': 'Roxo Profundo', 'sun': 'Preto' };
+        const bladeColor = styleMap[currentBreathingStyle] || 'Prata';
+
+        // Create Item Object
+        const newItem = {
+            id: Date.now().toString(), // Unique ID
+            name: recipe.name,
+            type: "weapon",
+            dmg: recipe.dmg,
+            desc: `${recipe.desc} (Forjada por ${humanData.name})`,
+            weight: "1.0 kg",
+            props: recipe.type,
+            rarity: "Raro",
+            corLamina: bladeColor,
+            criadoPor: humanData.name,
+            equipped: false,
+            breathingStyle: currentBreathingStyle
+        };
+
+        // Add to Inventory
+        window.addItemToInventory(newItem);
+
+        // Save & Render
+        saveHuman();
+        renderForge(); // Update UI costs
+        if (typeof updateInventoryStatus === 'function') updateInventoryStatus(); // Sync Global Status
+
+        // Custom Success UI
+        showForgeSuccess(newItem);
+    }
+};
+
+window.addItemToInventory = function (item) {
+    if (!charData.inventory) charData.inventory = [];
+    charData.inventory.push(item);
+    if (typeof renderInventory === 'function') renderInventory();
+};
+
+window.showForgeSuccess = function (item) {
+    // Create Overlay
+    const overlay = document.createElement('div');
+    overlay.id = 'forgeSuccessOverlay';
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.background = 'rgba(0,0,0,0.9)';
+    overlay.style.zIndex = '10000';
+    overlay.style.display = 'flex';
+    overlay.style.alignItems = 'center';
+    overlay.style.justifyContent = 'center';
+    overlay.style.backdropFilter = 'blur(5px)';
+    overlay.style.opacity = '0';
+    overlay.style.transition = 'opacity 0.5s ease';
+
+    // Card Content
+    overlay.innerHTML = `
+        <div style="background:#16161a; border:1px solid #ffd700; padding:30px; border-radius:15px; text-align:center; max-width:90%; width:400px; box-shadow:0 0 50px rgba(255, 215, 0, 0.3); transform:scale(0.8); transition:transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+            <i data-lucide="hammer" style="color:#ffd700; width:64px; height:64px; margin-bottom:20px;"></i>
+            <h2 style="color:#fff; font-family:'Cinzel', serif; font-size:2rem; margin:0 0 10px 0;">FORJA CONCLUÍDA!</h2>
+            <p style="color:#aaa; margin-bottom:20px;">Você criou uma obra-prima.</p>
+            
+            <div style="background:#111; padding:15px; border-radius:8px; margin-bottom:25px; border:1px solid #333;">
+                <h3 style="color:#ffd700; margin:0 0 5px 0;">${item.name}</h3>
+                <div style="color:#fff; font-weight:bold; font-size:1.2rem;">${item.dmg} <span style="font-size:0.8rem; color:#888;">Dano</span></div>
+                <div style="color:${item.corLamina === 'Azul' ? '#00b4d8' : item.corLamina === 'Vermelho' ? '#ef4444' : '#888'}; font-size:0.9rem; margin-top:5px;">Lâmina: ${item.corLamina}</div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                <button onclick="closeForgeSuccess()" style="background:transparent; border:1px solid #444; color:#aaa; padding:15px; border-radius:8px; font-weight:bold; cursor:pointer;">Guardar</button>
+                <button onclick="equipForgedItem('${item.id}'); closeForgeSuccess()" style="background:linear-gradient(135deg, #ffd700, #ffb703); border:none; color:#000; padding:15px; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 5px 15px rgba(255, 215, 0, 0.3);">Equipar Agora</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    // Animate In
+    setTimeout(() => {
+        overlay.style.opacity = '1';
+        overlay.querySelector('div').style.transform = 'scale(1)';
+        if (window.lucide) window.lucide.createIcons();
+    }, 10);
+};
+
+window.closeForgeSuccess = function () {
+    const overlay = document.getElementById('forgeSuccessOverlay');
+    if (overlay) {
+        overlay.style.opacity = '0';
+        overlay.querySelector('div').style.transform = 'scale(0.8)';
+        setTimeout(() => overlay.remove(), 500);
+    }
+};
+
+window.equipForgedItem = function (itemId) {
+    // Find index by ID
+    const idx = charData.inventory.findIndex(i => i.id === itemId);
+    if (idx !== -1) {
+        // Toggle Equip (assuming toggleEquip handles 'isEquipped' logic)
+        // Check if toggleEquip accepts ID or Index. Usually Index.
+        // Let's call the existing toggleEquip if available, passing index.
+        if (typeof toggleEquip === 'function') {
+            toggleEquip(idx);
+            showToast(`${charData.inventory[idx].name} Equipada!`, "success");
+        } else {
+            // Manual fallback
+            charData.inventory[idx].equipped = true;
+            saveHuman();
+            if (typeof renderInventory === 'function') renderInventory();
+            showToast("Item Equipado!", "success");
+        }
+    }
+};
 // --- STORE SYSTEM ---
 window.renderStore = function () {
     const grid = document.getElementById('storeGrid');

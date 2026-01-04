@@ -1455,22 +1455,154 @@
         </div>
     </nav>
 
-    <!-- VIEW: HISTORY (Log) -->
+    <!-- VIEW: HISTORY (Campaign Diary) -->
     <div id="view-story" class="view-section">
-        <div class="col-left">
-            <div class="panel-header">
-                <span><i data-lucide="scroll-text"></i> Histórico</span>
-                <span style="font-size:0.8rem; opacity:0.6;">Chat & Logs</span>
-            </div>
-            <div class="log-feed" id="logFeed">
-                <div class="log-item">
-                    <span class="log-time">10:00</span>
-                    <span>Bem-vindo ao Demon Slayer RPG.</span>
+        <div
+            style="display:grid; grid-template-columns:1.2fr 1fr 320px; gap:20px; height:100%; padding:20px; overflow:hidden;">
+
+            <!-- LEFT: Campaign Diary -->
+            <div style="display:flex; flex-direction:column; gap:15px; overflow:hidden;">
+
+                <!-- Session Management -->
+                <div style="background:rgba(24,24,27,0.8); border:1px solid #27272a; border-radius:12px; padding:15px;">
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                        <i data-lucide="book-open" size="18" style="color:var(--primary);"></i>
+                        <span
+                            style="font-family:'Cinzel'; font-size:0.85rem; font-weight:700; color:#e4e4e7; text-transform:uppercase; letter-spacing:0.05em;">Gerenciar
+                            Sessões</span>
+                    </div>
+
+                    <div style="display:flex; gap:10px;">
+                        <select id="sessionSelector" class="d-input" style="flex:1;"
+                            onchange="switchDiarySession(this.value)">
+                            <option value="">Selecione uma Sessão</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="createNewSession()"
+                            style="padding:8px 16px; white-space:nowrap;">
+                            <i data-lucide="plus" size="16"></i> Nova Sessão
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Note Input -->
+                <div style="background:rgba(24,24,27,0.8); border:1px solid #27272a; border-radius:12px; padding:15px;">
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                        <i data-lucide="pen-line" size="18" style="color:var(--primary);"></i>
+                        <span
+                            style="font-family:'Cinzel'; font-size:0.85rem; font-weight:700; color:#e4e4e7; text-transform:uppercase; letter-spacing:0.05em;">Nota
+                            Rápida</span>
+                    </div>
+
+                    <textarea id="quickNoteInput" class="d-input" placeholder="Escreva uma nota sobre esta sessão..."
+                        style="width:100%; min-height:60px; resize:vertical; margin-bottom:10px;"></textarea>
+                    <button class="btn btn-primary" onclick="addQuickNote()" style="width:100%;">
+                        <i data-lucide="save" size="16"></i> Adicionar Log
+                    </button>
+                </div>
+
+                <!-- Timeline Display -->
+                <div
+                    style="flex:1; overflow-y:auto; background:rgba(10,10,15,0.5); border:1px solid #27272a; border-radius:12px; padding:15px;">
+                    <div
+                        style="display:flex; align-items:center; gap:10px; margin-bottom:15px; padding-bottom:10px; border-bottom:1px solid #27272a;">
+                        <i data-lucide="clock" size="18" style="color:var(--primary);"></i>
+                        <span
+                            style="font-family:'Cinzel'; font-size:0.85rem; font-weight:700; color:#e4e4e7; text-transform:uppercase; letter-spacing:0.05em;">Linha
+                            do Tempo</span>
+                    </div>
+
+                    <div id="diaryTimeline" style="display:flex; flex-direction:column; gap:20px;">
+                        <div style="text-align:center; padding:40px 20px; color:#52525b;">
+                            <i data-lucide="book-marked" size="48" style="opacity:0.3; margin-bottom:10px;"></i>
+                            <p style="margin:0;">Nenhuma sessão criada ainda.<br>Clique em "Nova Sessão" para começar.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="Enviar mensagem ou comando (/roll 1d20)...">
-                <button class="btn-send" onclick="sendChat()"><i data-lucide="send"></i></button>
+
+            <!-- RIGHT: Session Summary -->
+            <div
+                style="display:flex; flex-direction:column; gap:15px; background:rgba(24,24,27,0.8); border:1px solid #27272a; border-radius:12px; padding:20px;">
+
+                <div
+                    style="display:flex; align-items:center; gap:10px; padding-bottom:15px; border-bottom:1px solid #27272a;">
+                    <i data-lucide="scroll-text" size="20" style="color:var(--primary);"></i>
+                    <div style="flex:1;">
+                        <div style="font-family:'Cinzel'; font-size:1rem; font-weight:700; color:#e4e4e7;"
+                            id="currentSessionTitle">Resumo da Sessão</div>
+                        <div style="font-size:0.75rem; color:#71717a; margin-top:2px;" id="sessionStats">Selecione uma
+                            sessão</div>
+                    </div>
+                </div>
+
+                <div style="flex:1; display:flex; flex-direction:column; gap:10px;">
+                    <label
+                        style="font-size:0.75rem; color:#a1a1aa; text-transform:uppercase; letter-spacing:0.05em; font-weight:700;">Resumo
+                        Manual</label>
+                    <textarea id="sessionSummaryInput" class="d-input" placeholder="Escreva um resumo desta sessão..."
+                        style="flex:1; resize:none; min-height:200px;" disabled></textarea>
+
+                    <button class="btn btn-primary" onclick="saveSessionSummary()" style="width:100%;"
+                        id="saveSummaryBtn" disabled>
+                        <i data-lucide="save" size="16"></i> Salvar Resumo
+                    </button>
+                </div>
+
+                <div
+                    style="background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.3); border-radius:8px; padding:12px;">
+                    <div
+                        style="font-size:0.7rem; color:#a1a1aa; text-transform:uppercase; font-weight:700; margin-bottom:8px;">
+                        💡 DICA</div>
+                    <p style="font-size:0.8rem; color:#d4d4d8; margin:0; line-height:1.4;">
+                        Use o resumo para destacar momentos importantes, decisões dos jogadores, NPCs encontrados e
+                        hooks para a próxima sessão.
+                    </p>
+                </div>
+            </div>
+
+            <!-- THIRD COLUMN: Scene Manager -->
+            <div
+                style="display:flex; flex-direction:column; gap:15px; background:rgba(24,24,27,0.8); border:1px solid #27272a; border-radius:12px; padding:20px; overflow-y:auto;">
+
+                <div
+                    style="display:flex; align-items:center; gap:10px; padding-bottom:15px; border-bottom:1px solid #27272a;">
+                    <i data-lucide="map" size="20" style="color:var(--primary);"></i>
+                    <div style="flex:1;">
+                        <div style="font-family:'Cinzel'; font-size:1rem; font-weight:700; color:#e4e4e7;">Gerenciador
+                            de Cenas</div>
+                        <div style="font-size:0.75rem; color:#71717a; margin-top:2px;">Alterar cenário visual</div>
+                    </div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:5px;">
+                        <div
+                            style="font-size:0.75rem; color:#a1a1aa; text-transform:uppercase; letter-spacing:0.05em; font-weight:700;">
+                            LOCAISDISP ONÍVEIS</div>
+                        <button class="btn" onclick="addCustomScene()"
+                            style="padding:4px 8px; font-size:0.7rem; border-radius:6px;"
+                            title="Adicionar Cena Customizada">
+                            <i data-lucide="plus" size="14"></i>
+                        </button>
+                    </div>
+
+                    <!-- Dynamic Scenes Container -->
+                    <div id="scenesList" style="display:flex; flex-direction:column; gap:10px;">
+                        <!-- Scenes injected by renderScenes() -->
+                    </div>
+                </div>
+
+                <div
+                    style="background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.3); border-radius:8px; padding:12px; margin-top:auto;">
+                    <div
+                        style="font-size:0.7rem; color:#a1a1aa; text-transform:uppercase; font-weight:700; margin-bottom:8px;">
+                        ℹ️ INFO</div>
+                    <p style="font-size:0.8rem; color:#d4d4d8; margin:0; line-height:1.4;">
+                        Ao ativar uma cena, o background do grid de combate será alterado para todos os jogadores
+                        conectados.
+                    </p>
+                </div>
             </div>
         </div>
     </div>
@@ -1479,19 +1611,45 @@
     <div id="view-combat" class="view-section active" style="height: calc(100vh - 50px); padding: 0;">
         <div class="wis-layout">
 
-            <!-- LEFT SIDEBAR: LOG/RESULTS -->
-            <div class="wis-sidebar">
-                <div class="wis-header">
-                    <span class="wis-title">Resultados</span>
-                    <button class="btn-icon" onclick="clearLog()" title="Limpar"><i data-lucide="trash-2"
-                            size="16"></i></button>
-                </div>
-                <div class="wis-scroll" id="logFeed">
-                    <!-- Log Cards Injected Here -->
-                    <div style="text-align:center; padding:20px; color:#555;">
-                        <i data-lucide="history" size="48" style="opacity:0.2;"></i>
+            <!-- LEFT SIDEBAR: COMBAT TRACKER -->
+            <div class="wis-sidebar" style="display:flex; flex-direction:column; height:100%;">
+
+                <!-- INITIATIVE TRACKER (60%) -->
+                <div style="flex:0 0 60%; display:flex; flex-direction:column; overflow:hidden;">
+                    <div class="wis-header">
+                        <span class="wis-title">⚔️ Iniciativa</span>
+                        <div style="font-size:0.7rem; color:#71717a; font-weight:400;">Round <span
+                                id="sidebarRound">1</span></div>
+                    </div>
+                    <div class="wis-scroll" id="initiativeList" style="flex:1; padding:8px;">
+                        <!-- Initiative Cards Injected Here -->
+                        <div style="text-align:center; padding:40px 20px; color:#52525b;">
+                            <i data-lucide="swords" size="48" style="opacity:0.2; margin-bottom:10px;"></i>
+                            <p style="margin:0; font-size:0.85rem;">Nenhum combatente</p>
+                        </div>
                     </div>
                 </div>
+
+                <!-- DIVIDER -->
+                <div
+                    style="height:1px; background:linear-gradient(90deg, transparent, #3f3f46, transparent); margin:0;">
+                </div>
+
+                <!-- DICE LOG (40%) -->
+                <div style="flex:0 0 40%; display:flex; flex-direction:column; overflow:hidden;">
+                    <div class="wis-header">
+                        <span class="wis-title">📜 Resultados</span>
+                        <button class="btn-icon" onclick="clearLog()" title="Limpar"><i data-lucide="trash-2"
+                                size="16"></i></button>
+                    </div>
+                    <div class="wis-scroll" id="logFeed" style="flex:1;">
+                        <!-- Log Cards Injected Here -->
+                        <div style="text-align:center; padding:20px; color:#555;">
+                            <i data-lucide="history" size="48" style="opacity:0.2;"></i>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <!-- CENTER: ARENA STAGE -->
@@ -1602,8 +1760,15 @@
                 <div id="sidebarBestiary" class="wis-scroll" style="display:none;">
                     <div style="padding:10px;">
                         <input type="text" id="sbMobSearch" placeholder="Buscar..." class="d-input"
-                            style="width:100%; border-radius:20px; padding:8px 15px; margin-bottom:15px; background:#0a0a0c; border-color:#333;"
+                            style="width:100%; border-radius:20px; padding:8px 15px; margin-bottom:10px; background:#0a0a0c; border-color:#333;"
                             onkeyup="renderSidebarBestiary()">
+
+                        <!-- Novo Monstro Button -->
+                        <button class="btn btn-primary" onclick="openCustomMobModal()"
+                            style="width:100%; margin-bottom:15px; display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; font-weight:700;">
+                            <i data-lucide="plus-circle" size="18"></i>
+                            NOVO MONSTRO
+                        </button>
 
                         <div id="sbBestiaryList" style="display:flex; flex-direction:column; gap:8px;">
                             <!-- Sidebar Mobs Injected Here -->
@@ -1615,32 +1780,40 @@
         </div>
     </div>
 
-    <!-- VIEW: CHARACTERS (Inspector) -->
+    <!-- VIEW: CHARACTERS (Player Monitor) -->
     <div id="view-chars" class="view-section">
-        <div class="col-right">
-            <div class="inspector-tabs">
-                <div class="tab-btn active" onclick="switchInspectorTab('sheet', this)">Ficha</div>
-                <div class="tab-btn" onclick="switchInspectorTab('bestiary', this)">Bestiário</div>
-            </div>
+        <div style="height:100%; padding:20px; overflow-y:auto; background:rgba(10,10,15,0.3);">
 
-            <div id="inspectorContainer" class="inspector-content">
-                <div id="inspector">
-                    <div style="text-align:center; color:#555; margin-top:50px;">
-                        <i data-lucide="user-search" size="48" style="opacity:0.2; margin-bottom:10px;"></i>
-                        <br>Selecione um personagem na aba Combate para ver detalhes aqui.
-                        <br><br>
-                        <!-- Maybe add a search/list here too? -->
+            <!-- Header -->
+            <div
+                style="display:flex; align-items:center; justify-content:space-between; margin-bottom:25px; padding-bottom:20px; border-bottom:1px solid #27272a;">
+                <div>
+                    <h1 style="font-family:'Cinzel'; font-size:1.8rem; font-weight:700; color:#e4e4e7; margin:0;">
+                        Monitor de Jogadores</h1>
+                    <p style="margin:5px 0 0 0; font-size:0.85rem; color:#71717a;">Sinais vitais e condições da equipe
+                    </p>
+                </div>
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <div style="text-align:center;">
+                        <div style="font-size:0.7rem; color:#71717a; text-transform:uppercase; font-weight:700;">
+                            JOGADORES</div>
+                        <div style="font-size:1.5rem; font-weight:700; color:var(--primary);" id="playerCount">0</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Bestiary List Hidden by Default -->
-            <div id="bestiaryContainer" class="inspector-content" style="display:none;">
-                <input type="text" id="mobSearch" placeholder="Buscar criatura..." class="d-input"
-                    style="margin-bottom:10px; width:100%; border-radius:10px; text-align:left;"
-                    onkeyup="renderBestiaryTab()">
-                <div id="bestiaryList" style="display:flex; flex-direction:column; gap:5px;"></div>
+            <!-- Player Cards Grid -->
+            <div id="playerMonitorGrid"
+                style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:20px;">
+                <!-- Cards injected here by renderPlayerMonitor() -->
+                <div style="grid-column:1/-1; text-align:center; padding:60px 20px; color:#52525b;">
+                    <i data-lucide="users" size="64" style="opacity:0.2; margin-bottom:15px;"></i>
+                    <p style="margin:0; font-size:1rem; color:#71717a;">Nenhum jogador conectado ainda.</p>
+                    <p style="margin:10px 0 0 0; font-size:0.85rem; color:#52525b;">Os jogadores aparecerão aqui quando
+                        entrarem na campanha.</p>
+                </div>
             </div>
+
         </div>
     </div>
 
@@ -1686,6 +1859,15 @@
                     <input type="text" id="cmName" class="d-input" style="width:100%;">
                 </div>
                 <div>
+                    <label>Tipo</label>
+                    <select id="cmType" class="d-input" style="width:100%;">
+                        <option value="oni">Oni</option>
+                        <option value="humano">Humano</option>
+                        <option value="animal">Animal</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+                <div>
                     <label>CR (Desafio)</label>
                     <input type="text" id="cmCR" class="d-input" style="width:100%;">
                 </div>
@@ -1715,6 +1897,15 @@
 
     <div id="toast" class="toast">
         <div id="toastMsg">Notificação</div>
+    </div>
+
+    <!-- TURN ANNOUNCER -->
+    <div id="turnAnnouncer" class="turn-announcer">
+        <div
+            style="font-size:0.8rem; color:#a1a1aa; text-transform:uppercase; letter-spacing:0.2em; margin-bottom:8px;">
+            TURNO</div>
+        <div id="announcerName"
+            style="font-size:2rem; font-family:'Cinzel', serif; font-weight:700; color:var(--primary-light);">-</div>
     </div>
 
     <!-- SERVER STATUS INDICATOR -->
@@ -1807,6 +1998,15 @@
             }
 
             updateLog(); // Initial log render
+
+            // Initialize Campaign Diary
+            initDiary();
+
+            // Initialize Player Monitor
+            renderPlayerMonitor();
+
+            // Initialize Scene Manager
+            initScenes();
             // updateReactionStatus(); 
         }
 
@@ -1930,8 +2130,294 @@
             });
 
             if (window.lucide) lucide.createIcons();
+
+            // Update initiative tracker in sidebar
+            renderInitiativeList();
+
             // Check for turn announcement if implemented
             if (typeof checkForTurnAnnouncement === 'function') checkForTurnAnnouncement();
+        }
+
+        // --- PLAYER MONITOR SYSTEM ---
+
+        function renderPlayerMonitor() {
+            if (!currentCamp) return;
+
+            const grid = document.getElementById('playerMonitorGrid');
+            const playerCount = document.getElementById('playerCount');
+
+            const players = currentCamp.players || [];
+
+            // Update count
+            playerCount.textContent = players.length;
+
+            // Render cards
+            if (players.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column:1/-1; text-align:center; padding:60px 20px; color:#52525b;">
+                        <i data-lucide="users" size="64" style="opacity:0.2; margin-bottom:15px;"></i>
+                        <p style="margin:0; font-size:1rem; color:#71717a;">Nenhum jogador conectado ainda.</p>
+                        <p style="margin:10px 0  0 0; font-size:0.85rem; color:#52525b;">Os jogadores aparecerão aqui quando entrarem na campanha.</p>
+                    </div>
+                `;
+                if (window.lucide) lucide.createIcons();
+                return;
+            }
+
+            grid.innerHTML = '';
+
+            players.forEach(player => {
+                const hp = player.currentHP || 0;
+                const maxHP = player.maxHP || 1;
+                const hpPercent = (hp / maxHP) * 100;
+
+                // Determine condition color
+                let borderColor = '#22c55e'; // Green = Healthy
+                if (hpPercent <= 50) borderColor = '#eab308'; // Yellow = Wounded
+                if (hpPercent <= 25) borderColor = '#ef4444'; // Red = Critical/Bleeding
+                if (hp <= 0) borderColor = '#7f1d1d'; // Dark Red = Down
+
+                // Calculate Passive Perception (10 + WIS mod)
+                const wisScore = (player.stats && player.stats.wis) || 10;
+                const wisMod = Math.floor((wisScore - 10) / 2);
+                const passivePerception = 10 + wisMod;
+
+                // AC (Armor Class)
+                const ac = player.ac || 10;
+
+                // Inspiration status
+                const hasInspiration = player.inspiration || false;
+
+                const card = document.createElement('div');
+                card.style.cssText = `
+                    background:rgba(24,24,27,0.9);
+                    border:2px solid ${borderColor};
+                    border-radius:12px;
+                    padding:16px;
+                    display:flex;
+                    flex-direction:column;
+                    gap:12px;
+                    transition:all 0.2s;
+                    box-shadow:0 0 20px ${borderColor}40;
+                `;
+
+                card.innerHTML = `
+                    <!-- Header -->
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <div style="width:50px; height:50px; border-radius:50%; background:linear-gradient(135deg, #3f3f46 0%, #27272a 100%); display:flex; align-items:center; justify-content:center; font-size:1.5rem; font-weight:700; color:#a1a1aa; border:2px solid ${borderColor};">
+                            ${player.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-size:1.1rem; font-weight:700; color:#e4e4e7; display:flex; align-items:center; gap:8px;">
+                                ${player.name}
+                                ${hasInspiration ? '<span style="color:#fbbf24; font-size:1.2rem;" title="Inspiração Ativa">✨</span>' : ''}
+                            </div>
+                            <div style="font-size:0.75rem; color:#71717a;">Nível ${player.level || 1}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- HP Bar (MOST IMPORTANT) -->
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <span style="font-size:0.75rem; color:#a1a1aa; text-transform:uppercase; font-weight:700;">VIDA</span>
+                            <span style="font-size:1.2rem; font-weight:700; color:${borderColor};">${hp} / ${maxHP}</span>
+                        </div>
+                        <div style="width:100%; height:24px; background:#18181b; border-radius:6px; overflow:hidden; border:1px solid #3f3f46; position:relative;">
+                            <div style="height:100%; background:${borderColor}; width:${hpPercent}%; transition:width 0.3s; box-shadow:0 0 10px ${borderColor}80;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Grid -->
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <div style="background:rgba(168,85,247,0.15); border:1px solid rgba(168,85,247,0.3); border-radius:8px; padding:10px; text-align:center;">
+                            <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-bottom:4px;">
+                                <i data-lucide="eye" size="16" style="color:var(--primary);"></i>
+                                <span style="font-size:0.7rem; color:#a1a1aa; text-transform:uppercase; font-weight:700;">PERCEPÇÃO</span>
+                            </div>
+                            <div style="font-size:1.8rem; font-weight:700; color:#d8b4fe;">${passivePerception}</div>
+                        </div>
+                        
+                        <div style="background:rgba(59,130,246,0.15); border:1px solid rgba(59,130,246,0.3); border-radius:8px; padding:10px; text-align:center;">
+                            <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-bottom:4px;">
+                                <i data-lucide="shield" size="16" style="color:#3b82f6;"></i>
+                                <span style="font-size:0.7rem; color:#a1a1aa; text-transform:uppercase; font-weight:700;">CA</span>
+                            </div>
+                            <div style="font-size:1.8rem; font-weight:700; color:#93c5fd;">${ac}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- DM Controls -->
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; padding-top:8px; border-top:1px solid #3f3f46;">
+                        <button class="btn" onclick="giveInspiration('${player.charId}')" style="padding:8px 12px; font-size:0.8rem; display:flex; align-items:center; justify-content:center; gap:6px; ${hasInspiration ? 'opacity:0.5;' : ''}">
+                            <i data-lucide="zap" size="14"></i>
+                            Inspiração
+                        </button>
+                        <button class="btn btn-primary" onclick="dmEditHP('${player.charId}', '${player.name}')" style="padding:8px 12px; font-size:0.8rem; display:flex; align-items:center; justify-content:center; gap:6px;">
+                            <i data-lucide="heart-pulse" size="14"></i>
+                            Editar HP
+                        </button>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function giveInspiration(charId) {
+            if (!currentCamp) return;
+
+            const player = currentCamp.players.find(p => p.charId === charId);
+            if (!player) return;
+
+            player.inspiration = !player.inspiration;
+            window.CampaignSystem.saveCampaigns();
+            window.CampaignSystem.sendUpdate(CAMP_ID, { type: 'player-update', charId });
+
+            renderPlayerMonitor();
+            showToast(player.inspiration ? `${player.name} recebeu Inspiração!` : `Inspiração removida de ${player.name}`);
+        }
+
+        // --- INITIATIVE TRACKER SYSTEM ---
+
+        function renderInitiativeList() {
+            if (!currentCamp) return;
+
+            const container = document.getElementById('initiativeList');
+            const roundDisplay = document.getElementById('sidebarRound');
+
+            if (!container) return;
+
+            // Update round counter
+            if (roundDisplay) roundDisplay.textContent = currentCamp.combat?.round || 1;
+
+            // Get combatants from initiative order
+            const order = currentCamp.combat?.order || [];
+            const turnIndex = currentCamp.combat?.turnIndex || 0;
+            const activeCombatantId = order[turnIndex];
+
+            if (order.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align:center; padding:40px 20px; color:#52525b;">
+                        <i data-lucide="swords" size="48" style="opacity:0.2; margin-bottom:10px;"></i>
+                        <p style="margin:0; font-size:0.85rem;">Nenhum combatente</p>
+                    </div>
+                `;
+                if (window.lucide) lucide.createIcons();
+                return;
+            }
+
+            container.innerHTML = '';
+
+            // Render each combatant in order
+            order.forEach((combatantId, index) => {
+                const entity = getEntity(combatantId);
+                if (!entity) return;
+
+                const isActive = combatantId === activeCombatantId;
+                const initiative = entity.initiative || 0;
+                const isNPC = entity.isNPC || false;
+
+                // Determine HP percentage for color
+                const hp = entity.currentHP || entity.hp || 0;
+                const maxHP = entity.maxHP || hp;
+                const hpPercent = maxHP > 0 ? (hp / maxHP) * 100 : 0;
+
+                let hpColor = '#22c55e'; // Green
+                if (hpPercent <= 50) hpColor = '#eab308'; // Yellow
+                if (hpPercent <= 25) hpColor = '#ef4444'; // Red
+                if (hp <= 0) hpColor = '#7f1d1d'; // Dark red
+
+                const card = document.createElement('div');
+                card.style.cssText = `
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 8px 10px;
+                    background: ${isActive ? 'rgba(168,85,247,0.15)' : 'rgba(24,24,27,0.6)'};
+                    border: 2px solid ${isActive ? 'var(--primary)' : '#3f3f46'};
+                    border-radius: 8px;
+                    margin-bottom: 6px;
+                    transition: all 0.2s;
+                    cursor: pointer;
+                    position: relative;
+                    transform: ${isActive ? 'scale(1.05)' : 'scale(1)'};
+                    box-shadow: ${isActive ? '0 0 20px rgba(168,85,247,0.5)' : 'none'};
+                `;
+
+                // Hover effect
+                card.onmouseenter = () => {
+                    if (!isActive) {
+                        card.style.background = 'rgba(39,39,42,0.8)';
+                        card.style.borderColor = '#52525b';
+                    }
+                };
+                card.onmouseleave = () => {
+                    if (!isActive) {
+                        card.style.background = 'rgba(24,24,27,0.6)';
+                        card.style.borderColor = '#3f3f46';
+                    }
+                };
+
+                card.innerHTML = `
+                    ${isActive ? '<div style="position:absolute; left:0px; top:50%; transform:translateY(-50%); color:var(--primary); font-size:1.2rem; font-weight:700;">▶</div>' : ''}
+                    
+                    <div onclick="event.stopPropagation(); editInitiative('${combatantId}')" style="display:flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg, #3f3f46 0%, #27272a 100%); border:2px solid ${hpColor}; font-size:0.9rem; font-weight:700; color:#e4e4e7; flex-shrink:0; margin-left:${isActive ? '20px' : '0'}; cursor:pointer; transition:all 0.2s;" title="Clique para editar" onmouseenter="this.style.transform='scale(1.1)'" onmouseleave="this.style.transform='scale(1)'">
+                        ${initiative}
+                    </div>
+                    
+                    <div style="flex:1; min-width:0;">
+                        <div style="font-size:0.9rem; font-weight:700; color:#e4e4e7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                            ${entity.name}
+                        </div>
+                        <div style="font-size:0.7rem; color:#71717a;">
+                            HP: ${hp}/${maxHP}
+                        </div>
+                    </div>
+                    
+                    ${entity.conditions && entity.conditions.length > 0 ? `
+                        <div style="display:flex; gap:4px; align-items:center;">
+                            ${entity.conditions.map(c => `<span style="font-size:0.7rem; padding:2px 6px; background:rgba(239,68,68,0.2); border:1px solid #ef4444; border-radius:4px; color:#fca5a5;">${c}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                `;
+
+                container.appendChild(card);
+            });
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function dmEditHP(charId, playerName) {
+            const input = prompt(`Editar HP de ${playerName}\n\nDigite:\n• Um número para DEFINIR o HP (ex: 25)\n• +X para CURAR (ex: +5)\n• -X para CAUSAR DANO (ex: -10)`);
+
+            if (!input) return;
+
+            const player = currentCamp.players.find(p => p.charId === charId);
+            if (!player) return;
+
+            let newHP = player.currentHP || 0;
+
+            if (input.startsWith('+')) {
+                newHP += parseInt(input.substring(1));
+            } else if (input.startsWith('-')) {
+                newHP += parseInt(input); // Already negative
+            } else {
+                newHP = parseInt(input);
+            }
+
+            // Clamp
+            if (newHP > player.maxHP) newHP = player.maxHP;
+            if (newHP < 0) newHP = 0;
+
+            player.currentHP = newHP;
+            window.CampaignSystem.saveCampaigns();
+            window.CampaignSystem.sendUpdate(CAMP_ID, { type: 'player-update', charId });
+
+            renderPlayerMonitor();
+            renderCombatList(); // Update combat tokens too
+            showToast(`HP de ${playerName} alterado para ${newHP}/${player.maxHP}`);
         }
 
         // --- COMBAT HELPERS ---
@@ -2041,13 +2527,27 @@
                 return;
             }
 
-            // Logic handled by CampaignSystem, but let's double check here or just call it
-            window.CampaignSystem.nextTurn(CAMP_ID);
+            // 1. Advance Index
+            currentCamp.combat.turnIndex = (currentCamp.combat.turnIndex + 1) % currentCamp.combat.order.length;
 
-            // Reload local data to reflect changes
-            loadData();
+            // 2. Check Round
+            if (currentCamp.combat.turnIndex === 0) {
+                currentCamp.combat.round = (currentCamp.combat.round || 1) + 1;
+                showToast(`Round ${currentCamp.combat.round} Iniciado!`);
+            }
 
-            // Visual FEEDBACK
+            // 3. Update Visuals (Round Display)
+            const roundDisplay = document.getElementById('roundDisplay');
+            if (roundDisplay) roundDisplay.innerText = currentCamp.combat.round;
+
+            // 4. Save & Sync
+            window.CampaignSystem.saveCampaigns();
+            window.CampaignSystem.sendUpdate(CAMP_ID, { type: 'combat-update' });
+
+            // 5. Local Render (Refreshes Banner and Tokens)
+            renderCombatList();
+
+            // 6. Announce
             const activeId = currentCamp.combat.order[currentCamp.combat.turnIndex];
             const ent = getEntity(activeId);
             if (ent) {
@@ -2421,14 +2921,23 @@
             currentCamp.log.slice().reverse().forEach(l => {
                 const card = document.createElement('div');
                 card.className = 'wis-card';
+                // Compact styling for sidebar
+                card.style.cssText = `
+                    background: rgba(24,24,27,0.6);
+                    border: 1px solid #3f3f46;
+                    border-radius: 6px;
+                    padding: 6px 8px;
+                    margin-bottom: 4px;
+                    transition: all 0.2s;
+                `;
                 if (l.msg.includes("CRÍTICO")) card.style.borderColor = "var(--hp-mid)";
 
                 card.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                        <span style="font-size:0.65rem; color:#71717a; text-transform:uppercase; font-weight:700;">LOG</span>
-                        <span style="font-size:0.65rem; color:#52525b;">${l.time}</span>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
+                        <span style="font-size:0.6rem; color:#71717a; text-transform:uppercase; font-weight:700;">LOG</span>
+                        <span style="font-size:0.6rem; color:#52525b;">${l.time}</span>
                     </div>
-                    <div style="font-size:0.8rem; color:#d4d4d8; line-height:1.4;">${l.msg}</div>
+                    <div style="font-size:0.75rem; color:#d4d4d8; line-height:1.3;">${l.msg}</div>
                 `;
                 feed.appendChild(card);
             });
@@ -2436,6 +2945,58 @@
 
         function closeModal(id) {
             document.getElementById(id).style.display = 'none';
+        }
+
+        // --- SPAWN MONSTER FROM BESTIARY ---
+
+        function spawnMobById(mobId) {
+            if (!currentCamp) return;
+
+            // Find monster template from database
+            const customs = JSON.parse(localStorage.getItem('customBestiary') || "[]");
+            const fullDB = [...customs, ...(window.BestiaryDB || [])];
+            const template = fullDB.find(m => m.id === mobId);
+
+            if (!template) {
+                showToast('Monstro não encontrado!');
+                return;
+            }
+
+            // Create INSTANCE (copy, not reference)
+            const instance = JSON.parse(JSON.stringify(template));
+
+            // Generate unique ID
+            instance.id = 'monster_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+            // Add name counter if duplicates exist
+            const monsters = currentCamp.monsters || [];
+            const sameNameCount = monsters.filter(m => m.name.startsWith(template.name)).length;
+            if (sameNameCount > 0) {
+                instance.name = `${template.name} (${sameNameCount + 1})`;
+            }
+
+            // Set initial position - Center of ENEMY FIELD (top half)
+            // Combat stage is typically 800x600, enemy field is top half
+            instance.x = 400; // Center horizontally
+            instance.y = 150; // Upper portion (enemy territory)
+
+            // Ensure HP fields
+            instance.currentHP = instance.hp || instance.maxHP || 10;
+            if (!instance.maxHP) instance.maxHP = instance.hp || 10;
+
+            // Add to campaign monsters
+            if (!currentCamp.monsters) currentCamp.monsters = [];
+            currentCamp.monsters.push(instance);
+
+            // Save and sync
+            window.CampaignSystem.saveCampaigns();
+            window.CampaignSystem.sendUpdate(CAMP_ID, { type: 'monster-added', monsterId: instance.id });
+
+            // Render immediately
+            renderCombatList();
+
+            // Show feedback
+            showToast(`${instance.name} adicionado ao combate!`);
         }
 
         // --- BESTIARY & HELPERS ---
@@ -2464,6 +3025,7 @@
 
         function saveCustomMob() {
             const name = document.getElementById('cmName').value;
+            const type = document.getElementById('cmType').value;
             const hp = parseInt(document.getElementById('cmHP').value) || 10;
             const ac = parseInt(document.getElementById('cmAC').value) || 10;
             const cr = document.getElementById('cmCR').value || "-";
@@ -2482,6 +3044,7 @@
             const newMob = {
                 id: 'custom_' + Date.now(),
                 name: name,
+                type: type,
                 hp: hp,
                 maxHP: hp,
                 ac: ac,
@@ -2495,43 +3058,57 @@
             localStorage.setItem('customBestiary', JSON.stringify(existing));
 
             document.getElementById('customMobModal').style.display = 'none';
-            closeModal('addCreatureModal');
-            // Directly add? Or just let user pick from list
-            const addedMob = window.CampaignSystem.addMonster(CAMP_ID, newMob);
 
-            if (addedMob) {
-                // POS & INIT FIX
-                const stage = document.getElementById('combatStage');
-                const centerX = stage ? stage.clientWidth / 2 : 100;
-                const centerY = stage ? stage.clientHeight / 2 : 100;
+            // Clear form fields
+            document.getElementById('cmName').value = '';
+            document.getElementById('cmType').value = 'oni';
+            document.getElementById('cmHP').value = '';
+            document.getElementById('cmAC').value = '';
+            document.getElementById('cmCR').value = '';
+            document.getElementById('cmAttacksList').innerHTML = '';
 
-                const gridSize = 64;
-                const finalX = Math.round((centerX - 32) / gridSize) * gridSize;
-                const finalY = Math.round((centerY - 32) / gridSize) * gridSize;
+            // Refresh bestiary list
+            renderSidebarBestiary();
 
-                // Auto-Roll Initiative
-                const init = Math.floor(Math.random() * 20) + 1; // Basic D20 for custom mob
+            showToast(`${name} adicionado ao bestiário!`);
+        }
+        closeModal('addCreatureModal');
+        // Directly add? Or just let user pick from list
+        const addedMob = window.CampaignSystem.addMonster(CAMP_ID, newMob);
 
-                // Update
-                window.CampaignSystem.updateEntity(CAMP_ID, addedMob.id, true, {
-                    initiative: init,
-                    x: finalX,
-                    y: finalY
-                });
+        if (addedMob) {
+            // POS & INIT FIX
+            const stage = document.getElementById('combatStage');
+            const centerX = stage ? stage.clientWidth / 2 : 100;
+            const centerY = stage ? stage.clientHeight / 2 : 100;
 
-                // Add to Combat Order if Active
-                if (currentCamp && currentCamp.combat && currentCamp.combat.active) {
-                    let entities = getAllEntities();
-                    const me = entities.find(e => e.id === addedMob.id);
-                    if (me) me.initiative = init;
-                    entities.sort((a, b) => (b.initiative || 0) - (a.initiative || 0));
-                    currentCamp.combat.order = entities.map(e => e.id || e.charId);
-                    window.CampaignSystem.saveCampaigns();
-                }
+            const gridSize = 64;
+            const finalX = Math.round((centerX - 32) / gridSize) * gridSize;
+            const finalY = Math.round((centerY - 32) / gridSize) * gridSize;
+
+            // Auto-Roll Initiative
+            const init = Math.floor(Math.random() * 20) + 1; // Basic D20 for custom mob
+
+            // Update
+            window.CampaignSystem.updateEntity(CAMP_ID, addedMob.id, true, {
+                initiative: init,
+                x: finalX,
+                y: finalY
+            });
+
+            // Add to Combat Order if Active
+            if (currentCamp && currentCamp.combat && currentCamp.combat.active) {
+                let entities = getAllEntities();
+                const me = entities.find(e => e.id === addedMob.id);
+                if (me) me.initiative = init;
+                entities.sort((a, b) => (b.initiative || 0) - (a.initiative || 0));
+                currentCamp.combat.order = entities.map(e => e.id || e.charId);
+                window.CampaignSystem.saveCampaigns();
             }
+        }
 
-            loadData();
-            showToast('Monstro criado e adicionado!');
+        loadData();
+        showToast('Monstro criado e adicionado!');
         }
 
         function renderBestiaryTab() {
@@ -2640,12 +3217,8 @@
             showToast('Iniciativa Rolada!');
         }
 
-        function nextTurn() {
-            if (window.CampaignSystem) {
-                window.CampaignSystem.nextTurn(CAMP_ID);
-                loadData();
-            }
-        }
+        // nextTurn handled above
+
 
         function clearCombat() {
             if (!confirm("Limpar todo o combate?")) return;
@@ -2658,6 +3231,374 @@
         function renderConditionIcons(conds) {
             if (!conds || conds.length === 0) return "";
             return conds.map(c => `[${c}]`).join(" ");
+        }
+
+        // --- CAMPAIGN DIARY SYSTEM ---
+
+        function initDiary() {
+            if (!currentCamp) return;
+
+            // Ensure diary structure exists
+            if (!currentCamp.diary) {
+                currentCamp.diary = {
+                    sessions: [],
+                    currentSessionId: null
+                };
+                window.CampaignSystem.saveCampaigns();
+            }
+
+            renderDiary();
+        }
+
+        function createNewSession() {
+            if (!currentCamp) return;
+
+            const sessionNum = (currentCamp.diary.sessions || []).length + 1;
+            const sessionName = prompt('Nome da Sessão:', `Sessão ${sessionNum}`);
+            if (!sessionName) return;
+
+            const newSession = {
+                id: 'session_' + Date.now(),
+                name: sessionName,
+                startTime: new Date().toISOString(),
+                summary: '',
+                logs: []
+            };
+
+            if (!currentCamp.diary.sessions) currentCamp.diary.sessions = [];
+            currentCamp.diary.sessions.push(newSession);
+            currentCamp.diary.currentSessionId = newSession.id;
+
+            window.CampaignSystem.saveCampaigns();
+            renderDiary();
+            showToast(`Sessão "${sessionName}" criada!`);
+        }
+
+        function switchDiarySession(sessionId) {
+            if (!currentCamp || !sessionId) return;
+            currentCamp.diary.currentSessionId = sessionId;
+            window.CampaignSystem.saveCampaigns();
+            renderDiary();
+        }
+
+        function addQuickNote() {
+            if (!currentCamp || !currentCamp.diary.currentSessionId) {
+                showToast('Selecione uma sessão primeiro!');
+                return;
+            }
+
+            const noteInput = document.getElementById('quickNoteInput');
+            const noteText = noteInput.value.trim();
+
+            if (!noteText) {
+                showToast('Escreva uma nota antes de adicionar!');
+                return;
+            }
+
+            const session = currentCamp.diary.sessions.find(s => s.id === currentCamp.diary.currentSessionId);
+            if (!session) return;
+
+            const newLog = {
+                id: 'log_' + Date.now(),
+                timestamp: new Date().toISOString(),
+                note: noteText
+            };
+
+            session.logs.push(newLog);
+            window.CampaignSystem.saveCampaigns();
+
+            noteInput.value = '';
+            renderDiary();
+            showToast('Nota adicionada!');
+        }
+
+        function saveSessionSummary() {
+            if (!currentCamp || !currentCamp.diary.currentSessionId) return;
+
+            const summaryInput = document.getElementById('sessionSummaryInput');
+            const session = currentCamp.diary.sessions.find(s => s.id === currentCamp.diary.currentSessionId);
+
+            if (!session) return;
+
+            session.summary = summaryInput.value.trim();
+            window.CampaignSystem.saveCampaigns();
+
+            showToast('Resumo salvo!');
+        }
+
+        function formatTimestamp(isoString) {
+            const date = new Date(isoString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${day}/${month} às ${hours}:${minutes}`;
+        }
+
+        function renderDiary() {
+            if (!currentCamp || !currentCamp.diary) return;
+
+            const sessionSelector = document.getElementById('sessionSelector');
+            const timeline = document.getElementById('diaryTimeline');
+            const currentSessionTitle = document.getElementById('currentSessionTitle');
+            const sessionStats = document.getElementById('sessionStats');
+            const sessionSummaryInput = document.getElementById('sessionSummaryInput');
+            const saveSummaryBtn = document.getElementById('saveSummaryBtn');
+
+            // Render Session Selector
+            sessionSelector.innerHTML = '<option value="">Selecione uma Sessão</option>';
+            (currentCamp.diary.sessions || []).forEach(session => {
+                const opt = document.createElement('option');
+                opt.value = session.id;
+                opt.textContent = session.name;
+                if (session.id === currentCamp.diary.currentSessionId) opt.selected = true;
+                sessionSelector.appendChild(opt);
+            });
+
+            // Render Timeline
+            if (!currentCamp.diary.sessions || currentCamp.diary.sessions.length === 0) {
+                timeline.innerHTML = `
+                    <div style="text-align:center; padding:40px 20px; color:#52525b;">
+                        <i data-lucide="book-marked" size="48" style="opacity:0.3; margin-bottom:10px;"></i>
+                        <p style="margin:0;">Nenhuma sessão criada ainda.<br>Clique em "Nova Sessão" para começar.</p>
+                    </div>
+                `;
+
+                // Disable summary panel
+                currentSessionTitle.textContent = 'Resumo da Sessão';
+                sessionStats.textContent = 'Selecione uma sessão';
+                sessionSummaryInput.value = '';
+                sessionSummaryInput.disabled = true;
+                saveSummaryBtn.disabled = true;
+
+                if (window.lucide) lucide.createIcons();
+                return;
+            }
+
+            // Render all sessions in reverse chronological order
+            timeline.innerHTML = '';
+            const sessions = [...currentCamp.diary.sessions].reverse();
+
+            sessions.forEach(session => {
+                const sessionCard = document.createElement('div');
+                sessionCard.style.cssText = 'background:rgba(24,24,27,0.6); border:1px solid #3f3f46; border-radius:8px; padding:15px; position:relative;';
+
+                // Session Header
+                const header = `
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid #3f3f46;">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <i data-lucide="calendar" size="16" style="color:var(--primary);"></i>
+                            <span style="font-family:'Cinzel'; font-weight:700; color:#e4e4e7; font-size:0.95rem;">${session.name}</span>
+                        </div>
+                        <span style="font-size:0.7rem; color:#71717a;">${formatTimestamp(session.startTime)}</span>
+                    </div>
+                `;
+
+                // Session Summary (if exists)
+                let summaryHTML = '';
+                if (session.summary && session.summary.trim()) {
+                    summaryHTML = `
+                        <div style="background:rgba(168,85,247,0.1); border-left:3px solid var(--primary); padding:10px; margin-bottom:12px; border-radius:4px;">
+                            <div style="font-size:0.7rem; color:#a1a1aa; text-transform:uppercase; font-weight:700; margin-bottom:5px;">📝 RESUMO</div>
+                            <p style="margin:0; font-size:0.85rem; color:#d4d4d8; line-height:1.4; white-space:pre-wrap;">${session.summary}</p>
+                        </div>
+                    `;
+                }
+
+                // Session Logs
+                let logsHTML = '';
+                if (session.logs && session.logs.length > 0) {
+                    logsHTML = session.logs.map(log => `
+                        <div style="display:flex; gap:10px; padding:8px; background:rgba(0,0,0,0.2); border-radius:4px; border-left:2px solid #52525b; margin-bottom:6px;">
+                            <div style="flex-shrink:0; font-size:0.7rem; color:#71717a; width:80px;">${formatTimestamp(log.timestamp)}</div>
+                            <div style="flex:1; font-size:0.85rem; color:#d4d4d8; line-height:1.4;">${log.note}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    logsHTML = '<div style="text-align:center; padding:15px; color:#52525b; font-size:0.8rem;">Nenhuma nota ainda</div>';
+                }
+
+                sessionCard.innerHTML = header + summaryHTML + logsHTML;
+                timeline.appendChild(sessionCard);
+            });
+
+            // Update Summary Panel
+            const activeSession = currentCamp.diary.sessions.find(s => s.id === currentCamp.diary.currentSessionId);
+            if (activeSession) {
+                currentSessionTitle.textContent = activeSession.name;
+                sessionStats.textContent = `${activeSession.logs.length} notas • Iniciada em ${formatTimestamp(activeSession.startTime)}`;
+                sessionSummaryInput.value = activeSession.summary || '';
+                sessionSummaryInput.disabled = false;
+                saveSummaryBtn.disabled = false;
+            } else {
+                currentSessionTitle.textContent = 'Resumo da Sessão';
+                sessionStats.textContent = 'Selecione uma sessão';
+                sessionSummaryInput.value = '';
+                sessionSummaryInput.disabled = true;
+                saveSummaryBtn.disabled = true;
+            }
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        // --- SCENE MANAGER SYSTEM ---
+
+        const DEFAULT_SCENES = [
+            { id: 'forest', name: 'Floresta', desc: 'Árvores densas', icon: 'trees', gradient: 'linear-gradient(135deg, #1a472a 0%, #0f2818 100%)', border: '#2d5a3d', textColor: '#a8e6cf', bg: 'https://images.unsplash.com/photo-1511497584788-876760111969?w=1920', removable: false },
+            { id: 'village', name: 'Vila', desc: 'Casas tradicionais', icon: 'home', gradient: 'linear-gradient(135deg, #8b4513 0%, #5c2e0a 100%)', border: '#a0522d', textColor: '#deb887', bg: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=1920', removable: false },
+            { id: 'castle', name: 'Castelo Infinito', desc: 'Dimensão demoníaca', icon: 'castle', gradient: 'linear-gradient(135deg, #4a1a4a 0%, #2d0f2d 100%)', border: '#6b2f6b', textColor: '#d8b4fe', bg: 'https://images.unsplash.com/photo-1585009350851-0c195a64dea9?w=1920', removable: false },
+            { id: 'mountain', name: 'Montanha', desc: 'Picos nevados', icon: 'mountain', gradient: 'linear-gradient(135deg, #4a5568 0%, #2d3748 100%)', border: '#718096', textColor: '#cbd5e0', bg: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920', removable: false }
+        ];
+
+        function initScenes() {
+            if (!currentCamp) return;
+
+            // Initialize scenes array if doesn't exist
+            if (!currentCamp.scenes) {
+                currentCamp.scenes = [...DEFAULT_SCENES];
+                window.CampaignSystem.saveCampaigns();
+            }
+
+            renderScenes();
+        }
+
+        function renderScenes() {
+            if (!currentCamp) return;
+
+            const container = document.getElementById('scenesList');
+            if (!container) return;
+
+            const scenes = currentCamp.scenes || [];
+            const activeScene = currentCamp.activeScene;
+
+            container.innerHTML = '';
+
+            scenes.forEach(scene => {
+                const isActive = activeScene === scene.id;
+
+                const btn = document.createElement('div');
+                btn.className = 'scene-btn';
+                btn.setAttribute('data-scene', scene.id);
+                btn.style.cssText = `
+                    position:relative;
+                    padding:12px 16px;
+                    background:${scene.gradient};
+                    border:2px solid ${isActive ? 'var(--primary)' : scene.border};
+                    border-radius:8px;
+                    color:#fff;
+                    font-weight:700;
+                    text-align:left;
+                    cursor:pointer;
+                    transition:all 0.2s;
+                    display:flex;
+                    align-items:center;
+                    gap:10px;
+                    ${isActive ? 'box-shadow:0 0 20px rgba(168,85,247,0.5);' : ''}
+                `;
+
+                // Hover effects
+                btn.onmouseenter = () => {
+                    if (!isActive) btn.style.transform = 'scale(1.02)';
+                    const trash = btn.querySelector('.scene-trash');
+                    if (trash) trash.style.display = 'flex';
+                };
+                btn.onmouseleave = () => {
+                    btn.style.transform = 'scale(1)';
+                    const trash = btn.querySelector('.scene-trash');
+                    if (trash) trash.style.display = 'none';
+                };
+
+                btn.onclick = () => activateScene(scene.id);
+
+                btn.innerHTML = `
+                    <i data-lucide="${scene.icon}" size="18"></i>
+                    <div style="flex:1;">
+                        <div style="font-size:0.9rem;">${scene.name}</div>
+                        <div style="font-size:0.7rem; color:${scene.textColor}; opacity:0.8;">${scene.desc}</div>
+                    </div>
+                    ${isActive ? '<div class="scene-active-indicator" style="width:10px; height:10px; background:#22c55e; border-radius:50%; box-shadow:0 0 10px #22c55e;"></div>' : ''}
+                    ${scene.removable ? '<div class="scene-trash" onclick="event.stopPropagation(); removeScene(\'' + scene.id + '\')" style="display:none; position:absolute; top:8px; right:8px; width:28px; height:28px; background:rgba(239,68,68,0.9); border-radius:6px; cursor:pointer; align-items:center; justify-content:center; transition:all 0.2s;" onmouseenter="this.style.background=\'#ef4444\'" onmouseleave="this.style.background=\'rgba(239,68,68,0.9)\'"><i data-lucide="trash-2" size="14" style="color:#fff;"></i></div>' : ''}
+                `;
+
+                container.appendChild(btn);
+            });
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function addCustomScene() {
+            const name = prompt('Nome da Cena:');
+            if (!name || !name.trim()) return;
+
+            const desc = prompt('Descrição Curta:');
+            if (!desc || !desc.trim()) return;
+
+            const newScene = {
+                id: 'custom_' + Date.now(),
+                name: name.trim(),
+                desc: desc.trim(),
+                icon: 'map-pin',
+                gradient: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
+                border: '#3b82f6',
+                textColor: '#93c5fd',
+                bg: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=1920', // Default custom background
+                removable: true
+            };
+
+            currentCamp.scenes.push(newScene);
+            window.CampaignSystem.saveCampaigns();
+            renderScenes();
+            showToast(`Cena "${name}" adicionada!`);
+        }
+
+        function removeScene(sceneId) {
+            if (!confirm('Remover esta cena?')) return;
+
+            const scene = currentCamp.scenes.find(s => s.id === sceneId);
+            if (!scene || !scene.removable) {
+                showToast('Esta cena não pode ser removida!');
+                return;
+            }
+
+            currentCamp.scenes = currentCamp.scenes.filter(s => s.id !== sceneId);
+
+            // If removing active scene, clear it
+            if (currentCamp.activeScene === sceneId) {
+                currentCamp.activeScene = null;
+            }
+
+            window.CampaignSystem.saveCampaigns();
+            renderScenes();
+            showToast('Cena removida!');
+        }
+
+        function activateScene(sceneId) {
+            if (!currentCamp) return;
+
+            const scene = currentCamp.scenes.find(s => s.id === sceneId);
+            if (!scene) return;
+
+            // Update campaign scene
+            currentCamp.activeScene = sceneId;
+            window.CampaignSystem.saveCampaigns();
+
+            // Sync via WebSocket
+            window.CampaignSystem.sendUpdate(CAMP_ID, {
+                type: 'scene-change',
+                scene: sceneId,
+                backgroundUrl: scene.bg
+            });
+
+            // Update combat stage background
+            const combatStage = document.getElementById('combatStage');
+            if (combatStage) {
+                combatStage.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('${scene.bg}')`;
+                combatStage.style.backgroundSize = 'cover';
+                combatStage.style.backgroundPosition = 'center';
+            }
+
+            renderScenes(); // Re-render to update active indicator
+            showToast(`Cena alterada: ${scene.name}`);
         }
 
         // --- TOAST HELPER ---

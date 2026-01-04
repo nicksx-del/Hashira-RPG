@@ -1,0 +1,45 @@
+/* --- VISUAL EFFECTS --- */
+
+/* PSYCHIC DAMAGE ANIMATION */
+.psychic-effect {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.psychic-wave {
+    position: absolute;
+    border-radius: 50%;
+    border: 5px solid rgba(255, 0, 255, 0.6);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.8), inset 0 0 20px rgba(255, 0, 255, 0.8);
+    opacity: 0;
+    animation: psychicWave 1.5s ease-out forwards;
+}
+
+.psychic-wave:nth-child(1) { animation-delay: 0s; }
+.psychic-wave:nth-child(2) { animation-delay: 0.3s; }
+.psychic-wave:nth-child(3) { animation-delay: 0.6s; }
+
+@keyframes psychicWave {
+    0% {
+        width: 0;
+        height: 0;
+        opacity: 0.8;
+        border-width: 10px;
+    }
+    100% {
+        width: 150vmax;
+        height: 150vmax;
+        opacity: 0;
+        border-width: 0;
+    }
+}
