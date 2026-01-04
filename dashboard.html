@@ -416,6 +416,12 @@
             <div class="inv-workspace">
                 <div class="inv-list-container" id="inventoryGrid"></div>
             </div>
+
+            <!-- MOBILE FAB (Only visible on mobile) -->
+            <button id="mobileAddBtn" onclick="openItemModal()"
+                style="display: none; position: fixed; bottom: 85px; right: 20px; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-primary), #00b4d8); color: #10002b; border: none; box-shadow: 0 4px 15px rgba(0, 180, 216, 0.4); z-index: 9999; align-items: center; justify-content: center; cursor: pointer;">
+                <i data-lucide="plus" style="width: 28px; height: 28px; stroke-width: 3;"></i>
+            </button>
         </section>
 
         <!-- SECTION: SKILLS (Combined Breathing & Background) -->
@@ -484,9 +490,14 @@
                 <span class="sec-title">Ataques & Combate</span>
                 <i data-lucide="swords" color="#d90429"></i>
             </div>
-            <div class="atk-controls" style="margin-bottom:1rem;">
-                <button class="devour-btn" style="width:auto; margin:0;" onclick="openAttackModal()">+ Novo
-                    Ataque</button>
+            <div class="atk-controls" style="margin-bottom:1rem; display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="devour-btn" style="width:auto; margin:0; flex:1;" onclick="openAttackModal()">
+                    <i data-lucide="sword" style="width:16px; margin-right:5px;"></i> Criar Ataque
+                </button>
+                <button class="devour-btn" style="width:auto; margin:0; background:#222; border-color:#444; color:#ccc;"
+                    onclick="quickAddKatana()">
+                    + Katana
+                </button>
             </div>
             <div id="attacksList"></div>
         </section>
@@ -1327,9 +1338,9 @@
             <i data-lucide="swords"></i>
             <span>Combate</span>
         </div>
-        <div class="nav-item-mobile" onclick="window.location.href='campaign-hub.html'">
-            <i data-lucide="map"></i>
-            <span>Mapa</span>
+        <div class="nav-item-mobile" onclick="showSection('skills'); activateMobile(this)">
+            <i data-lucide="sparkles"></i>
+            <span>Habilidades</span>
         </div>
         <div class="nav-item-mobile" onclick="toggleMobileMenu()">
             <i data-lucide="menu"></i>
@@ -1461,17 +1472,141 @@
                 font-size: 1.2rem !important;
                 font-weight: 800;
             }
+
+            .mobile-only-salary {
+                display: flex !important;
+            }
+
+            /* Hide duplicate user meta on mobile */
+            .user-meta {
+                display: none !important;
+            }
+
+            /* Show FAB on Mobile */
+            #mobileAddBtn {
+                display: flex !important;
+                animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
+
+            @keyframes popIn {
+                0% {
+                    transform: scale(0);
+                    opacity: 0;
+                }
+
+                100% {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+            }
+
+            /* BUTTON ACCESSIBILITY */
+            button,
+            select,
+            input[type="text"],
+            input[type="number"] {
+                min-height: 44px;
+                /* Apple/Android Touch Standard */
+            }
+
+            .vital-btn {
+                min-width: 44px;
+                min-height: 44px;
+                margin: 0 5px;
+                /* Extra spacing */
+            }
         }
     </style>
+
+    <!-- MOBILE MENU OVERLAY -->
+    <div id="mobileMenuOverlay" onclick="toggleMobileMenu()"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(5px); z-index:10005; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s;">
+        <div class="menu-content" onclick="event.stopPropagation()"
+            style="width:80%; max-width:300px; background:#16161a; border:1px solid #333; border-radius:12px; padding:20px; display:flex; flex-direction:column; gap:15px; transform:scale(0.9); transition:transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);">
+            <h3 style="text-align:center; color:white; margin:0 0 10px 0;">Menu</h3>
+
+            <button onclick="completeMission(); toggleMobileMenu()"
+                style="background:rgba(0, 180, 216, 0.1); border:1px solid var(--accent-primary); color:var(--accent-primary); padding:15px; border-radius:8px; font-weight:bold; display:flex; align-items:center; justify-content:center; gap:10px;">
+                <i data-lucide="coins"></i> Resgatar Salário
+            </button>
+
+            <button onclick="window.location.href='index.html'"
+                style="background:#333; color:#ef4444; border:none; padding:15px; border-radius:8px; font-weight:bold; display:flex; align-items:center; justify-content:center; gap:10px;">
+                <i data-lucide="log-out"></i> Sair do Painel
+            </button>
+
+            <button onclick="toggleMobileMenu()"
+                style="background:none; border:none; color:#666; padding:10px;">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- MOBILE DETAIL DRAWER -->
+    <div id="detailDrawerBackdrop" onclick="closeDetailDrawer()"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:10001; opacity:0; transition:opacity 0.3s;">
+    </div>
+    <div id="detailDrawer"
+        style="position:fixed; bottom:0; left:0; width:100%; max-height:80vh; background:#16161a; border-top:1px solid #333; border-radius:15px 15px 0 0; z-index:10002; transform:translateY(110%); transition:transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); padding:20px; box-shadow:0 -5px 30px rgba(0,0,0,0.8); overflow-y:auto; display:flex; flex-direction:column; gap:15px;">
+        <!-- Drawer Handle -->
+        <div
+            style="width:40px; height:5px; background:#333; border-radius:10px; align-self:center; margin-bottom:10px;">
+        </div>
+
+        <div id="drawerContent">
+            <!-- Injected via JS -->
+        </div>
+
+        <button onclick="closeDetailDrawer()"
+            style="background:#222; color:#ccc; border:none; padding:15px; border-radius:8px; font-weight:bold;">FECHAR</button>
+    </div>
+
     <script>
+        function openDetailDrawer(type, id) {
+            // Mobile check? Or allow on desktop too? User asked for "Interações Mobile".
+            // Often better to keep consistent, but let's enforce mainly for mobile usage or replace hover everywhere?
+            // "Refatore as interações de 'Hover' para UX Mobile". Implies replace.
+            // But desktop users utilize hover. I will enable this function globally but only call it if I update the click handlers.
+
+            // Logic handled in dashboard.js mostly, but here is UI control
+            const drawer = document.getElementById('detailDrawer');
+            const bg = document.getElementById('detailDrawerBackdrop');
+            if (!drawer || !bg) return;
+
+            // Note: Content must be populated before calling this, or assume caller did it.
+            // dashboard.js populates 'drawerContent' before calling this function.
+
+            bg.style.display = 'block';
+            setTimeout(() => bg.style.opacity = '1', 10);
+            drawer.style.transform = 'translateY(0)';
+        }
+
+        function closeDetailDrawer() {
+            const drawer = document.getElementById('detailDrawer');
+            const bg = document.getElementById('detailDrawerBackdrop');
+            if (!drawer || !bg) return;
+
+            drawer.style.transform = 'translateY(110%)';
+            bg.style.opacity = '0';
+            setTimeout(() => {
+                bg.style.display = 'none';
+            }, 300);
+        }
         function activateMobile(el) {
             document.querySelectorAll('.nav-item-mobile').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
         }
         function toggleMobileMenu() {
-            // Simple logic for now, redirect or show modal. 
-            // Reuse Exit logic for consistency as per Sidebar
-            if (confirm("Sair do Painel?")) window.location.href = 'index.html';
+            const overlay = document.getElementById('mobileMenuOverlay');
+            if (overlay) {
+                if (overlay.style.display === 'flex') {
+                    // Close
+                    overlay.style.opacity = '0';
+                    setTimeout(() => overlay.style.display = 'none', 300);
+                } else {
+                    // Open
+                    overlay.style.display = 'flex';
+                    setTimeout(() => overlay.style.opacity = '1', 10);
+                }
+            }
         }
 
         // Ensure active tab sync

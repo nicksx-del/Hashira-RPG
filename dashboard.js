@@ -1193,7 +1193,28 @@ function renderClassFeatures() {
         // CARD HTML
         const card = document.createElement('div');
         card.className = 'ability-card';
-        card.onclick = () => card.classList.toggle('expanded');
+        card.onclick = () => {
+            if (window.innerWidth < 768) {
+                // Mobile Drawer
+                const drawerContent = document.getElementById('drawerContent');
+                if (drawerContent) {
+                    drawerContent.innerHTML = `
+                        <div style="text-align:center; margin-bottom:15px;">
+                            <h3 style="color:white; margin:5px 0;">${fStr}</h3>
+                            <div style="color:${badgeColor}; font-weight:bold; font-size:0.9rem;">${type}</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px; margin-bottom:15px;">
+                            <div style="color:#e0e0e0; line-height:1.6;">${fullDesc}</div>
+                        </div>
+                    `;
+                    if (window.lucide) lucide.createIcons();
+                }
+                if (typeof openDetailDrawer === 'function') openDetailDrawer();
+            } else {
+                // Desktop Expanded
+                card.classList.toggle('expanded');
+            }
+        };
 
         card.innerHTML = `
             <div class="ability-header">
@@ -2096,11 +2117,6 @@ function renderAttacks() {
             <div style="text-align:center; padding:3rem; color:#666; width:100%;">
                 <i data-lucide="sword" size="48" style="opacity:0.3; margin-bottom:1rem;"></i>
                 <p>Nenhum ataque registrado.</p>
-                <div style="display:flex; justify-content:center; gap:10px; margin-top:15px;">
-                    <button class="forge-btn" style="width:auto; padding:8px 16px; font-size:0.9rem;" onclick="openAttackModal()">Criar Ataque</button>
-                    <!-- Quick Presets -->
-                    <button class="forge-btn" style="width:auto; padding:8px 16px; font-size:0.9rem; background:#333; border-color:#444;" onclick="quickAddKatana()">+ Katana</button>
-                </div>
             </div>
         `;
         if (window.lucide) lucide.createIcons();

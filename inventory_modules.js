@@ -524,6 +524,52 @@ window.createInventoryCard = function (item, index) {
 };
 
 window.selectItem = function (index) {
+    // MOBILE DRAWER LOGIC
+    if (window.innerWidth < 768) {
+        const item = charData.inventory[index];
+        if (!item) return;
+
+        const drawerContent = document.getElementById('drawerContent');
+        if (drawerContent) {
+            let icon = '📦';
+            if (item.type === 'weapon') icon = '⚔️';
+            else if (item.type === 'armor') icon = '🛡️';
+            else if (item.type === 'consumable') icon = '🧪';
+
+            // Action Buttons
+            let actions = '';
+            if (item.type === 'consumable') {
+                actions = `<button onclick="useItem(${index}); closeDetailDrawer()" style="flex:1; background:#20bf6b; color:#fff; border:none; padding:12px; border-radius:6px; font-weight:bold;">USAR</button>`;
+            } else if (item.type && item.type.includes('bundle')) {
+                actions = `<button onclick="openBundleSelection(${index}); closeDetailDrawer()" style="flex:1; background:#d90429; color:#fff; border:none; padding:12px; border-radius:6px; font-weight:bold;">ABRIR</button>`;
+            } else {
+                actions = `<button onclick="toggleEquip(${index}); closeDetailDrawer()" style="flex:1; background:${item.equipped ? '#333' : 'var(--accent-primary)'}; color:#fff; border:none; padding:12px; border-radius:6px; font-weight:bold;">${item.equipped ? 'DESEQUIPAR' : 'EQUIPAR'}</button>`;
+            }
+
+            drawerContent.innerHTML = `
+                <div style="text-align:center; margin-bottom:15px;">
+                    <div style="font-size:3rem;">${icon}</div>
+                    <h3 style="color:white; margin:5px 0;">${item.name}</h3>
+                    <div style="color:#888; font-size:0.9rem;">${item.type} • ${item.weight || '0kg'}</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px; margin-bottom:15px;">
+                    <div style="color:#ccc; font-style:italic; margin-bottom:5px;">${item.props || 'Sem propriedades'}</div>
+                    <div style="color:#aaa;">${item.desc || 'Sem descrição'}</div>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    ${actions}
+                    <button onclick="editItem(${index}); closeDetailDrawer()" style="background:#333; color:#ccc; border:none; padding:12px; border-radius:6px;"><i data-lucide="pencil" style="width:16px;"></i></button>
+                    <button onclick="removeInvItem(${index}); closeDetailDrawer()" style="background:#333; color:#ef4444; border:none; padding:12px; border-radius:6px;"><i data-lucide="trash-2" style="width:16px;"></i></button>
+                </div>
+            `;
+            if (window.lucide) lucide.createIcons();
+        }
+
+        if (typeof openDetailDrawer === 'function') openDetailDrawer();
+        return;
+    }
+
+    // DESKTOP LOGIC (Existing)
     const details = document.getElementById(`inv-det-${index}`);
     if (details) details.classList.toggle('expanded');
     selectedItemIndex = selectedItemIndex === index ? null : index;
