@@ -242,37 +242,9 @@ const backgroundData = {
             { name: "Técnicas de Camuflagem", desc: "Pode se esconder facilmente na natureza (Vantagem)." }
         ],
         description: "Filho da natureza. Resiliente e instintivo."
-    },
-
-
-    // --- LEGADO ---
-    herdeiro: {
-        title: "Herdeiro",
-        skills: ["Persuasão", "História"],
-        items: [
-            { name: "Katana Ornamental", dmg: "1d6 cortante", type: "weapon" },
-            { name: "Bolsa de Ienes", type: "consumable", props: "4d6 x 1000", desc: "Herança de família." },
-            { name: "Selo da Família", type: "item" }
-        ],
-        abilities: [
-            { name: "Educação Refinada", desc: "Vantagem em testes sociais com a elite." }
-        ],
-        html: "<strong>Berço de Ouro:</strong> Família rica ou nobre. Recursos iniciais abundantes."
-    },
-    sobrevivente: {
-        title: "Sobrevivente",
-        skills: ["Sobrevivência", "Furtividade"],
-        items: [
-            { name: "Faca de Caça", dmg: "1d4 perfurante", type: "weapon" },
-            { name: "Bolsa de Ienes", type: "consumable", props: "2d6 x 1000", desc: "O que sobrou." },
-            { name: "Amuleto da Sorte", type: "item" }
-        ],
-        abilities: [
-            { name: "Instinto de Preservação", desc: "Pode rerolar 1 teste de resistência por dia." }
-        ],
-        html: "<strong>Tragédia:</strong> Único sobrevivente. Instintos aguçados pela dor."
     }
 };
+
 
 // Override selectRace to update panel directly
 window.selectRace = function (race) {

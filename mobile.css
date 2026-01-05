@@ -134,6 +134,351 @@
         grid-template-columns: 1fr;
     }
 
+    /* === CHARACTER CREATOR MOBILE LAYOUT === */
+    /* Hide desktop sidebar for character creator */
+    body:has(.form-step) .sidebar-left {
+        display: none !important;
+    }
+
+    /* Horizontal Progress Bar */
+    .mobile-progress-bar {
+        display: none;
+        /* Hidden by default, shown via JS */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(10, 10, 15, 0.98);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 900;
+        padding: 12px 15px;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .mobile-back-btn {
+        background: transparent;
+        border: none;
+        color: var(--accent-red, #d90429);
+        cursor: pointer;
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s;
+    }
+
+    .mobile-back-btn:active {
+        transform: scale(0.95);
+    }
+
+    .mobile-step-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .mobile-step-text {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--text-main, #f0f0f0);
+        font-family: var(--font-main, 'Outfit', sans-serif);
+    }
+
+    .mobile-step-dots {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+    }
+
+    .step-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transition: all 0.3s;
+    }
+
+    .step-dot.active {
+        background: var(--accent-red, #d90429);
+        box-shadow: 0 0 8px var(--accent-red, #d90429);
+        width: 24px;
+        border-radius: 4px;
+    }
+
+    .step-dot.completed {
+        background: rgba(217, 4, 41, 0.5);
+    }
+
+    /* Main content for character creator */
+    body:has(.form-step) .main-content {
+        width: 100% !important;
+        padding: 80px 20px 150px 20px !important;
+        /* 150px bottom padding for keyboard safe area */
+        margin-left: 0 !important;
+    }
+
+    /* === MOBILE INPUT IMPROVEMENTS === */
+    /* Prevent keyboard overlap and iOS auto-zoom */
+    body:has(.form-step) input[type="text"],
+    body:has(.form-step) input[type="number"],
+    body:has(.form-step) input[type="email"],
+    body:has(.form-step) textarea,
+    body:has(.form-step) select {
+        height: 50px !important;
+        min-height: 50px !important;
+        font-size: 16px !important;
+        /* Prevents iOS auto-zoom */
+        padding: 12px 15px !important;
+        margin-top: 8px !important;
+        margin-bottom: 20px !important;
+        /* 20px vertical spacing between fields */
+        border-radius: 8px !important;
+        -webkit-appearance: none;
+        /* Remove default iOS styling */
+    }
+
+    body:has(.form-step) textarea {
+        min-height: 120px !important;
+        height: auto !important;
+        padding-top: 15px !important;
+        padding-bottom: 15px !important;
+        line-height: 1.5 !important;
+        resize: vertical !important;
+    }
+
+    /* Labels spacing */
+    body:has(.form-step) label {
+        display: block !important;
+        margin-bottom: 8px !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+    }
+
+    /* Form sections spacing */
+    body:has(.form-step) .form-section {
+        margin-bottom: 40px !important;
+    }
+
+    /* Input groups */
+    body:has(.form-step) .vital-input,
+    body:has(.form-step) .idc-section {
+        margin-bottom: 20px !important;
+    }
+
+    /* Name input specific (larger) */
+    body:has(.form-step) .idc-name-input {
+        font-size: 18px !important;
+        min-height: 55px !important;
+        padding: 15px !important;
+    }
+
+    /* Ensure buttons have proper spacing */
+    body:has(.form-step) .step-nav-btns {
+        margin-top: 60px !important;
+        padding-bottom: 40px !important;
+    }
+
+    body:has(.form-step) .btn-next,
+    body:has(.form-step) .btn-prev {
+        min-height: 50px !important;
+        font-size: 16px !important;
+        padding: 14px 24px !important;
+    }
+
+    /* Convert all grids to single column */
+    body:has(.form-step) .grid-2,
+    body:has(.form-step) .forge-container,
+    body:has(.form-step) .grid-4 {
+        grid-template-columns: 1fr !important;
+    }
+
+    body:has(.form-step) .corps-id-card {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+
+    body:has(.form-step) .vitals-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    body:has(.form-step) div[style*="grid-template-columns: 1.5fr 1fr"],
+    body:has(.form-step) div[style*="grid-template-columns: repeat(2"],
+    body:has(.form-step) div[style*="grid-template-columns: repeat(3"],
+    body:has(.form-step) div[style*="grid-template-columns: repeat(auto-fit"] {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+
+    /* === BREATHING SELECTION MOBILE === */
+    /* Convert breathing grid to vertical list */
+    body:has(.form-step) .grid-4,
+    body:has(.form-step) div[style*="grid-template-columns: repeat(auto-fit, minmax(300px"] {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+
+    /* Breathing card mobile styles */
+    body:has(.form-step) .style-btn {
+        width: 100% !important;
+        min-height: 120px !important;
+        max-height: 150px !important;
+        aspect-ratio: unset !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: stretch !important;
+        padding: 0 !important;
+        border: 3px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 12px !important;
+        background: #1a1a20 !important;
+        position: relative !important;
+        overflow: hidden !important;
+        transition: all 0.3s ease !important;
+    }
+
+    /* Remove hover effects on mobile */
+    body:has(.form-step) .style-btn:hover {
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Image positioning for mobile cards - left side */
+    body:has(.form-step) .style-btn img {
+        position: relative !important;
+        transform: none !important;
+        width: 120px !important;
+        min-width: 120px !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        object-position: center center !important;
+        flex-shrink: 0 !important;
+        opacity: 0.9 !important;
+    }
+
+    /* Text overlay adjustment for horizontal layout */
+    body:has(.form-step) .style-btn>div[style*="position:absolute"] {
+        position: relative !important;
+        width: 100% !important;
+        flex: 1 !important;
+        background: transparent !important;
+        padding: 15px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+    }
+
+    body:has(.form-step) .style-btn>div[style*="position:absolute"]>div {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    body:has(.form-step) .style-btn strong {
+        font-size: 1.2rem !important;
+        font-weight: 700 !important;
+    }
+
+    /* Active/Selected state with thick colored border */
+    body:has(.form-step) .style-btn.selected,
+    body:has(.form-step) .style-btn[data-selected="true"] {
+        border: 3px solid var(--accent-red, #d90429) !important;
+        background: rgba(217, 4, 41, 0.08) !important;
+        box-shadow: 0 0 20px rgba(217, 4, 41, 0.3) !important;
+    }
+
+    /* Style-specific border colors when selected */
+    body:has(.form-step) .style-btn.type-water.selected,
+    body:has(.form-step) .style-btn.type-water[data-selected="true"] {
+        border-color: #00b4d8 !important;
+        box-shadow: 0 0 20px rgba(0, 180, 216, 0.3) !important;
+    }
+
+    body:has(.form-step) .style-btn.type-thunder.selected,
+    body:has(.form-step) .style-btn.type-thunder[data-selected="true"] {
+        border-color: #ffb703 !important;
+        box-shadow: 0 0 20px rgba(255, 183, 3, 0.3) !important;
+    }
+
+    body:has(.form-step) .style-btn.type-flame.selected,
+    body:has(.form-step) .style-btn.type-flame[data-selected="true"] {
+        border-color: #ef233c !important;
+        box-shadow: 0 0 20px rgba(239, 35, 60, 0.3) !important;
+    }
+
+    body:has(.form-step) .style-btn.type-beast.selected,
+    body:has(.form-step) .style-btn.type-beast[data-selected="true"] {
+        border-color: #888 !important;
+        box-shadow: 0 0 20px rgba(136, 136, 136, 0.3) !important;
+    }
+
+    body:has(.form-step) .style-btn.type-wind.selected,
+    body:has(.form-step) .style-btn.type-wind[data-selected="true"] {
+        border-color: #56ab2f !important;
+        box-shadow: 0 0 20px rgba(86, 171, 47, 0.3) !important;
+    }
+
+    body:has(.form-step) .style-btn.type-stone.selected,
+    body:has(.form-step) .style-btn.type-stone[data-selected="true"] {
+        border-color: #888 !important;
+        box-shadow: 0 0 20px rgba(136, 136, 136, 0.3) !important;
+    }
+
+    body:has(.form-step) .style-btn.type-mist.selected,
+    body:has(.form-step) .style-btn.type-mist[data-selected="true"] {
+        border-color: #a2d2ff !important;
+        box-shadow: 0 0 20px rgba(162, 210, 255, 0.3) !important;
+    }
+
+    /* Locked state for mobile */
+    body:has(.form-step) .style-btn.locked {
+        opacity: 0.4 !important;
+        filter: grayscale(1) !important;
+        pointer-events: none !important;
+    }
+
+    body:has(.form-step) .style-btn.locked::after {
+        content: '🔒';
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 1.2rem;
+        opacity: 0.6;
+        z-index: 10;
+    }
+
+    /* Active touch feedback */
+    body:has(.form-step) .style-btn:active {
+        transform: scale(0.98) !important;
+        opacity: 0.9;
+    }
+
+    /* Add checkmark to selected cards */
+    body:has(.form-step) .style-btn.selected::before,
+    body:has(.form-step) .style-btn[data-selected="true"]::before {
+        content: '✓';
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: var(--accent-red, #d90429);
+        color: white;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+        z-index: 10;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
     /* === DM PANEL SPECIFIC === */
     .dm-layout {
         grid-template-columns: 1fr;

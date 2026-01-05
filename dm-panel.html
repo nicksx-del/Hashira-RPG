@@ -3641,6 +3641,45 @@
             }
         }
 
+        // --- VIEW SWITCHER ---
+        function switchView(viewName) {
+            // Hide all views
+            document.querySelectorAll('.view-section').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Deselect all tabs
+            document.querySelectorAll('.nav-tab').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Map view names to IDs
+            const viewMap = {
+                'combat': 'view-combat',
+                'chars': 'view-chars',
+                'story': 'view-story'
+            };
+
+            // Show selected view
+            const targetId = viewMap[viewName];
+            if (targetId) {
+                const targetView = document.getElementById(targetId);
+                if (targetView) {
+                    targetView.classList.add('active');
+                }
+            }
+
+            // Activate the clicked tab
+            const tabs = document.querySelectorAll('.nav-tab');
+            const tabIndex = viewName === 'combat' ? 0 : viewName === 'chars' ? 1 : 2;
+            if (tabs[tabIndex]) {
+                tabs[tabIndex].classList.add('active');
+            }
+
+            // Re-render icons for the new view
+            if (window.lucide) lucide.createIcons();
+        }
+
         function renderSidebarBestiary() {
             const list = document.getElementById('sbBestiaryList');
             if (!list) return;
