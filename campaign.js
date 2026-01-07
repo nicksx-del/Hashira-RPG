@@ -98,35 +98,42 @@ window.CampaignSystem = {
         const c = list.find(x => x.id === campId);
         if (!c) return;
 
-        // Safety: Initialize arrays if they don't exist (old campaign data)
+        // Safety
         if (!c.monsters) c.monsters = [];
         if (!c.players) c.players = [];
         if (!c.combat) c.combat = { active: false, order: [], round: 1, turnIndex: 0 };
 
-        // Count existing to name "Demon A", "Demon B"
-        const count = c.monsters.filter(m => m.templateId === monsterTemplate.id).length;
-        const letter = String.fromCharCode(65 + count); // A, B, C...
+        // Naming Logic: Only applying A/B/C if it looks like a generic template (has templateId)
+        // If it's a custom created NPC, we might treat it as unique unless specified.
+        let finalName = monsterTemplate.name;
 
-        // Clone
+        // If it has a templateId, we check for duplicates to append letters
+        if (monsterTemplate.templateId) {
+            const count = c.monsters.filter(m => m.templateId === monsterTemplate.templateId).length;
+            if (count > 0) {
+                const letter = String.fromCharCode(65 + count); // A, B...
+                finalName = `${monsterTemplate.name} ${letter}`;
+            }
+        }
+
+        // Create new ID
+        const newId = 'mob_' + Date.now() + Math.random().toString().substr(2, 5);
+
+        // FULL MERGE: Copy all properties from template, then overwrite system ones
         const newMob = {
-            id: 'mob_' + Date.now() + Math.random().toString().substr(2, 5),
-            templateId: monsterTemplate.id,
-            name: `${monsterTemplate.name} ${letter}`,
-            currentHP: monsterTemplate.maxHP,
-            maxHP: monsterTemplate.maxHP,
-            currentPE: 10,
-            maxPE: 10,
-            ac: monsterTemplate.ac,
-            initiative: 0, // DM will roll
-            conditions: [],
-            isNPC: true,
-            stats: monsterTemplate.stats,
-            actions: monsterTemplate.actions
+            ...monsterTemplate, // Spread all props (stats, race, breathing, equipment, etc.)
+            id: newId,
+            name: finalName,
+            currentHP: monsterTemplate.currentHP || monsterTemplate.maxHP,
+            currentPE: monsterTemplate.currentPE || (monsterTemplate.maxPE || 10),
+            initiative: monsterTemplate.initiative || 0,
+            conditions: monsterTemplate.conditions || [],
+            isNPC: true
         };
 
         c.monsters.push(newMob);
 
-        // If combat is active, add to order immediately
+        // Add to combat if active
         if (c.combat.active) {
             c.combat.order.push(newMob.id);
         }
@@ -152,30 +159,6 @@ window.CampaignSystem = {
         }
 
         this.saveCampaigns(list);
-    },
-    // --- COMBAT & ENTITIES ---
-    addMonster: function (campId, monsterTemplate) {
-        const list = this.getCampaigns();
-        const c = list.find(x => x.id === campId);
-        if (!c) return null;
-
-        const newId = 'mob_' + Date.now();
-        const newMob = {
-            id: newId,
-            name: monsterTemplate.name,
-            maxHP: monsterTemplate.maxHP,
-            currentHP: monsterTemplate.maxHP,
-            ac: monsterTemplate.ac,
-            xp: monsterTemplate.xp,
-            stats: monsterTemplate.stats, // Ensure stats are copied
-            actions: monsterTemplate.actions,
-            isNPC: true,
-            initiative: 0 // Will be rolled later
-        };
-
-        c.monsters.push(newMob);
-        this.saveCampaigns(list);
-        return newMob;
     },
 
     startCombat: function (campId) {
@@ -238,6 +221,22 @@ window.CampaignSystem = {
 
         this.saveCampaigns(list);
     },
+
+    // --- FOLDERS ---
+    addFolder: function (campId, folderName) {
+        const list = this.getCampaigns();
+        const c = list.find(x => x.id === campId);
+        if (!c) return false;
+
+        if (!c.folders) c.folders = ["Aliados", "Luas Superiores", "Onis Menores", "Aldeões"];
+        if (c.folders.includes(folderName)) return false; // Duplicate
+
+        c.folders.push(folderName);
+        this.saveCampaigns(list);
+        return true;
+    },
+
+
 
     // --- COMBAT LOGIC ---
     // --- COMBAT LOGIC ---
