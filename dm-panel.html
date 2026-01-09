@@ -356,8 +356,8 @@
         .wis-sheet-avatar-lg {
             width: 80px;
             height: 80px;
-            border-radius: 20px;
-            /* Squircle */
+            border-radius: 50%;
+            /* Circle */
             border: 1px solid var(--border-dark);
             background: #27272a;
             object-fit: cover;
@@ -530,7 +530,7 @@
         .wis-tree-item-avatar {
             width: 20px;
             height: 20px;
-            border-radius: 4px;
+            border-radius: 50%;
             object-fit: cover;
             background: #333;
         }
@@ -1104,6 +1104,98 @@
             color: var(--text-muted);
             margin-left: 5px;
         }
+
+        /* SKILL CHIPS */
+        .skill-group-header {
+            font-size: 0.75rem;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .skill-group-header::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .skill-chip {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ccc;
+            padding: 6px 12px;
+            /* Chip size */
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            user-select: none;
+        }
+
+        .skill-chip:hover {
+            transform: translateY(-2px);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Attribute Themes */
+        .chip-for {
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .chip-for:hover {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #ef4444;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+        }
+
+        .chip-des {
+            border-color: rgba(168, 85, 247, 0.3);
+        }
+
+        .chip-des:hover {
+            background: rgba(168, 85, 247, 0.1);
+            border-color: #a855f7;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+        }
+
+        .chip-int {
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .chip-int:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+        }
+
+        .chip-sab {
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .chip-sab:hover {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: #22c55e;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
+        }
+
+        .chip-car {
+            border-color: rgba(234, 179, 8, 0.3);
+        }
+
+        .chip-car:hover {
+            background: rgba(234, 179, 8, 0.1);
+            border-color: #eab308;
+            box-shadow: 0 0 10px rgba(234, 179, 8, 0.2);
+        }
     </style>
 </head>
 
@@ -1117,6 +1209,10 @@
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <div class="wis-title">Biblioteca de NPCs</div>
                     <div style="display:flex; gap:8px;">
+                        <button class="wis-add-btn" onclick="openSettingsModal()" title="Configurações da Campanha"
+                            style="padding:6px; background:rgba(255,255,255,0.05);">
+                            <i data-lucide="settings" size="14"></i>
+                        </button>
                         <button class="wis-add-btn" id="newFolderBtn" onclick="toggleNewFolderInput()"
                             title="Nova Pasta" style="padding:6px; background:rgba(255,255,255,0.05);">
                             <i data-lucide="folder-plus" size="14"></i>
@@ -1695,7 +1791,6 @@
                 }
 
                 console.log("renderSidebar: Camp loaded", currentCamp.id);
-                console.log("renderSidebar: Monsters count", currentCamp.monsters?.length);
 
                 const players = currentCamp.players || [];
                 const monsters = currentCamp.monsters || [];
@@ -1704,28 +1799,37 @@
                 // 1. Players Section (Root Node)
                 renderTreeNode(treeRoot, "Jogadores", players, true, true);
 
-                // 2. Prepare Groups for Monsters
+                // 2. "Todos os NPCs" (Aggregate View - NEW)
+                // Shows ALL monsters regardless of folder
+                renderTreeNode(treeRoot, "Todos os NPCs", monsters, false, false);
+
+                // 3. Prepare Groups for Monsters
                 const groups = {};
-                groups["Todos"] = [];
+                groups["Sem Pasta"] = []; // Renamed from "Todos"
+
                 // Ensure folders exist in groups
                 folders.forEach(f => groups[f] = []);
 
                 monsters.forEach(m => {
                     let target = m.folderId || m.category;
-                    // Fix: Check if target folder actually exists in our groups
-                    if (!target || !groups.hasOwnProperty(target)) {
-                        groups["Todos"].push(m);
+
+                    // Normalize "Todos" legacy data to "Sem Pasta" legacy handling or null
+                    if (target === "Todos") target = "Sem Pasta";
+
+                    // Check availability
+                    if (!target || target === '' || !groups.hasOwnProperty(target)) {
+                        groups["Sem Pasta"].push(m);
                     } else {
                         groups[target].push(m);
                     }
                 });
 
-                // 3. Render 'Todos' (Root Node)
-                renderTreeNode(treeRoot, "Todos", groups["Todos"], false, true);
+                // 4. Render "Sem Pasta" (Uncategorized)
+                renderTreeNode(treeRoot, "Sem Pasta", groups["Sem Pasta"], false, false);
 
-                // 4. Render Custom Folders (Root Nodes)
+                // 5. Render Custom Folders
                 folders.forEach(folderName => {
-                    if (folderName === "Todos") return;
+                    if (folderName === "Todos") return; // Legacy skip just in case
                     const list = groups[folderName] || [];
                     renderTreeNode(treeRoot, folderName, list, false, false);
                 });
@@ -1751,8 +1855,19 @@
             const isActive = (forceOpen || title === "Todos") ? "active" : "";
 
             // Icons
-            const iconName = (title === 'Jogadores') ? 'users' : (title === 'Todos' ? 'globe' : 'folder');
-            const color = (title === 'Todos' ? '#3b82f6' : (title === 'Jogadores' ? '#a855f7' : '#eab308'));
+            let iconName = 'folder';
+            let color = '#eab308'; // Default Yellow folder
+
+            if (title === 'Jogadores') {
+                iconName = 'users';
+                color = '#a855f7'; // Purple
+            } else if (title === 'Todos os NPCs') {
+                iconName = 'globe';
+                color = '#3b82f6'; // Blue
+            } else if (title === 'Sem Pasta') {
+                iconName = 'inbox';
+                color = '#71717a'; // Gray
+            }
 
             const node = document.createElement('div');
             node.className = `wis-tree-folder ${isActive}`;
@@ -1878,6 +1993,9 @@
 
                     <!-- Ações Rápidas (Compact) -->
                     <div style="display:flex; gap:5px;">
+                        <button class="btn-icon" title="Duplicar" onclick="duplicateEntity('${entity.id}')" style="background:#222; color:#3b82f6;">
+                            <i data-lucide="copy" size="14"></i>
+                        </button>
                         <button class="btn-icon" title="Combate" onclick="promptAddToCombat('${isPlayer ? entity.charId : entity.id}', ${isPlayer})" style="background:#222;">
                             <i data-lucide="swords" size="14"></i>
                         </button>
@@ -2070,13 +2188,65 @@
                     </button>
                 </div>
 
-                <!-- HISTORY & NOTES (Compact) -->
-                <div>
-                     <h3 class="wis-title" style="margin-bottom:5px; font-size:1rem;">Histórico</h3>
-                     <textarea class="wis-paper-textarea" 
-                               placeholder="História, segredos..."
-                               oninput="updateActiveEntityField('lore', this.value)"
-                               style="width: 100%; min-height: 100px; background: #1e1e24; border: 1px solid #333; color: #ddd; padding: 10px; font-family: sans-serif; line-height: 1.5; border-radius: 8px; resize: vertical; outline: none; font-size:0.9rem;">${entity.lore || ''}</textarea>
+                <!-- HISTORY & LORE ACCORDION -->
+                <div style="margin-top:20px;">
+                    <h3 class="wis-title" style="margin-bottom:10px; font-size:1rem;">História e Detalhes</h3>
+                    
+                    ${(() => {
+                    // Data Migration / Fallback
+                    if (!entity.loreData) {
+                        entity.loreData = {
+                            origin: entity.lore || '',
+                            personality: '',
+                            appearance: '',
+                            secrets: ''
+                        };
+                    }
+                    const ld = entity.loreData;
+
+                    // Helper to render lore item
+                    const renderLoreItem = (key, title, icon, color = '', isOpen = false) => {
+                        const content = ld[key] || '';
+                        const itemId = `lore-${key}`;
+                        const displayStyle = isOpen ? 'block' : 'none';
+
+                        // Specific style for Secrets
+                        const containerStyle = key === 'secrets'
+                            ? 'border:1px solid #7f1d1d; background:rgba(60, 10, 10, 0.4); border-radius:8px; margin-bottom:8px; overflow:hidden;'
+                            : 'border:1px solid var(--border-dark); background:#18181b; border-radius:8px; margin-bottom:8px; overflow:hidden;';
+
+                        return `
+                                <div style="${containerStyle}">
+                                    <div class="wis-accordion-header" onclick="toggleLoreSection('${itemId}')" style="padding:10px 15px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03);">
+                                        <div style="display:flex; align-items:center; gap:8px; font-weight:bold; color:${color || '#e4e4e7'};">
+                                            <span style="font-size:1.2rem;">${icon}</span> ${title}
+                                        </div>
+                                        <i data-lucide="chevron-down" size="16" style="color:#777;"></i>
+                                    </div>
+                                    <div id="${itemId}" style="display:${displayStyle}; padding:15px; border-top:1px solid rgba(255,255,255,0.05);">
+                                        <!-- Simple Toolbar -->
+                                        <div style="margin-bottom:8px; display:flex; gap:5px; border-bottom:1px solid #333; padding-bottom:5px;">
+                                            <button onclick="formatDoc('bold')" style="background:none; border:none; color:#aaa; cursor:pointer; font-weight:bold; padding:2px 6px;" title="Negrito (Ctrl+B)">B</button>
+                                            <button onclick="formatDoc('italic')" style="background:none; border:none; color:#aaa; cursor:pointer; font-style:italic; padding:2px 6px;" title="Itálico (Ctrl+I)">I</button>
+                                        </div>
+                                        
+                                        <!-- Editable Content -->
+                                        <div contenteditable="true" 
+                                             class="wis-rich-editor"
+                                             oninput="updateActiveEntityLore('${key}', this.innerHTML)"
+                                             style="min-height:80px; outline:none; color:#ccc; line-height:1.6; font-size:0.95rem; white-space:pre-wrap;">${content}</div>
+                                    </div>
+                                </div>
+                            `;
+                    };
+
+                    return `
+                            ${renderLoreItem('origin', 'Origem & Passado', '🎋', '', true)}
+                            ${renderLoreItem('personality', 'Personalidade & Ideais', '🎭')}
+                            ${renderLoreItem('appearance', 'Aparência Visual', '👘')}
+                            ${renderLoreItem('secrets', 'Segredos do Mestre', '🤫', '#fca5a5')}
+                        `;
+                })()}
                 </div>
             `;
 
@@ -2234,13 +2404,213 @@
         }
 
         // --- SKILL MANAGEMENT ---
-        function promptAddSkill() {
-            const name = prompt("Nome da Perícia (ex: Furtividade):");
-            if (!name) return;
-            const val = prompt("Bônus (ex: 5):", "2");
-            if (!val) return;
+        const SKILL_GROUPS = {
+            'FORÇA': { skills: ['Atletismo'], class: 'chip-for', icon: 'biceps-flexed' },
+            'DESTREZA': { skills: ['Acrobacia', 'Furtividade', 'Ladinagem', 'Prestidigitação', 'Esportes'], class: 'chip-des', icon: 'wind' },
+            'INTELIGÊNCIA': { skills: ['Arcanismo', 'História', 'Investigação', 'Natureza', 'Religião'], class: 'chip-int', icon: 'brain' },
+            'SABEDORIA': { skills: ['Intuição', 'Lidar com Animais', 'Medicina', 'Percepção', 'Sobrevivência'], class: 'chip-sab', icon: 'eye' },
+            'CARISMA': { skills: ['Atuação', 'Blefar', 'Enganação', 'Intimidação', 'Persuasão'], class: 'chip-car', icon: 'message-circle' }
+        };
 
-            updateActiveEntitySkill(null, { name: name, value: parseInt(val) || 0 });
+        function openSkillSelector() {
+            const m = document.getElementById('skillSelectorModal');
+            if (!m) return;
+            m.style.display = 'flex';
+
+            // Populate Grid by Group
+            const container = document.getElementById('skillSelectorGrid');
+            container.innerHTML = '';
+            container.style.display = 'flex';
+            container.style.flexDirection = 'column'; // Vertical stack of groups
+            container.style.gap = '16px';
+
+            for (const [attr, data] of Object.entries(SKILL_GROUPS)) {
+                // Determine icon fallback
+                const icon = data.icon || 'circle';
+
+                const groupHtml = `
+                    <div>
+                        <div class="skill-group-header">
+                            <i data-lucide="${icon}" size="12"></i> ${attr}
+                        </div>
+                        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                            ${data.skills.map(skill => `
+                                <button onclick="selectSkillFromModal('${skill}')" 
+                                        class="skill-chip ${data.class}">
+                                    ${skill}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', groupHtml);
+            }
+
+            document.getElementById('customSkillInput').value = '';
+
+            // Refresh icons inside modal
+            if (window.lucide) window.lucide.createIcons();
+        }
+
+        function closeSkillSelector() {
+            document.getElementById('skillSelectorModal').style.display = 'none';
+        }
+
+        function selectSkillFromModal(name) {
+            const val = parseInt(document.getElementById('newSkillValue').value) || 0;
+            updateActiveEntitySkill(null, { name: name, value: val });
+            closeSkillSelector();
+            showToast(`Perícia ${name} adicionada!`);
+        }
+
+        function confirmAddCustomSkill() {
+            const name = document.getElementById('customSkillInput').value.trim();
+            if (!name) return;
+            selectSkillFromModal(name);
+        }
+
+        function promptAddSkill() {
+            openSkillSelector();
+        }
+
+        function openSettingsModal() {
+            const m = document.getElementById('settingsModal');
+            if (m) m.style.display = 'flex';
+        }
+
+        function closeSettingsModal() {
+            const m = document.getElementById('settingsModal');
+            if (m) m.style.display = 'none';
+        }
+
+        function exportCampaign() {
+            if (!currentCamp) return showToast("Nenhuma campanha carregada.");
+
+            // Create a Blob
+            const dataStr = JSON.stringify(currentCamp, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+
+            // Link to download
+            const a = document.createElement('a');
+            a.href = url;
+            const safeName = (currentCamp.name || 'campaign').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            a.download = `demon_slayer_backup_${safeName}_${Date.now()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showToast("Backup iniciado!");
+        }
+
+        function importCampaign(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            if (!confirm("⚠️ A T E N Ç Ã O ⚠️\n\nIsso irá substituir TODOS os dados da campanha atual pelos dados do arquivo.\n\nTem certeza que deseja continuar?")) {
+                input.value = ''; // Reset
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const json = JSON.parse(e.target.result);
+
+                    // Basic Validation
+                    if (!json.id || !json.monsters) {
+                        throw new Error("Arquivo inválido ou corrompido.");
+                    }
+
+                    // Save to System
+                    // We need to update the specific campaign in the list
+                    const list = window.CampaignSystem.getCampaigns();
+                    const idx = list.findIndex(c => c.id === CAMP_ID); // Assuming current CAMP_ID
+
+                    if (idx >= 0) {
+                        // Preserve ID to ensure we stay on same page context if user wants, 
+                        // OR we assume the file contains the ID we want to restore.
+                        // Usually restore means RESTORE everything, including ID.
+                        // But if ID changes, URL param might be wrong.
+                        // Let's keep the file's ID but warn if it differs? 
+                        // Simpler: Just update the entry in localStorage.
+
+                        // BUT, if we are "Importing into THIS campaign context", maybe we should keep the ID?
+                        // The user said "Settings of the Campaign", so it implies backing up THIS campaign.
+                        // If I import a backup of another campaign, it might be weird.
+                        // Let's trust the file's ID effectively replacing the campaign slot.
+
+                        // If file ID matches CAMP_ID, great. If not, we are replacing the current campaign slot with a new one?
+                        // Let's just update the list.
+
+                        // Actually better: Update the object in the list that matches CAMP_ID with the new content, 
+                        // but FORCE the ID to remain CAMP_ID so we don't break the URL?
+                        // Or just fully replace.
+
+                        // Decision: Fully replace the object in the array. 
+                        // If ID in file is different, we might lose reference if we reload page with ?id=OLD_ID.
+                        // let's ensure ID matches or redirect.
+
+                        if (json.id !== CAMP_ID) {
+                            if (confirm("O backup parece ser de uma campanha diferente (ID diferente). Deseja importar mesmo assim? (Você será redirecionado)")) {
+                                // Replace
+                                list[idx] = json;
+                                window.CampaignSystem.saveCampaigns(list);
+                                window.location.href = `dm-panel.html?id=${json.id}`;
+                                return;
+                            } else {
+                                return;
+                            }
+                        } else {
+                            list[idx] = json;
+                            window.CampaignSystem.saveCampaigns(list);
+                        }
+
+                    } else {
+                        // Campaign doesn't exist? Just add it?
+                        list.push(json);
+                        window.CampaignSystem.saveCampaigns(list);
+                    }
+
+                    showToast("Backup restaurado com sucesso!");
+                    setTimeout(() => location.reload(), 1000);
+
+                } catch (err) {
+                    console.error(err);
+                    alert("Erro ao ler arquivo: " + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function duplicateEntity(id) {
+            if (!currentCamp) return;
+            const original = currentCamp.monsters.find(m => m.id === id);
+            if (!original) return showToast("NPC não encontrado para duplicar.");
+
+            // Deep Clone
+            const clone = JSON.parse(JSON.stringify(original));
+
+            // New Metadata
+            clone.id = 'mob_' + Date.now() + Math.random().toString().substr(2, 5);
+            clone.name = original.name + " (Cópia)";
+
+            // Add to list
+            currentCamp.monsters.push(clone);
+
+            // Save
+            const list = window.CampaignSystem.getCampaigns();
+            const idx = list.findIndex(c => c.id === CAMP_ID);
+            if (idx >= 0) {
+                list[idx].monsters = currentCamp.monsters;
+                window.CampaignSystem.saveCampaigns(list);
+            }
+
+            showToast("NPC Duplicado!");
+            loadCampaignData();
+            renderSidebar();
+            selectEntity(clone.id, false);
         }
 
         function promptEditSkill(index) {
@@ -2406,7 +2776,9 @@
                 let condHtml = c.conditions.map(cond => `<span class="cond-tag">${cond}</span>`).join('');
 
                 const html = `
-                <div class="combatant-card ${isActive ? 'active-turn' : ''}" style="${isDead ? 'opacity:0.5; filter:grayscale(1);' : ''}">
+                <div class="combatant-card ${isActive ? 'active-turn' : ''}" 
+                     style="${isDead ? 'opacity:0.5; filter:grayscale(1);' : ''}; cursor:pointer;"
+                     onclick="selectEntity('${c.id}', ${c.isPlayer})">
                         <div class="combatant-init-box">
                             <span class="init-val">${c.init}</span>
                             <span class="init-label">INI</span>
@@ -2414,10 +2786,12 @@
                         <img src="${c.avatar || 'assets/default_slayer.png'}" style="width:32px; height:32px; border-radius:50%; object-fit:cover; margin-left:8px;" onerror="this.src='https://via.placeholder.com/32'">
                         <div class="combatant-info">
                             <div class="combatant-name">${c.name}</div>
-                            <div class="combatant-hp">HP ${c.hp}/${c.maxHP} ${condHtml}</div>
+                            <div class="combatant-hp" style="font-size:0.8rem; color:#888;">
+                                HP <span style="font-size:1.1rem; font-weight:bold; color:#e4e4e7;">${c.hp}/${c.maxHP}</span> ${condHtml}
+                            </div>
                         </div>
                         <div style="display:flex; flex-direction:column; gap:2px;">
-                             <button class="btn-icon" style="padding:2px; font-size:0.6rem;" onclick="removeCombatant(${i})">❌</button>
+                             <button class="btn-icon" style="padding:2px; font-size:0.6rem;" onclick="event.stopPropagation(); removeCombatant(${i})">❌</button>
                         </div>
                     </div>
             `;
@@ -2656,6 +3030,7 @@
                 document.getElementById('atkMultInput').value = '2';
                 document.getElementById('atkBonusInput').value = '0';
                 document.getElementById('atkRangeInput').value = '';
+                document.getElementById('atkDescInput').value = '';
                 document.getElementById('extraDmgContainer').innerHTML = '';
 
                 const btn = document.getElementById('btnConfirmAttack');
@@ -2677,13 +3052,45 @@
             } else if (type === 'unarmed') {
                 document.getElementById('atkNameInput').value = "Ataque Desarmado";
                 document.getElementById('atkDmgInput').value = "1d4+1";
-                document.getElementById('atkTypeInput').value = "Concussão";
-            } else if (type === 'bow') {
-                document.getElementById('atkNameInput').value = "Arco Longo";
-                document.getElementById('atkDmgInput').value = "1d8+2";
                 document.getElementById('atkTypeInput').value = "Perfurante";
                 document.getElementById('atkRangeInput').value = "Longo";
             }
+        }
+
+        // --- LORE SYSTEM ---
+        function updateActiveEntityLore(key, content) {
+            if (!activeEntityId || !currentCamp) return;
+
+            // Debounce could be added here if typing is laggy
+            let isPlayer = false;
+            let ent = currentCamp.monsters.find(m => m.id === activeEntityId);
+            if (!ent) { ent = currentCamp.players.find(p => p.charId === activeEntityId); isPlayer = true; }
+
+            if (ent) {
+                if (!ent.loreData) ent.loreData = { origin: '', personality: '', appearance: '', secrets: '' };
+                ent.loreData[key] = content;
+
+                // Also update legacy field just in case using 'origin' as primary backup
+                if (key === 'origin') ent.lore = content;
+
+                window.CampaignSystem.updateEntity(CAMP_ID, activeEntityId, !isPlayer, {
+                    loreData: ent.loreData,
+                    lore: ent.lore // Maintain legacy sync
+                });
+            }
+        }
+
+        function toggleLoreSection(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                const isHidden = el.style.display === 'none';
+                el.style.display = isHidden ? 'block' : 'none';
+            }
+        }
+
+        function formatDoc(cmd, value = null) {
+            document.execCommand(cmd, false, value);
+            // Focus back on editor? It usually keeps focus.
         }
 
         function addExtraDmgRow(dmgVal = '', typeVal = '') {
@@ -2734,52 +3141,79 @@
             let isPlayer = false;
             let ent = currentCamp.monsters.find(m => m.id === activeEntityId);
             if (!ent) { ent = currentCamp.players.find(p => p.charId === activeEntityId); isPlayer = true; }
-            if (!ent) return;
-
-            // Gather Data
-            const name = document.getElementById('atkNameInput').value;
-            const dmg = document.getElementById('atkDmgInput').value;
-            const type = document.getElementById('atkTypeInput').value;
-            const critThreshold = parseInt(document.getElementById('atkCritInput').value) || 20;
-            const critMult = parseInt(document.getElementById('atkMultInput').value) || 2;
-            const atkBonus = parseInt(document.getElementById('atkBonusInput').value) || 0;
-            const range = document.getElementById('atkRangeInput').value;
-
-            // Extra Dmg
-            const extraRows = document.querySelectorAll('.extra-dmg-row');
-            const extraDmg = [];
-            extraRows.forEach(row => {
-                const d = row.querySelector('.extra-dmg-val').value;
-                const t = row.querySelector('.extra-type-val').value;
-                if (d && t) extraDmg.push({ damage: d, type: t });
-            });
-
-            if (!name || !dmg || !type) {
-                alert("Preencha Nome, Dano e Tipo!");
+            if (!ent) {
+                alert("Erro: Entidade ativa não encontrada. Tente reabrir a ficha.");
                 return;
             }
 
-            if (!ent.attacks) ent.attacks = [];
+            try {
+                // Gather Data
+                const nameEl = document.getElementById('atkNameInput');
+                const dmgEl = document.getElementById('atkDmgInput');
+                const descEl = document.getElementById('atkDescInput');
 
-            const atkObj = {
-                name, damage: dmg, type,
-                critThreshold, critMult, atkBonus, range,
-                extraDmg
-            };
+                if (!nameEl || !dmgEl) {
+                    alert("Erro interno: Campos de ataque não encontrados. Tente recarregar a página.");
+                    return;
+                }
 
-            if (editingAttackIndex >= 0) {
-                ent.attacks[editingAttackIndex] = atkObj;
-            } else {
-                ent.attacks.push(atkObj);
+                const name = nameEl.value.trim();
+                const dmg = dmgEl.value.trim();
+                const desc = descEl ? descEl.value.trim() : ""; // Safety check
+
+                if (!name || !dmg) return alert("Preencha Nome e Dano Base!");
+
+                const crit = parseInt(document.getElementById('atkCritInput').value) || 20;
+                const mult = parseInt(document.getElementById('atkMultInput').value) || 2;
+                const bonus = parseInt(document.getElementById('atkBonusInput').value) || 0;
+                const type = document.getElementById('atkTypeInput').value || "";
+                const range = document.getElementById('atkRangeInput').value || "";
+
+                // Extra Dmg
+                const extraRows = document.querySelectorAll('.extra-dmg-row');
+                const extraDmg = [];
+                extraRows.forEach(row => {
+                    const dmgInput = row.querySelector('.extra-dmg-val');
+                    const typeInput = row.querySelector('.extra-type-val');
+                    if (dmgInput && typeInput) {
+                        const d = dmgInput.value;
+                        const t = typeInput.value;
+                        if (d) extraDmg.push({ damage: d, type: t });
+                    }
+                });
+
+                if (!ent.attacks) ent.attacks = [];
+
+                const newAtk = {
+                    name,
+                    damage: dmg,
+                    critThreshold: crit,
+                    critMult: mult,
+                    atkBonus: bonus,
+                    type,
+                    range,
+                    desc, // Save Description
+                    extraDmg
+                };
+
+                if (editingAttackIndex >= 0) {
+                    ent.attacks[editingAttackIndex] = newAtk;
+                } else {
+                    ent.attacks.push(newAtk);
+                }
+
+                // Save
+                window.CampaignSystem.updateEntity(CAMP_ID, activeEntityId, !isPlayer, {
+                    attacks: ent.attacks
+                });
+
+                renderDMSheet(ent, isPlayer);
+                renderDMSheet(ent, isPlayer);
+                closeAttackModal();
+            } catch (err) {
+                console.error("Erro ao criar ataque:", err);
+                alert("Erro ao criar ataque: " + err.message);
             }
-
-            // Save
-            window.CampaignSystem.updateEntity(CAMP_ID, activeEntityId, !isPlayer, {
-                attacks: ent.attacks
-            });
-
-            renderDMSheet(ent, isPlayer);
-            closeAttackModal();
         }
 
         function promptEditAttack(index) {
@@ -2795,6 +3229,7 @@
 
                 document.getElementById('atkNameInput').value = atk.name;
                 document.getElementById('atkDmgInput').value = atk.damage;
+                document.getElementById('atkDescInput').value = atk.desc || ''; // Populate Description
                 document.getElementById('atkTypeInput').value = atk.type;
                 document.getElementById('atkCritInput').value = atk.critThreshold || 20;
                 document.getElementById('atkMultInput').value = atk.critMult || 2;
@@ -2885,30 +3320,58 @@
         // ... (renderEditableActionCard remains unchanged) ...
 
         function renderEditableAttackCard(atk, index) {
+            const desc = atk.desc || '';
+            const detailsId = `atk-details-${index}`;
+
             return `
-                <div class="wis-action-card" style="background:#222; border:1px solid #333; border-radius:6px; padding:10px; display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px;">
-                    <div style="flex:1;">
-                        <div style="font-weight:bold; color:#fff; display:flex; align-items:center; gap:8px;">
-                            <i data-lucide="sword" size="14" style="color:#777;"></i> ${atk.name}
+                <div class="wis-attack-card" onclick="toggleAttackDetails('${detailsId}')" style="background:#222; border:1px solid #333; border-radius:6px; padding:10px; display:flex; flex-direction:column; gap:5px; margin-bottom:8px; cursor:pointer; transition:background 0.2s;">
+                    <!-- HEADER -->
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div style="flex:1;">
+                            <div style="font-weight:bold; color:#fff; display:flex; align-items:center; gap:8px;">
+                                <i data-lucide="sword" size="14" style="color:#777;"></i> ${atk.name}
+                            </div>
+                            <div style="font-size:0.8rem; color:#888; margin-top:2px;">
+                                <span style="color:#ccc;">${atk.damage}</span> • ${atk.type}
+                            </div>
                         </div>
-                        <div style="font-size:0.8rem; color:#888; margin-top:2px;">
-                            <span style="color:#ccc;">${atk.damage}</span> • ${atk.type}
+                        
+                        <!-- Quick Actions (Roll) -->
+                        <div style="display:flex; gap:5px; align-items:center;">
+                             <button class="btn-primary" onclick="event.stopPropagation(); rollActiveEntityAttack(${index})" title="Rolar Ataque" style="padding:4px 8px; font-size:0.75rem; display:flex; align-items:center; gap:4px;">
+                                <i data-lucide="dices" size="12"></i> Rolar
+                             </button>
                         </div>
                     </div>
-                    <div style="display:flex; gap:5px; align-items:center;">
-                         <button class="btn-primary" onclick="rollActiveEntityAttack(${index})" title="Rolar Ataque" style="padding:4px 8px; font-size:0.75rem; display:flex; align-items:center; gap:4px;">
-                            <i data-lucide="dices" size="12"></i> Rolar
-                         </button>
-                         <div style="width:1px; height:20px; background:#444; margin:0 5px;"></div>
-                         <button class="btn-icon" onclick="promptEditAttack(${index})" title="Editar" style="color:#00b4d8;">
-                            <i data-lucide="pencil" size="14"></i>
-                         </button>
-                         <button class="btn-icon" onclick="removeAttack(${index})" title="Excluir" style="color:#ef4444;">
-                            <i data-lucide="trash-2" size="14"></i>
-                         </button>
+
+                    <!-- DETAILS (Hidden) -->
+                    <div id="${detailsId}" style="display:none; margin-top:10px; padding-top:10px; border-top:1px dashed #444;">
+                        <div style="font-size:0.85rem; color:#aaa; font-style:italic; margin-bottom:10px; white-space: pre-wrap; line-height:1.4;">${desc || 'Sem descrição.'}</div>
+                        
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:#666; margin-bottom:10px;">
+                            <div>Alcance: <strong style="color:#ccc">${atk.range || 'Padrão'}</strong></div>
+                            <div>Bônus: <strong style="color:#ccc">+${atk.atkBonus || 0}</strong> | Crítico: <strong style="color:#ccc">${atk.critThreshold || 20} (x${atk.critMult || 2})</strong></div>
+                        </div>
+
+                        <div style="display:flex; gap:8px; justify-content:flex-end;">
+                             <button class="btn-icon" onclick="event.stopPropagation(); promptEditAttack(${index})" title="Editar" style="color:#00b4d8; background:rgba(0,0,0,0.3); width:auto; padding:5px 10px; border-radius:4px;">
+                                <i data-lucide="pencil" size="14" style="margin-right:4px;"></i> Editar
+                             </button>
+                             <button class="btn-icon" onclick="event.stopPropagation(); removeAttack(${index})" title="Excluir" style="color:#ef4444; background:rgba(0,0,0,0.3); width:auto; padding:5px 10px; border-radius:4px;">
+                                <i data-lucide="trash-2" size="14" style="margin-right:4px;"></i> Excluir
+                             </button>
+                        </div>
                     </div>
                 </div>
             `;
+        }
+
+        function toggleAttackDetails(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                const isHidden = el.style.display === 'none';
+                el.style.display = isHidden ? 'block' : 'none';
+            }
         }
 
         // --- DICE ROLLING SYSTEM (Ported) ---
@@ -3111,6 +3574,13 @@
                     style="width:100%; padding:10px; background:#0a0a0a; border:1px solid #333; color:white; border-radius:6px; outline:none;">
             </div>
 
+            <!-- Description Field -->
+            <div style="margin-bottom:15px;">
+                <label style="color:#aaa; display:block; margin-bottom:5px;">Descrição/Efeito</label>
+                <textarea id="atkDescInput" class="ds-input" placeholder="Ex: Alcance 9m, Derruba o alvo (CD 14)"
+                    style="width:100%; padding:10px; background:#0a0a0a; border:1px solid #333; color:white; border-radius:6px; outline:none; resize:vertical; min-height:60px; font-family:inherit;"></textarea>
+            </div>
+
             <!-- ROW 2: Base Damage & Stats -->
             <div style="display:grid; grid-template-columns: 1.5fr 1fr 1fr; gap:15px; margin-bottom:15px;">
                 <div>
@@ -3199,6 +3669,93 @@
             </div>
         </div>
     </div>
+
+    <!-- SKILL SELECTOR MODAL -->
+    <div id="skillSelectorModal" class="modal-overlay" onclick="if(event.target===this) closeSkillSelector()">
+        <div
+            style="background:#18181b; padding:25px; border-radius:12px; width:500px; border:1px solid var(--border-dark); display:flex; flex-direction:column; gap:20px; max-height:85vh; overflow-y:auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 class="wis-title" style="margin:0;">Adicionar Perícia</h3>
+                <button class="btn-icon" onclick="closeSkillSelector()"><i data-lucide="x"></i></button>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                <label class="wis-stat-label">Valor (Bônus)</label>
+                <input type="number" id="newSkillValue" class="d-input" value="2"
+                    style="width:100%; font-size:1.2rem; font-weight:bold; text-align:center;">
+            </div>
+
+            <div>
+                <label class="wis-stat-label" style="display:block; margin-bottom:10px;">Perícias Padrão</label>
+                <div id="skillSelectorGrid" style="display:flex; flex-wrap:wrap; gap:8px;">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+
+            <div style="border-top:1px solid var(--border-dark); padding-top:15px;">
+                <label class="wis-stat-label" style="display:block; margin-bottom:10px;">Ou Personalizada</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="customSkillInput" class="d-input" placeholder="Nome da Perícia"
+                        style="flex:1;">
+                    <button class="btn btn-primary" onclick="confirmAddCustomSkill()">Adicionar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    <!-- SETTINGS MODAL -->
+    <div id="settingsModal" class="modal-overlay" onclick="if(event.target===this) closeSettingsModal()">
+        <div
+            style="background:#18181b; padding:30px; border-radius:12px; width:450px; border:1px solid var(--border-dark); box-shadow:0 20px 50px rgba(0,0,0,0.8);">
+
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid var(--border-dark); padding-bottom:10px;">
+                <h3 class="wis-title" style="margin:0; font-size:1.2rem;">Configurações</h3>
+                <button class="btn-icon" onclick="closeSettingsModal()"><i data-lucide="x"></i></button>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:20px;">
+
+                <!-- EXPORT -->
+                <div
+                    style="background:rgba(255,255,255,0.03); padding:15px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);">
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                        <i data-lucide="download" style="color:#3b82f6;"></i>
+                        <span style="font-weight:bold; color:#fff;">Exportar Backup</span>
+                    </div>
+                    <p style="font-size:0.8rem; color:#888; margin-bottom:15px;">
+                        Baixe um arquivo JSON contendo todos os dados da campanha.
+                    </p>
+                    <button class="btn btn-primary" onclick="exportCampaign()" style="width:100%; background:#3b82f6;">
+                        <i data-lucide="download" size="14" style="margin-right:5px;"></i> Baixar Campanha (.json)
+                    </button>
+                </div>
+
+                <!-- IMPORT -->
+                <div
+                    style="background:rgba(255,255,255,0.03); padding:15px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);">
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                        <i data-lucide="upload" style="color:#eab308;"></i>
+                        <span style="font-weight:bold; color:#fff;">Restaurar Backup</span>
+                    </div>
+                    <p style="font-size:0.8rem; color:#888; margin-bottom:15px;">
+                        Carregue um arquivo JSON para restaurar os dados.
+                        <strong style="color:#ef4444;">Substituirá os dados atuais!</strong>
+                    </p>
+                    <input type="file" id="importFileInput" accept=".json" style="display:none;"
+                        onchange="importCampaign(this)">
+                    <button class="btn btn-primary" onclick="document.getElementById('importFileInput').click()"
+                        style="width:100%; background:#eab308; color:#000;">
+                        <i data-lucide="upload" size="14" style="margin-right:5px;"></i> Selecionar Arquivo
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
     <!-- COMBAT RESULT MODAL (Ported from Dashboard) -->
     <div id="combatResultModal" style="display:none;" class="modal-overlay">
         <div class="combat-modal-content"
