@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demon Slayer RPG | Breath of the Sun</title>
+    <title>Hashira RPG | Breath of the Sun</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700&display=swap"
         rel="stylesheet">
@@ -161,17 +161,23 @@
             position: fixed;
             top: 0;
             width: 100%;
-            padding: 1.5rem 4rem;
-            /* Increased padding */
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            justify-content: center;
+            /* Centers the inner container */
             z-index: 1000;
             background: rgba(5, 5, 5, 0.6);
             backdrop-filter: blur(20px);
-            /* Stronger blur */
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            width: 100%;
+            max-width: 1400px;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .logo {
@@ -807,22 +813,17 @@
 
     <!-- NAV -->
     <nav class="navbar">
-        <div class="logo">
-            <i data-lucide="flame"></i>
-            Demon Slayer RPG
-        </div>
-        <div class="nav-links">
-            <a href="#" class="nav-link">História</a>
-            <a href="#styles" class="nav-link">Respirações</a>
-            <a href="campaign-hub.html" class="nav-link" style="color:#ffd700;">Campanha</a>
-            <a href="#mechanics" class="nav-link">Sistema</a>
-            <a href="#" class="nav-link">Comunidade</a>
-        </div>
-        <div class="nav-actions">
-            <!-- Dynamic Login Button -->
-            <a href="characters.html" class="btn-outline" style="border-color:transparent; color:#fff;">
-                <i data-lucide="users" style="width:16px;"></i> Meus Personagens
-            </a>
+        <div class="nav-container">
+            <div class="logo">
+                <i data-lucide="flame"></i>
+                HASHIRA RPG
+            </div>
+
+            <!-- Links Removidos (Sistema, História, Comunidade) -->
+
+            <div class="nav-actions">
+                <!-- JS Inject -->
+            </div>
         </div>
     </nav>
 
@@ -1023,7 +1024,7 @@
     <section class="cta-footer">
         <div class="cta-content reveal">
             <h2>Pronto para Caçar?</h2>
-            <p>A Corporação Demon Slayer precisa da sua lâmina. Junte-se a milhares de outros jogadores na luta
+            <p>A Corporação Hashira precisa da sua lâmina. Junte-se a thousands de outros jogadores na luta
                 pela
                 humanidade.</p>
             <div style="display:flex; gap:1rem;">
@@ -1038,10 +1039,10 @@
     <footer class="footer-links">
         <div style="display:flex; align-items:center; gap:10px;">
             <i data-lucide="flame" style="color:var(--accent-red)"></i>
-            <strong>Demon Slayer RPG</strong>
+            <strong>Hashira RPG</strong>
         </div>
         <div style="display:flex; flex-direction: column; align-items: center; gap: 5px;">
-            <span>© 2025 Demon Slayer RPG Project. Fã-made.</span>
+            <span>© 2025 Hashira RPG Project. Fã-made.</span>
             <span style="font-size: 0.9rem; color: var(--accent-red); font-weight: 600;">Feito por Nícolas
                 Silveira</span>
         </div>
@@ -1285,12 +1286,21 @@
         // === OPTIONAL AUTHENTICATION ===
         function checkAuthentication() {
             try {
-                const session = localStorage.getItem('demonSlayerSession');
-                if (session) {
-                    const sessionData = JSON.parse(session);
-                    console.log('Usuário logado:', sessionData.username);
-                    updateNavbarWithUser(sessionData);
-                    return true;
+                if (typeof AuthSystem !== 'undefined') {
+                    const session = AuthSystem.getSession();
+                    if (session) {
+                        console.log('Usuário logado:', session.username);
+                        updateNavbarWithUser(session);
+                        return true;
+                    }
+                } else {
+                    // Fallback
+                    const session = localStorage.getItem('demonSlayerSession');
+                    if (session) {
+                        const sessionData = JSON.parse(session);
+                        updateNavbarWithUser(sessionData);
+                        return true;
+                    }
                 }
 
                 // Not logged in, but that's OK - show login option
@@ -1326,23 +1336,41 @@
                 userMenu.id = 'user-menu';
                 userMenu.style.cssText = 'display: flex; align-items: center; gap: 1rem;';
                 userMenu.innerHTML = `
-                    <span style="color: #888; font-size: 0.9rem;">
-                        <i data-lucide="user" style="width:16px; vertical-align:middle;"></i>
-                        ${sessionData.username}
-                    </span>
-                     <a href="characters.html" class="btn-outline" style="border-color:#00b4d8; color:#00b4d8;">
-                        <i data-lucide="users" style="width:16px;"></i> CHARS
+                    <a href="characters.html" class="btn-outline" 
+                       style="
+                           border-color: #00b4d8; 
+                           color: #00b4d8; 
+                           border-radius: 50%; 
+                           width: 42px; 
+                           height: 42px; 
+                           padding: 0; 
+                           display: flex; 
+                           align-items: center; 
+                           justify-content: center;
+                           margin-right: 15px; /* Espaço reduzido */
+                       "
+                       title="Meus Personagens">
+                        <i data-lucide="users" style="width:20px;"></i> 
                     </a>
-                    <button onclick="handleLogout()" style="
-                        background: transparent;
-                        border: none;
-                        color: #666;
-                        cursor: pointer;
-                        transition: all 0.2s;
-                    " onmouseover="this.style.color='#ef4444'"
-                       onmouseout="this.style.color='#666'">
-                        <i data-lucide="log-out" style="width:20px;"></i>
-                    </button>
+                    
+                    <div style="display:flex; align-items:center; gap:10px; border-left:1px solid rgba(255,255,255,0.2); padding-left:20px;">
+                        <span style="color: #ccc; font-size: 0.9rem; font-weight:600;">
+                            ${sessionData.username}
+                        </span>
+                        <button onclick="handleLogout()" style="
+                            background: transparent;
+                            border: none;
+                            color: #666;
+                            cursor: pointer;
+                            transition: all 0.2s;
+                            display: flex;
+                            align-items: center;
+                        " onmouseover="this.style.color='#ef4444'"
+                        onmouseout="this.style.color='#666'"
+                        title="Sair da Conta">
+                            <i data-lucide="log-out" style="width:20px;"></i>
+                        </button>
+                    </div>
                 `;
                 navActions.appendChild(userMenu);
 
@@ -1352,7 +1380,11 @@
 
         function handleLogout() {
             if (confirm('Deseja realmente sair?')) {
-                localStorage.removeItem('demonSlayerSession');
+                if (typeof AuthSystem !== 'undefined') {
+                    AuthSystem.logout();
+                } else {
+                    localStorage.removeItem('demonSlayerSession');
+                }
                 window.location.reload();
             }
         }
@@ -1403,6 +1435,7 @@
             }
         }
     </script>
+    <script src="auth_system.js"></script>
     <script src="premium_system.js"></script>
 </body>
 

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Premium | Demon Slayer RPG</title>
+    <title>Login Premium | Hashira RPG</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700&display=swap"
         rel="stylesheet">
@@ -338,12 +338,13 @@
 </head>
 
 <body>
+    <script src="auth_system.js"></script>
     <div class="login-box">
         <div class="logo">
             <div class="logo-icon">
                 <i data-lucide="swords" size="40" color="#fff"></i>
             </div>
-            <h1 class="logo-title">DEMON SLAYER</h1>
+            <h1 class="logo-title">HASHIRA RPG</h1>
             <p class="logo-subtitle">Acesso ao Sistema</p>
         </div>
 
@@ -381,7 +382,7 @@
         </button>
 
         <div class="footer">
-            Não tem conta? <a href="characters.html">Criar agora</a>
+            Não tem conta? <a href="register.html">Criar agora</a>
         </div>
     </div>
 
@@ -395,8 +396,7 @@
 
         // Auto-login if already logged in
         window.addEventListener('load', () => {
-            const user = localStorage.getItem('demonSlayerUser');
-            if (user) {
+            if (AuthSystem.isAuthenticated()) {
                 window.location.href = 'characters.html';
             }
         });
@@ -418,23 +418,15 @@
 
             // Simulate auth delay
             setTimeout(() => {
-                // Check credentials (expandir com backend real)
-                const users = JSON.parse(localStorage.getItem('demonSlayerUsers') || '[]');
-                const user = users.find(u => u.username === username && u.password === password);
+                const result = AuthSystem.login(username, password);
 
-                if (user || username === 'demo' && password === 'demo') {
-                    // Success
-                    const userData = user || { username: 'demo', name: 'Demo User', role: 'player' };
-                    localStorage.setItem('demonSlayerUser', JSON.stringify(userData));
-
-                    showMessage('Login realizado com sucesso!', 'success');
-
+                if (result.success) {
+                    showMessage(result.message, 'success');
                     setTimeout(() => {
                         window.location.href = 'characters.html';
                     }, 800);
                 } else {
-                    // Error
-                    showMessage('Usuário ou senha incorretos', 'error');
+                    showMessage(result.message, 'error');
                     spinner.style.display = 'none';
                     btnText.textContent = 'Entrar';
                 }
@@ -442,11 +434,7 @@
         });
 
         function guestAccess() {
-            localStorage.setItem('demonSlayerUser', JSON.stringify({
-                username: 'guest',
-                name: 'Convidado',
-                role: 'guest'
-            }));
+            AuthSystem.loginAsGuest();
             window.location.href = 'characters.html';
         }
 

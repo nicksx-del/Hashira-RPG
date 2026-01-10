@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro | Demon Slayer RPG</title>
+    <title>Cadastro | Hashira RPG</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700&display=swap"
         rel="stylesheet">
@@ -277,6 +277,7 @@
 </head>
 
 <body>
+    <script src="auth_system.js"></script>
     <div class="box">
         <div class="logo">
             <div class="logo-icon"><i data-lucide="user-plus" size="40" color="#fff"></i></div>
@@ -291,6 +292,13 @@
                     <input type="text" id="newUsername" placeholder="Escolha um usuário" required
                         autocomplete="username">
                     <i data-lucide="user" class="input-icon"></i>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <div class="input-wrapper">
+                    <input type="email" id="email" placeholder="Seu melhor email" required autocomplete="email">
+                    <i data-lucide="mail" class="input-icon"></i>
                 </div>
             </div>
             <div class="form-group">
@@ -326,21 +334,21 @@
         form.addEventListener('submit', e => {
             e.preventDefault();
             const username = document.getElementById('newUsername').value.trim();
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('newPassword').value;
             const confirm = document.getElementById('confirmPassword').value;
             if (password !== confirm) { show('Senhas não coincidem', 'error'); return; }
-            if (!username || !password) { show('Preencha todos os campos', 'error'); return; }
+            if (!username || !password || !email) { show('Preencha todos os campos', 'error'); return; }
             spinner.style.display = 'inline-block';
             regText.textContent = 'Cadastrando...';
             setTimeout(() => {
-                const users = JSON.parse(localStorage.getItem('demonSlayerUsers') || '[]');
-                if (users.find(u => u.username === username)) {
-                    show('Usuário já existe', 'error');
-                } else {
-                    users.push({ username, password });
-                    localStorage.setItem('demonSlayerUsers', JSON.stringify(users));
-                    show('Conta criada com sucesso! Redirecionando...', 'success');
+                const result = AuthSystem.register(username, email, password);
+
+                if (result.success) {
+                    show(result.message, 'success');
                     setTimeout(() => { window.location.href = 'login.html'; }, 1200);
+                } else {
+                    show(result.message, 'error');
                 }
                 spinner.style.display = 'none';
                 regText.textContent = 'Cadastrar';

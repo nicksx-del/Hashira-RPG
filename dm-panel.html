@@ -1228,8 +1228,15 @@
                 <div style="display:grid; grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr; gap:12px; margin-bottom:12px;">
                     <div>
                         <label class="wis-stat-label">Nome *</label>
-                        <input type="text" id="newNpcName" class="d-input" style="width:100%;" placeholder="Nome do NPC"
-                            required>
+                        <div style="display:flex; gap:5px;">
+                            <input type="text" id="newNpcName" class="d-input" style="flex:1;" placeholder="Nome do NPC"
+                                required>
+                            <button class="btn-icon" type="button" onclick="generateRandomNpcName()"
+                                title="Gerar Nome Aleatório"
+                                style="background:rgba(255,255,255,0.05); border:1px solid var(--border-dark); padding:0 10px; cursor:pointer; border-radius:8px;">
+                                <i data-lucide="dices" size="16"></i>
+                            </button>
+                        </div>
                     </div>
                     <div>
                         <label class="wis-stat-label">Raça</label>
@@ -1727,7 +1734,11 @@
                 folders.forEach(folderName => {
                     if (folderName === "Todos") return;
                     const list = groups[folderName] || [];
-                    renderTreeNode(treeRoot, folderName, list, false, false);
+
+                    // Fix: Auto-expand folder if it contains the active entity
+                    const isActiveFolder = list.some(m => m.id === activeEntityId);
+
+                    renderTreeNode(treeRoot, folderName, list, false, isActiveFolder);
                 });
 
                 console.log("renderSidebar: Tree constructed. Initializing icons...");
@@ -1783,12 +1794,20 @@
             const level = entity.level || 1;
 
             const clickAdd = `event.stopPropagation(); promptAddToCombat('${id}', ${isPlayer});`;
+            const clickDup = `event.stopPropagation(); duplicateEntity('${id}', ${isPlayer});`;
 
             return `
                 <div class="wis-tree-item ${activeEntityId === id ? 'selected' : ''}" onclick="selectEntity('${id}', ${isPlayer})">
                      <img src="${avatar}" class="wis-tree-item-avatar" onerror="this.src='https://via.placeholder.com/20'">
                      <span style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${name}</span>
                      ${!isPlayer ? `<span style="font-size:0.7rem; color:#555; margin-right:4px;">Lv.${level}</span>` : ''}
+                     
+                     ${!isPlayer ? `
+                     <button class="btn-icon" onclick="${clickDup}" title="Duplicar NPC" style="opacity:0.5; padding:2px; border:none; background:none; cursor:pointer; margin-right:4px;">
+                        <i data-lucide="copy" size="12"></i>
+                     </button>
+                     ` : ''}
+
                      <button class="btn-icon" onclick="${clickAdd}" title="Add Combat" style="opacity:0.5; padding:0; border:none; background:none; cursor:pointer;">
                         <i data-lucide="swords" size="12"></i>
                      </button>
@@ -1912,6 +1931,11 @@
 
                     <!-- Buttons -->
                     <div style="display: flex; gap: 4px;">
+                        ${entity.race === 'Oni' ? `
+                            <button class="btn-mini-heal" onclick="regenerateOni(${entity.level})" title="Regeneração Oni" style="background:#450a0a; color:#f87171; border:1px solid #7f1d1d; width:24px; height:24px; border-radius:4px; cursor:pointer; font-size:0.75rem; margin-right:4px;">
+                                <i data-lucide="droplet" size="12"></i>
+                            </button>
+                        ` : ''}
                         <button class="btn-mini-dmg" onclick="adjustHP(-5)" style="background:#3a0b0b; color:#ff6b6b; border:1px solid #5c1414; width:24px; height:24px; border-radius:4px; cursor:pointer; font-size:0.75rem;">-5</button>
                         <button class="btn-mini-dmg" onclick="adjustHP(-1)" style="background:#3a0b0b; color:#ff6b6b; border:1px solid #5c1414; width:24px; height:24px; border-radius:4px; cursor:pointer; font-size:0.75rem;">-1</button>
                         <button class="btn-mini-heal" onclick="adjustHP(1)" style="background:#0b3a1a; color:#4ade80; border:1px solid #145c26; width:24px; height:24px; border-radius:4px; cursor:pointer; font-size:0.75rem;">+1</button>
@@ -1919,12 +1943,20 @@
                     </div>
                 </div>
 
+                <!-- STICKY NAVBAR -->
+                <div style="position:sticky; top:0; z-index:99; background:rgba(24, 24, 27, 0.95); backdrop-filter:blur(4px); padding:8px 5px; border-bottom:1px solid #333; display:flex; justify-content:space-around; margin-bottom:15px; margin-top:-10px; border-radius:0 0 8px 8px;">
+                    <button class="btn-clean" style="color:#aaa; font-size:0.8rem; font-weight:bold; cursor:pointer; background:none; border:none;" onclick="document.getElementById('sheet-sec-attributes').scrollIntoView({behavior: 'smooth', block: 'center'})">Atributos</button>
+                    <button class="btn-clean" style="color:#aaa; font-size:0.8rem; font-weight:bold; cursor:pointer; background:none; border:none;" onclick="document.getElementById('sheet-sec-skills').scrollIntoView({behavior: 'smooth', block: 'start'})">Habilidades</button>
+                    <button class="btn-clean" style="color:#aaa; font-size:0.8rem; font-weight:bold; cursor:pointer; background:none; border:none;" onclick="document.getElementById('sheet-sec-equipment').scrollIntoView({behavior: 'smooth', block: 'center'})">Equipamento</button>
+                    <button class="btn-clean" style="color:#aaa; font-size:0.8rem; font-weight:bold; cursor:pointer; background:none; border:none;" onclick="document.getElementById('sheet-sec-lore').scrollIntoView({behavior: 'smooth', block: 'start'})">Histórico</button>
+                </div>
+
                 <!-- ATTRIBUTES & SKILLS -->
                 <!-- ATTRIBUTES & SKILLS (Compact Row) -->
                  <div style="display:flex; flex-direction:column; gap:10px; margin-bottom: 20px;">
                     
                     <!-- ATTRIBUTES GRID (6 Cols) -->
-                    <div style="width:100%;">
+                    <div id="sheet-sec-attributes" style="width:100%; scroll-margin-top: 60px;">
                         <div class="wis-stats-grid" style="display:grid; grid-template-columns: repeat(6, 1fr); gap:6px;">
                             ${renderEditableStatBox('FOR', 'str', stats.str)}
                             ${renderEditableStatBox('DES', 'dex', stats.dex)}
@@ -1936,7 +1968,7 @@
                     </div>
 
                 <!-- SKILLS (Grouped by Attribute) -->
-                <div style="background:#18181b; padding:10px; border-radius:8px; border:1px solid var(--border-dark); margin-bottom: 20px;">
+                <div id="sheet-sec-skills" style="background:#18181b; padding:10px; border-radius:8px; border:1px solid var(--border-dark); margin-bottom: 20px; scroll-margin-top: 60px;">
                      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                          <h3 class="wis-title" style="margin:0; font-size:1rem;">Perícias</h3>
                          <button class="btn-icon" onclick="promptAddSkill()" title="Adicionar" style="background:#222; padding:2px;">
@@ -2070,13 +2102,46 @@
                     </button>
                 </div>
 
+                <!-- EQUIPMENT SECTION -->
+                <div id="sheet-sec-equipment" style="background:#18181b; padding:10px; border-radius:8px; border:1px solid var(--border-dark); margin-bottom: 10px; scroll-margin-top: 60px;">
+                    <h3 class="wis-title" style="margin-bottom:10px; font-size:1rem;">Equipamento</h3>
+                    <div style="display:flex; flex-direction:column; gap:5px;">
+                        <div style="display:flex; justify-content:space-between; border-bottom:1px solid #333; padding-bottom:5px;">
+                            <span style="color:#888; font-size:0.9rem;">Arma Principal</span>
+                            <span style="color:#fff; font-weight:bold;">${entity.equipment?.weaponName ? entity.equipment.weaponName :
+                    (entity.equipment?.weapon === 'katana' ? 'Katana Nichirin' : 'Desarmado')
+                }</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; padding-top:5px;">
+                            <span style="color:#888; font-size:0.9rem;">Armadura</span>
+                            <span style="color:#fff;">${entity.equipment?.armor === 'slayer_uniform' ? 'Uniforme de Caçador' :
+                    (entity.equipment?.armor === 'haori' ? 'Haori' : 'Nenhuma')
+                }</span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- HISTORY & NOTES (Compact) -->
-                <div>
+                <div id="sheet-sec-lore" style="scroll-margin-top: 60px;">
                      <h3 class="wis-title" style="margin-bottom:5px; font-size:1rem;">Histórico</h3>
                      <textarea class="wis-paper-textarea" 
                                placeholder="História, segredos..."
                                oninput="updateActiveEntityField('lore', this.value)"
                                style="width: 100%; min-height: 100px; background: #1e1e24; border: 1px solid #333; color: #ddd; padding: 10px; font-family: sans-serif; line-height: 1.5; border-radius: 8px; resize: vertical; outline: none; font-size:0.9rem;">${entity.lore || ''}</textarea>
+                </div>
+
+                <!-- LOOT & DROPS SECTION -->
+                <div style="margin-top:20px; border-top:1px solid #333; padding-top:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                        <h3 class="wis-title" style="margin:0; font-size:1rem;">Espólio & Drops</h3>
+                        <button class="btn-icon" onclick="announceLoot()" title="Enviar para Chat" style="background:#222; color:var(--text-muted); padding:4px;">
+                            <i data-lucide="send" size="14"></i>
+                        </button>
+                    </div>
+                    <textarea class="wis-paper-textarea" 
+                               placeholder="Itens que este NPC carrega (ex: Sangue de Lua Inferior, Nichirin...)"
+                               oninput="updateActiveEntityLoot(this.value)"
+                               style="width: 100%; min-height: 60px; background: #18181b; border: 1px solid #333; color: #aaa; padding: 10px; font-family: monospace; font-size:0.85rem; border-radius: 8px; resize: vertical; outline: none;">${entity.loot || ''}</textarea>
                 </div>
             `;
 
@@ -2315,6 +2380,41 @@
             document.getElementById('dmSheetState').style.display = 'none';
             document.getElementById('sessionDashboardState').style.display = 'flex';
             renderSidebar();
+        }
+
+        // --- SPECIAL COMBAT FEATURES ---
+        function regenerateOni(level) {
+            if (!activeEntityId || !currentCamp) return;
+            const ent = currentCamp.monsters.find(m => m.id === activeEntityId);
+            if (!ent || ent.race !== 'Oni') return;
+
+            const healAmount = (level && level >= 10) ? 20 : 10;
+            let newHP = (ent.currentHP || 0) + healAmount;
+            if (newHP > ent.maxHP) newHP = ent.maxHP;
+
+            updateActiveEntityHP(newHP, null);
+            showToast("Regeneração de Demônio ativada! +" + healAmount + " HP");
+        }
+
+        function updateActiveEntityLoot(value) {
+            if (!activeEntityId || !currentCamp) return;
+            const ent = currentCamp.monsters.find(m => m.id === activeEntityId);
+            if (!ent) return;
+
+            ent.loot = value;
+            window.CampaignSystem.updateEntity(CAMP_ID, activeEntityId, false, {
+                loot: value
+            });
+        }
+
+        function announceLoot() {
+            if (!activeEntityId || !currentCamp) return;
+            const ent = currentCamp.monsters.find(m => m.id === activeEntityId);
+            if (!ent) return;
+
+            const loot = ent.loot || "Nada de interessante.";
+            showToast("O grupo encontrou: " + loot);
+            // In a real chat system, this would push to the chat log array.
         }
 
         // --- COMBAT SYSTEM (New) ---

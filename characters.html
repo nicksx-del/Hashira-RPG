@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meus Personagens | Demon Slayer RPG</title>
+    <title>Meus Personagens | Hashira RPG</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700&display=swap"
         rel="stylesheet">
@@ -36,7 +36,7 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            /* Demon Slayer themed background */
+            /* Hashira RPG themed background */
             background:
                 radial-gradient(circle at 20% 80%, rgba(157, 78, 221, 0.15) 0%, transparent 50%),
                 radial-gradient(circle at 80% 20%, rgba(0, 180, 216, 0.1) 0%, transparent 50%),
@@ -82,7 +82,7 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            /* Demon Slayer night sky with wisteria glow */
+            /* Hashira RPG night sky with wisteria glow */
             background:
                 radial-gradient(ellipse at top, #1a1a2e 0%, transparent 50%),
                 radial-gradient(ellipse at bottom, #0f0f1a 0%, transparent 50%),
@@ -454,7 +454,7 @@
     <header style="justify-content: center; padding-top: 1rem;">
         <div class="logo">
             <i data-lucide="sword" color="#fff"></i>
-            DEMON SLAYER RPG
+            HASHIRA RPG
         </div>
         <!-- User Profile removed from header to simplify focus -->
     </header>
@@ -477,7 +477,20 @@
         </div>
     </main>
 
+    <script src="auth_system.js"></script>
     <script>
+        // Check Authentication First
+        (function checkAuth() {
+            if (typeof AuthSystem !== 'undefined') {
+                AuthSystem.requireAuth();
+            } else {
+                // Fallback if script load fails (shouldn't happen)
+                if (!localStorage.getItem('demonSlayerSession')) {
+                    window.location.href = 'login.html';
+                }
+            }
+        })();
+
         // DATA MIGRATION & STANDARDIZATION
         function migrateData() {
             // 1. Migrate single char 'demonSlayerChar' -> 'demonSlayerSaveSlots' if slots empty

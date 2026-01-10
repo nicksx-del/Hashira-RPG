@@ -534,22 +534,15 @@ function confirmNpcCreation() {
 
                 // 3. Force Sidebar Redraw
                 setTimeout(() => {
-                    if (typeof window.renderSidebar === 'function') {
-                        window.renderSidebar();
-                        console.log("Sidebar Redrawn via window.renderSidebar()");
-                    } else {
-                        console.error("Critical: window.renderSidebar not found");
-                    }
-
                     if (typeof showToast === 'function') showToast("NPC " + name + " Criado com sucesso!");
 
                     // 4. Auto-Select
                     if (typeof window.selectEntity === 'function') {
-                        // Small delay to ensure renderSidebar has populated DOM if needed (though it shouldn't matter for logic)
+                        // Small delay to ensure renderSidebar has populated DOM if needed
                         console.log("Auto-selecting new NPC: " + newMob.id);
                         window.selectEntity(newMob.id, false);
                     }
-                }, 50); // Slight delay to let loadCampaignData finish if it was async (it's sync but good practice for UI repaints)
+                }, 50);
             } else {
                 alert("Erro ao salvar NPC no banco de dados.");
             }
@@ -561,5 +554,51 @@ function confirmNpcCreation() {
     } else {
         console.error("CampaignSystem not found");
         alert("Erro no sistema de campanha.");
+    }
+}
+
+// --- PRODUCTIVITY TOOLS ---
+
+function generateRandomNpcName() {
+    const names = [
+        "Takeshi", "Yumi", "Kenji", "Akira", "Hana", "Rengoku", "Shinobu", "Giyu", "Tanjiro", "Nezuko",
+        "Zenitsu", "Inosuke", "Kanao", "Genya", "Sanemi", "Muichiro", "Obanai", "Mitsuri", "Uzui", "Gyomei",
+        "Muzan", "Akaza", "Doma", "Kokushibo", "Hantengu", "Gyokko", "Daki", "Gyutaro", "Kaigaku", "Nakime",
+        "Rui", "Enmu", "Kyojuro", "Kanae", "Sabito", "Makomo", "Kagaya", "Amane", "Hinatsuru", "Makio", "Suma"
+    ];
+    const randomName = names[Math.floor(Math.random() * names.length)];
+    const nameInput = document.getElementById('newNpcName');
+    if (nameInput) {
+        nameInput.value = randomName;
+        // Trigger subtle flash or visual feedback if desired
+    }
+}
+
+function duplicateEntity(id, isPlayer) {
+    if (isPlayer) return alert("Apenas NPCs podem ser duplicados por aqui.");
+
+    if (!window.CampaignSystem || !window.CAMP_ID) {
+        return alert("Erro: Sistema de Campanha não disponível.");
+    }
+
+    const camp = window.CampaignSystem.getCampaignById(window.CAMP_ID);
+    const original = camp.monsters.find(m => m.id === id);
+
+    if (!original) return alert("NPC original não encontrado.");
+
+    if (confirm(`Deseja duplicar "${original.name}"?`)) {
+        // Deep Copy
+        const copy = JSON.parse(JSON.stringify(original));
+
+        // Modify for uniqueness
+        copy.id = 'mob_' + Date.now() + Math.random().toString().substr(2, 5);
+        copy.name = original.name + " (Cópia)";
+
+        // Add using System
+        window.CampaignSystem.addMonster(window.CAMP_ID, copy);
+
+        // UI Refresh
+        if (typeof showToast === 'function') showToast("NPC Duplicado com sucesso!");
+        if (typeof window.renderSidebar === 'function') window.renderSidebar();
     }
 }
