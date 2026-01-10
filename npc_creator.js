@@ -466,9 +466,9 @@ function confirmNpcCreation() {
         age: age,
         height: height,
         weight: weight,
-        // Use folder if selected, otherwise fallback to "Todos" (Default Root)
-        category: folder ? folder : "Todos",
-        folderId: folder ? folder : "Todos",
+        // Use folder if selected, otherwise fallback to "Sem Pasta" (Default Root)
+        category: folder ? folder : "Sem Pasta",
+        folderId: folder ? folder : "Sem Pasta",
         maxHP: hp,
         currentHP: hp,
         ac: ac,
