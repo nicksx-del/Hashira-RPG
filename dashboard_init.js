@@ -78,6 +78,9 @@ function initializeDashboard() {
 
     console.log("charData inicializado:", window.charData);
 
+    // Limpar armas iniciais duplicadas (Katana vs Nichirin)
+    cleanupStarterWeapons();
+
     // Salvar estado inicial
     saveState();
 
@@ -214,4 +217,26 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeDashboard);
 } else {
     initializeDashboard();
-}
+
+    // Helper para remover duplicatas de armas iniciais
+    function cleanupStarterWeapons() {
+        if (!window.charData || !window.charData.inventory) return;
+
+        // Verificar se existe a "Katana (Nichirin)" que o usuário quer MANTER
+        const hasSafeNichirin = window.charData.inventory.some(i =>
+            i.name && i.name.includes('Katana (Nichirin)')
+        );
+
+        // Se tiver a correta, remove a "Nichirin Padrão" e a "Katana" genérica
+        if (hasSafeNichirin) {
+            const initialCount = window.charData.inventory.length;
+            window.charData.inventory = window.charData.inventory.filter(i =>
+                i.name !== 'Nichirin Padrão' && i.name !== 'Katana'
+            );
+
+            if (window.charData.inventory.length < initialCount) {
+                console.log("Limpeza de inventário: Itens redundantes removidos.");
+            }
+        }
+    }
+

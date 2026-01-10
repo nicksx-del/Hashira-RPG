@@ -158,7 +158,8 @@
             background: rgba(168, 85, 247, 0.05);
             border: 2px solid rgba(168, 85, 247, 0.2);
             color: #fff;
-            padding: 14px 45px 14px 18px;
+            padding: 14px 45px 14px 45px;
+            /* Increased left padding for icon */
             border-radius: 12px;
             font-size: 1rem;
             font-family: 'Outfit', sans-serif;
@@ -174,10 +175,27 @@
 
         .input-icon {
             position: absolute;
+            left: 15px;
+            /* Moved to left */
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            pointer-events: none;
+            /* Prevent clicking the icon */
+        }
+
+        .toggle-password {
+            position: absolute;
             right: 15px;
             top: 50%;
             transform: translateY(-50%);
             color: #666;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .toggle-password:hover {
+            color: #a855f7;
         }
 
         /* Buttons */
@@ -365,6 +383,8 @@
                     <input type="password" id="password" placeholder="Digite sua senha" required
                         autocomplete="current-password">
                     <i data-lucide="lock" size="18" class="input-icon"></i>
+                    <i data-lucide="eye" size="18" class="toggle-password" onclick="togglePassword('password', this)"
+                        title="Mostrar Senha"></i>
                 </div>
             </div>
 
@@ -373,6 +393,20 @@
                 <div class="spinner" id="spinner"></div>
             </button>
         </form>
+
+        <script>
+            function togglePassword(inputId, el) {
+                const input = document.getElementById(inputId);
+                if (input.type === "password") {
+                    input.type = "text";
+                    el.setAttribute('data-lucide', 'eye-off');
+                } else {
+                    input.type = "password";
+                    el.setAttribute('data-lucide', 'eye');
+                }
+                if (window.lucide) lucide.createIcons();
+            }
+        </script>
 
         <div class="divider">OU</div>
 

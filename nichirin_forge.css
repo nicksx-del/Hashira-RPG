@@ -248,6 +248,7 @@
 /* FLAME (Rengoku Style) - VERMELHONA/INTENSE RED */
 .blade.fx-flame .blade-color-layer {
     background: linear-gradient(90deg, #500000, #990000, #ff0000);
+    background-size: 200% 200%;
     opacity: 1;
     mix-blend-mode: normal;
     /* Changed from color-dodge to make it more solid red */
@@ -289,12 +290,14 @@
 /* WATER (Giyu Style) */
 .blade.fx-water .blade-color-layer {
     background: linear-gradient(90deg, #03045e, #0077b6, #90e0ef);
+    background-size: 200% 200%;
     opacity: 0.9;
     mix-blend-mode: hard-light;
 }
 
 .blade.fx-water .blade-aura {
     background: linear-gradient(90deg, transparent, rgba(0, 180, 216, 0.6), transparent);
+    background-size: 200% 200%;
     opacity: 0.8;
     filter: blur(5px);
     animation: flowWater 3s linear infinite;
@@ -352,6 +355,7 @@
 
 .blade.fx-wind .blade-aura {
     background: linear-gradient(90deg, transparent, rgba(62, 137, 20, 0.5), transparent);
+    background-size: 200% 200%;
     filter: blur(4px);
     opacity: 0.7;
     animation: windShear 0.2s infinite linear;
@@ -455,6 +459,7 @@
     opacity: 0.7;
     filter: blur(6px);
     background: linear-gradient(90deg, transparent, rgba(123, 44, 191, 0.5), transparent);
+    background-size: 200% 200%;
     animation: snakeSlither 3s ease-in-out infinite;
 }
 
@@ -937,4 +942,142 @@
         transform: scale(8);
         opacity: 0;
     }
+}
+
+/* --- NEW CARD SELECTION STYLES --- */
+.destiny-option-card {
+    background: rgba(20, 20, 25, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 220px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+
+    /* Default State: Darker & Grayscale */
+    opacity: 0.7;
+    filter: grayscale(100%);
+    transform: scale(0.95);
+}
+
+.destiny-option-card:hover {
+    opacity: 1;
+    filter: grayscale(0%);
+    /* Restore color on hover */
+    background: rgba(30, 30, 35, 1);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.0);
+}
+
+.destiny-option-card.selected {
+    opacity: 1;
+    filter: grayscale(0%);
+    transform: scale(1.05) !important;
+    /* Force scale override */
+    background: rgba(20, 20, 25, 1);
+    z-index: 10;
+    /* Border color is handled inline by JS, ensuring element match */
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+/* Color Indicator Circle */
+.card-color-indicator {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.4s;
+}
+
+.destiny-option-card:hover .card-color-indicator,
+.destiny-option-card.selected .card-color-indicator {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px currentColor;
+    border-color: #fff;
+}
+
+.card-title {
+    color: #fff;
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    margin: 0 0 10px 0;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.card-desc {
+    color: #aaa;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* Selection Ring (Visual feedback for 'selected' state) */
+.card-selection-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    pointer-events: none;
+    transition: all 0.3s;
+}
+
+.destiny-option-card.selected .card-selection-ring {
+    border-color: inherit;
+    /* Inherits from inline style of parent */
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1);
+}
+/* --- PROGRESSIVE INFO EXPANSION --- */
+
+.card-details-container {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    margin-top: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.destiny-option-card.selected .card-details-container {
+    max-height: 120px; /* Allow enough space for content */
+    opacity: 1;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.destiny-option-card.selected {
+    height: 320px; /* Expand card height on selection */
+}
+
+.card-buff-info {
+    font-size: 0.85rem;
+    color: #fff;
+    background: rgba(0,0,0,0.3);
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.card-flavor-text {
+    font-size: 0.75rem;
+    color: #888;
+    font-style: italic;
+    line-height: 1.4;
+    margin: 0;
 }

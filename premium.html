@@ -621,40 +621,267 @@
             </div>
             <p class="footer-text">© 2023 Demon Slayer RPG. Todos os direitos reservados.</p>
         </div>
+        <!-- Payment Modal -->
+        <div id="paymentModal" class="modal-overlay">
+            <div class="modal-card">
+                <button class="close-modal" onclick="closePaymentModal()"><i data-lucide="x"></i></button>
+
+                <!-- STEP 1: QR CODE -->
+                <div id="paymentStep1">
+                    <h2 style="font-family:var(--font-display); color:white; margin-bottom:5px;">Finalizar Compra</h2>
+                    <p style="color:#aaa; font-size:0.9rem; margin-bottom:20px;">Pague via PIX para liberação imediata.
+                    </p>
+
+                    <div class="qr-container">
+                        <!-- Dynamic QR for visual effect -->
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=DemonSlayerRPG-Payment"
+                            alt="QR Code PIX" style="opacity:0.9;">
+                    </div>
+                    <p style="text-align:center; color:#666; font-size:0.8rem; margin-bottom:20px;">Escaneie com seu app
+                        de banco</p>
+
+                    <div class="payment-info">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span style="color:#888;">Plano:</span>
+                            <span id="modalPlanName" style="color:white; font-weight:bold;">Premium Mensal</span>
+                        </div>
+                        <div
+                            style="display:flex; justify-content:space-between; border-top:1px solid rgba(255,255,255,0.1); padding-top:8px;">
+                            <span style="color:#888;">Total:</span>
+                            <span id="modalPlanPrice"
+                                style="color:var(--accent-gold); font-weight:bold; font-size:1.2rem;">R$
+                                29,90</span>
+                        </div>
+                    </div>
+
+                    <button class="plan-button primary" onclick="processPayment()" style="margin-bottom:10px;">
+                        <i data-lucide="check-circle" style="width:18px; vertical-align:middle; margin-right:8px;"></i>
+                        Confirmar Pagamento
+                    </button>
+                    <button class="plan-button secondary" onclick="processPayment()" style="margin-bottom:0;">
+                        <i data-lucide="copy" style="width:18px; vertical-align:middle; margin-right:8px;"></i>
+                        Copiar Código PIX
+                    </button>
+                </div>
+
+                <!-- STEP 2: PROCESSING -->
+                <div id="paymentStep2" style="display:none; text-align:center; padding:30px 0;">
+                    <div class="spinner"></div>
+                    <h3 style="margin-top:20px; color:white;">Processando Pagamento...</h3>
+                    <p style="color:#888; font-size:0.9rem;">Aguardando confirmação do banco.</p>
+                </div>
+
+                <!-- STEP 3: SUCCESS -->
+                <div id="paymentStep3" style="display:none; text-align:center; padding:20px 0;">
+                    <div
+                        style="width:80px; height:80px; background:var(--accent-gold); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px auto; box-shadow:0 0 30px rgba(255,215,0,0.5);">
+                        <i data-lucide="crown" style="width:40px; height:40px; color:#000;"></i>
+                    </div>
+                    <h2 style="font-family:var(--font-display); color:white; margin-bottom:10px;">Pagamento Aprovado!
+                    </h2>
+                    <p style="color:#ccc; margin-bottom:20px;">Você agora faz parte da elite dos Caçadores.</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                    <p style="color:#666; font-size:0.8rem; margin-top:10px;">Redirecionando...</p>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            /* MODAL STYLES */
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.85);
+                backdrop-filter: blur(8px);
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                opacity: 0;
+                animation: fadeIn 0.3s forwards;
+            }
+
+            @keyframes fadeIn {
+                to {
+                    opacity: 1;
+                }
+            }
+
+            .modal-card {
+                background: #16161a;
+                border: 1px solid var(--accent-gold);
+                border-radius: 16px;
+                padding: 30px;
+                width: 90%;
+                max-width: 400px;
+                position: relative;
+                box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+                transform: scale(0.9);
+                animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            }
+
+            @keyframes scaleIn {
+                to {
+                    transform: scale(1);
+                }
+            }
+
+            .close-modal {
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                background: transparent;
+                border: none;
+                color: #666;
+                cursor: pointer;
+                transition: color 0.2s;
+            }
+
+            .close-modal:hover {
+                color: white;
+            }
+
+            .qr-container {
+                background: white;
+                padding: 10px;
+                border-radius: 12px;
+                width: 200px;
+                height: 200px;
+                margin: 0 auto 10px auto;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .payment-info {
+                background: rgba(255, 255, 255, 0.03);
+                border: 1px solid rgba(255, 255, 255, 0.05);
+                padding: 15px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+            }
+
+            /* SPINNER */
+            .spinner {
+                width: 50px;
+                height: 50px;
+                border: 4px solid rgba(255, 215, 0, 0.1);
+                border-top: 4px solid var(--accent-gold);
+                border-radius: 50%;
+                margin: 0 auto;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+
+            /* PROGRESS BAR */
+            .progress-bar {
+                width: 100%;
+                height: 4px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 2px;
+                overflow: hidden;
+            }
+
+            .progress-fill {
+                height: 100%;
+                background: var(--accent-gold);
+                width: 0%;
+                animation: fillProgress 2s ease-in-out forwards;
+            }
+
+            @keyframes fillProgress {
+                to {
+                    width: 100%;
+                }
+            }
+        </style>
     </div>
 
     <script>
         // Initialize Lucide icons
         lucide.createIcons();
 
-        function selectPlan(plan) {
-            const planNames = {
-                'free': 'Normal',
-                'premium': 'Premium',
-                'lifetime': 'Vitalício'
-            };
+        // Modal Logic
+        let selectedPlanType = null;
+        const modal = document.getElementById('paymentModal');
+        const planNames = {
+            'free': 'Normal',
+            'premium': 'Premium',
+            'lifetime': 'Vitalício'
+        };
 
+        function selectPlan(plan) {
             if (plan === 'free') {
                 alert('Você já está no plano Normal!');
                 return;
             }
 
+            selectedPlanType = plan;
+
+            // Populate Modal
+            const price = plan === 'premium' ? 'R$ 29,90' : 'R$ 299,00';
+            const name = planNames[plan];
+
+            document.getElementById('modalPlanName').innerText = name;
+            document.getElementById('modalPlanPrice').innerText = price;
+
+            // Show Step 1
+            document.getElementById('paymentStep1').style.display = 'block';
+            document.getElementById('paymentStep2').style.display = 'none';
+            document.getElementById('paymentStep3').style.display = 'none';
+
+            // Open Modal
+            modal.style.display = 'flex';
+        }
+
+        function closePaymentModal() {
+            modal.style.display = 'none';
+        }
+
+        function processPayment() {
+            // Step 1 -> Step 2
+            document.getElementById('paymentStep1').style.display = 'none';
+            document.getElementById('paymentStep2').style.display = 'block';
+
+            // Simulate API Call / Bank Processing
+            setTimeout(() => {
+                completeTransaction();
+            }, 3000);
+        }
+
+        function completeTransaction() {
+            // Step 2 -> Step 3
+            document.getElementById('paymentStep2').style.display = 'none';
+            document.getElementById('paymentStep3').style.display = 'block';
+
+            // Grant Subscription
             const subscription = {
-                plan: plan,
+                plan: selectedPlanType,
                 active: true,
                 startDate: new Date().toISOString(),
-                price: plan === 'premium' ? 29.90 : 299
+                price: selectedPlanType === 'premium' ? 29.90 : 299
             };
 
             localStorage.setItem('demonSlayerSubscription', JSON.stringify(subscription));
 
-            // Show success message
-            alert(`🎉 Parabéns! Você agora é ${planNames[plan]}!\n\nTodos os recursos foram desbloqueados.`);
-
             // Redirect
             setTimeout(() => {
                 window.location.href = 'index.html';
-            }, 1000);
+            }, 2500);
         }
 
         // Check current subscription

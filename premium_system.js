@@ -7,16 +7,16 @@ function initializePremium() {
     try {
         const sub = localStorage.getItem('demonSlayerSubscription');
 
-        // Se não tiver assinatura, criar uma vitalícia automaticamente
+        // Se não tiver assinatura, criar plano FREE por padrão
         if (!sub) {
             const defaultSubscription = {
-                plan: 'lifetime',
+                plan: 'free',
                 active: true,
                 startDate: new Date().toISOString(),
-                price: 25
+                price: 0
             };
             localStorage.setItem('demonSlayerSubscription', JSON.stringify(defaultSubscription));
-            console.log('Assinatura premium vitalícia ativada automaticamente');
+            console.log('Plano FREE iniciado por padrão.');
         }
 
         return true;

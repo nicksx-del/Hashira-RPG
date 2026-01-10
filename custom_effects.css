@@ -25,9 +25,17 @@
     animation: psychicWave 1.5s ease-out forwards;
 }
 
-.psychic-wave:nth-child(1) { animation-delay: 0s; }
-.psychic-wave:nth-child(2) { animation-delay: 0.3s; }
-.psychic-wave:nth-child(3) { animation-delay: 0.6s; }
+.psychic-wave:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.psychic-wave:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.psychic-wave:nth-child(3) {
+    animation-delay: 0.6s;
+}
 
 @keyframes psychicWave {
     0% {
@@ -36,10 +44,126 @@
         opacity: 0.8;
         border-width: 10px;
     }
+
     100% {
         width: 150vmax;
         height: 150vmax;
         opacity: 0;
         border-width: 0;
     }
+}
+
+/* --- COMBAT ANIMATIONS --- */
+
+/* CRITICAL HIT - Screen Shake & Golden Pulse */
+@keyframes shake-hard {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    10% {
+        transform: translate(-5px, -5px) rotate(-1deg);
+    }
+
+    20% {
+        transform: translate(5px, 5px) rotate(1deg);
+    }
+
+    30% {
+        transform: translate(-5px, 5px) rotate(0deg);
+    }
+
+    40% {
+        transform: translate(5px, -5px) rotate(1deg);
+    }
+
+    50% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+}
+
+@keyframes crit-glow {
+    0% {
+        box-shadow: 0 0 0 rgba(255, 215, 0, 0);
+        border-color: #333;
+    }
+
+    50% {
+        box-shadow: 0 0 50px rgba(255, 215, 0, 0.6);
+        border-color: #ffd700;
+        transform: scale(1.02);
+    }
+
+    100% {
+        box-shadow: 0 0 0 rgba(255, 215, 0, 0);
+        border-color: #333;
+        transform: scale(1);
+    }
+}
+
+.crit-hit-anim {
+    animation: shake-hard 0.5s cubic-bezier(.36, .07, .19, .97) both, crit-glow 0.8s ease-out both;
+}
+
+/* CRITICAL FAIL - Glitch & Darken */
+@keyframes glitch-anim {
+    0% {
+        transform: translate(0);
+        opacity: 1;
+    }
+
+    20% {
+        transform: translate(-2px, 2px);
+        opacity: 0.8;
+        filter: invert(1);
+    }
+
+    40% {
+        transform: translate(-2px, -2px);
+        opacity: 1;
+        filter: invert(0);
+    }
+
+    60% {
+        transform: translate(2px, 2px);
+        opacity: 0.8;
+        filter: invert(1);
+    }
+
+    80% {
+        transform: translate(2px, -2px);
+        opacity: 1;
+        filter: invert(0);
+    }
+
+    100% {
+        transform: translate(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fail-darken {
+    0% {
+        background-color: #111;
+        border-color: #333;
+    }
+
+    50% {
+        background-color: #300000;
+        border-color: #ff0000;
+        box-shadow: inset 0 0 30px #500;
+    }
+
+    100% {
+        background-color: #111;
+        border-color: #333;
+    }
+}
+
+.crit-fail-anim {
+    animation: glitch-anim 0.4s steps(2) both, fail-darken 0.6s ease-out both;
 }

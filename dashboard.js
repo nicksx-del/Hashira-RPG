@@ -1143,7 +1143,7 @@ window.syncCombatValues = function () {
     equippedWeapons.forEach(w => {
         humanData.attacks.push({
             name: w.name,
-            damage: w.dmg || '1d6',
+            damage: w.damage || w.dmg || '1d6',
             type: w.props || 'Comum',
             source: 'equipment' // Flag to identify auto-added attacks
         });
@@ -1388,17 +1388,18 @@ window.completeMission = function () {
     }
 
     // 2. Add to Wealth
-    if (!humanData.yen) humanData.yen = 0;
-    humanData.yen += salary;
+    if (!humanData.money) humanData.money = 0;
+    humanData.money += salary;
 
     // 3. Save
     saveHuman();
 
     // 4. Update UI
-    // If Inventory is open, update visible Yen. If not, next render will handle.
-    // We can assume inventory_modules.js handles rendering, but we can force text update if element exists
+    if (typeof updateInventoryStatus === 'function') updateInventoryStatus();
+
+    // Legacy support if specific element exists separate from inventory
     const yenDisplay = document.getElementById('yenDisplay');
-    if (yenDisplay) yenDisplay.textContent = humanData.yen.toLocaleString('pt-BR');
+    if (yenDisplay) yenDisplay.textContent = humanData.money.toLocaleString('pt-BR');
 
     // 5. Feedback
     showToast(`Missão Completa! +${salary.toLocaleString('pt-BR')} Ienes recebidos.`, "success");
@@ -1507,12 +1508,22 @@ function renderAttributes() {
                 <span style="font-size:0.75rem; color:#666; letter-spacing:1px;">${k.toUpperCase()}</span>
             </div>
             <div style="text-align:right;">
-                <span style="font-size:1.5rem; font-weight:800; color:${mod >= 0 ? '#00b4d8' : '#d90429'}; text-shadow:0 0 10px rgba(0,0,0,0.5);">${mod >= 0 ? '+' : ''}${mod}</span>
-                <div style="font-size:0.7rem; color:#555;">Valor: ${val}</div>
+                <span id="mod-${k}" style="font-size:1.5rem; font-weight:800; color:${mod >= 0 ? '#00b4d8' : '#d90429'}; text-shadow:0 0 10px rgba(0,0,0,0.5); transition:color 0.3s;">${mod >= 0 ? '+' : ''}${mod}</span>
+                <div style="font-size:0.7rem; color:#555; display:flex; align-items:center; justify-content:flex-end; gap:5px;">
+                    Valor: 
+                    <input type="number" value="${val}" min="1" max="30" 
+                        onchange="updateStat('${k}', this.value)"
+                        onclick="event.stopPropagation()"
+                        style="width:40px; background:#111; border:1px solid #333; color:white; border-radius:4px; padding:2px 4px; text-align:center; font-size:0.8rem;">
+                </div>
             </div>
         `;
 
-        header.onclick = () => rollCheck(map[k], mod);
+        header.onclick = (e) => {
+            // Prevent triggering roll when clicking input (handled by stopPropagation above, but good safety)
+            if (e.target.tagName === 'INPUT') return;
+            rollCheck(map[k], mod);
+        };
         col.appendChild(header);
 
         // Skills List
@@ -2801,47 +2812,76 @@ window.renderForge = function () {
     const forgeSection = document.getElementById('forge');
     if (!forgeSection) return;
 
-    // Ensure Ores and Money exist
-    if (typeof charData.money === 'undefined') charData.money = 0; // Legacy support
-    if (typeof charData.ores === 'undefined') charData.ores = 0;
-
-    // Base Layout
+    // Base Layout for Nichirin Forge (Ultimate Edition)
     forgeSection.innerHTML = `
         <div class="section-header">
-            <span class="sec-title show-on-scroll" style="color:#ffd700">Forja Nichirin</span>
-            <div style="display:flex; gap:15px; font-weight:bold; font-size:0.9rem;">
-                <div onclick="editResource('money')" title="Editar Ienes" style="color:#ffd700; cursor:pointer; display:flex; align-items:center; gap:5px; padding:5px; border-radius:4px; transition:background 0.2s;">
-                    <i data-lucide="coins" style="width:14px;"></i> ${charData.money.toLocaleString('pt-BR')}
-                </div>
-                <div onclick="editResource('ores')" title="Editar Minérios" style="color:#aaa; cursor:pointer; display:flex; align-items:center; gap:5px; padding:5px; border-radius:4px; transition:background 0.2s;">
-                    <i data-lucide="mountain" style="width:14px;"></i> ${charData.ores} Minérios
-                </div>
-            </div>
+            <span class="sec-title" style="color:#ffd700">Forja Nichirin</span>
+            <i data-lucide="hammer" color="#ffd700"></i>
         </div>
 
-        <div class="forge-container" style="display:grid; grid-template-columns: 1fr 1.5fr; gap:20px; height: 500px;">
-            <!-- LEFT: Recipe List -->
-            <div class="recipe-list" style="background:#16161a; border:1px solid #333; border-radius:12px; overflow-y:auto; padding:10px;">
-                ${WEAPON_RECIPES.map((recipe, index) => {
-        const isSelected = index === selectedRecipeIndex;
-        return `
-                        <div onclick="selectRecipe(${index})" 
-                            style="padding:15px; margin-bottom:10px; background:${isSelected ? 'rgba(255, 215, 0, 0.1)' : '#111'}; border:1px solid ${isSelected ? '#ffd700' : '#333'}; border-radius:8px; cursor:pointer; transition:0.2s;">
-                            <div style="font-weight:bold; color:${isSelected ? '#ffd700' : '#fff'}; margin-bottom:5px;">${recipe.name}</div>
-                            <div style="font-size:0.8rem; color:#888;">${recipe.cost.toLocaleString('pt-BR')} Ienes • ${recipe.ores} Minérios</div>
-                        </div>
-                    `;
-    }).join('')}
+        <div class="nichirin-wrapper">
+            <!-- VISUAL STAGE -->
+            <div class="sword-stage">
+                <div id="vfxContainer" class="vfx-container"></div>
+                <div class="sword-container">
+                     <div id="bladeAura" class="blade-aura"></div>
+                     
+                     <div class="blade-group">
+                          <div class="habaki"></div>
+                          <!-- The Blade itself -->
+                          <div id="swordBlade" class="blade">
+                               <div id="swordColorLayer" class="blade-color-layer"></div>
+                               <div class="hamon"></div>
+                               <!-- Kanji for 'Destroy' usually engraved -->
+                               <div class="engraving">METSU</div>
+                          </div>
+                     </div>
+                     
+                     <!-- Fittings -->
+                     <div class="tsuba"></div>
+                     <div class="tsuka">
+                          <div class="samegawa"></div>
+                          <div class="tsuka-ito"></div>
+                     </div>
+                     <div class="kashira"></div>
+                </div>
             </div>
 
-            <!-- RIGHT: Details Pane -->
-            <div class="recipe-details" id="forgeDetails" style="background:#111; border:1px solid #333; border-radius:12px; padding:20px; display:flex; flex-direction:column; align-items:center; text-align:center; position:relative;">
-                ${renderForgeDetails(selectedRecipeIndex)}
+            <!-- UI: MODE SELECTION -->
+            <div id="forgeModeSelect" class="forge-ui" style="display:block;">
+                <h2 style="text-align:center; color:white; font-family:'Cinzel'; margin-bottom:20px;">Como deseja forjar sua lâmina?</h2>
+                
+                <div class="mode-cards">
+                    <div class="mode-card" onclick="selectForgeMode('destiny')">
+                        <i data-lucide="sparkles" size="48" color="#d90429"></i>
+                        <h4>Destino</h4>
+                        <p style="color:#aaa; font-size:0.9rem;">Responda ao chamado da sua alma. O aço revelará sua verdadeira cor.</p>
+                    </div>
+
+                    <div class="mode-card" onclick="selectForgeMode('blacksmith')">
+                         <i data-lucide="hammer" size="48" color="#00b4d8"></i>
+                         <h4>Ferreiro</h4>
+                         <p style="color:#aaa; font-size:0.9rem;">Escolha manualmente o minério e o estilo que deseja moldar.</p>
+                    </div>
+                </div>
             </div>
+
+            <!-- UI: DYNAMIC CONTAINERS -->
+            <div id="forgeQuizUI" class="forge-ui" style="display:block;"></div>
+            <div id="forgeHammerUI" class="forge-ui" style="display:none;"></div>
+            <div id="forgeResultUI" class="forge-ui" style="display:block;"></div>
         </div>
     `;
 
     if (window.lucide) window.lucide.createIcons();
+
+    // Initialize Logic from nichirin_system.js
+    if (window.initForge) {
+        window.initForge();
+    } else {
+        console.error("Nichirin System not loaded!");
+        forgeSection.innerHTML += '<p style="color:red; text-align:center;">Erro: Sistema Nichirin não carregado (nichirin_system.js ausente).</p>';
+    }
 };
 
 window.selectRecipe = function (index) {
@@ -2942,11 +2982,8 @@ window.forgeItem = function (index) {
     }
 };
 
-window.addItemToInventory = function (item) {
-    if (!charData.inventory) charData.inventory = [];
-    charData.inventory.push(item);
-    if (typeof renderInventory === 'function') renderInventory();
-};
+// addItemToInventory is handled by inventory_modules.js
+// Do not override it here.
 
 window.showForgeSuccess = function (item) {
     // Create Overlay
@@ -3105,7 +3142,37 @@ window.buyItem = function (id, price) {
         window.location.href = 'premium.html';
         return;
     }
-    alert(`Funcionalidade de compra para ${id} em breve!`);
+
+    // Standard Purchase Logic
+    if (confirm(`Comprar este item por R$ ${price.toFixed(2)}? \n(Simulação: Será debitado em Ienes: ¥${price * 1000})`)) {
+        const costInYen = price * 1000; // Simulated Conversion for demo
+
+        if (!humanData.money || humanData.money < costInYen) {
+            showToast("Fundos insuficientes em Ienes!", "error");
+            return;
+        }
+
+        humanData.money -= costInYen;
+
+        // Grant Item Logic (Simplified for Demo)
+        if (id === 'reset_token') {
+            humanData.inventory.push({
+                name: "Token de Renascimento",
+                type: "consumable",
+                weight: "0.1 kg",
+                desc: "Permite resetar ficha.",
+                quantity: 1
+            });
+            showToast("Token adquirido!", "success");
+        } else if (id === 'color_bundle') {
+            // Unlock logic would go here
+            showToast("Pacote de Cores adquirido!", "success");
+        }
+
+        saveHuman();
+        renderStore(); // Refresh to update buttons if needed (though they are static here)
+        if (typeof updateInventoryStatus === 'function') updateInventoryStatus(); // Sync UI
+    }
 };
 
 
@@ -3578,3 +3645,29 @@ function resetSalary() {
     saveChar();
     console.log("Salary Reset");
 }
+
+window.updateStat = function(key, newValue) {
+    const val = parseInt(newValue);
+    if (isNaN(val) || val < 1) return; // Basic validation
+
+    // Update Data
+    humanData.stats[key] = val;
+    saveHuman();
+
+    // Calculate New Modifier
+    const newMod = Math.floor((val - 10) / 2);
+
+    // Update UI Modifier Display immediately
+    const modEl = document.getElementById('mod-' + key);
+    if (modEl) {
+        modEl.textContent = (newMod >= 0 ? '+' : '') + newMod;
+        modEl.style.color = newMod >= 0 ? '#00b4d8' : '#d90429';
+    }
+
+    // Re-render skills to update their totals driven by this stat
+    // We delay slightly or just call renderAttributes to refresh everything safely
+    // But full re-render resets open states etc. Ideally we just re-render skills.
+    // For now, full re-render is safest to sync everything.
+    renderAttributes();
+    if (typeof updateVitalsUI === 'function') updateVitalsUI(); // Check if HP/AC changed (CON/DEX)
+};

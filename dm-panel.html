@@ -798,6 +798,82 @@
             color: var(--text-muted);
         }
 
+        /* --- MOBILE SIDEBAR --- */
+        .mobile-sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1000;
+            background: rgba(168, 85, 247, 0.2);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+        }
+
+        .mobile-sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 40;
+            backdrop-filter: blur(2px);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .mobile-sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* MOBILE RESPONSIVENESS */
+        @media (max-width: 768px) {
+            .mobile-sidebar-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .wis-sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100%;
+                width: 85%;
+                max-width: 320px;
+                transform: translateX(-100%);
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+                border-right: 1px solid var(--border-dark);
+                z-index: 50;
+            }
+
+            .wis-sidebar.active {
+                transform: translateX(0);
+            }
+
+            /* Adjust header to make room for toggle if needed, or overlay it */
+            .wis-sidebar-header {
+                padding-top: 60px;
+                /* Space for close button if inside, or general breathing room */
+            }
+
+            .wis-app-layout {
+                flex-direction: column;
+            }
+
+            .wis-workspace {
+                width: 100%;
+            }
+        }
+
         .combat-dock {
             padding: 16px;
             border-top: 1px solid var(--border-dark);
@@ -1198,6 +1274,13 @@
 </head>
 
 <body data-theme="wisteria">
+    <!-- MOBILE TOGGLE -->
+    <div class="mobile-sidebar-overlay" id="mobileSidebarOverlay" onclick="toggleMobileSidebar()" style="display:none;">
+    </div>
+    <div class="mobile-sidebar-toggle" onclick="toggleMobileSidebar()">
+        <i data-lucide="folder-tree" size="24"></i>
+    </div>
+
     <div class="noise-overlay"></div>
 
     <div class="wis-app-layout">
@@ -3901,6 +3984,32 @@
             </div>
         </div>
     </div>
+
+    <!-- MOBILE JS LIBRARIES -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        // MOBILE SIDEBAR LOGIC
+        function toggleMobileSidebar() {
+            const sidebar = document.querySelector('.wis-sidebar');
+            const overlay = document.getElementById('mobileSidebarOverlay');
+            if (sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+                setTimeout(() => overlay.style.display = 'none', 300);
+            } else {
+                overlay.style.display = 'block';
+                // Trigger reflow
+                void overlay.offsetWidth;
+                overlay.classList.add('active');
+                sidebar.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</div>
+</div>
+</div>
+</div>
 </body>
 
 </html>

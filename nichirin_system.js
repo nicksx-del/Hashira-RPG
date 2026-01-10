@@ -124,7 +124,7 @@ const NICHIRIN_ELEMENTS = {
     sun: {
         name: 'Sol (Hi)',
         color: '#000000',
-        glow: 'rgba(255, 0, 0, 0.8)',
+        glow: 'rgba(0, 0, 0, 0.9)',
         class: 'fx-sun',
         buffName: 'Calor Solar',
         buffDesc: '+1d4 dano extra contra Onis.',
@@ -217,6 +217,50 @@ let forgeState = {
     hammerClicks: 0,
     finalElement: null
 };
+// ============================================
+// HELPER FUNCTIONS (PREVIEW)
+// ============================================
+// Add these new helper functions
+
+window.previewBlade = function (elementKey) {
+    const element = NICHIRIN_ELEMENTS[elementKey];
+    const blade = document.getElementById('swordBlade');
+    const colorLayer = document.getElementById('swordColorLayer');
+    const aura = document.getElementById('bladeAura');
+
+    if (!blade || !element) return;
+
+    // Apply Class
+    blade.className = `blade ${element.class}`;
+
+    // Apply Colors
+    if (element.class) {
+        colorLayer.style.background = ''; // Use CSS
+    } else {
+        colorLayer.style.background = element.color;
+    }
+
+    // Show Aura immediately for preview
+    colorLayer.style.width = '100%';
+    colorLayer.style.opacity = '1';
+    aura.style.background = element.glow;
+    aura.style.opacity = '0.8';
+};
+
+window.resetBladePreview = function () {
+    // Prevent reset if we are already revealing/locked
+    if (forgeState.phase === 'reveal') return;
+
+    const blade = document.getElementById('swordBlade');
+    const colorLayer = document.getElementById('swordColorLayer');
+    const aura = document.getElementById('bladeAura');
+
+    if (!blade) return;
+
+    blade.className = 'blade';
+    colorLayer.style.opacity = '0';
+    aura.style.opacity = '0';
+};
 
 // ============================================
 // CORE FUNCTIONS
@@ -228,7 +272,8 @@ function initForge() {
         currentQuestion: 0,
         scores: {},
         hammerClicks: 0,
-        finalElement: null
+        finalElement: null,
+        selectedElement: null // Track 2-step selection
     };
     Object.keys(NICHIRIN_ELEMENTS).forEach(elem => forgeState.scores[elem] = 0);
 
@@ -270,8 +315,8 @@ function startBlacksmithMode() {
     const ui = document.getElementById('forgeQuizUI'); // Reuse Quiz container
 
     // Filter out 'sun' (Black) as it is exclusive/rare
-    const availableElements = Object.entries(NICHIRIN_ELEMENTS)
-        .filter(([key, val]) => key !== 'sun');
+    const availableElements = Object.entries(NICHIRIN_ELEMENTS);
+    // .filter(([key, val]) => key !== 'sun'); // Unlocked by request
 
     ui.innerHTML = `
         <div class="destiny-quiz-card" style="max-width:800px;">
@@ -280,20 +325,71 @@ function startBlacksmithMode() {
             
             <div class="destiny-options" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:15px; max-height:400px; overflow-y:auto; padding-right:5px;">
                 ${availableElements.map(([key, val]) => `
-                    <button class="destiny-option" onclick="handleManualSelection('${key}')" 
-                        style="border-left: 4px solid ${val.color}; display:flex; flex-direction:column; align-items:flex-start; gap:5px;">
-                        <span style="color:#fff; font-weight:bold; font-size:1.1rem;">${val.name}</span>
-                        <span style="font-size:0.8rem; color:${val.color};">${val.buffName}</span>
-                    </button>
+                    <div class="destiny-option-card" 
+                            onmouseover="previewBlade('${key}')"
+                            onmouseout="resetBladePreview()"
+                            onclick="handleManualSelection('${key}', this)">
+                        <div class="card-color-indicator" style="background:${val.color}; box-shadow:0 0 15px ${val.color};"></div>
+                        <h3 class="card-title">${val.name}</h3>
+                        
+                        <div class="card-details-container">
+                             <div class="card-buff-info">
+                                <i data-lucide="sparkles" size="12" style="margin-right:4px;"></i>
+                                <span style="color:#ffd700; font-weight:bold;">${val.buffName}</span>
+                                <div style="font-size:0.75rem; margin-top:2px; color:#ccc;">${val.buffDesc}</div>
+                             </div>
+                             <p class="card-flavor-text">"${val.desc}"</p>
+                        </div>
+
+                        <div class="card-selection-ring"></div>
+                    </div>
                 `).join('')}
             </div>
         </div>
     `;
 }
 
-function handleManualSelection(element) {
+function handleManualSelection(element, btnElement) {
+    // 2-Step Logic for Mobile Safety
+    if (forgeState.selectedElement !== element) {
+        // Step 1: Select
+        forgeState.selectedElement = element;
+
+        // Remove "selected" class from all buttons
+        const allBtns = document.querySelectorAll('.destiny-option');
+        allBtns.forEach(b => {
+            b.classList.remove('selected');
+            b.style.borderColor = 'rgba(255,255,255,0.1)'; // Reset border
+            b.style.boxShadow = 'none';
+        });
+
+        // Add visual feedback to clicked button
+        if (btnElement) {
+            btnElement.classList.add('selected');
+            const color = NICHIRIN_ELEMENTS[element].color;
+            btnElement.style.borderColor = color;
+            btnElement.style.boxShadow = `0 0 15px ${color}`;
+        }
+
+        // Preview Visuals
+        previewBlade(element);
+
+        return; // WAITING FOR CONFIRMATION
+    }
+
+    // Step 2: Confirm (Clicked same item again)
     forgeState.finalElement = element;
-    startHammering();
+    forgeState.phase = 'reveal'; // Lock phase to prevent reset
+
+    // Lock visuals immediately
+    previewBlade(element);
+
+    // Clear Quiz UI (since we skip hammering)
+    const quizUi = document.getElementById('forgeQuizUI');
+    if (quizUi) quizUi.innerHTML = '';
+
+    // Direct to Reveal
+    startRevealSequence();
 }
 
 // ============================================
@@ -366,6 +462,10 @@ function calculateResult() {
 
 function startHammering() {
     document.getElementById('forgeQuizUI').innerHTML = '';
+
+    // Safety Reset
+    resetBladePreview();
+
     const ui = document.getElementById('forgeHammerUI');
 
     ui.innerHTML = `
@@ -429,7 +529,11 @@ function finishHammering() {
 // ============================================
 
 function startRevealSequence() {
-    document.getElementById('forgeHammerUI').innerHTML = '';
+    // Clear both potential previous UIs
+    const hammerUi = document.getElementById('forgeHammerUI');
+    const quizUi = document.getElementById('forgeQuizUI');
+    if (hammerUi) hammerUi.innerHTML = '';
+    if (quizUi) quizUi.innerHTML = '';
 
     const element = NICHIRIN_ELEMENTS[forgeState.finalElement];
     const blade = document.getElementById('swordBlade');
@@ -501,7 +605,7 @@ function equipAndClose() {
         quantity: 1,
         equipped: true,
         damage: '1d8',
-        properties: 'Acuidade, Versátil (1d10)',
+        properties: 'Cortante, Acuidade, Versátil (1d10)',
         value: 1000 // Yen value
     };
 

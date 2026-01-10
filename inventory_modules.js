@@ -334,11 +334,7 @@ function populateItemModal() {
         card.onclick = () => window.handleItemSelect(item);
 
         // Icon based on type
-        let icon = 'box';
-        if (item.category === 'weapon') icon = '⚔️';
-        else if (item.category === 'armor') icon = '🛡️';
-        else if (item.category === 'consumable') icon = '🧪';
-        else if (item.category === 'adventure') icon = '🎒';
+        let icon = window.getItemEmoji(item.name, item.category);
 
         // Stat display
         let statText = '';
@@ -578,12 +574,9 @@ window.createInventoryCard = function (item, index) {
         card.style.background = `linear-gradient(90deg, ${item.color}22, rgba(20,20,25,0.8))`;
     }
 
-    // Ícone baseado no tipo
-    let icon = 'box';
-    if (item.type === 'weapon') icon = 'sword';
-    else if (item.type === 'armor') icon = 'shield';
-    else if (item.type === 'consumable') icon = 'flask-conical';
-    else if (item.type.includes('bundle')) icon = 'gift'; // Bundle Icon
+    // Contextual Emoji
+    let emoji = window.getItemEmoji(item.name, item.type);
+    if (item.type && item.type.includes('bundle')) emoji = '🎁';
 
     // Estatística principal
     let mainStat = '';
@@ -617,8 +610,8 @@ window.createInventoryCard = function (item, index) {
     card.innerHTML = `
         <div class="inv-header" onclick="selectItem(${index})">
             <div style="display:flex; align-items:center; gap:10px; flex:1;">
-                <div class="inv-row-icon">
-                    <i data-lucide="${icon}" style="width:20px;"></i>
+                <div class="inv-row-icon" style="font-size:1.4rem; padding:0; display:flex; align-items:center; justify-content:center;">
+                   ${emoji}
                 </div>
                 <div style="flex:1;">
                     <div class="inv-name" style="${item.equipped ? 'color:var(--accent-cyan); font-weight:bold;' : ''}">${item.name}</div>
@@ -654,10 +647,7 @@ window.selectItem = function (index) {
 
         const drawerContent = document.getElementById('drawerContent');
         if (drawerContent) {
-            let icon = '📦';
-            if (item.type === 'weapon') icon = '⚔️';
-            else if (item.type === 'armor') icon = '🛡️';
-            else if (item.type === 'consumable') icon = '🧪';
+            let icon = window.getItemEmoji(item.name, item.type);
 
             // Action Buttons
             let actions = '';
@@ -724,10 +714,7 @@ function showItemDetails(index) {
     emptyState.style.display = 'none';
     container.style.display = 'flex';
 
-    let icon = '📦';
-    if (item.type === 'weapon') icon = '⚔️';
-    else if (item.type === 'armor') icon = '🛡️';
-    else if (item.type === 'consumable') icon = '🧪';
+    let icon = window.getItemEmoji(item.name, item.type);
 
     container.innerHTML = `
         <div style="text-align:center; padding:2rem; border-bottom:1px solid #222;">
@@ -1020,7 +1007,7 @@ window.useItem = function (index) {
 
             if (confirm(`Abrir ${item.name}?\nVocê obteve: ${finalValue.toLocaleString()} Ienes!`)) {
                 // Add Money
-                charData.yen = (charData.yen || 0) + finalValue;
+                charData.money = (charData.money || 0) + finalValue;
 
                 // Remove Item
                 charData.inventory.splice(index, 1);
@@ -1039,7 +1026,7 @@ window.useItem = function (index) {
             const val = parseInt(String(item.value).replace(/\D/g, ''));
             if (val) {
                 if (confirm(`Usar ${item.name} para obter ${val} Ienes?`)) {
-                    charData.yen = (charData.yen || 0) + val;
+                    charData.money = (charData.money || 0) + val;
                     charData.inventory.splice(index, 1);
                     if (typeof saveHuman === 'function') saveHuman();
                     renderInventory();
@@ -1087,3 +1074,45 @@ window.useItem = function (index) {
     if (typeof saveHuman === 'function') saveHuman();
     renderInventory();
 }
+
+// HELPER: Contextual Emojis
+window.getItemEmoji = function (name, type) {
+    if (!name) return '📦';
+    const n = name.toLowerCase();
+
+    // Specific Overrides
+    if (n.includes('livro') || n.includes('book') || n.includes('grimório') || n.includes('diário')) return '📖';
+    if (n.includes('poção') || n.includes('potion') || n.includes('elixir') || n.includes('frasco')) return '🧪';
+    if (n.includes('carta') || n.includes('mapa') || n.includes('documento') || n.includes('convite')) return '📜';
+    if (n.includes('chave') || n.includes('key')) return '🔑';
+    if (n.includes('moeda') || n.includes('coin') || n.includes('ouro') || n.includes('bolsa')) return '💰';
+    if (n.includes('anel') || n.includes('ring')) return '💍';
+    if (n.includes('colar') || n.includes('amuleto') || n.includes('pingente')) return '📿';
+    if (n.includes('flor') || n.includes('glicínia') || n.includes('lótus')) return '🌸';
+    if (n.includes('minério') || n.includes('ore') || n.includes('pedra') || n.includes('cristal') || n.includes('gema')) return '🪨';
+    if (n.includes('carne') || n.includes('food') || n.includes('comida') || n.includes('onigiri') || n.includes('arroz') || n.includes('pão')) return '🍙';
+    if (n.includes('máscara')) return '🎭';
+
+    // Fallback to Type
+    if (type === 'weapon') {
+        if (n.includes('arco') || n.includes('bow')) return '🏹';
+        if (n.includes('machado') || n.includes('axe')) return '🪓';
+        if (n.includes('lança') || n.includes('spear')) return '🔱';
+        if (n.includes('martelo') || n.includes('hammer') || n.includes('marreta')) return '🔨';
+        if (n.includes('adaga') || n.includes('dagger') || n.includes('faca') || n.includes('kunai')) return '🗡️';
+        if (n.includes('bomba') || n.includes('bomb')) return '💣';
+        return '⚔️';
+    }
+    if (type === 'armor') {
+        if (n.includes('capacete') || n.includes('elmo') || n.includes('helm')) return '🪖';
+        if (n.includes('escudo') || n.includes('shield')) return '🛡️';
+        if (n.includes('manto') || n.includes('capa') || n.includes('haori') || n.includes('robe')) return '👘';
+        if (n.includes('bota')) return '👢';
+        if (n.includes('luva')) return '🧤';
+        return '🥋';
+    }
+    if (type === 'consumable') return '🧪';
+    if (type === 'adventure') return '🎒';
+
+    return '📦';
+};
