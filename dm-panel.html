@@ -4,40 +4,35 @@
 <head>
     <meta charset="UTF-8">
     <title>Painel do Mestre - Hashira RPG</title>
-    <!-- Use the same CSS file name as established -->
+    <!-- Cinematic Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700;900&display=swap"
+        rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            /* WISTERIA THEME - MINIMALIST */
+            /* CINEMATIC WISTERIA THEME */
             --primary: #a855f7;
             --primary-dark: #7e22ce;
-            --primary-light: #d8b4fe;
-            --bg-dark: #09090b;
-            /* Pitch black */
-            --surface-dark: transparent;
-            /* Minimalist transparent */
-            --border-dark: #27272a;
-            /* Zinc-800 */
-            --accent-purple: #c084fc;
-            --text-main: #ffffff;
-            --text-muted: #a1a1aa;
-            /* Zinc-400 */
-            --danger: #ef4444;
+            --accent-gold: #fbbf24;
+            --accent-red: #ef4444;
 
-            /* Status Colors */
+            --bg-dark: #121214;
+            --glass-bg: rgba(24, 24, 28, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --surface-hover: rgba(255, 255, 255, 0.03);
+
+            --text-main: #e4e4e7;
+            --text-muted: #a1a1aa;
+
+            /* Status */
             --hp-high: #22c55e;
             --hp-mid: #eab308;
             --hp-low: #ef4444;
-            --blood-red: #b91c1c;
 
-            /* Global */
-            --font-display: 'Inter', sans-serif;
-            /* Modern sans */
-            --font-body: 'Inter', sans-serif;
-        }
-
-        [data-theme="wisteria"] {
-            /* Keep overrides if needed, but aligning to minimalist */
+            /* Typography */
+            --font-display: 'Cinzel', serif;
+            --font-body: 'Outfit', sans-serif;
         }
 
         * {
@@ -55,13 +50,43 @@
             flex-direction: column;
         }
 
+        /* --- ATMOSPHERE --- */
+        #wisteria-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background:
+                radial-gradient(circle at 10% 20%, rgba(60, 20, 80, 0.15), transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(200, 50, 50, 0.1), transparent 40%),
+                linear-gradient(to bottom, #121214, #0a0a0c);
+        }
+
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
         /* --- SPLIT VIEW LAYOUT --- */
         .wis-app-layout {
             display: flex;
             width: 100vw;
             height: 100vh;
             overflow: hidden;
-            background: var(--bg-dark);
+            background: transparent;
+            /* Let bg shine through */
+            position: relative;
+            z-index: 1;
         }
 
         /* LEFT SIDEBAR (NPC LIBRARY) */
@@ -69,18 +94,18 @@
             width: 30%;
             min-width: 300px;
             max-width: 450px;
-            background: var(--surface-dark);
-            border-right: 1px solid var(--border-dark);
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid var(--glass-border);
             display: flex;
             flex-direction: column;
             z-index: 20;
-            /* No shadow requested */
+            box-shadow: 20px 0 40px rgba(0, 0, 0, 0.5);
         }
 
         .wis-sidebar-header {
             padding: 24px;
-            /* Increased whitespace */
-            border-bottom: 1px solid var(--border-dark);
+            border-bottom: 1px solid var(--glass-border);
             background: transparent;
             display: flex;
             flex-direction: column;
@@ -93,21 +118,20 @@
 
         .wis-search-input {
             width: 100%;
-            background: transparent;
-            /* Transparent input */
-            border: 1px solid var(--border-dark);
-            padding: 10px 12px 10px 36px;
-            border-radius: 8px;
-            /* Softer transition */
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            padding: 12px 14px 12px 40px;
+            border-radius: 4px;
             color: var(--text-main);
-            font-family: inherit;
-            font-size: 0.9rem;
-            transition: border-color 0.2s;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            transition: all 0.3s;
         }
 
         .wis-search-input:focus {
             outline: none;
-            border-color: var(--primary);
+            border-color: transparent;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.3), inset 0 0 8px rgba(168, 85, 247, 0.1);
         }
 
         .wis-search-icon {
@@ -119,40 +143,57 @@
         }
 
         .wis-add-btn {
-            background: transparent;
-            /* Remove solid bg */
+            background: rgba(168, 85, 247, 0.1);
             color: var(--primary);
-            border: 1px solid var(--border-dark);
-            border-radius: 8px;
-            padding: 10px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            padding: 12px;
             cursor: pointer;
-            font-weight: 600;
+            font-family: var(--font-display);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            font-weight: 700;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
+            gap: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.15);
         }
 
         .wis-add-btn:hover {
-            border-color: var(--primary);
-            background: rgba(168, 85, 247, 0.05);
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.6), 0 0 40px rgba(168, 85, 247, 0.3);
         }
 
         .wis-sidebar-content {
             flex: 1;
             overflow-y: auto;
             padding: 12px;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .wis-sidebar-content>* {
+            pointer-events: auto;
+            flex-shrink: 0;
         }
 
         /* ACCORDION SYSTEM */
         .wis-accordion-item {
             margin-bottom: 8px;
             border: 1px solid transparent;
-            /* Hidden by default */
             border-radius: 8px;
             background: transparent;
-            overflow: hidden;
+            /* REMOVED overflow: hidden to allow natural flow */
+            position: relative;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
         }
 
         .wis-accordion-header {
@@ -165,6 +206,9 @@
             user-select: none;
             transition: all 0.2s;
             border-radius: 8px;
+            position: relative;
+            z-index: 110;
+            pointer-events: auto;
         }
 
         .wis-accordion-header:hover {
@@ -189,14 +233,20 @@
         }
 
         .wis-accordion-body {
-            display: none;
-            /* Hidden by default */
-            padding: 8px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, overflow 0s 0.3s;
+            padding: 0 8px;
             background: rgba(0, 0, 0, 0.2);
-            border-top: 1px solid var(--border-dark);
+            position: static;
         }
 
         .wis-accordion-item.active .wis-accordion-body {
+            max-height: 2000px;
+            overflow: visible;
+            transition: max-height 0.3s ease-out;
+            padding: 8px;
+            border-top: 1px solid var(--border-dark);
             display: flex;
             flex-direction: column;
             gap: 4px;
@@ -243,16 +293,16 @@
         }
 
         .wis-npc-card:hover {
-            background: rgba(255, 255, 255, 0.02);
-            border-color: var(--border-dark);
+            background: var(--surface-hover);
+            border-color: var(--glass-border);
+            transform: translateX(4px);
         }
 
         .wis-npc-card.selected {
-            background: rgba(168, 85, 247, 0.1);
-            border: 1px solid var(--primary);
-            border-left: 4px solid var(--primary);
-            /* Prominent active state */
-            box-shadow: 0 0 10px rgba(168, 85, 247, 0.1);
+            background: linear-gradient(90deg, rgba(168, 85, 247, 0.15), transparent);
+            border: 1px solid transparent;
+            border-left: 3px solid rgba(168, 85, 247, 0.8);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.4), inset 0 0 15px rgba(168, 85, 247, 0.1);
         }
 
         .wis-npc-avatar {
@@ -293,7 +343,7 @@
         /* RIGHT WORKSPACE */
         .wis-workspace {
             flex: 1;
-            background: var(--bg-dark);
+            background: transparent;
             display: flex;
             flex-direction: column;
             position: relative;
@@ -388,10 +438,11 @@
         }
 
         .wis-stat-box {
-            background: transparent;
-            border: 1px solid var(--border-dark);
-            border-radius: 8px;
-            padding: 10px;
+            background: rgba(24, 24, 28, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 14px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -487,17 +538,21 @@
         }
 
         .wis-tree-children {
-            display: none;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
             flex-direction: column;
             gap: 1px;
-            padding-left: 10px;
-            /* Indentation */
+            padding-left: 0;
             margin-left: 9px;
             border-left: 1px solid rgba(255, 255, 255, 0.1);
-            /* Guide Line */
+            position: static;
         }
 
         .wis-tree-folder.active>.wis-tree-children {
+            max-height: 3000px;
+            overflow: visible;
+            padding-left: 10px;
             display: flex;
         }
 
@@ -521,8 +576,8 @@
         .wis-tree-item.selected {
             background: rgba(168, 85, 247, 0.15);
             color: var(--primary);
-            border-left: 3px solid var(--primary);
-            /* Accent mark */
+            border-left: 3px solid rgba(168, 85, 247, 0.8);
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.3), inset 0 0 10px rgba(168, 85, 247, 0.1);
         }
 
         .wis-tree-item-avatar {
@@ -557,13 +612,10 @@
         }
 
         .combatant-card.active-turn {
-            border-color: var(--primary);
-            box-shadow: none;
-            /* Removed glow */
-            background: rgba(168, 85, 247, 0.05);
-            /* Very subtle tint */
-            transform: scale(1.0);
-            /* Removed scale */
+            border-color: transparent;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.5), 0 0 40px rgba(168, 85, 247, 0.2), inset 0 0 15px rgba(168, 85, 247, 0.15);
+            background: rgba(168, 85, 247, 0.1);
+            transform: scale(1.02);
         }
 
         .combatant-init-box {
@@ -872,6 +924,24 @@
             .wis-workspace {
                 width: 100%;
             }
+
+            /* Combat Sidebar Mobile */
+            .wis-combat-sidebar {
+                position: fixed;
+                top: 0;
+                right: 0;
+                height: 100%;
+                width: 100%;
+                max-width: 350px;
+                transform: translateX(100%);
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+                z-index: 50;
+            }
+
+            .wis-combat-sidebar.active {
+                transform: translateX(0);
+            }
         }
 
         .combat-dock {
@@ -951,7 +1021,8 @@
 
         .d-input:focus {
             outline: none;
-            border-color: var(--primary);
+            border-color: transparent;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4), inset 0 0 10px rgba(168, 85, 247, 0.1);
         }
 
         .modal-overlay {
@@ -1100,9 +1171,10 @@
         }
 
         .creator-stat-box {
-            background: transparent;
-            border: 1px solid var(--border-dark);
-            border-radius: 8px;
+            background: rgba(24, 24, 28, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
             padding: 10px;
             text-align: center;
             display: flex;
@@ -1270,10 +1342,35 @@
             border-color: #eab308;
             box-shadow: 0 0 10px rgba(234, 179, 8, 0.2);
         }
+
+        /* Modal Animation */
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* HP Bar Shimmer Animation */
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
     </style>
 </head>
 
 <body data-theme="wisteria">
+    <div id="wisteria-bg"></div>
     <!-- MOBILE TOGGLE -->
     <div class="mobile-sidebar-overlay" id="mobileSidebarOverlay" onclick="toggleMobileSidebar()" style="display:none;">
     </div>
@@ -1288,7 +1385,9 @@
         <div class="wis-sidebar">
             <div class="wis-sidebar-header">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div class="wis-title">Biblioteca de NPCs</div>
+                    <h2 class="wis-title"
+                        style="margin:0; font-size:1.4rem; font-family:var(--font-display); color:var(--accent-gold);">
+                        BIBLIOTECA</h2>
                     <div style="display:flex; gap:8px;">
                         <button class="wis-add-btn" onclick="openSettingsModal()" title="Configurações da Campanha"
                             style="padding:6px; background:rgba(255,255,255,0.05);">
@@ -1334,10 +1433,15 @@
             <div class="wis-workspace-content" id="mainWorkspace">
                 <!-- DEFAULT STATE: EMPTY -->
                 <div id="sessionDashboardState"
-                    style="height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:#555;">
-                    <i data-lucide="user-search" size="48" style="margin-bottom:20px; opacity:0.3;"></i>
-                    <h2 style="font-size:1.5rem; margin-bottom:10px; color:#ddd;">Nenhum NPC Selecionado</h2>
-                    <p>Selecione um NPC na lista à esquerda ou crie um novo.</p>
+                    style="height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:var(--text-muted);">
+                    <div
+                        style="width:80px; height:80px; border-radius:50%; background:rgba(255,255,255,0.03); display:flex; align-items:center; justify-content:center; margin-bottom:24px; border:1px solid var(--glass-border);">
+                        <i data-lucide="scroll" size="40" style="opacity:0.5; color:var(--accent-gold);"></i>
+                    </div>
+                    <h2 style="font-family:var(--font-display); font-size:2rem; margin-bottom:10px; color:#fff;">Painel
+                        do Mestre</h2>
+                    <p style="max-width:400px; line-height:1.6; font-size:1.1rem;">Selecione um personagem ou NPC na
+                        biblioteca à esquerda para ver detalhes e editar a ficha.</p>
                 </div>
 
                 <!-- DM SHEET STATE (Hidden by default) -->
@@ -1389,14 +1493,26 @@
     <!-- NPC CREATOR MODAL (Detailed) -->
     <div id="npcCreatorModal" class="modal-overlay" onclick="if(event.target===this) closeNpcCreator()">
         <div
-            style="background:#18181b; padding:25px; border-radius:12px; width:700px; max-height:90vh; overflow-y:auto; border:1px solid var(--border-dark); display:flex; flex-direction:column; gap:20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h2 class="wis-title" style="font-size:1.4rem;">Novo NPC</h2>
-                <button class="btn-icon" onclick="closeNpcCreator()"><i data-lucide="x"></i></button>
+            style="background:rgba(18, 18, 20, 0.95); backdrop-filter:blur(20px); padding:32px; border-radius:20px; width:800px; max-width:95vw; max-height:90vh; overflow-y:auto; border:1px solid var(--glass-border); display:flex; flex-direction:column; gap:24px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 80px rgba(168, 85, 247, 0.15); animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
+            <!-- HEADER -->
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; padding-bottom:20px; border-bottom:1px solid var(--glass-border);">
+                <div>
+                    <h2
+                        style="font-family:var(--font-display); font-size:2rem; margin:0; background:linear-gradient(135deg, var(--primary), #c084fc); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">
+                        Criar Personagem</h2>
+                    <p style="margin:4px 0 0 0; color:var(--text-muted); font-size:0.9rem;">Configure um novo NPC para
+                        sua campanha</p>
+                </div>
+                <button onclick="closeNpcCreator()"
+                    style="background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); color:var(--text-muted); width:40px; height:40px; border-radius:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.3s;">
+                    <i data-lucide="x" size="20"></i>
+                </button>
             </div>
 
             <!-- SECTION A: PERSONAL DATA -->
-            <div style="background:transparent; padding:20px; border:1px solid var(--border-dark); border-radius:12px;">
+            <div
+                style="background:rgba(24, 24, 28, 0.4); backdrop-filter:blur(12px); padding:20px; border:1px solid var(--glass-border); border-radius:16px;">
                 <label class="wis-stat-label" style="display:block; margin-bottom:15px; font-size:1rem;">Dados
                     Pessoais</label>
 
@@ -1482,7 +1598,8 @@
             </div>
 
             <!-- SECTION B: LEVEL & ENERGY -->
-            <div style="background:transparent; padding:20px; border:1px solid var(--border-dark); border-radius:12px;">
+            <div
+                style="background:rgba(24, 24, 28, 0.4); backdrop-filter:blur(12px); padding:20px; border:1px solid var(--glass-border); border-radius:16px;">
                 <label class="wis-stat-label" style="display:block; margin-bottom:15px; font-size:1rem;">Nível &
                     Energia</label>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
@@ -1502,7 +1619,8 @@
             </div>
 
             <!-- SECTION C: ATTRIBUTES & COMBAT -->
-            <div style="background:transparent; padding:20px; border:1px solid var(--border-dark); border-radius:12px;">
+            <div
+                style="background:rgba(24, 24, 28, 0.4); backdrop-filter:blur(12px); padding:20px; border:1px solid var(--glass-border); border-radius:16px;">
                 <label class="wis-stat-label" style="display:block; margin-bottom:15px; font-size:1rem;">Atributos &
                     Combate</label>
 
@@ -1556,7 +1674,8 @@
             </div>
 
             <!-- SECTION D: EQUIPMENT -->
-            <div style="background:transparent; padding:20px; border:1px solid var(--border-dark); border-radius:12px;">
+            <div
+                style="background:rgba(24, 24, 28, 0.4); backdrop-filter:blur(12px); padding:20px; border:1px solid var(--glass-border); border-radius:16px;">
                 <label class="wis-stat-label"
                     style="display:block; margin-bottom:15px; font-size:1rem;">Equipamento</label>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
@@ -1587,7 +1706,8 @@
             </div>
 
             <!-- SECTION D: SKILLS -->
-            <div style="background:transparent; padding:20px; border:1px solid var(--border-dark); border-radius:12px;">
+            <div
+                style="background:rgba(24, 24, 28, 0.4); backdrop-filter:blur(12px); padding:20px; border:1px solid var(--glass-border); border-radius:16px;">
                 <label class="wis-stat-label"
                     style="display:block; margin-bottom:15px; font-size:1rem;">Perícias</label>
                 <div id="skillsGrid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px;">
@@ -1725,12 +1845,17 @@
 
             <!-- MODAL FOOTER -->
             <div
-                style="margin-top:24px; padding-top:20px; border-top:1px solid var(--border-dark); display:flex; justify-content:flex-end; gap:12px;">
-                <button class="btn"
-                    style="background:transparent; border:1px solid var(--border-dark); color:var(--text-muted); padding:10px 24px;"
-                    onclick="closeNpcCreator()">Cancelar</button>
-                <button class="btn btn-primary" style="padding:10px 24px; font-weight:600;"
-                    onclick="confirmNpcCreation()">Salvar NPC</button>
+                style="margin-top:28px; padding-top:24px; border-top:1px solid var(--glass-border); display:flex; justify-content:flex-end; gap:12px;">
+                <button
+                    style="background:transparent; border:1px solid var(--glass-border); color:var(--text-main); padding:12px 32px; border-radius:10px; cursor:pointer; font-size:0.95rem; font-weight:600; transition:all 0.3s;"
+                    onclick="closeNpcCreator()" onmouseover="this.style.background='rgba(255,255,255,0.05)'"
+                    onmouseout="this.style.background='transparent'">Cancelar</button>
+                <button
+                    style="background:var(--primary); border:1px solid transparent; color:#fff; padding:12px 32px; border-radius:10px; cursor:pointer; font-size:0.95rem; font-weight:600; box-shadow:0 0 20px rgba(168, 85, 247, 0.4); transition:all 0.3s; font-family:var(--font-display);"
+                    onclick="confirmNpcCreation()"
+                    onmouseover="this.style.boxShadow='0 0 30px rgba(168, 85, 247, 0.6), 0 0 60px rgba(168, 85, 247, 0.3)'; this.style.transform='translateY(-2px)'"
+                    onmouseout="this.style.boxShadow='0 0 20px rgba(168, 85, 247, 0.4)'; this.style.transform='translateY(0)'">✨
+                    Criar Personagem</button>
             </div>
         </div>
     </div>
@@ -1748,6 +1873,63 @@
             <div style="display:flex; gap:10px;">
                 <button class="btn" style="flex:1;" onclick="rollInitForPrompt()">Rolar d20</button>
                 <button class="btn btn-primary" style="flex:1;" onclick="confirmAddToCombat()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GENDER SELECTION MODAL FOR NAME GENERATION -->
+    <div id="genderSelectionModal" class="modal-overlay" onclick="if(event.target===this) closeGenderModal()"
+        style="display:none;">
+        <div
+            style="background:rgba(18, 18, 20, 0.95); backdrop-filter:blur(20px); padding:32px; border-radius:20px; width:500px; max-width:90vw; border:1px solid var(--glass-border); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 80px rgba(168, 85, 247, 0.15); animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
+
+            <!-- Header -->
+            <div style="text-align:center; margin-bottom:28px;">
+                <h2
+                    style="font-family:var(--font-display); font-size:1.8rem; margin:0; background:linear-gradient(135deg, var(--primary), #c084fc); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">
+                    Escolher Gênero</h2>
+                <p style="margin:8px 0 0 0; color:var(--text-muted); font-size:0.9rem;">Selecione para gerar um nome
+                    apropriado</p>
+            </div>
+
+            <!-- Gender Buttons -->
+            <div style="display:flex; flex-direction:column; gap:12px;">
+                <!-- Male Button -->
+                <button onclick="generateNameByGender('male')"
+                    style="background:rgba(59, 130, 246, 0.1); backdrop-filter:blur(8px); border:1px solid rgba(59, 130, 246, 0.3); color:#60a5fa; padding:20px; border-radius:12px; cursor:pointer; font-size:1.1rem; font-weight:600; display:flex; align-items:center; justify-content:center; gap:12px; transition:all 0.3s; position:relative; overflow:hidden;"
+                    onmouseover="this.style.background='rgba(59, 130, 246, 0.2)'; this.style.boxShadow='0 0 25px rgba(59, 130, 246, 0.4)'; this.style.transform='translateY(-2px)'"
+                    onmouseout="this.style.background='rgba(59, 130, 246, 0.1)'; this.style.boxShadow='none'; this.style.transform='translateY(0)'">
+                    <span style="font-size:1.5rem;">♂️</span>
+                    <span>Masculino</span>
+                </button>
+
+                <!-- Female Button -->
+                <button onclick="generateNameByGender('female')"
+                    style="background:rgba(236, 72, 153, 0.1); backdrop-filter:blur(8px); border:1px solid rgba(236, 72, 153, 0.3); color:#f9a8d4; padding:20px; border-radius:12px; cursor:pointer; font-size:1.1rem; font-weight:600; display:flex; align-items:center; justify-content:center; gap:12px; transition:all 0.3s;"
+                    onmouseover="this.style.background='rgba(236, 72, 153, 0.2)'; this.style.boxShadow='0 0 25px rgba(236, 72, 153, 0.4)'; this.style.transform='translateY(-2px)'"
+                    onmouseout="this.style.background='rgba(236, 72, 153, 0.1)'; this.style.boxShadow='none'; this.style.transform='translateY(0)'">
+                    <span style="font-size:1.5rem;">♀️</span>
+                    <span>Feminino</span>
+                </button>
+
+                <!-- Neutral Button -->
+                <button onclick="generateNameByGender('neutral')"
+                    style="background:rgba(168, 85, 247, 0.1); backdrop-filter:blur(8px); border:1px solid rgba(168, 85, 247, 0.3); color:var(--primary); padding:20px; border-radius:12px; cursor:pointer; font-size:1.1rem; font-weight:600; display:flex; align-items:center; justify-content:center; gap:12px; transition:all 0.3s;"
+                    onmouseover="this.style.background='rgba(168, 85, 247, 0.2)'; this.style.boxShadow='0 0 25px rgba(168, 85, 247, 0.4)'; this.style.transform='translateY(-2px)'"
+                    onmouseout="this.style.background='rgba(168, 85, 247, 0.1)'; this.style.boxShadow='none'; this.style.transform='translateY(0)'">
+                    <span style="font-size:1.5rem;">⚡</span>
+                    <span>Neutro / Qualquer</span>
+                </button>
+            </div>
+
+            <!-- Cancel Button -->
+            <div style="margin-top:20px; text-align:center;">
+                <button onclick="closeGenderModal()"
+                    style="background:transparent; border:1px solid var(--glass-border); color:var(--text-muted); padding:10px 24px; border-radius:8px; cursor:pointer; font-size:0.9rem; transition:all 0.3s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.05)'"
+                    onmouseout="this.style.background='transparent'">
+                    Cancelar
+                </button>
             </div>
         </div>
     </div>
@@ -1976,11 +2158,10 @@
             const node = document.createElement('div');
             node.className = `wis-tree-folder ${isActive}`;
 
-            // Check for list content to avoid map errors if list is weird (though it should be array)
             const safeList = Array.isArray(list) ? list : [];
 
             node.innerHTML = `
-                <div class="wis-tree-header" onclick="toggleTreeFolder(this)">
+                <div class="wis-tree-header" onclick="toggleTreeFolder(this)" ontouchstart="toggleTreeFolder(this)">
                     <i data-lucide="chevron-right" size="14" class="icon-chevron" style="color:#71717a;"></i>
                     <i data-lucide="${iconName}" size="16" color="${color}" style="color:${color}"></i>
                     <span>${title}</span>
@@ -2001,11 +2182,12 @@
             const name = entity.name || 'Sem Nome';
             const level = entity.level || 1;
 
+            const clickSelect = `event.stopPropagation(); selectEntity('${id}', ${isPlayer});`;
             const clickAdd = `event.stopPropagation(); promptAddToCombat('${id}', ${isPlayer});`;
             const clickDup = `event.stopPropagation(); duplicateEntity('${id}', ${isPlayer});`;
 
             return `
-                <div class="wis-tree-item ${activeEntityId === id ? 'selected' : ''}" onclick="selectEntity('${id}', ${isPlayer})">
+                <div class="wis-tree-item ${activeEntityId === id ? 'selected' : ''}" onclick="${clickSelect}">
                      <img src="${avatar}" class="wis-tree-item-avatar" onerror="this.src='https://via.placeholder.com/20'">
                      <span style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${name}</span>
                      ${!isPlayer ? `<span style="font-size:0.7rem; color:#555; margin-right:4px;">Lv.${level}</span>` : ''}
@@ -2028,7 +2210,28 @@
         }
 
         function toggleTreeFolder(header) {
-            header.parentElement.classList.toggle('active');
+            // Mobile-friendly implementation
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            const folder = header.parentElement;
+            const wasActive = folder.classList.contains('active');
+
+            // Toggle active state
+            if (wasActive) {
+                folder.classList.remove('active');
+            } else {
+                folder.classList.add('active');
+            }
+
+            // Force icon re-render for mobile
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                setTimeout(() => lucide.createIcons(), 50);
+            }
+
+            return false;
         }
 
         function filterSidebar(query) {
@@ -2120,46 +2323,72 @@
                     </div>
                 </div>
 
-                <!-- HP MANAGER (Compact Single Line) -->
-                <div style="background: #18181b; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-dark); margin-bottom: 10px; display:flex; align-items:center; gap:10px;">
-                    <div style="font-size: 0.9rem; font-weight: bold; color: #fff; white-space:nowrap; display:flex; align-items:center; gap:5px;">
-                        <span style="color:${hpColor}; transition:color 0.5s ease;">❤️</span> 
-                        <input type="number" value="${entity.currentHP}" 
-                               class="ds-seamless-input"
-                               style="width:50px; text-align:right; font-weight:bold; -moz-appearance:textfield;"
-                               onchange="updateActiveEntityHP(this.value, null)">
-                        <span style="color:#555; font-weight:normal;">/</span>
-                        <input type="number" value="${entity.maxHP}" 
-                               class="ds-seamless-input"
-                               style="color:#777; width:50px; text-align:left; -moz-appearance:textfield;"
-                               onchange="updateActiveEntityHP(null, this.value)">
+                <!-- PREMIUM HP BAR -->
+                <div style="background:rgba(24, 24, 28, 0.6); backdrop-filter:blur(12px); padding:20px 24px; border-radius:16px; border:1px solid var(--glass-border); margin-bottom:20px; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+                    
+                    <!-- HP Numbers Display -->
+                    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px;">
+                        <div style="display:flex; align-items:baseline; gap:8px;">
+                            <span style="font-size:0.85rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Pontos de Vida</span>
+                        </div>
+                        <div style="display:flex; align-items:baseline; gap:6px;">
+                            <input type="number" value="${entity.currentHP}" 
+                                   class="ds-seamless-input"
+                                   style="min-width:60px; max-width:120px; text-align:right; font-weight:800; font-size:1.8rem; color:#fff; -moz-appearance:textfield; background:transparent; border:none; border-bottom:2px solid transparent; transition:all 0.3s;"
+                                   onchange="updateActiveEntityHP(this.value, null)"
+                                   onfocus="this.style.borderBottomColor='${hpColor}'"
+                                   onblur="this.style.borderBottomColor='transparent'">
+                            <span style="font-size:1.3rem; color:#555; font-weight:600;">/</span>
+                            <input type="number" value="${entity.maxHP}" 
+                                   class="ds-seamless-input"
+                                   style="min-width:60px; max-width:120px; text-align:left; font-weight:700; font-size:1.3rem; color:#888; -moz-appearance:textfield; background:transparent; border:none; border-bottom:2px solid transparent; transition:all 0.3s;"
+                                   onchange="updateActiveEntityHP(null, this.value)"
+                                   onfocus="this.style.borderBottomColor='var(--primary)'"
+                                   onblur="this.style.borderBottomColor='transparent'">
+                        </div>
                     </div>
 
-                    <!-- Bar -->
-                    <div style="flex:1; height:6px; background:#333; border-radius:3px; overflow:hidden; position:relative;">
-                        <div style="height:100%; background:${hpColor}; width:${hpPct}%; transition: width 0.5s ease-in-out, background-color 0.5s ease-in-out;"></div>
+                    <!-- HP Progress Bar -->
+                    <div style="position:relative; height:32px; background:rgba(0,0,0,0.4); border-radius:10px; overflow:hidden; border:1px solid rgba(255,255,255,0.05); box-shadow:inset 0 2px 8px rgba(0,0,0,0.5);">
+                        <!-- Animated Fill -->
+                        <div style="position:absolute; inset:0; background:linear-gradient(90deg, ${hpColor}, ${hpColor === '#10b981' ? '#34d399' : hpColor === '#facc15' ? '#fde047' : '#fca5a5'}); width:${hpPct}%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s ease; box-shadow:0 0 20px ${hpColor}40;">
+                            <!-- Shine Effect -->
+                            <div style="position:absolute; inset:0; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); animation:shimmer 2s infinite;"></div>
+                        </div>
+                        
+                        <!-- Percentage Text -->
+                        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.9rem; color:#fff; text-shadow:0 2px 4px rgba(0,0,0,0.8); z-index:2;">
+                            ${Math.round(hpPct)}%
+                        </div>
                     </div>
 
-                    <!-- Buttons -->
-                    <div style="display: flex; gap: 4px;">
+                    <!-- Quick Action Buttons -->
+                    <div style="display:flex; gap:6px; margin-top:12px; justify-content:flex-end;">
                         ${entity.race === 'Oni' ? `
-                            <button class="btn-mini-heal" onclick="regenerateOni(${entity.level})" title="Regeneração Oni" style="background:#450a0a; color:#f87171; border:1px solid #7f1d1d; width:24px; height:24px; border-radius:4px; cursor:pointer; font-size:0.75rem; margin-right:4px;">
-                                <i data-lucide="droplet" size="12"></i>
+                            <button onclick="regenerateOni(${entity.level})" title="Regeneração Oni" 
+                                style="background:linear-gradient(135deg, #7f1d1d, #991b1b); border:1px solid #dc2626; color:#fca5a5; padding:6px 12px; border-radius:8px; cursor:pointer; font-size:0.8rem; font-weight:600; transition:all 0.3s; display:flex; align-items:center; gap:4px;"
+                                onmouseover="this.style.boxShadow='0 0 15px rgba(239, 68, 68, 0.5)'; this.style.transform='translateY(-1px)'"
+                                onmouseout="this.style.boxShadow='none'; this.style.transform='translateY(0)'">
+                                <i data-lucide="droplet" size="12"></i> Regen
                             </button>
                         ` : ''}
-                        <button class="btn-mini-dmg" onclick="adjustHP(-5)" style="background:#3a0b0b; color:#ff6b6b; border:1px solid #5c1414; width:24px; height:24px; border-radius:4px; cursor:pointer; font-size:0.75rem;">-5</button>
-                        <button class="btn-mini-dmg" onclick="adjustHP(-1)" style="background:#3a0b0b; color:#ff6b6b; border:1px solid #5c1414; width:24px; height:24px; border-radius:4px; cursor:pointer; font-size:0.75rem;">-1</button>
-                        <button class="btn-mini-heal" onclick="adjustHP(1)" style="background:#0b3a1a; color:#4ade80; border:1px solid #145c26; width:24px; height:24px; border-radius:4px; cursor:pointer; font-size:0.75rem;">+1</button>
-                        <button class="btn-mini-heal" onclick="adjustHP(5)" style="background:#0b3a1a; color:#4ade80; border:1px solid #145c26; width:24px; height:24px; border-radius:4px; cursor:pointer; font-size:0.75rem;">+5</button>
+                        <button onclick="adjustHP(-5)" 
+                            style="background:#3a0b0b; color:#ff6b6b; border:1px solid #5c1414; padding:6px 14px; border-radius:8px; cursor:pointer; font-size:0.85rem; font-weight:700; transition:all 0.2s;"
+                            onmouseover="this.style.background='#4a1818'; this.style.transform='scale(1.05)'"
+                            onmouseout="this.style.background='#3a0b0b'; this.style.transform='scale(1)'">-5</button>
+                        <button onclick="adjustHP(-1)" 
+                            style="background:#3a0b0b; color:#ff6b6b; border:1px solid #5c1414; padding:6px 14px; border-radius:8px; cursor:pointer; font-size:0.85rem; font-weight:700; transition:all 0.2s;"
+                            onmouseover="this.style.background='#4a1818'; this.style.transform='scale(1.05)'"
+                            onmouseout="this.style.background='#3a0b0b'; this.style.transform='scale(1)'">-1</button>
+                        <button onclick="adjustHP(1)" 
+                            style="background:#0b3a1a; color:#4ade80; border:1px solid #145c26; padding:6px 14px; border-radius:8px; cursor:pointer; font-size:0.85rem; font-weight:700; transition:all 0.2s;"
+                            onmouseover="this.style.background='#155d2e'; this.style.transform='scale(1.05)'"
+                            onmouseout="this.style.background='#0b3a1a'; this.style.transform='scale(1)'">+1</button>
+                        <button onclick="adjustHP(5)" 
+                            style="background:#0b3a1a; color:#4ade80; border:1px solid #145c26; padding:6px 14px; border-radius:8px; cursor:pointer; font-size:0.85rem; font-weight:700; transition:all 0.2s;"
+                            onmouseover="this.style.background='#155d2e'; this.style.transform='scale(1.05)'"
+                            onmouseout="this.style.background='#0b3a1a'; this.style.transform='scale(1)'">+5</button>
                     </div>
-                </div>
-
-                <!-- STICKY NAVBAR -->
-                <div style="position:sticky; top:0; z-index:99; background:rgba(24, 24, 27, 0.95); backdrop-filter:blur(4px); padding:8px 5px; border-bottom:1px solid #333; display:flex; justify-content:space-around; margin-bottom:15px; margin-top:-10px; border-radius:0 0 8px 8px;">
-                    <button class="btn-clean" style="color:#aaa; font-size:0.8rem; font-weight:bold; cursor:pointer; background:none; border:none;" onclick="document.getElementById('sheet-sec-attributes').scrollIntoView({behavior: 'smooth', block: 'center'})">Atributos</button>
-                    <button class="btn-clean" style="color:#aaa; font-size:0.8rem; font-weight:bold; cursor:pointer; background:none; border:none;" onclick="document.getElementById('sheet-sec-skills').scrollIntoView({behavior: 'smooth', block: 'start'})">Habilidades</button>
-                    <button class="btn-clean" style="color:#aaa; font-size:0.8rem; font-weight:bold; cursor:pointer; background:none; border:none;" onclick="document.getElementById('sheet-sec-equipment').scrollIntoView({behavior: 'smooth', block: 'center'})">Equipamento</button>
-                    <button class="btn-clean" style="color:#aaa; font-size:0.8rem; font-weight:bold; cursor:pointer; background:none; border:none;" onclick="document.getElementById('sheet-sec-lore').scrollIntoView({behavior: 'smooth', block: 'start'})">Histórico</button>
                 </div>
 
                 <!-- ATTRIBUTES & SKILLS -->
@@ -2179,7 +2408,7 @@
                     </div>
 
                 <!-- SKILLS (Grouped by Attribute) -->
-                <div id="sheet-sec-skills" style="background:#18181b; padding:10px; border-radius:8px; border:1px solid var(--border-dark); margin-bottom: 20px; scroll-margin-top: 60px;">
+                <div id="sheet-sec-skills" style="background:rgba(24, 24, 28, 0.4); backdrop-filter:blur(12px); padding:10px; border-radius:12px; border:1px solid var(--glass-border); margin-bottom: 20px; scroll-margin-top: 60px;">
                      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                          <h3 class="wis-title" style="margin:0; font-size:1rem;">Perícias</h3>
                          <button class="btn-icon" onclick="promptAddSkill()" title="Adicionar" style="background:#222; padding:2px;">
@@ -2283,7 +2512,7 @@
                 </div>
 
                 <!-- COMBAT & ATTACKS (Compact) -->
-                <div style="background:#18181b; padding:10px; border-radius:8px; border:1px solid var(--border-dark); margin-bottom: 10px;">
+                <div style="background:rgba(24, 24, 28, 0.4); backdrop-filter:blur(12px); padding:10px; border-radius:12px; border:1px solid var(--glass-border); margin-bottom: 10px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                          <h3 class="wis-title" style="margin:0; font-size:1rem;">Ataques</h3>
                          <button class="btn-icon" onclick="openAttackModal()" title="Criar Ataque" style="background:#222; padding:2px;">
@@ -2301,7 +2530,7 @@
                 </div>
 
                 <!-- ACTIONS & TECHNIQUES (Compact) -->
-                <div style="background:#18181b; padding:10px; border-radius:8px; border:1px solid var(--border-dark); margin-bottom: 10px;">
+                <div style="background:rgba(24, 24, 28, 0.4); backdrop-filter:blur(12px); padding:10px; border-radius:12px; border:1px solid var(--glass-border); margin-bottom: 10px;">
                     <h3 class="wis-title" style="margin-bottom:10px; font-size:1rem;">Técnicas</h3>
                     
                     <div id="actions-list-container" style="display:flex; flex-direction:column; gap:6px;">
@@ -2313,9 +2542,8 @@
                     </button>
                 </div>
 
-<<<<<<< HEAD
                 <!-- EQUIPMENT SECTION -->
-                <div id="sheet-sec-equipment" style="background:#18181b; padding:10px; border-radius:8px; border:1px solid var(--border-dark); margin-bottom: 10px; scroll-margin-top: 60px;">
+                <div id="sheet-sec-equipment" style="background:rgba(24, 24, 28, 0.4); backdrop-filter:blur(12px); padding:10px; border-radius:12px; border:1px solid var(--glass-border); margin-bottom: 10px; scroll-margin-top: 60px;">
                     <h3 class="wis-title" style="margin-bottom:10px; font-size:1rem;">Equipamento</h3>
                     <div style="display:flex; flex-direction:column; gap:5px;">
                         <div style="display:flex; justify-content:space-between; border-bottom:1px solid #333; padding-bottom:5px;">
@@ -2333,14 +2561,6 @@
                     </div>
                 </div>
 
-                <!-- HISTORY & NOTES (Compact) -->
-                <div id="sheet-sec-lore" style="scroll-margin-top: 60px;">
-                     <h3 class="wis-title" style="margin-bottom:5px; font-size:1rem;">Histórico</h3>
-                     <textarea class="wis-paper-textarea" 
-                               placeholder="História, segredos..."
-                               oninput="updateActiveEntityField('lore', this.value)"
-                               style="width: 100%; min-height: 100px; background: #1e1e24; border: 1px solid #333; color: #ddd; padding: 10px; font-family: sans-serif; line-height: 1.5; border-radius: 8px; resize: vertical; outline: none; font-size:0.9rem;">${entity.lore || ''}</textarea>
-=======
                 <!-- HISTORY & LORE ACCORDION -->
                 <div style="margin-top:20px;">
                     <h3 class="wis-title" style="margin-bottom:10px; font-size:1rem;">História e Detalhes</h3>
@@ -2400,7 +2620,6 @@
                             ${renderLoreItem('secrets', 'Segredos do Mestre', '🤫', '#fca5a5')}
                         `;
                 })()}
->>>>>>> c7b500f375fe9baa484bb43c729a6a4c229cc4e6
                 </div>
 
                 <!-- LOOT & DROPS SECTION -->
@@ -4003,6 +4222,58 @@
                 overlay.classList.add('active');
                 sidebar.classList.add('active');
             }
+        }
+
+        // ===== RANDOM NAME GENERATOR SYSTEM =====
+
+        const nameDatabase = {
+            maleNames: [
+                'Haruto', 'Yuki', 'Kaito', 'Takeshi', 'Ryota', 'Kenji', 'Daichi',
+                'Hiro', 'Akira', 'Ren', 'Sota', 'Hayato', 'Riku', 'Yuto', 'Sora',
+                'Asahi', 'Kenta', 'Tatsuya', 'Naoki', 'Shinji', 'Makoto'
+            ],
+            femaleNames: [
+                'Sakura', 'Hana', 'Yui', 'Mei', 'Aiko', 'Rin', 'Kanna',
+                'Hina', 'Akari', 'Miyu', 'Saki', 'Yuna', 'Natsuki', 'Haruka',
+                'Koharu', 'Himari', 'Ayaka', 'Riko', 'Nanami', 'Maki', 'Sayuri'
+            ],
+            surnames: [
+                'Tanaka', 'Yamamoto', 'Suzuki', 'Takahashi', 'Watanabe', 'Ito',
+                'Nakamura', 'Kobayashi', 'Kato', 'Yoshida', 'Yamada', 'Sasaki',
+                'Yamaguchi', 'Matsumoto', 'Inoue'
+            ]
+        };
+
+        function generateRandomNpcName() {
+            // Open gender selection modal
+            document.getElementById('genderSelectionModal').style.display = 'flex';
+        }
+
+        function closeGenderModal() {
+            document.getElementById('genderSelectionModal').style.display = 'none';
+        }
+
+        function generateNameByGender(gender) {
+            let firstName;
+
+            if (gender === 'male') {
+                firstName = nameDatabase.maleNames[Math.floor(Math.random() * nameDatabase.maleNames.length)];
+            } else if (gender === 'female') {
+                firstName = nameDatabase.femaleNames[Math.floor(Math.random() * nameDatabase.femaleNames.length)];
+            } else {
+                // Neutral: pick from either list
+                const allNames = [...nameDatabase.maleNames, ...nameDatabase.femaleNames];
+                firstName = allNames[Math.floor(Math.random() * allNames.length)];
+            }
+
+            const surname = nameDatabase.surnames[Math.floor(Math.random() * nameDatabase.surnames.length)];
+            const fullName = `${firstName} ${surname}`;
+
+            // Set the name in the input field
+            document.getElementById('newNpcName').value = fullName;
+
+            // Close the modal
+            closeGenderModal();
         }
     </script>
 </body>

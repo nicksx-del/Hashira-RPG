@@ -807,6 +807,7 @@
             /* Simplified for mobile */
         }
     </style>
+    <link rel="stylesheet" href="custom_effects.css">
 </head>
 
 <body>
@@ -831,7 +832,14 @@
     <header class="hero">
         <div class="wisteria-container" id="wisteria"></div>
         <div class="hero-content">
-            <h1>Breath of the Sun.<br>End the Nightmare.</h1>
+            <div class="hero-title-container" style="padding: 0 1rem;">
+                <div class="hero-kanji">日の呼吸</div>
+                <div class="slash-container">
+                    <h1 class="slash-text" data-text="BREATH&#10;OF THE SUN">BREATH&#10;OF THE SUN</h1>
+                    <div class="slash-line"></div>
+                </div>
+            </div>
+            <h2 class="hero-subtitle">END THE NIGHTMARE.</h2>
             <p>Junte-se à Corporação de Caçadores na experiência definitiva de RPG baseada em navegador. Cace demônios,
                 masterize estilos de respiração e ascenda de Mizunoto a Hashira.</p>
             <div class="hero-btns">
@@ -855,6 +863,39 @@
             <div class="mouse"></div>
         </div>
     </header>
+
+    <!-- SYSTEM FEATURES -->
+    <section class="features-section">
+        <h2 class="features-title reveal">Domine a Respiração Total</h2>
+        <div class="features-grid">
+            <!-- Card A: Creation -->
+            <div class="glass-card glow-water reveal delay-100">
+                <div class="card-icon">
+                    <i data-lucide="user" style="width:48px; height:48px;"></i>
+                </div>
+                <h3>Criação Profunda</h3>
+                <p>Crie Caçadores, Onis ou Hashiras com fichas automatizadas e árvores de talentos completas.</p>
+            </div>
+
+            <!-- Card B: Combat -->
+            <div class="glass-card glow-fire reveal delay-200">
+                <div class="card-icon">
+                    <i data-lucide="swords" style="width:48px; height:48px;"></i>
+                </div>
+                <h3>Combate em Tempo Real</h3>
+                <p>Role dados, gerencie iniciativa e use técnicas de respiração com um clique.</p>
+            </div>
+
+            <!-- Card C: Campaign -->
+            <div class="glass-card glow-thunder reveal delay-300">
+                <div class="card-icon">
+                    <i data-lucide="scroll" style="width:48px; height:48px;"></i>
+                </div>
+                <h3>Campanha Persistente</h3>
+                <p>Seu progresso salvo na nuvem. Leve sua lenda do celular para o PC.</p>
+            </div>
+        </div>
+    </section>
 
     <!-- CHARACTERS MODAL -->
     <div id="charsModal"
@@ -1021,6 +1062,49 @@
                         caçadores em duelos rankeados.</p>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- STYLE CHOOSER SECTION -->
+    <section class="style-chooser-section" id="chooseStyle">
+        <!-- Background Layers -->
+        <div class="style-bg-layer bg-water-art" id="bg-water"></div>
+        <div class="style-bg-layer bg-flame-art" id="bg-flame"></div>
+        <div class="style-bg-layer bg-thunder-art" id="bg-thunder"></div>
+        <div class="style-bg-layer bg-beast-art" id="bg-beast"></div>
+        <div class="style-bg-layer bg-oni-art" id="bg-oni"></div>
+        <div class="style-bg-overlay"></div>
+
+        <!-- Content -->
+        <div class="style-chooser-content">
+            <!-- Tabs -->
+            <div class="style-tabs">
+                <button class="style-tab-btn" data-style="water" onmouseenter="previewStyle('water')"
+                    onclick="lockStyle('water')">Respiração da Água</button>
+                <button class="style-tab-btn" data-style="flame" onmouseenter="previewStyle('flame')"
+                    onclick="lockStyle('flame')">Respiração das Chamas</button>
+                <button class="style-tab-btn" data-style="thunder" onmouseenter="previewStyle('thunder')"
+                    onclick="lockStyle('thunder')">Respiração do Trovão</button>
+                <button class="style-tab-btn" data-style="beast" onmouseenter="previewStyle('beast')"
+                    onclick="lockStyle('beast')">Respiração da Fera</button>
+                <button class="style-tab-btn" data-style="oni" onmouseenter="previewStyle('oni')"
+                    onclick="lockStyle('oni')">Poder Oni</button>
+            </div>
+
+            <!-- Info Display -->
+            <div class="style-info-display active" id="styleInfo">
+                <h2 class="style-title title-water" id="infoTitle">Água</h2>
+                <div class="style-desc" id="infoDesc">
+                    Fluida, adaptável e implacável. A defesa perfeita que se transforma em um ataque devastador. Para
+                    aqueles que mantêm a calma no caos.
+                </div>
+                <a href="create-character.html?style=water" class="btn-style-cta btn-water" id="infoBtn">
+                    Criar Personagem deste Estilo <i data-lucide="arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- Character Art -->
+            <img src="assets/Tanjirou_manga.png" class="style-char-art active" id="charArt" alt="Character Art">
         </div>
     </section>
 
@@ -1417,30 +1501,120 @@
 
             document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-            // Init Wisteria
+            // Create Wisteria
             createWisteria();
+
+            // Init Default Style
+            previewStyle('water');
         });
 
-        // --- WISTERIA FALLING EFFECT ---
-        function createWisteria() {
-            const container = document.getElementById('wisteria');
-            if (!container) return;
-
-            const petalCount = 20; // Number of petals
-
-            for (let i = 0; i < petalCount; i++) {
-                const petal = document.createElement('div');
-                petal.classList.add('petal');
-                petal.style.left = Math.random() * 100 + '%';
-                petal.style.animationDuration = (Math.random() * 3 + 4) + 's';
-                petal.style.animationDelay = Math.random() * 5 + 's';
-                petal.style.opacity = Math.random() * 0.5 + 0.3;
-                container.appendChild(petal);
+        // --- STYLE CHOOSER LOGIC ---
+        const styleData = {
+            water: {
+                title: "Água",
+                desc: "Fluida, adaptável e implacável. A defesa perfeita que se transforma em um ataque devastador. Para aqueles que mantêm a calma no caos.",
+                img: "assets/Tanjirou_manga.png",
+                bgClass: "bg-water-art"
+            },
+            flame: {
+                title: "Chamas",
+                desc: "Queime com convicção. Golpes devastadores e postura inabalável. Para aqueles que protegem os fracos com fogo no coração.",
+                img: "https://assets.stickpng.com/images/5f5e56eb60010900045c7199.png",
+                bgClass: "bg-flame-art"
+            },
+            thunder: {
+                title: "Trovão",
+                desc: "Velocidade explosiva e ataques fulminantes. Para quem decide o combate em um único golpe antes que o inimigo pisque.",
+                img: "assets/Zenitsu_colored_body_2 (1).png",
+                bgClass: "bg-thunder-art"
+            },
+            beast: {
+                title: "Fera",
+                desc: "Instinto puro e imprevisibilidade. Ataques selvagens e sentidos aguçados. Para quem luta sem regras.",
+                img: "assets/Inosuke3 (1).png",
+                bgClass: "bg-beast-art"
+            },
+            oni: {
+                title: "Oni",
+                desc: "Poder sobrenatural a um custo terrível. Regeneração, força bruta e artes de sangue. Para quem abraça a escuridão.",
+                img: "assets/NezukoKamado.png",
+                bgClass: "bg-oni-art"
             }
+        };
+
+        let currentLock = null;
+
+        function previewStyle(styleKey) {
+            if (currentLock && currentLock !== styleKey) return; // Optional locking behavior? Removing for fluid hover.
+
+            // Actually, let's allow hover to override unless clicked? 
+            // Better UX: Hover always previews. Click scrolls to CTA or just locks visual? 
+            // The prompt says "Ao clicar/passar o mouse". Let's update on hover.
+
+            updateStyleVisuals(styleKey);
+        }
+
+        function lockStyle(styleKey) {
+            // Unused locking logic for now, but good hook for mobile tap
+            updateStyleVisuals(styleKey);
+            // Maybe scroll or animate flashy effect
+        }
+
+        function updateStyleVisuals(key) {
+            const data = styleData[key];
+            if (!data) return;
+
+            // Update Backgrounds
+            document.querySelectorAll('.style-bg-layer').forEach(bg => {
+                if (bg.id === `bg-${key}`) bg.classList.add('active');
+                else bg.classList.remove('active');
+            });
+
+            // Update Tabs Status
+            document.querySelectorAll('.style-tab-btn').forEach(btn => {
+                if (btn.dataset.style === key) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+
+            // Update Info with simple fade glitch effect?
+            const infoDisplay = document.getElementById('styleInfo');
+            const title = document.getElementById('infoTitle');
+            const desc = document.getElementById('infoDesc');
+            const btn = document.getElementById('infoBtn');
+            const img = document.getElementById('charArt');
+
+            title.innerText = data.title;
+            title.className = `style-title title-${key}`;
+
+            desc.innerText = data.desc;
+
+            btn.href = `create-character.html?style=${key}`;
+            btn.className = `btn-style-cta btn-${key}`;
+
+            // Image Transition
+            if (img.src !== data.img && !data.img.includes(img.src.split('/').pop())) { // Simple check
+                img.classList.remove('active');
+                setTimeout(() => {
+                    img.src = data.img;
+                    img.classList.add('active');
+                }, 300);
+            }
+
+            if (window.lucide) lucide.createIcons();
         }
     </script>
-    <script src="auth_system.js"></script>
-    <script src="premium_system.js"></script>
+    function createWisteria() {
+    const container = document.getElementById('wisteria');
+    if (!container) return;
+
+    const petalCount = 20; // Number of petals
+
+    for (let i = 0; i < petalCount; i++) { const petal=document.createElement('div'); petal.classList.add('petal');
+        petal.style.left=Math.random() * 100 + '%' ; petal.style.animationDuration=(Math.random() * 3 + 4) + 's' ;
+        petal.style.animationDelay=Math.random() * 5 + 's' ; petal.style.opacity=Math.random() * 0.5 + 0.3;
+        container.appendChild(petal); } } </script>
+        <script src="auth_system.js"></script>
+        <script src="premium_system.js"></script>
 </body>
 
 </html>

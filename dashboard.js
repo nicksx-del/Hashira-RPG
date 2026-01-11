@@ -3646,7 +3646,7 @@ function resetSalary() {
     console.log("Salary Reset");
 }
 
-window.updateStat = function(key, newValue) {
+window.updateStat = function (key, newValue) {
     const val = parseInt(newValue);
     if (isNaN(val) || val < 1) return; // Basic validation
 

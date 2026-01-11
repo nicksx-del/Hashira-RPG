@@ -167,3 +167,873 @@
 .crit-fail-anim {
     animation: glitch-anim 0.4s steps(2) both, fail-darken 0.6s ease-out both;
 }
+
+/* --- HERO REFACTOR --- */
+
+/* 1. Cinematic Background */
+.hero {
+    /* Wisteria Forest Night Background */
+    background: radial-gradient(circle at center, rgba(0, 0, 0, 0.3) 0%, #050505 100%),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.4), #050505),
+        url('https://images7.alphacoders.com/133/1330715.jpeg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-attachment: fixed !important;
+}
+
+/* Darker Overlay (70%) */
+.hero::before {
+    background: rgba(0, 0, 0, 0.7) !important;
+    z-index: 1;
+}
+
+/* 2. Title "Breath of the Sun" - ANIMATED FIRE TEXT */
+.hero h1 {
+    font-family: 'Cinzel', serif !important;
+    font-weight: 800 !important;
+    font-size: 5rem !important;
+    /* Base size */
+
+    /* Fire Gradient */
+    background: linear-gradient(to right, #facc15, #f97316, #dc2626, #facc15) !important;
+    background-size: 200% auto !important;
+
+    /* Text Fill */
+    background-clip: text !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+
+    /* Animation: Shine/Flow + Slide Up Entry */
+    /* We combine animations: heroSlideUp (entry) AND shine (continuous) */
+    opacity: 0;
+    transform: translateY(60px);
+    animation: heroSlideUp 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.3s,
+        shine 5s linear infinite !important;
+
+    /* Outer Glow (Heat Halo) */
+    filter: drop-shadow(0 0 15px rgba(220, 38, 38, 0.5)) drop-shadow(0 0 30px rgba(249, 115, 22, 0.3)) !important;
+}
+
+@media (min-width: 768px) {
+    .hero h1 {
+        font-size: 7rem !important;
+        /* Larger on desktop */
+    }
+}
+
+@keyframes heroSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(60px) scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes shine {
+    to {
+        background-position: 200% center;
+    }
+}
+
+/* 3. Floating Particles (Wisteria Petals / Embers Rising) */
+.petal {
+    /* Override existing falling petal styles to rise up */
+    background: linear-gradient(135deg, #e0aaff, #7c3aed) !important;
+    /* Glowing Purple */
+    box-shadow: 0 0 10px rgba(167, 139, 250, 0.6) !important;
+    width: 6px !important;
+    height: 6px !important;
+    border-radius: 50% !important;
+    /* Round/Ember shape */
+
+    /* Reset and apply new animation properties INDIVIDUALLY to allow JS delay to work */
+    bottom: -10px !important;
+    top: auto !important;
+
+    animation-name: riseUp !important;
+    animation-duration: 8s !important;
+    /* Force slow rise (JS random was 4-7s). Setting 8s constant. */
+    animation-timing-function: linear !important;
+    animation-iteration-count: infinite !important;
+    /* We DO NOT override animation-delay to allow JS random delay to persist */
+
+    opacity: 0;
+}
+
+@keyframes riseUp {
+    0% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    50% {
+        transform: translateY(-50vh) translateX(30px) rotate(180deg);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: translateY(-110vh) translateX(-20px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* 4. Scroll Indicator Bounce */
+.scroll-indicator {
+    animation: bounceIndicator 2.5s infinite ease-in-out !important;
+}
+
+@keyframes bounceIndicator {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateX(-50%) translateY(0);
+    }
+
+    40% {
+        transform: translateX(-50%) translateY(-12px);
+    }
+
+    60% {
+        transform: translateX(-50%) translateY(-6px);
+    }
+}
+
+/* --- FEATURES SECTION (GLASSMORPHISM) --- */
+.features-section {
+    padding: 6rem 2rem;
+    position: relative;
+    z-index: 10;
+    background: linear-gradient(to bottom, #050505, #080808);
+}
+
+.features-title {
+    font-family: var(--font-display, 'Cinzel', serif);
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 4rem;
+    background: linear-gradient(to bottom, #fff, #aaa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    /* Fina e semitransparente */
+    border-radius: 16px;
+    padding: 2.5rem;
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+}
+
+.glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent);
+    opacity: 0;
+    transition: opacity 0.4s;
+    pointer-events: none;
+}
+
+.glass-card:hover {
+    transform: translateY(-10px);
+}
+
+.glass-card:hover::before {
+    opacity: 1;
+}
+
+.card-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1.5rem auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.4s;
+}
+
+.glass-card h3 {
+    font-family: var(--font-display, 'Cinzel', serif);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #fff;
+    font-weight: 700;
+}
+
+.glass-card p {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+/* Glow Variants */
+.glow-water:hover {
+    box-shadow: 0 10px 40px rgba(0, 180, 216, 0.15);
+    border-color: rgba(0, 180, 216, 0.5);
+}
+
+.glow-water .card-icon {
+    color: #00b4d8;
+    filter: drop-shadow(0 0 15px rgba(0, 180, 216, 0.5));
+}
+
+.glow-fire:hover {
+    box-shadow: 0 10px 40px rgba(217, 4, 41, 0.15);
+    border-color: rgba(217, 4, 41, 0.5);
+}
+
+.glow-fire .card-icon {
+    color: #d90429;
+    filter: drop-shadow(0 0 15px rgba(217, 4, 41, 0.5));
+}
+
+.glow-thunder:hover {
+    box-shadow: 0 10px 40px rgba(255, 183, 3, 0.15);
+    border-color: rgba(255, 183, 3, 0.5);
+}
+
+.glow-thunder .card-icon {
+    color: #ffb703;
+    filter: drop-shadow(0 0 15px rgba(255, 183, 3, 0.5));
+}
+
+/* --- STYLE CHOOSER SECTION --- */
+.style-chooser-section {
+    position: relative;
+    min-height: 700px;
+    overflow: hidden;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Dynamic Background Layers */
+.style-bg-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+    z-index: 1;
+}
+
+.style-bg-layer.active {
+    opacity: 1;
+}
+
+.style-bg-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, #000 0%, #000 30%, rgba(0, 0, 0, 0.6) 100%);
+    z-index: 2;
+}
+
+/* Background Definitions */
+.bg-water-art {
+    background-image: url('https://w.wallhaven.cc/full/xl/wallhaven-xl3yvz.jpg');
+    /* Example Water */
+}
+
+.bg-flame-art {
+    background-image: url('https://images.alphacoders.com/115/1150821.jpg');
+    /* Rengoku Flame */
+}
+
+.bg-thunder-art {
+    background-image: url('https://images4.alphacoders.com/108/thumb-1920-1080302.png');
+    /* Zenitsu Thunder */
+}
+
+.bg-beast-art {
+    background-image: url('https://w.wallhaven.cc/full/ey/wallhaven-ey3ywo.jpg');
+    /* Inosuke Forest */
+}
+
+.bg-oni-art {
+    background-image: url('https://images5.alphacoders.com/112/1123282.jpg');
+    /* Muzan/Akaza/Nezuko Dark */
+}
+
+/* Content Container */
+.style-chooser-content {
+    position: relative;
+    z-index: 10;
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+/* Tabs */
+.style-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    min-width: 250px;
+}
+
+.style-tab-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    font-family: var(--font-display, 'Cinzel', serif);
+    font-size: 1.5rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    padding-left: 20px;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.style-tab-btn::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 0;
+    background: currentColor;
+    transition: height 0.3s;
+}
+
+.style-tab-btn:hover {
+    color: rgba(255, 255, 255, 0.8);
+    padding-left: 25px;
+}
+
+.style-tab-btn.active {
+    color: #fff;
+    padding-left: 30px;
+    text-shadow: 0 0 15px currentColor;
+}
+
+.style-tab-btn.active::before {
+    height: 100%;
+}
+
+/* Color Coding Active Tabs */
+.style-tab-btn.active[data-style="water"] {
+    color: #00b4d8;
+}
+
+.style-tab-btn.active[data-style="flame"] {
+    color: #d90429;
+}
+
+.style-tab-btn.active[data-style="thunder"] {
+    color: #ffd700;
+}
+
+.style-tab-btn.active[data-style="beast"] {
+    color: #adb5bd;
+}
+
+.style-tab-btn.active[data-style="oni"] {
+    color: #c9184a;
+}
+
+/* Info Display */
+.style-info-display {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 600px;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: all 0.5s ease-out;
+}
+
+.style-info-display.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.style-title {
+    font-family: var(--font-display, 'Cinzel', serif);
+    font-size: 4rem;
+    line-height: 1;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
+}
+
+/* Gradient Titles based on theme */
+.title-water {
+    background: linear-gradient(to right, #00b4d8, #fff);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.title-flame {
+    background: linear-gradient(to right, #d90429, #ffbe0b);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.title-thunder {
+    background: linear-gradient(to right, #ffd700, #fff);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.title-beast {
+    background: linear-gradient(to right, #adb5bd, #6c757d);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.title-oni {
+    background: linear-gradient(to right, #a01a58, #ff0054);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.style-desc {
+    font-size: 1.2rem;
+    color: #ddd;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    border-left: 3px solid rgba(255, 255, 255, 0.2);
+    padding-left: 1rem;
+}
+
+.btn-style-cta {
+    align-self: flex-start;
+    background: white;
+    color: black;
+    padding: 1rem 2.5rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s;
+    font-family: var(--font-display);
+    letter-spacing: 1px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.btn-style-cta:hover {
+    transform: translateX(10px);
+}
+
+/* Theme Hover colors for button */
+.btn-water:hover {
+    background: #00b4d8;
+    color: white;
+    box-shadow: 0 0 25px rgba(0, 180, 216, 0.6);
+}
+
+.btn-flame:hover {
+    background: #d90429;
+    color: white;
+    box-shadow: 0 0 25px rgba(217, 4, 41, 0.6);
+}
+
+.btn-thunder:hover {
+    background: #ffd700;
+    color: black;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+}
+
+.btn-beast:hover {
+    background: #adb5bd;
+    color: black;
+    box-shadow: 0 0 25px rgba(173, 181, 189, 0.6);
+}
+
+.btn-oni:hover {
+    background: #ff0054;
+    color: white;
+    box-shadow: 0 0 25px rgba(255, 0, 84, 0.6);
+}
+
+/* Character Image Art */
+.style-char-art {
+    position: absolute;
+    bottom: -50px;
+    right: 5%;
+    max-height: 90%;
+    z-index: 5;
+    pointer-events: none;
+    transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    opacity: 0;
+    transform: translateX(100px);
+    filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.8));
+}
+
+.style-char-art.active {
+    opacity: 1;
+    transform: translateX(0);
+    bottom: 0;
+}
+
+@media (max-width: 1000px) {
+    .style-char-art {
+        right: -100px;
+        opacity: 0.5;
+    }
+}
+
+@media (max-width: 768px) {
+    .style-chooser-content {
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .style-tabs {
+        flex-direction: row;
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        min-width: auto;
+    }
+
+    .style-tab-btn {
+        font-size: 1rem;
+        padding-left: 0;
+        white-space: nowrap;
+    }
+
+    .style-tab-btn::before {
+        display: none;
+        /* remove sidebar for horizontal */
+    }
+
+    .style-tab-btn.active {
+        padding-left: 0;
+        border-bottom: 2px solid currentColor;
+    }
+
+    .style-char-art {
+        display: none;
+        /* Hide expensive art on mobile or make it bg */
+    }
+
+    /* --- SWORD SLASH ENTRANCE --- */
+
+    /* --- SWORD SLASH ENTRANCE & HERO LAYOUT --- */
+
+    /* Base Layout Container */
+    .hero-title-container {
+        display: flex;
+        flex-direction: column;
+        /* Mobile stack */
+        align-items: center;
+        gap: 1rem;
+        position: relative;
+        width: 100%;
+        margin-bottom: 2rem;
+    }
+
+    /* Kanji Styling - Mobile (Vertical Japanese) */
+    .hero-kanji {
+        position: absolute;
+        top: 5px;
+        /* Tweaked top spacing */
+        right: 15px;
+        /* Top Right placement */
+
+        /* Vertical Writing Mode */
+        writing-mode: vertical-rl;
+        text-orientation: upright;
+
+        font-family: 'Cinzel', serif;
+        font-weight: 900;
+        font-size: 2.2rem;
+        line-height: 1;
+        letter-spacing: 0.8rem;
+
+        /* Style: Blood Red with Border */
+        color: rgba(220, 38, 38, 0.75);
+        border-right: 2px solid rgba(220, 38, 38, 0.5);
+        padding-right: 12px;
+
+        z-index: 0;
+        pointer-events: none;
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .slash-container {
+        position: relative;
+        display: inline-block;
+        padding: 10px;
+        margin-bottom: 0.5rem;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    /* The Line of the Slash */
+    .slash-line {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0%;
+        height: 2px;
+        background: #fff;
+        transform: translate(-50%, -50%) rotate(-5deg);
+        box-shadow: 0 0 10px #fff, 0 0 20px #00b4d8;
+        z-index: 10;
+        opacity: 0;
+        animation: slashLineAnim 2.5s cubic-bezier(0.1, 0.7, 0.1, 1) forwards;
+    }
+
+    @keyframes slashLineAnim {
+        0% {
+            width: 0%;
+            opacity: 0;
+        }
+
+        10% {
+            width: 0%;
+            opacity: 1;
+        }
+
+        20% {
+            width: 120%;
+            opacity: 1;
+        }
+
+        40% {
+            width: 120%;
+            opacity: 0;
+        }
+
+        100% {
+            width: 120%;
+            opacity: 0;
+        }
+    }
+
+    /* Base Text */
+    .slash-text {
+        /* Inherit Fire Text Properties */
+        font-family: 'Cinzel', serif;
+        font-weight: 800;
+
+        /* Fluid Sizing */
+        font-size: clamp(3rem, 10vw, 8rem);
+        line-height: 1.1;
+
+        /* HIDE BASE TEXT (Override .hero h1 !important) */
+        background: none !important;
+        -webkit-text-fill-color: initial !important;
+        color: transparent !important;
+        text-shadow: none !important;
+        place-content: center;
+
+        position: relative;
+        display: block;
+
+        /* Wrapping behavior */
+        white-space: pre-wrap;
+        word-break: normal;
+        text-align: center;
+        max-width: 100%;
+
+        padding-bottom: 0.2em;
+    }
+
+    /* Subtitle Styling */
+    .hero-subtitle {
+        font-family: var(--font-display, 'Cinzel', serif);
+        font-size: clamp(1.25rem, 4vw, 2.5rem);
+        /* text-xl -> text-5xl equivalent range */
+        color: rgba(255, 255, 255, 0.9);
+        margin-top: 2rem;
+        /* mt-8 equivalent */
+        margin-bottom: 1.5rem;
+        opacity: 0;
+        animation: fadeIn 2s forwards 2.5s;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        letter-spacing: 2px;
+        text-align: center;
+    }
+
+    @media (min-width: 768px) {
+        .slash-text {
+            white-space: nowrap;
+            /* Single line on desktop if space allows */
+        }
+
+        .hero-title-container {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Kanji - Desktop Reset & Giant BG */
+        .hero-kanji {
+            /* Reset Vertical Mode */
+            writing-mode: horizontal-tb;
+            border-right: none;
+            padding-right: 0;
+            letter-spacing: normal;
+
+            position: absolute;
+            font-size: 15rem;
+            /* Giant background kanji style */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            right: auto;
+            /* Reset Right */
+
+            opacity: 0.1;
+            /* Subtle background */
+            color: #fff;
+            white-space: nowrap;
+            mix-blend-mode: overlay;
+            z-index: -1;
+        }
+    }
+
+    /* Shared Pseudo-Element Styles (The Halves) */
+    .slash-text::before,
+    .slash-text::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+
+        /* FIRE STYLING RE-APPLIED */
+        background: linear-gradient(to right, #facc15, #f97316, #dc2626, #facc15);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 0 15px rgba(220, 38, 38, 0.5));
+
+        /* Animation Shine Inherited */
+        animation: shine 5s linear infinite;
+
+        opacity: 0;
+        /* Start Invisible */
+        text-align: center;
+        /* Ensure pseudos align */
+        white-space: pre-wrap;
+        /* Ensure line breaks match base */
+    }
+
+    /* Top Half */
+    .slash-text::before {
+        clip-path: polygon(0 0, 100% 0, 100% 52%, 0 48%);
+        /* Slight angle cut */
+        transform: translate(-30px, -10px);
+        /* Displaced Left/Up */
+        animation: slashSnapTop 3.5s cubic-bezier(0.1, 0.7, 0.1, 1) forwards 0.2s,
+            shine 5s linear infinite;
+    }
+
+    /* Bottom Half */
+    .slash-text::after {
+        clip-path: polygon(0 48%, 100% 52%, 100% 100%, 0 100%);
+        transform: translate(30px, 10px);
+        /* Displaced Right/Down */
+        animation: slashSnapBottom 3.5s cubic-bezier(0.1, 0.7, 0.1, 1) forwards 0.2s,
+            shine 5s linear infinite;
+    }
+
+    /* Keyframes for Snap */
+    @keyframes slashSnapTop {
+        0% {
+            opacity: 0;
+            transform: translate(-40px, -10px);
+        }
+
+        10% {
+            opacity: 1;
+            transform: translate(-40px, -10px);
+        }
+
+        20% {
+            transform: translate(0, 0);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translate(0, 0);
+        }
+    }
+
+    @keyframes slashSnapBottom {
+        0% {
+            opacity: 0;
+            transform: translate(40px, 10px);
+        }
+
+        10% {
+            opacity: 1;
+            transform: translate(40px, 10px);
+        }
+
+        20% {
+            transform: translate(0, 0);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translate(0, 0);
+        }
+    }
