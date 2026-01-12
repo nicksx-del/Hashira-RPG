@@ -376,8 +376,7 @@
             /* Prevent click */
         }
 
-        ``` transform: none;
-        }
+
 
         /* CORPS ID CARD STYLES */
         .corps-id-card {
@@ -1357,7 +1356,325 @@
 
         .rainbow-anim {
             background: linear-gradient(0deg, red, orange, yellow, green, blue, indigo, violet) !important;
-            animation: rainbow 2s linear infinite;
+        }
+
+        /* --- MOBILE RESPONSIVENESS --- */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            /* Header */
+            .mobile-header {
+                display: flex !important;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 60px;
+                background: rgba(10, 10, 12, 0.95);
+                backdrop-filter: blur(10px);
+                z-index: 1000;
+                align-items: center;
+                gap: 15px;
+                padding: 0 15px;
+                border-bottom: 1px solid #333;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            }
+
+            .mobile-header-spacer {
+                display: block !important;
+                height: 60px;
+            }
+
+            /* Nav/Sidebar Drawer */
+            .sidebar-left {
+                position: fixed;
+                top: 60px;
+                left: -100%;
+                /* Hidden by default */
+                width: 80%;
+                max-width: 300px;
+                height: calc(100vh - 60px);
+                transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+                border-right: 1px solid #333;
+                background: linear-gradient(135deg, #0a0a0c 0%, #050505 100%);
+                padding-bottom: 100px;
+                /* Space for scroll */
+            }
+
+            .sidebar-left.open {
+                left: 0;
+            }
+
+            /* Overlay for Sidebar */
+            .sidebar-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(4px);
+                z-index: 999;
+                display: none;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+                opacity: 1;
+            }
+
+            /* Main Content */
+            .main-content {
+                padding: 2rem 1rem 8rem 1rem;
+                /* Extra bottom padding for mobile */
+                width: 100%;
+            }
+
+            /* Typography */
+            .page-title {
+                font-size: 2.2rem;
+            }
+
+            .page-subtitle {
+                font-size: 1rem;
+            }
+
+            .sec-title {
+                font-size: 1.5rem;
+            }
+
+            /* Grids */
+            .grid-2 {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            /* Cards */
+            .selection-card {
+                aspect-ratio: auto;
+                /* Allow flexible height */
+                height: 280px;
+            }
+
+            .card-text {
+                padding: 1.5rem;
+            }
+
+            .card-text h3 {
+                font-size: 1.8rem;
+            }
+
+            /* Modals (Race Details / Breathing) */
+            .modal-content {
+                flex-direction: column !important;
+                height: 95vh !important;
+                width: 95% !important;
+                margin-top: 10px;
+                overflow-y: auto !important;
+            }
+
+            .modal-content>div {
+                flex: none !important;
+                width: 100% !important;
+            }
+
+            /* Specific fix for Race Modal Image */
+            #raceDetailModal .modal-content>div:first-child {
+                height: 250px !important;
+                min-height: 250px;
+                order: -1;
+            }
+
+            #raceDetailModal .modal-content>div:last-child {
+                padding: 1.5rem !important;
+                overflow-y: visible !important;
+                height: auto;
+            }
+
+            /* Specific fix for Breathing Modal */
+            #breathingDetailModal .modal-content>div:first-child {
+                height: 200px !important;
+                min-height: 200px;
+                order: -1;
+            }
+
+            #breathingDetailModal .modal-content>div:last-child {
+                padding: 1.5rem !important;
+                overflow-y: visible !important;
+                height: auto;
+            }
+
+            /* Mobile Preview Button */
+            .mobile-preview-btn {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                background: var(--accent-red);
+                color: white;
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 20px rgba(217, 4, 41, 0.6);
+                z-index: 2000;
+                border: 2px solid white;
+                font-size: 1.5rem;
+            }
+
+            /* --- CORPORATION REGISTRY MOBILE --- */
+            .corps-id-card {
+                flex-direction: column !important;
+                gap: 2rem !important;
+                height: auto !important;
+            }
+
+            .idc-left,
+            .idc-right {
+                width: 100% !important;
+                border-right: none !important;
+            }
+
+            .idc-left {
+                border-bottom: 1px solid #333;
+                padding-bottom: 2rem;
+            }
+
+            .avatar-container {
+                width: 150px !important;
+                height: 150px !important;
+                margin: 0 auto 1.5rem auto !important;
+            }
+
+            .vitals-grid {
+                gap: 10px !important;
+            }
+
+            .vital-input input {
+                font-size: 1rem !important;
+            }
+
+            /* Crow Section & General Inputs */
+            .idc-section>div {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 0.8rem !important;
+            }
+
+            .idc-section input,
+            .idc-section select {
+                width: 100% !important;
+                height: 44px !important;
+                /* Better touch target */
+                flex: none !important;
+            }
+
+            /* Crow Icon */
+            .idc-section i[data-lucide="bird"] {
+                margin-bottom: 5px;
+            }
+
+            .idc-section>div>div:first-child {
+                /* The crow icon container */
+                width: 40px !important;
+                height: 40px !important;
+            }
+
+            .idc-name-input {
+                font-size: 1.5rem !important;
+            }
+
+            .idc-textarea {
+                width: 100% !important;
+                font-size: 1rem !important;
+            }
+
+            /* Traits */
+            .traits-container {
+                justify-content: center;
+            }
+
+            /* Confirm Button */
+            #btnSealRecord {
+                width: 100% !important;
+                padding: 1.2rem !important;
+                margin-bottom: 3rem;
+                /* Space from bottom */
+            }
+
+            /* --- REFINEMENTS --- */
+            /* Force 16px to prevent zoom */
+            input,
+            select,
+            textarea {
+                font-size: 16px !important;
+            }
+
+            /* Improved Trait Tags */
+            .trait-tag {
+                padding: 10px 18px !important;
+                font-size: 0.9rem !important;
+                margin: 5px !important;
+                border-radius: 20px !important;
+            }
+
+            /* Better Section Spacing */
+            .idc-section {
+                margin-bottom: 2.5rem !important;
+                width: 100%;
+            }
+
+            /* Avatar Placeholder Style */
+            .avatar-placeholder {
+                border-style: dashed !important;
+                background: rgba(255, 255, 255, 0.03) !important;
+            }
+
+            /* --- FINAL POLISH (AGGRESSIVE STACKING) --- */
+            /* Force Vitals to Stack */
+            .vitals-grid {
+                display: grid !important;
+                grid-template-columns: 1fr !important;
+                gap: 15px !important;
+            }
+
+            /* Force Crow Inputs to Stack (Targeting the nested flex container) */
+            .idc-section>div>div[style*="flex:1"] {
+                flex-direction: column !important;
+                width: 100% !important;
+                display: flex !important;
+                gap: 10px !important;
+            }
+
+            /* Keyboard Safety Buffer */
+            #step-5 {
+                padding-bottom: 300px !important;
+            }
+
+            /* Ensure inputs in the crow section take full width */
+            .idc-section>div>div[style*="flex:1"]>* {
+                width: 100% !important;
+                flex: none !important;
+            }
+        }
+
+        /* Desktop Only overrides for cleanup */
+        @media (min-width: 769px) {
+
+            .mobile-header,
+            .mobile-preview-btn,
+            .mobile-header-spacer,
+            .sidebar-overlay {
+                display: none !important;
+            }
         }
     </style>
     <script src="breathing_class_db.js"></script>
@@ -1380,53 +1697,66 @@
 
     <!-- MOBILE HEADER -->
     <div class="mobile-header">
-        <a href="index.html" style="color:white;"><i data-lucide="arrow-left"></i></a>
-        <span style="font-weight:bold; font-family:var(--font-display);">Criação de Personagem</span>
-        <div style="width:24px;"></div> <!-- Spacer -->
+        <button onclick="toggleSidebar()" style="background:none; border:none; color:white; cursor:pointer;">
+            <i data-lucide="menu" size="28"></i>
+        </button>
+        <div class="app-logo" style="font-size: 1.1rem;">
+            Demon Slayer RPG
+        </div>
+        <a href="index.html" style="color:rgba(255,255,255,0.6); margin-left:auto;"><i data-lucide="x"></i></a>
     </div>
+    <div class="mobile-header-spacer"></div>
+
+    <!-- MOBILE SIDEBAR OVERLAY -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
     <!-- MOBILE PREVIEW TOGGLE -->
     <button class="mobile-preview-btn" onclick="togglePreview()">
-        <i data-lucide="user"></i>
+        <i data-lucide="shopping-bag"></i> <!-- Icon for 'Inventory/Character' -->
     </button>
-    <div class="mobile-overlay" id="previewOverlay" onclick="togglePreview()"
-        style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; display:none;">
-    </div>
 
     <!-- LEFT SIDEBAR -->
-    <nav class="sidebar-left">
-        <div class="app-logo">
+    <nav class="sidebar-left" id="sidebarLeft">
+        <div class="app-logo" style="margin-bottom: 0;">
             <i data-lucide="flame" style="color: var(--accent-red);"></i> Demon Slayer RPG
         </div>
+        <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 1.5rem 0;"></div>
 
         <div class="nav-steps">
-            <div
-                style="font-size: 0.8rem; text-transform: uppercase; color: #555; font-weight: 700; margin-bottom: 5px;">
-                Etapas de Criação
+            <!-- Nav Items injected here or below -->
+            <div onclick="goToStep(1); toggleSidebar()" class="nav-item active" id="nav-step-1">
+                <div class="step-icon">1</div>
+                <span>Caminho</span> <!-- Race -->
             </div>
-
-            <div onclick="goToStep(1)" class="nav-item active" id="nav-step-1">
-                <div class="step-icon">1</div> <span>Raça</span> <i data-lucide="lock" class="lock-icon"></i>
+            <div onclick="goToStep(2); toggleSidebar()" class="nav-item locked" id="nav-step-2">
+                <div class="step-icon">2</div>
+                <span>Combate</span>
+                <i data-lucide="lock" class="lock-icon"></i>
             </div>
-            <div onclick="goToStep(2)" class="nav-item locked" id="nav-step-2">
-                <div class="step-icon">2</div> <span>Estilo de Combate</span> <i data-lucide="lock"
-                    class="lock-icon"></i>
+            <div onclick="goToStep(3); toggleSidebar()" class="nav-item locked" id="nav-step-3">
+                <div class="step-icon">3</div>
+                <span>História</span> <!-- Background -->
+                <i data-lucide="lock" class="lock-icon"></i>
             </div>
-            <div onclick="goToStep(3)" class="nav-item locked" id="nav-step-3">
-                <div class="step-icon">3</div> <span>Antecedente</span> <i data-lucide="lock" class="lock-icon"></i>
+            <div onclick="goToStep(4); toggleSidebar()" class="nav-item locked" id="nav-step-4">
+                <div class="step-icon">4</div>
+                <span>Atributos</span>
+                <i data-lucide="lock" class="lock-icon"></i>
             </div>
-            <div onclick="goToStep(4)" class="nav-item locked" id="nav-step-4">
-                <div class="step-icon">4</div> <span>Atributos</span> <i data-lucide="lock" class="lock-icon"></i>
+            <div onclick="goToStep(5); toggleSidebar()" class="nav-item locked" id="nav-step-5">
+                <div class="step-icon">5</div>
+                <span>Identidade</span>
+                <i data-lucide="lock" class="lock-icon"></i>
             </div>
-            <div onclick="goToStep(5)" class="nav-item locked" id="nav-step-5">
-                <div class="step-icon">5</div> <span>Descrição</span> <i data-lucide="lock" class="lock-icon"></i>
+            <div onclick="goToStep(6); toggleSidebar()" class="nav-item locked" id="nav-step-6">
+                <div class="step-icon">6</div>
+                <span>Companheiro</span>
+                <i data-lucide="lock" class="lock-icon"></i>
             </div>
-
-            <a href="index.html" class="nav-item" style="margin-top: auto; color: #666;">
-                <i data-lucide="arrow-left" size="16"></i> Cancelar
-            </a>
         </div>
     </nav>
+
+
 
     <!-- CONTENT AREA -->
     <main class="main-content">
@@ -1676,18 +2006,7 @@
             </div>
         </div>
 
-        <script>
-            function togglePreview() {
-                const sb = document.querySelector('.sidebar-right');
-                const overlay = document.getElementById('previewOverlay');
-                sb.classList.toggle('open');
-                if (sb.classList.contains('open')) {
-                    overlay.style.display = 'block';
-                } else {
-                    overlay.style.display = 'none';
-                }
-            }
-        </script>
+
 
         <!-- SEC 4: STATS -->
         <!-- STEP 4: STATS -->
@@ -1819,10 +2138,10 @@
             </div>
         </div>
 
-        <!-- STEP 5: DESCRIPTION & FINISH -->
+        <!-- STEP 5: IDENTITY -->
         <div id="step-5" class="form-step">
             <div class="section-header">
-                <span class="sec-num">05.</span> <span class="sec-title">Registro da Corporação</span>
+                <span class="sec-num">05.</span> <span class="sec-title">Identidade</span>
             </div>
 
             <!-- ID CARD CONTAINER -->
@@ -1845,60 +2164,32 @@
                             <input type="number" id="inputAge" placeholder="16">
                         </div>
                         <div class="vital-input">
-                            <label>Altura</label>
-                            <input type="text" id="inputHeight" placeholder="1.65m">
+                            <label>Altura (cm)</label>
+                            <input type="number" id="inputHeight" placeholder="175">
                         </div>
                         <div class="vital-input">
-                            <label>Peso</label>
-                            <input type="text" id="inputWeight" placeholder="60kg">
+                            <label>Peso (kg)</label>
+                            <input type="number" id="inputWeight" placeholder="65">
                         </div>
                     </div>
                 </div>
 
                 <!-- RIGHT COL: NARRATIVE -->
                 <div class="idc-right">
-                    <div class="idc-header">
+                    <div class="idc-section">
                         <label>Nome do Caçador</label>
-                        <input type="text" id="inputName" class="idc-name-input" placeholder="Seu Nome"
-                            oninput="updatePreview()">
+                        <input type="text" id="inputCharName" class="ds-input-lg" placeholder="Seu Nome">
                     </div>
 
                     <div class="idc-section">
                         <label>Traços de Personalidade</label>
-                        <div class="traits-container" id="traitsContainer">
-                            <!-- JS Generated -->
+                        <div id="traitsTags" class="traits-container">
                             <div class="trait-tag" onclick="toggleTrait(this)">Determinado</div>
+                            <div class="trait-tag" onclick="toggleTrait(this)">Calmo</div>
+                            <div class="trait-tag" onclick="toggleTrait(this)">Agressivo</div>
                             <div class="trait-tag" onclick="toggleTrait(this)">Gentil</div>
-                            <div class="trait-tag" onclick="toggleTrait(this)">Cauteloso</div>
-                            <div class="trait-tag" onclick="toggleTrait(this)">Impulsivo</div>
-                            <div class="trait-tag" onclick="toggleTrait(this)">Estoico</div>
-                            <div class="trait-tag" onclick="toggleTrait(this)">Otimista</div>
-                        </div>
-                    </div>
-
-                    <div class="idc-section">
-                        <label>Companheiro de Ligação (Corvo Kasugai)</label>
-                        <div style="display:flex; gap:15px; align-items:center;">
-                            <!-- Crow Icon -->
-                            <div
-                                style="width:50px; height:50px; background:#1a1a20; border:1px solid #333; border-radius:50%; display:flex; align-items:center; justify-content:center;">
-                                <i data-lucide="bird" size="24" color="#666"></i>
-                            </div>
-
-                            <!-- Inputs -->
-                            <div style="flex:1; display:flex; gap:10px;">
-                                <input type="text" id="inputCrowName" class="ds-input" placeholder="Nome do Corvo"
-                                    style="flex:1; background:#0a0a0a; border:1px solid #333; height:40px;">
-                                <select id="inputCrowPersonality" class="ds-input"
-                                    style="flex:1; background:#0a0a0a; border:1px solid #333; height:40px;">
-                                    <option value="" disabled selected>Personalidade</option>
-                                    <option value="Arrogante">Arrogante</option>
-                                    <option value="Medroso">Medroso</option>
-                                    <option value="Estrito">Estrito</option>
-                                    <option value="Fofoqueiro">Fofoqueiro</option>
-                                    <option value="Mudo">Mudo</option>
-                                </select>
-                            </div>
+                            <div class="trait-tag" onclick="toggleTrait(this)">Estratégico</div>
+                            <div class="trait-tag" onclick="toggleTrait(this)">Protetor</div>
                         </div>
                     </div>
 
@@ -1926,6 +2217,53 @@
                 </div>
             </div>
 
+            <div class="step-nav-btns">
+                <button class="btn-prev" onclick="goToStep(4)"><i data-lucide="arrow-left"></i> Voltar</button>
+                <button class="btn-next" onclick="goToStep(6)">Próximo <i data-lucide="arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- STEP 6: COMPANION -->
+        <div id="step-6" class="form-step">
+            <div class="section-header">
+                <span class="sec-num">06.</span> <span class="sec-title">Companheiro Kasugai</span>
+            </div>
+
+            <div class="corps-id-card">
+                <!-- CROW SECTION -->
+                <div class="idc-right" style="width:100% !important; border:none !important; padding:0 !important;">
+                    <div class="idc-section">
+                        <label>Companheiro de Ligação (Corvo Kasugai)</label>
+                        <div style="font-size:0.8rem; color:#888; margin-bottom:8px;">Todo caçador recebe um Corvo
+                            Kasugai para comunicação.
+                        </div>
+
+                        <div style="display:flex; gap:15px; align-items:center;">
+                            <!-- Crow Icon -->
+                            <div
+                                style="width:50px; height:50px; background:#1a1a20; border:1px solid #333; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+                                <i data-lucide="bird" size="24" color="#666"></i>
+                            </div>
+
+                            <!-- Inputs -->
+                            <div style="flex:1; display:flex; gap:10px;">
+                                <input type="text" id="inputCrowName" class="ds-input" placeholder="Nome do Corvo"
+                                    style="flex:1; background:#0a0a0a; border:1px solid #333; height:40px;">
+                                <select id="inputCrowPersonality" class="ds-input"
+                                    style="flex:1; background:#0a0a0a; border:1px solid #333; height:40px;">
+                                    <option value="" disabled selected>Personalidade</option>
+                                    <option value="Arrogante">Arrogante</option>
+                                    <option value="Medroso">Medroso</option>
+                                    <option value="Estrito">Estrito</option>
+                                    <option value="Fofoqueiro">Fofoqueiro</option>
+                                    <option value="Mudo">Mudo</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div style="display:flex; justify-content:center; margin-top:30px;">
                 <button id="btnSealRecord" class="confirm-btn" onclick="finishCreation()"
                     style="width:auto; padding:15px 50px; font-size:1.2rem; transition: all 0.5s ease;">
@@ -1933,7 +2271,7 @@
                 </button>
             </div>
 
-            <!-- WELCOME OVERLAY -->
+            <!-- WELCOME OVERLAY MOVED HERE -->
             <div id="welcomeOverlay"
                 style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:20000; align-items:center; justify-content:center; flex-direction:column; animation: fadeIn 2s;">
                 <h1
@@ -1945,7 +2283,7 @@
             </div>
 
             <div class="step-nav-btns">
-                <button class="btn-prev" onclick="goToStep(4)"><i data-lucide="arrow-left"></i> Voltar</button>
+                <button class="btn-prev" onclick="goToStep(5)"><i data-lucide="arrow-left"></i> Voltar</button>
             </div>
         </div>
 
@@ -2400,6 +2738,69 @@
             }
         };
 
+        // --- MOBILE HELPERS ---
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebarLeft');
+            const ov = document.querySelector('.sidebar-overlay');
+            sb.classList.toggle('open');
+            ov.classList.toggle('active');
+        }
+
+        function togglePreview() {
+            const modal = document.getElementById('characterSummaryModal');
+            if (!modal) return;
+
+            // Populate Data
+            // Identity
+            document.getElementById('csName').innerText = document.getElementById('charName')?.value || 'Sem Nome';
+            document.getElementById('csRace').innerText = state.race || 'Indefinida';
+            document.getElementById('csAge').innerText = (document.getElementById('charAge')?.value || '18') + " anos";
+
+            // Combat
+            document.getElementById('csStyle').innerText = state.combat ? (state.combat.charAt(0).toUpperCase() + state.combat.slice(1)) : 'Iniciante';
+
+            // Background
+            if (state.background && backgroundData[state.background]) {
+                const bg = backgroundData[state.background];
+                document.getElementById('csBgTitle').innerText = bg.title;
+                document.getElementById('csBgDesc').innerText = bg.description;
+
+                // Items
+                const itemsList = document.getElementById('csItems');
+                itemsList.innerHTML = '';
+                if (bg.items) {
+                    bg.items.forEach(item => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<span style="color:#eee;">${item.name}</span> <span style="color:#888; font-size:0.8rem;">${item.type === 'armor' ? '(Armadura)' : ''}</span>`;
+                        li.style.marginBottom = "4px";
+                        itemsList.appendChild(li);
+                    });
+                }
+            } else {
+                document.getElementById('csBgTitle').innerText = 'Não selecionado';
+                document.getElementById('csBgDesc').innerText = '-';
+                document.getElementById('csItems').innerHTML = '<li style="color:#666;">Nenhum item</li>';
+            }
+
+            // Stats
+            ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach(attr => {
+                const val = state.stats[attr] || 10;
+                // Calculate modifier
+                const mod = Math.floor((val - 10) / 2);
+                const modStr = mod >= 0 ? `+${mod}` : `${mod}`;
+
+                document.getElementById(`cs-${attr}`).innerText = val;
+                document.getElementById(`cs-${attr}-mod`).innerText = modStr;
+            });
+
+            // Show Modal
+            modal.style.display = 'flex';
+        }
+
+        window.toggleSidebar = toggleSidebar;
+        window.togglePreview = togglePreview;
+
+
 
         // --- DYNAMIC BACKGROUND RENDERING ---
         function renderBackgrounds() {
@@ -2498,9 +2899,7 @@
         window.cancelOni = cancelOni;
 
         function showOniConfirmation() {
-            console.log('Building Oni modal');
-
-            // Create modal overlay with dramatic entrance
+            // Enhanced Modal with Premium Visuals
             const modal = document.createElement('div');
             modal.id = 'oniTransformationModal';
             modal.style.cssText = `
@@ -2509,13 +2908,13 @@
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background: radial-gradient(circle at center, rgba(139, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.98) 100%);
-                backdrop-filter: blur(10px);
+                background: radial-gradient(circle at center, rgba(30, 0, 0, 0.6) 0%, #000 90%);
+                backdrop-filter: blur(15px);
                 z-index: 9999;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                animation: oniOverlayFadeIn 0.6s ease-out;
+                animation: oniOverlayFadeIn 0.8s ease-out forwards;
                 overflow: hidden;
             `;
 
@@ -2526,330 +2925,220 @@
                         to { opacity: 1; }
                     }
                     
-                    @keyframes oniModalSlideIn {
-                        from { 
-                            opacity: 0;
-                            transform: scale(0.8) translateY(50px);
-                        }
-                        to { 
-                            opacity: 1;
-                            transform: scale(1) translateY(0);
-                        }
+                    @keyframes oniModalAppear {
+                        0% { opacity: 0; transform: scale(0.9) translateY(30px); }
+                        100% { opacity: 1; transform: scale(1) translateY(0); }
                     }
                     
-                    @keyframes oniPulse {
-                        0%, 100% { 
-                            box-shadow: 0 0 30px rgba(217, 4, 41, 0.4),
-                                        0 0 60px rgba(217, 4, 41, 0.2),
-                                        inset 0 0 20px rgba(217, 4, 41, 0.1);
-                        }
-                        50% { 
-                            box-shadow: 0 0 50px rgba(217, 4, 41, 0.6),
-                                        0 0 100px rgba(217, 4, 41, 0.3),
-                                        inset 0 0 30px rgba(217, 4, 41, 0.2);
-                        }
+                    @keyframes bloodPulse {
+                        0%, 100% { box-shadow: 0 0 40px rgba(220, 20, 60, 0.3); border-color: rgba(220, 20, 60, 0.6); }
+                        50% { box-shadow: 0 0 80px rgba(255, 0, 0, 0.5); border-color: rgba(255, 0, 0, 1); }
                     }
-                    
-                    @keyframes oniFloat {
-                        0%, 100% { transform: translateY(0); }
-                        50% { transform: translateY(-10px); }
+
+                    @keyframes floatDemon {
+                        0%, 100% { transform: translateY(0); filter: drop-shadow(0 0 25px rgba(220, 20, 60, 0.6)); }
+                        50% { transform: translateY(-15px); filter: drop-shadow(0 0 50px rgba(255, 0, 0, 0.8)); }
                     }
-                    
-                    @keyframes bloodDrip {
-                        0% { transform: translateY(-100%); opacity: 0; }
-                        50% { opacity: 0.8; }
-                        100% { transform: translateY(100vh); opacity: 0; }
+
+                    .oni-btn-accept {
+                        background: linear-gradient(135deg, #8b0000 0%, #ff0000 100%);
+                        color: white;
+                        border: 1px solid #ff4444;
+                        padding: 1.5rem 3.5rem;
+                        font-family: 'Cinzel', serif;
+                        font-weight: 700;
+                        font-size: 1.3rem;
+                        text-transform: uppercase;
+                        letter-spacing: 2px;
+                        border-radius: 4px; /* Sharp edges */
+                        cursor: pointer;
+                        box-shadow: 0 0 30px rgba(139, 0, 0, 0.6);
+                        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                        position: relative;
+                        overflow: hidden;
                     }
-                    
-                    .oni-blood-particle {
+
+                    .oni-btn-accept::before {
+                        content: '';
                         position: absolute;
-                        width: 2px;
-                        height: 20px;
-                        background: linear-gradient(to bottom, transparent, #d90429);
-                        animation: bloodDrip 3s linear infinite;
+                        top: 0; left: -100%;
+                        width: 100%; height: 100%;
+                        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+                        transition: 0.5s;
+                    }
+
+                    .oni-btn-accept:hover {
+                        transform: scale(1.05);
+                        box-shadow: 0 0 60px rgba(255, 0, 0, 0.8);
+                        background: linear-gradient(135deg, #a00000 0%, #ff3333 100%);
+                    }
+
+                    .oni-btn-accept:hover::before {
+                        left: 100%;
+                    }
+
+                    .oni-btn-cancel {
+                        background: transparent;
+                        color: #bbb;
+                        border: 1px solid #444;
+                        padding: 1rem 2.5rem;
+                        font-family: 'Cinzel', serif;
+                        letter-spacing: 1px;
+                        cursor: pointer;
+                        transition: all 0.3s;
+                        border-radius: 4px;
+                        text-transform: uppercase;
+                        font-size: 1rem;
+                    }
+
+                    .oni-btn-cancel:hover {
+                        border-color: #fff;
+                        color: #fff;
+                        background: rgba(255,255,255,0.05);
+                    }
+                    
+                    /* Screen Fill Animation */
+                    @keyframes screenFlood {
+                        0% { 
+                            clip-path: circle(0% at 50% 50%);
+                            background: #500000;
+                        }
+                        50% {
+                            background: #8b0000;
+                        }
+                        100% { 
+                            clip-path: circle(150% at 50% 50%);
+                            background: #000;
+                        }
+                    }
+
+                    .blood-transition {
+                        position: fixed;
+                        top: 0; left: 0;
+                        width: 100vw; height: 100vh;
+                        z-index: 10000;
+                        pointer-events: none;
+                        display: none;
+                    }
+
+                    /* Mobile Responsive Styles */
+                    @media (max-width: 768px) {
+                        .oni-modal-card {
+                            width: 95% !important;
+                            padding: 2rem 1.5rem !important;
+                            max-height: 90vh;
+                            overflow-y: auto;
+                        }
+                        
+                        .oni-actions {
+                            flex-direction: column-reverse;
+                            width: 100%;
+                            gap: 1rem !important;
+                        }
+
+                        .oni-btn-accept, .oni-btn-cancel {
+                            width: 100%;
+                            padding: 1.2rem !important;
+                            font-size: 1.1rem !important;
+                        }
+
+                        .oni-title {
+                            font-size: 2rem !important;
+                        }
+
+                        .oni-desc-grid {
+                            grid-template-columns: 1fr !important;
+                            gap: 1rem !important;
+                        }
                     }
                 </style>
-                
-                <!-- Blood particles background -->
-                <div style="position: absolute; inset: 0; overflow: hidden; pointer-events: none;">
-                    ${Array.from({ length: 15 }, (_, i) => `
-                        <div class="oni-blood-particle" style="
-                            left: ${Math.random() * 100}%;
-                            animation-delay: ${Math.random() * 3}s;
-                            animation-duration: ${2 + Math.random() * 2}s;
-                        "></div>
-                    `).join('')}
-                </div>
-                
-                <!-- Main Modal Card -->
-                <div style="
+
+                <div class="blood-transition" id="bloodTransition"></div>
+
+                <div class="oni-modal-card" style="
                     position: relative;
-                    background: linear-gradient(135deg, 
-                        rgba(26, 10, 15, 0.95) 0%, 
-                        rgba(10, 10, 15, 0.98) 50%,
-                        rgba(20, 5, 10, 0.95) 100%);
-                    border: 3px solid #d90429;
-                    border-radius: 24px;
-                    padding: 0;
-                    max-width: 900px;
                     width: 90%;
+                    max-width: 1000px;
+                    background: linear-gradient(to bottom, #0f0505, #1a0a0a);
+                    border: 1px solid #444;
+                    border-radius: 4px;
+                    padding: 4rem;
                     text-align: center;
-                    animation: oniModalSlideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), oniPulse 3s ease-in-out infinite;
-                    overflow: hidden;
+                    animation: oniModalAppear 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+                    box-shadow: 0 0 100px rgba(0,0,0,0.8);
+                    border-top: 4px solid #d90429;
+                    border-bottom: 4px solid #d90429;
                 ">
-                    <!-- Top decorative bar -->
+                    <!-- Background Runes/Details -->
                     <div style="
-                        height: 6px;
-                        background: linear-gradient(90deg, 
-                            transparent 0%, 
-                            #d90429 20%, 
-                            #ff1744 50%, 
-                            #d90429 80%, 
-                            transparent 100%);
-                        box-shadow: 0 0 20px rgba(217, 4, 41, 0.8);
+                        position: absolute; top:0; left:0; width:100%; height:100%;
+                        background-image: url('assets/pattern_noise.png'); /* If exists, else subtle noise */
+                        opacity: 0.1;
+                        pointer-events: none;
                     "></div>
+
+                    <!-- Close Button -->
+                    <button onclick="cancelOni()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: #666; cursor: pointer; z-index: 10;">
+                        <i data-lucide="x" size="24"></i>
+                    </button>
+
+                    <!-- Demon Image -->
+                    <img src="assets/criação_personagem/Oni-removebg-preview.png" style="
+                        height: 180px;
+                        margin-bottom: 1.5rem;
+                        animation: floatDemon 5s ease-in-out infinite;
+                        filter: drop-shadow(0 0 20px #900);
+                        max-width: 100%;
+                        object-fit: contain;
+                    ">
+
+                    <!-- Titles -->
+                    <h2 class="oni-title" style="
+                        font-family: 'Cinzel', serif;
+                        font-size: 3.5rem;
+                        margin: 0;
+                        background: linear-gradient(to right, #ff3333, #8b0000, #ff3333);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        filter: drop-shadow(0 0 10px rgba(255,0,0,0.5));
+                        letter-spacing: 4px;
+                        line-height: 1.1;
+                    ">A ASCENSÃO DEMONÍACA</h2>
                     
-                    <!-- Content wrapper -->
-                    <div style="padding: 3rem 3rem 2.5rem 3rem;">
-                        <!-- Animated Oni Image -->
-                        <div style="
-                            margin-bottom: 2rem;
-                            animation: oniFloat 4s ease-in-out infinite;
-                        ">
-                             <img src="assets/criação_personagem/Oni-removebg-preview.png" style="
-                                height: 180px; 
-                                filter: drop-shadow(0 0 20px rgba(217, 4, 41, 0.4));
-                                object-fit: contain;
-                             ">
-                        </div>
-                        
-                        <!-- Title -->
-                        <h2 style="
-                            font-family: 'Cinzel', serif;
-                            font-size: 3rem;
-                            background: linear-gradient(90deg, #ff1744, #d90429, #c1121f);
-                            -webkit-background-clip: text;
-                            -webkit-text-fill-color: transparent;
-                            background-clip: text;
-                            margin-bottom: 1rem;
-                            text-transform: uppercase;
-                            letter-spacing: 3px;
-                            text-shadow: 0 0 30px rgba(217, 4, 41, 0.5);
-                        ">Transformação Demoníaca</h2>
-                        
-                        <!-- Subtitle -->
-                        <p style="
-                            color: rgba(255, 77, 77, 0.9);
-                            font-size: 1.2rem;
-                            font-weight: 600;
-                            margin-bottom: 2rem;
-                            font-family: 'Cinzel', serif;
-                            letter-spacing: 2px;
-                        ">Abandone sua Humanidade</p>
-                        
-                        <!-- Divider -->
-                        <div style="
-                            width: 80%;
-                            height: 2px;
-                            background: linear-gradient(90deg, transparent, #d90429, transparent);
-                            margin: 0 auto 2rem auto;
-                            box-shadow: 0 0 10px rgba(217, 4, 41, 0.5);
-                        "></div>
-                        
-                        <!-- Description Grid -->
-                        <div style="
-                            display: grid;
-                            grid-template-columns: 1fr 1fr;
-                            gap: 2rem;
-                            margin-bottom: 2.5rem;
-                            text-align: left;
-                        ">
-                            <!-- Powers Section -->
-                            <div style="
-                                background: rgba(255, 255, 255, 0.02);
-                                border: 1px solid rgba(255, 255, 255, 0.05);
-                                border-radius: 12px;
-                                padding: 2rem;
-                                text-align: left;
-                                transition: 0.3s;
-                            " onmouseover="this.style.background='rgba(255, 255, 255, 0.04)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.02)'">
-                                <h3 style="
-                                    color: #ff5c77;
-                                    font-family: 'Cinzel', serif;
-                                    font-size: 1.4rem;
-                                    margin-bottom: 1.5rem;
-                                    display: flex;
-                                    align-items: center;
-                                    gap: 12px;
-                                    border-bottom: 1px solid rgba(255, 92, 119, 0.2);
-                                    padding-bottom: 10px;
-                                ">
-                                    <i data-lucide="zap" style="width:24px; height:24px;"></i> Poderes
-                                </h3>
-                                <ul style="
-                                    list-style: none;
-                                    padding: 0;
-                                    margin: 0;
-                                    display: flex;
-                                    flex-direction: column;
-                                    gap: 12px;
-                                ">
-                                    <li style="display: flex; align-items: start; gap: 10px; color: #ddd; font-size: 0.95rem;">
-                                        <i data-lucide="flame" style="width:16px; height:16px; color:#ffb703; margin-top:2px;"></i>
-                                        <span><strong>Kekkijutsu</strong><br><span style="color:#888; font-size:0.85rem">Artes de sangue únicas.</span></span>
-                                    </li>
-                                    <li style="display: flex; align-items: start; gap: 10px; color: #ddd; font-size: 0.95rem;">
-                                        <i data-lucide="activity" style="width:16px; height:16px; color:#ffb703; margin-top:2px;"></i>
-                                        <span><strong>Regeneração</strong><br><span style="color:#888; font-size:0.85rem">Cura quase instantânea.</span></span>
-                                    </li>
-                                    <li style="display: flex; align-items: start; gap: 10px; color: #ddd; font-size: 0.95rem;">
-                                        <i data-lucide="dumbbell" style="width:16px; height:16px; color:#ffb703; margin-top:2px;"></i>
-                                        <span><strong>Vigor Infinito</strong><br><span style="color:#888; font-size:0.85rem">Força sobre-humana.</span></span>
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <!-- Weaknesses Section -->
-                            <div style="
-                                background: rgba(255, 255, 255, 0.02);
-                                border: 1px solid rgba(255, 255, 255, 0.05);
-                                border-radius: 12px;
-                                padding: 2rem;
-                                text-align: left;
-                                transition: 0.3s;
-                            " onmouseover="this.style.background='rgba(255, 255, 255, 0.04)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.02)'">
-                                <h3 style="
-                                    color: #888;
-                                    font-family: 'Cinzel', serif;
-                                    font-size: 1.4rem;
-                                    margin-bottom: 1.5rem;
-                                    display: flex;
-                                    align-items: center;
-                                    gap: 12px;
-                                    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                                    padding-bottom: 10px;
-                                ">
-                                    <i data-lucide="alert-triangle" style="width:24px; height:24px;"></i> Maldições
-                                </h3>
-                                <ul style="
-                                    list-style: none;
-                                    padding: 0;
-                                    margin: 0;
-                                    display: flex;
-                                    flex-direction: column;
-                                    gap: 12px;
-                                ">
-                                    <li style="display: flex; align-items: start; gap: 10px; color: #a0a0a0; font-size: 0.95rem;">
-                                        <i data-lucide="sun" style="width:16px; height:16px; color:#666; margin-top:2px;"></i>
-                                        <span><strong>Luz Solar</strong><br><span style="color:#666; font-size:0.85rem">Causa morte instantânea.</span></span>
-                                    </li>
-                                    <li style="display: flex; align-items: start; gap: 10px; color: #a0a0a0; font-size: 0.95rem;">
-                                        <i data-lucide="flower-2" style="width:16px; height:16px; color:#666; margin-top:2px;"></i>
-                                        <span><strong>Glicínias</strong><br><span style="color:#666; font-size:0.85rem">Veneno paralisante.</span></span>
-                                    </li>
-                                    <li style="display: flex; align-items: start; gap: 10px; color: #a0a0a0; font-size: 0.95rem;">
-                                        <i data-lucide="sword" style="width:16px; height:16px; color:#666; margin-top:2px;"></i>
-                                        <span><strong>Nichirin</strong><br><span style="color:#666; font-size:0.85rem">Decapitação letal.</span></span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        
-                        <!-- Warning Message -->
-                        <div style="
-                            background: rgba(217, 4, 41, 0.05);
-                            border: 1px dashed rgba(217, 4, 41, 0.3);
-                            padding: 1rem;
-                            margin-bottom: 2.5rem;
-                            border-radius: 8px;
-                            display: inline-block;
-                        ">
-                            <p style="
-                                color: #ff5c77;
-                                font-weight: 500;
-                                font-size: 0.9rem;
-                                margin: 0;
-                                display: flex;
-                                align-items: center;
-                                gap: 8px;
-                            ">
-                                <i data-lucide="skull" style="width:16px;"></i> Decisão Irreversível. Sua alma humana será perdida para sempre.
-                            </p>
-                        </div>
-                        
-                        <!-- Action Buttons -->
-                        <div style="
-                            display: flex;
-                            gap: 1.5rem;
-                            justify-content: center;
-                            margin-top: 2rem;
-                        ">
-                            <button onclick="confirmOni()" style="
-                                background: linear-gradient(135deg, #d90429 0%, #c1121f 100%);
-                                color: white;
-                                border: 2px solid #ff1744;
-                                padding: 1.2rem 3rem;
-                                border-radius: 12px;
-                                font-weight: 700;
-                                font-size: 1.2rem;
-                                cursor: pointer;
-                                transition: all 0.3s;
-                                box-shadow: 0 8px 25px rgba(217, 4, 41, 0.4);
-                                font-family: 'Cinzel', serif;
-                                letter-spacing: 1px;
-                                text-transform: uppercase;
-                            " onmouseover="
-                                this.style.transform='translateY(-3px) scale(1.05)';
-                                this.style.boxShadow='0 12px 35px rgba(217, 4, 41, 0.6)';
-                                this.style.background='linear-gradient(135deg, #ff1744 0%, #d90429 100%)';
-                            " onmouseout="
-                                this.style.transform='translateY(0) scale(1)';
-                                this.style.boxShadow='0 8px 25px rgba(217, 4, 41, 0.4)';
-                                this.style.background='linear-gradient(135deg, #d90429 0%, #c1121f 100%)';
-                            ">
-                                🩸 Aceitar Transformação
-                            </button>
-                            
-                            <button onclick="cancelOni()" style="
-                                background: rgba(255, 255, 255, 0.05);
-                                color: rgba(255, 255, 255, 0.8);
-                                border: 2px solid rgba(255, 255, 255, 0.2);
-                                padding: 1.2rem 3rem;
-                                border-radius: 12px;
-                                font-weight: 700;
-                                font-size: 1.2rem;
-                                cursor: pointer;
-                                transition: all 0.3s;
-                                font-family: 'Cinzel', serif;
-                                letter-spacing: 1px;
-                                text-transform: uppercase;
-                            " onmouseover="
-                                this.style.background='rgba(255, 255, 255, 0.15)';
-                                this.style.color='white';
-                                this.style.borderColor='rgba(255, 255, 255, 0.4)';
-                                this.style.transform='translateY(-2px)';
-                            " onmouseout="
-                                this.style.background='rgba(255, 255, 255, 0.05)';
-                                this.style.color='rgba(255, 255, 255, 0.8)';
-                                this.style.borderColor='rgba(255, 255, 255, 0.2)';
-                                this.style.transform='translateY(0)';
-                            ">
-                                Permanecer Humano
-                            </button>
-                        </div>
+                    <p style="
+                        color: #ff8888;
+                        font-family: 'Cinzel', serif;
+                        font-size: 1.1rem;
+                        letter-spacing: 2px;
+                        margin-top: 10px;
+                        margin-bottom: 2rem;
+                        text-transform: uppercase;
+                    ">Abandone sua Fragilidade Humana</p>
+
+                    <!-- Warning Box -->
+                    <div style="
+                        background: rgba(20, 0, 0, 0.6);
+                        border: 1px solid #500;
+                        padding: 1rem;
+                        margin: 0 auto 2rem auto;
+                        max-width: 700px;
+                        color: #ccc;
+                        font-size: 0.95rem;
+                        line-height: 1.6;
+                        border-radius: 8px;
+                    ">
+                        <p style="margin-bottom: 10px;"><strong style="color: #ff4444;">ATENÇÃO:</strong> Ao aceitar o sangue, não haverá retorno.</p>
+                        <p style="font-size: 0.9rem; color: #888; margin: 0;">Você perderá sua capacidade de respirar com o sol e será caçado pelos seus antigos aliados.</p>
                     </div>
-                    
-                    <!-- Bottom decorative bar -->
-                    <div style="
-                        height: 6px;
-                        background: linear-gradient(90deg, 
-                            transparent 0%, 
-                            #d90429 20%, 
-                            #ff1744 50%, 
-                            #d90429 80%, 
-                            transparent 100%);
-                        box-shadow: 0 0 20px rgba(217, 4, 41, 0.8);
-                    "></div>
+
+                    <!-- Actions -->
+                    <div class="oni-actions" style="display: flex; gap: 2rem; justify-content: center; align-items: center;">
+                        <button class="oni-btn-cancel" onclick="cancelOni()">Recusar</button>
+                        <button class="oni-btn-accept" onclick="confirmOni()">
+                            <span>Aceitar Sangue</span>
+                        </button>
+                    </div>
+
                 </div>
             `;
 
@@ -2905,21 +3194,48 @@
         }
 
         function confirmOni() {
-            // Save current state
-            const tempData = {
-                name: document.getElementById('inputName').value,
-                race: 'Oni',
-                stats: state.stats
-            };
-            localStorage.setItem('tempCharData', JSON.stringify(tempData));
+            // New Dramatic Transition
+            const overlay = document.getElementById('bloodTransition');
+            const modal = document.querySelector('#oniTransformationModal > div'); // The card
 
-            // Redirect to Oni customization page
-            window.location.href = 'create-oni.html';
+            // 1. Play dramatic sound (optional, if we had Audio)
+
+            // 2. Hide Modal Card
+            if (modal) {
+                modal.style.transition = 'all 0.5s ease-in';
+                modal.style.transform = 'scale(0.8) translateY(50px)';
+                modal.style.opacity = '0';
+            }
+
+            // 3. Start Screen Flood Animation
+            if (overlay) {
+                overlay.style.display = 'block';
+                overlay.style.animation = 'screenFlood 2s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards';
+            }
+
+            // 4. Redirect after animation
+            setTimeout(() => {
+                // Save current state
+                const tempData = {
+                    name: document.getElementById('inputName').value,
+                    race: 'Oni',
+                    stats: state.stats
+                };
+                localStorage.setItem('tempCharData', JSON.stringify(tempData));
+
+                // Redirect to Oni customization page
+                window.location.href = 'create-oni.html';
+            }, 1800); // Wait for animation
         }
 
         function cancelOni() {
-            // Remove modal
-            const modal = document.querySelector('div[style*="z-index: 9999"]');
+            // Remove modal with fade out
+            const modal = document.getElementById('oniTransformationModal');
+            if (modal) {
+                modal.style.transition = "opacity 0.5s";
+                modal.style.opacity = "0";
+                setTimeout(() => modal.remove(), 500);
+            }
             if (modal) modal.remove();
 
             // Reset to Humano
@@ -4350,6 +4666,200 @@
         </div>
     </div>
 </div>
+<!-- CHARACTER SUMMARY MODAL -->
+<div id="characterSummaryModal" class="modal-overlay"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:11000; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+
+    <style>
+        .cs-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            height: 100%;
+        }
+
+        .cs-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cs-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #666;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .cs-val {
+            font-size: 1.2rem;
+            color: #eee;
+            font-family: 'Cinzel', serif;
+            margin-bottom: 15px;
+        }
+
+        .cs-stat-row {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 8px 0;
+        }
+
+        .cs-stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .cs-mod-badge {
+            background: #222;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: var(--accent-red);
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .cs-grid {
+                grid-template-columns: 1fr;
+                overflow-y: auto;
+                padding-right: 5px;
+            }
+
+            .cs-card {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+
+    <div class="modal-content"
+        style="background:#111; width:90%; max-width:1000px; height:85vh; border:1px solid #333; box-shadow:0 0 50px rgba(0,0,0,0.8); display:flex; flex-direction:column; padding:0; overflow:hidden; border-radius: 4px;">
+
+        <!-- Header -->
+        <div
+            style="padding: 20px 30px; border-bottom: 1px solid #333; display:flex; justify-content:space-between; align-items:center; background:#0a0a0c;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <i data-lucide="backpack" style="color:var(--accent-red);"></i>
+                <h2 style="margin:0; font-family:'Cinzel', serif; font-size:1.5rem; color:white;">Resumo do Caçador</h2>
+            </div>
+            <button onclick="document.getElementById('characterSummaryModal').style.display='none'"
+                style="background:none; border:none; color:#666; cursor:pointer;">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div style="flex:1; padding:30px; overflow:hidden;">
+            <div class="cs-grid">
+                <!-- Col 1: Identity & Stats -->
+                <div style="display:flex; flex-direction:column; gap:1.5rem;">
+                    <!-- Avatar/Identity -->
+                    <div class="cs-card" style="align-items:center; text-align:center;">
+                        <div
+                            style="width:100px; height:100px; border-radius:50%; background:#000; border:2px solid #333; display:flex; align-items:center; justify-content:center; margin-bottom:15px; overflow:hidden;">
+                            <i data-lucide="user" size="40" color="#333"></i>
+                        </div>
+                        <div id="csName"
+                            style="font-family:'Cinzel', serif; font-size:1.4rem; color:white; margin-bottom:5px;">Sem
+                            Nome</div>
+                        <div
+                            style="font-size:0.9rem; color:var(--accent-red); text-transform:uppercase; letter-spacing:2px;">
+                            <span id="csRace">Humano</span>
+                        </div>
+                        <div id="csAge" style="font-size:0.9rem; color:#666; margin-top:5px;">18 anos</div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="cs-card">
+                        <div class="cs-label"
+                            style="text-align:center; border-bottom:1px solid #333; padding-bottom:5px; margin-bottom:10px;">
+                            Atributos</div>
+                        ${['str', 'dex', 'con', 'int', 'wis', 'cha'].map(a => `
+                        <div class="cs-stat-row">
+                            <span
+                                style="text-transform:uppercase; font-size:0.9rem; color:#aaa; width:40px;">${a}</span>
+                            <span id="cs-${a}" style="color:white; font-weight:bold;">10</span>
+                            <span id="cs-${a}-mod" class="cs-mod-badge">+0</span>
+                        </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Col 2: Loadout -->
+                <div style="display:flex; flex-direction:column; gap:1.5rem; overflow-y:auto;">
+                    <!-- Class/Combat -->
+                    <div class="cs-card">
+                        <div class="cs-label"><i data-lucide="sword" size="14" style="margin-right:5px;"></i> Estilo de
+                            Combate</div>
+                        <div id="csStyle" class="cs-val" style="color:var(--accent-red);">Iniciante</div>
+                        <div style="font-size:0.9rem; color:#888;">
+                            Sua técnica de respiração define suas habilidades de combate.
+                        </div>
+                    </div>
+
+                    <!-- Background Info -->
+                    <div class="cs-card">
+                        <div class="cs-label"><i data-lucide="scroll" size="14" style="margin-right:5px;"></i>
+                            Antecedente</div>
+                        <div id="csBgTitle" class="cs-val" style="color:#ffd700;">-</div>
+                        <p id="csBgDesc" style="font-size:0.95rem; color:#aaa; margin:0 0 15px 0; line-height:1.5;">-
+                        </p>
+
+                        <div class="cs-label" style="margin-top:10px;">Itens Iniciais</div>
+                        <ul id="csItems" style="padding-left:20px; margin:0; list-style:circle; color:#888;">
+                            <li>Nenhum item</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div
+            style="padding:15px 30px; background:#0a0a0c; border-top:1px solid #333; display:flex; justify-content:flex-end;">
+            <button onclick="document.getElementById('characterSummaryModal').style.display='none'"
+                style="padding:10px 25px; background:var(--accent-red); color:white; border:none; font-family:'Cinzel'; cursor:pointer; font-weight:700;">
+                FECHAR
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // PATCH: Ensure 6-Step Navigation Works
+    window.goToStep = function (n) {
+        // 1. Hide all steps
+        document.querySelectorAll('.form-step').forEach(el => {
+            el.style.display = 'none';
+            el.classList.remove('active');
+        });
+
+        // 2. Show Target
+        const target = document.getElementById('step-' + n);
+        if (target) {
+            target.style.display = 'block';
+            setTimeout(() => target.classList.add('active'), 10);
+        }
+
+        // 3. Update Sidebar
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        const nav = document.getElementById('nav-step-' + n);
+        if (nav) {
+            nav.classList.add('active');
+            nav.classList.remove('locked');
+        }
+
+        // Mobile Sidebar Close
+        const sidebar = document.getElementById('sidebarLeft');
+        if (sidebar && window.innerWidth <= 768) {
+            sidebar.classList.remove('open');
+        }
+    }
+</script>
 </body>
 
 </html>

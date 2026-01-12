@@ -585,13 +585,14 @@ function recalculateState() {
         let baseVal = 0;
         let finalVal = 0;
         let mod = 0;
+        let hasBonus = state.bonuses.includes(s);
 
         if (slot.children.length > 0) {
             baseVal = parseInt(slot.children[0].innerText); // Raw value from token
             filledCount++;
 
             // Apply Bonus
-            if (state.bonuses.includes(s)) {
+            if (hasBonus) {
                 finalVal = baseVal + 2;
             } else {
                 finalVal = baseVal;
@@ -608,24 +609,26 @@ function recalculateState() {
 
         // Update UI
         const modSpan = document.getElementById(`mod-${s}`);
-        // Show Total Value if bonus applied, or just mod? 
-        // Request: "Exiba o Valor Total (Base + Bônus) em tamanho grande. Abaixo dele, exiba o Modificador"
-        // Currently our UI structure is: Token (Base) -> Slot -> Mod Display.
-        // We might want to visually indicate the +2 in the UI.
-
         let displayMod = mod >= 0 ? `+${mod}` : mod;
 
-        if (state.bonuses.includes(s) && baseVal > 0) {
-            // Maybe modify the token text temporarily or show near it?
-            // For now, let's update the mod display to show "16 (+3)" style if space permits or just Mod
-            modSpan.innerHTML = `<span style="font-size:0.6em; color:#bd00ff;">${finalVal}</span> <br> ${displayMod}`;
-        } else if (baseVal > 0) {
-            modSpan.innerHTML = `<span style="font-size:0.6em; color:#fff;">${finalVal}</span> <br> ${displayMod}`;
+        if (state.assignments[s] > 0) {
+            if (hasBonus) {
+                // Visual Highlight for Bonus: Show calculation
+                modSpan.innerHTML = `
+                    <div style="font-size:0.7em; color:#aaa; margin-bottom:2px;">${baseVal} <span style="color:#00e5ff;">+2</span></div>
+                    <div style="font-size:1.1em; font-weight:bold; color:#00e5ff;">${finalVal}</div>
+                    <div style="font-size:0.8em; color:#888;">(${displayMod})</div>
+                `;
+            } else {
+                // Standard Display
+                modSpan.innerHTML = `
+                    <div style="font-size:1.1em; font-weight:bold; color:white;">${finalVal}</div>
+                    <div style="font-size:0.8em; color:#888;">(${displayMod})</div>
+                `;
+            }
         } else {
-            modSpan.innerText = "+0";
+            modSpan.innerHTML = `<span style="color:#444;">--</span>`;
         }
-
-        modSpan.style.color = mod > 0 ? '#00e5ff' : (mod < 0 ? '#ff3d3d' : '#888');
     });
 
     // Race Logic for Bonuses
