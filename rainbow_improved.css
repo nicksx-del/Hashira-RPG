@@ -1,0 +1,78 @@
+/* RAINBOW (Special) - RGB Gaming Style PREMIUM */
+.blade.fx-rainbow .blade-color-layer {
+    background: linear-gradient(90deg,
+            #ff0055 0%,
+            #ff3d00 16%,
+            #ffea00 33%,
+            #00ff88 50%,
+            #00e5ff 66%,
+            #7b2cbf 83%,
+            #ff0055 100%);
+    background-size: 300% 100%;
+    opacity: 1;
+    animation: rainbowShift 2.5s linear infinite, rainbowPulse 1.2s ease-in-out infinite;
+    mix-blend-mode: screen;
+    filter: saturate(1.8) brightness(1.3) contrast(1.1);
+}
+
+.blade.fx-rainbow .blade-aura {
+    background: radial-gradient(ellipse at center,
+            rgba(255, 0, 255, 0.9) 0%,
+            rgba(0, 255, 255, 0.7) 30%,
+            rgba(255, 255, 0, 0.6) 60%,
+            transparent 100%);
+    filter: blur(20px) saturate(2);
+    opacity: 1;
+    animation: rgbRotate 1.8s linear infinite, auraPulse 0.9s ease-in-out infinite alternate;
+    box-shadow:
+        0 0 30px rgba(255, 0, 255, 0.9),
+        0 0 50px rgba(0, 255, 255, 0.7),
+        0 0 70px rgba(255, 255, 0, 0.5),
+        inset 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+@keyframes rainbowShift {
+    0% {
+        background-position: 0% center;
+    }
+
+    100% {
+        background-position: 300% center;
+    }
+}
+
+@keyframes rainbowPulse {
+
+    0%,
+    100% {
+        filter: saturate(1.8) brightness(1.3) contrast(1.1);
+        transform: scaleY(1);
+    }
+
+    50% {
+        filter: saturate(2.2) brightness(1.5) contrast(1.2);
+        transform: scaleY(1.02);
+    }
+}
+
+@keyframes rgbRotate {
+    0% {
+        filter: blur(20px) saturate(2) hue-rotate(0deg);
+    }
+
+    100% {
+        filter: blur(20px) saturate(2) hue-rotate(360deg);
+    }
+}
+
+@keyframes auraPulse {
+    0% {
+        opacity: 0.8;
+        transform: scale(0.95);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1.08);
+    }
+}

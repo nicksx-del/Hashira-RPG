@@ -3360,19 +3360,43 @@ window.renderClassFeaturesInGrimoire = function () {
                 if (type === 'Ação Bônus') badgeColor = '#4cc9f0';
                 if (type === 'Reação') badgeColor = '#ffd700';
 
+                // Check if this is an attribute boost feature
+                const isAttributeBoost = featName.includes('Incremento no Valor de Habilidade');
+
+                // Check if already used
+                if (!humanData.usedFeatures) humanData.usedFeatures = [];
+                const featureKey = `${featName}_${i}`; // Include level to allow multiple uses
+                const isUsed = humanData.usedFeatures.includes(featureKey);
+
                 // CARD HTML
                 const card = document.createElement('div');
                 card.className = 'ability-card';
-                card.onclick = () => card.classList.toggle('expanded');
+
+                // Create button badge for header (always visible)
+                let useButtonBadge = '';
+                if (isAttributeBoost) {
+                    if (isUsed) {
+                        useButtonBadge = `<span class="ability-badge" style="background:#666; cursor:not-allowed;">USADO</span>`;
+                    } else {
+                        useButtonBadge = `<button class="ability-badge" onclick="event.stopPropagation(); showAttributeBoostModal('${featureKey}', ${i})" style="background:#56ab2f; cursor:pointer; border:none; padding:4px 10px; font-size:0.75rem; border-radius:4px; font-weight:600; transition:all 0.2s;">USAR</button>`;
+                    }
+                }
 
                 card.innerHTML = `
                     <div class="ability-header">
                         <span class="ability-name">${featName}</span>
-                        <span class="ability-badge" style="background:${badgeColor}">${type}</span>
+                        <div style="display:flex; align-items:center; gap:5px;">
+                            <span class="ability-badge" style="background:${badgeColor}">${type}</span>
+                            ${useButtonBadge}
+                        </div>
                     </div>
                     <div class="ability-summary">${summary}</div>
                     <div class="ability-details">${fullDesc}</div>
                 `;
+
+                // Add expand/collapse for all cards
+                card.onclick = () => card.classList.toggle('expanded');
+
                 container.appendChild(card);
             });
         }
@@ -3671,3 +3695,235 @@ window.updateStat = function (key, newValue) {
     renderAttributes();
     if (typeof updateVitalsUI === 'function') updateVitalsUI(); // Check if HP/AC changed (CON/DEX)
 };
+
+// ===== ATTRIBUTE BOOST MODAL =====
+window.showAttributeBoostModal = function (featureKey, level) {
+    const modal = document.createElement('div');
+    modal.id = 'attributeBoostModal';
+    modal.className = 'modal-overlay';
+    modal.style.display = 'flex';
+    modal.style.alignItems = 'center';
+    modal.style.justifyContent = 'center';
+    modal.style.background = 'rgba(0,0,0,0.95)';
+    modal.style.zIndex = '9999';
+
+    const stats = humanData.stats || { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 };
+    const statNames = {
+        str: 'Força',
+        dex: 'Destreza',
+        con: 'Constituição',
+        int: 'Inteligência',
+        wis: 'Sabedoria',
+        cha: 'Carisma'
+    };
+
+    let selectedMode = null; // 'single' or 'double'
+    let selectedStats = [];
+
+    // Build stat selection HTML
+    let statsHTML = '';
+    Object.keys(statNames).forEach(key => {
+        const currentVal = stats[key];
+        const atMax = currentVal >= 20;
+        const disabledClass = atMax ? 'disabled' : '';
+        const disabledAttr = atMax ? 'disabled' : '';
+
+        statsHTML += `
+            <div class="stat-option ${disabledClass}" data-stat="${key}" ${disabledAttr}>
+                <div class="stat-name">${statNames[key]}</div>
+                <div class="stat-value">${currentVal}</div>
+                ${atMax ? '<div class="stat-max-badge">MAX</div>' : ''}
+            </div>
+        `;
+    });
+
+    modal.innerHTML = `
+        <style>
+            .stat-option {
+                padding: 1rem;
+                background: rgba(255,255,255,0.05);
+                border: 2px solid #444;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.2s;
+                text-align: center;
+            }
+            .stat-option:hover:not(.disabled) {
+                border-color: var(--accent-primary);
+                background: rgba(0, 180, 216, 0.1);
+                transform: translateY(-2px);
+            }
+            .stat-option.selected {
+                border-color: var(--accent-primary);
+                background: rgba(0, 180, 216, 0.2);
+                box-shadow: 0 0 15px rgba(0, 180, 216, 0.3);
+            }
+            .stat-option.disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+            }
+            .stat-name {
+                font-size: 0.85rem;
+                color: #aaa;
+                margin-bottom: 5px;
+            }
+            .stat-value {
+                font-size: 1.8rem;
+                font-weight: bold;
+                color: #fff;
+            }
+            .stat-max-badge {
+                font-size: 0.7rem;
+                color: var(--accent-primary);
+                margin-top: 3px;
+                font-weight: 600;
+            }
+        </style>
+        <div class="modal-content" style="max-width:600px; padding:2rem; background:#141418; border:1px solid #333; border-radius:12px; text-align:center;">
+            <i data-lucide="trending-up" size="48" color="var(--accent-primary)" style="margin-bottom:1rem;"></i>
+            
+            <h2 style="font-family:'Cinzel', serif; color:var(--accent-primary); margin:0 0 1rem 0;">Incremento de Atributo</h2>
+            <p style="color:#aaa; margin-bottom:2rem;">Escolha como deseja aumentar seus atributos:</p>
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:2rem;">
+                <button id="btnMode1" onclick="selectBoostMode('single')" class="boost-mode-btn" style="padding:1.5rem; background:rgba(255,255,255,0.05); border:2px solid #444; border-radius:8px; cursor:pointer; transition:0.2s;">
+                    <div style="font-size:2rem; font-weight:bold; color:var(--accent-primary);">+2</div>
+                    <div style="font-size:0.8rem; color:#888; margin-top:5px;">em UM atributo</div>
+                </button>
+                <button id="btnMode2" onclick="selectBoostMode('double')" class="boost-mode-btn" style="padding:1.5rem; background:rgba(255,255,255,0.05); border:2px solid #444; border-radius:8px; cursor:pointer; transition:0.2s;">
+                    <div style="font-size:2rem; font-weight:bold; color:var(--accent-primary);">+1 / +1</div>
+                    <div style="font-size:0.8rem; color:#888; margin-top:5px;">em DOIS atributos</div>
+                </button>
+            </div>
+            
+            <div id="statSelectionArea" style="display:none;">
+                <p id="selectionInstruction" style="color:#ccc; margin-bottom:1rem; font-size:0.9rem;">Selecione um atributo:</p>
+                <div class="stats-grid" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; margin-bottom:2rem;">
+                    ${statsHTML}
+                </div>
+            </div>
+            
+            <div style="display:flex; gap:15px; justify-content:center;">
+                <button id="btnConfirmBoost" onclick="confirmAttributeBoost('${featureKey}')" disabled style="background:#333; color:#666; padding:12px 30px; border:none; border-radius:6px; font-weight:600; cursor:not-allowed; transition:0.2s;">
+                    CONFIRMAR
+                </button>
+                <button onclick="closeAttributeBoostModal()" style="background:transparent; border:1px solid #444; color:#888; padding:12px 30px; border-radius:6px; font-weight:600; cursor:pointer; transition:0.2s;">
+                    CANCELAR
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    if (window.lucide) lucide.createIcons();
+
+    // Setup click handlers for stat selection
+    modal.querySelectorAll('.stat-option:not(.disabled)').forEach(el => {
+        el.onclick = function () {
+            const stat = this.getAttribute('data-stat');
+            if (!selectedMode) return;
+
+            if (selectedMode === 'single') {
+                // Clear all previous selections
+                modal.querySelectorAll('.stat-option').forEach(s => s.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedStats = [stat];
+            } else if (selectedMode === 'double') {
+                // Toggle selection
+                if (this.classList.contains('selected')) {
+                    this.classList.remove('selected');
+                    selectedStats = selectedStats.filter(s => s !== stat);
+                } else {
+                    if (selectedStats.length < 2) {
+                        this.classList.add('selected');
+                        selectedStats.push(stat);
+                    }
+                }
+            }
+
+            updateConfirmButton();
+        };
+    });
+
+    // Mode selection functions (global scope)
+    window.selectBoostMode = function (mode) {
+        selectedMode = mode;
+        selectedStats = [];
+
+        // Update button styles
+        const btn1 = modal.querySelector('#btnMode1');
+        const btn2 = modal.querySelector('#btnMode2');
+
+        if (mode === 'single') {
+            btn1.style.borderColor = 'var(--accent-primary)';
+            btn1.style.background = 'rgba(0, 180, 216, 0.15)';
+            btn2.style.borderColor = '#444';
+            btn2.style.background = 'rgba(255,255,255,0.05)';
+            modal.querySelector('#selectionInstruction').textContent = 'Selecione UM atributo para receber +2:';
+        } else {
+            btn2.style.borderColor = 'var(--accent-primary)';
+            btn2.style.background = 'rgba(0, 180, 216, 0.15)';
+            btn1.style.borderColor = '#444';
+            btn1.style.background = 'rgba(255,255,255,0.05)';
+            modal.querySelector('#selectionInstruction').textContent = 'Selecione DOIS atributos para receber +1 cada:';
+        }
+
+        // Clear selections
+        modal.querySelectorAll('.stat-option').forEach(s => s.classList.remove('selected'));
+
+        // Show stat selection area
+        modal.querySelector('#statSelectionArea').style.display = 'block';
+        updateConfirmButton();
+    };
+
+    function updateConfirmButton() {
+        const btn = modal.querySelector('#btnConfirmBoost');
+        const isValid = (selectedMode === 'single' && selectedStats.length === 1) ||
+            (selectedMode === 'double' && selectedStats.length === 2);
+
+        if (isValid) {
+            btn.disabled = false;
+            btn.style.background = 'var(--accent-primary)';
+            btn.style.color = '#fff';
+            btn.style.cursor = 'pointer';
+        } else {
+            btn.disabled = true;
+            btn.style.background = '#333';
+            btn.style.color = '#666';
+            btn.style.cursor = 'not-allowed';
+        }
+    }
+
+    window.confirmAttributeBoost = function (key) {
+        const boost = selectedMode === 'single' ? 2 : 1;
+
+        // Apply boosts
+        selectedStats.forEach(stat => {
+            const currentVal = humanData.stats[stat];
+            const newVal = Math.min(20, currentVal + boost);
+            humanData.stats[stat] = newVal;
+        });
+
+        // Mark as used
+        if (!humanData.usedFeatures) humanData.usedFeatures = [];
+        humanData.usedFeatures.push(key);
+
+        // Save and update UI
+        saveHuman();
+        renderAttributes();
+        updateVitalsUI(); // CON might have changed
+        renderClassFeaturesInGrimoire();
+
+        // Show success message
+        const statList = selectedStats.map(s => statNames[s]).join(' e ');
+        showToast(`✨ ${statList} aumentado em +${boost}!`, 'success');
+
+        closeAttributeBoostModal();
+    };
+
+    window.closeAttributeBoostModal = function () {
+        const m = document.getElementById('attributeBoostModal');
+        if (m) m.remove();
+    };
+};
+
