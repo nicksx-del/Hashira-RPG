@@ -785,32 +785,306 @@
             align-items: center;
         }
 
-        /* RESPONSIVE */
+        /* --- MOBILE ADAPTATIONS --- */
+        /* Mobile Toggle Button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            z-index: 1002;
+        }
+
+        /* Mobile Drawer */
+        .mobile-drawer {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            max-width: 300px;
+            height: 100vh;
+            background: linear-gradient(to bottom, #0a0a0c, #000);
+            border-left: 1px solid #333;
+            z-index: 1001;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            padding: 5rem 2rem 2rem 2rem;
+            box-shadow: -10px 0 50px rgba(0, 0, 0, 0.8);
+        }
+
+        .mobile-drawer.active {
+            right: 0;
+        }
+
+        .mobile-drawer a {
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 1.2rem;
+            color: #ccc;
+            font-family: var(--font-display);
+        }
+
+        .mobile-drawer a:hover {
+            color: var(--accent-red);
+            padding-left: 10px;
+        }
+
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .drawer-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* RESPONSIVE QUERIES */
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.2rem;
-                padding: 0 10px;
-            }
-
-            .story-container {
-                grid-template-columns: 1fr;
-            }
-
             .navbar {
                 padding: 1rem;
+            }
+
+            .nav-container {
+                padding: 0;
             }
 
             .nav-links {
                 display: none;
             }
 
-            /* Simplified for mobile */
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+                padding: 0 1rem;
+            }
+
+            .story-container {
+                grid-template-columns: 1fr;
+                flex-direction: column;
+            }
+
+            .story-img-box {
+                height: 250px;
+            }
+
+            .styles-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .mech-grid {
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* Style Chooser Mobile */
+            .style-tabs {
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding: 0 1rem 1rem 1rem;
+                mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+                -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+                /* Mask helps show scroll */
+            }
+
+            .style-tab-btn {
+                flex-shrink: 0;
+            }
+
+            .style-chooser-content {
+                grid-template-columns: 1fr;
+                margin-top: 1rem;
+            }
+
+            .style-char-art {
+                position: relative;
+                height: 300px;
+                width: auto;
+                margin: 0 auto;
+                opacity: 0.8;
+                mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+                -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+            }
+
+            .style-info-display {
+                padding: 1rem;
+                text-align: center;
+                align-items: center;
+            }
+
+            .cta-content h2 {
+                font-size: 2rem;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
         }
+
+        /* --- TRANSITION OVERLAY (SHUTTER) --- */
+        .transition-layer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .shutter-top,
+        .shutter-bottom {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: #000;
+            transition: transform 0.6s cubic-bezier(0.8, 0, 0.2, 1);
+        }
+
+        .shutter-top {
+            top: 0;
+            transform: translateY(-100%);
+            border-bottom: 2px solid var(--accent-red);
+        }
+
+        .shutter-bottom {
+            bottom: 0;
+            transform: translateY(100%);
+            border-top: 2px solid var(--accent-red);
+        }
+
+        .transition-layer.active {
+            pointer-events: all;
+        }
+
+        .transition-layer.active .shutter-top {
+            transform: translateY(0);
+        }
+
+        .transition-layer.active .shutter-bottom {
+            transform: translateY(0);
+        }
+
+        .transition-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            z-index: 10000;
+            color: var(--accent-red);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition-delay: 0.3s;
+        }
+
+        .transition-layer.active .transition-icon {
+            transform: translate(-50%, -50%) scale(1.5);
+            opacity: 1;
+        }
+
+        /* --- SLASH ANIMATION --- */
+        .slash-line {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0%;
+            height: 5px;
+            background: #fff;
+            box-shadow:
+                0 0 10px #fff,
+                0 0 30px var(--accent-red),
+                0 0 60px var(--accent-red);
+            transform: translate(-50%, -50%) rotate(-45deg);
+            z-index: 10001;
+            opacity: 0;
+            transition: opacity 0.1s;
+        }
+
+        .transition-layer.slashing .slash-line {
+            animation: slashCut 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 1;
+        }
+
+        /* Screen Shake */
+        .transition-layer.slashing {
+            animation: screenShake 0.4s ease-out;
+        }
+
+        @keyframes slashCut {
+            0% {
+                width: 0%;
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                width: 150%;
+                opacity: 0;
+            }
+        }
+
+        @keyframes screenShake {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            10% {
+                transform: translate(-5px, 5px);
+            }
+
+            20% {
+                transform: translate(5px, -5px);
+            }
+
+            30% {
+                transform: translate(-3px, 3px);
+            }
+
+            40% {
+                transform: translate(0, 0);
+            }
+        }
+
+        /* --- UPDATED SHUTTER --- */
     </style>
     <link rel="stylesheet" href="custom_effects.css">
 </head>
 
 <body>
+    <!-- TRANSITION LAYER -->
+    <div id="transitionLayer" class="transition-layer">
+        <div class="slash-line"></div>
+        <div class="shutter-top"></div>
+        <div class="shutter-bottom"></div>
+        <div class="transition-icon">
+            <i data-lucide="flame" size="64"></i>
+        </div>
+    </div>
 
     <!-- NAV -->
     <nav class="navbar">
@@ -823,10 +1097,33 @@
             <!-- Links Removidos (Sistema, História, Comunidade) -->
 
             <div class="nav-actions">
+                <button onclick="toggleMobileMenu()" class="mobile-menu-btn"><i data-lucide="menu"
+                        size="28"></i></button>
                 <!-- JS Inject -->
             </div>
         </div>
     </nav>
+
+    <!-- MOBILE DRAWER -->
+    <div class="drawer-overlay" id="drawerOverlay" onclick="toggleMobileMenu()"></div>
+    <div class="mobile-drawer" id="mobileDrawer">
+        <div
+            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; border-bottom:1px solid #333; padding-bottom:1rem;">
+            <span style="font-family:var(--font-display); color:white; font-size:1.2rem;">MENU</span>
+            <button onclick="toggleMobileMenu()" style="background:none; border:none; color:#666; cursor:pointer;"><i
+                    data-lucide="x" size="24"></i></button>
+        </div>
+        <a href="index.html" onclick="toggleMobileMenu()"><i data-lucide="home" size="18"
+                style="margin-right:10px; color:var(--accent-red);"></i> Início</a>
+        <a href="create-character.html" onclick="toggleMobileMenu()"><i data-lucide="sword" size="18"
+                style="margin-right:10px; color:var(--accent-red);"></i> Novo Jogo</a>
+        <a href="characters.html" onclick="toggleMobileMenu()"><i data-lucide="users" size="18"
+                style="margin-right:10px; color:var(--accent-red);"></i> Personagens</a>
+        <a href="campaign-hub.html" onclick="toggleMobileMenu()"><i data-lucide="map" size="18"
+                style="margin-right:10px; color:var(--accent-red);"></i> Campanha</a>
+        <a href="login.html" onclick="toggleMobileMenu()"><i data-lucide="log-in" size="18"
+                style="margin-right:10px; color:var(--accent-red);"></i> Login</a>
+    </div>
 
     <!-- HERO -->
     <header class="hero">
@@ -843,7 +1140,8 @@
             <p>Junte-se à Corporação de Caçadores na experiência definitiva de RPG baseada em navegador. Cace demônios,
                 masterize estilos de respiração e ascenda de Mizunoto a Hashira.</p>
             <div class="hero-btns">
-                <a href="create-character.html" class="btn-hero-primary">
+                <a href="create-character.html" onclick="playTransition(event, 'create-character.html')"
+                    class="btn-hero-primary">
                     <i data-lucide="play" style="width:18px;"></i> Jogar Agora
                 </a>
                 <a href="campaign-hub.html" class="btn-hero-secondary"
@@ -1484,6 +1782,23 @@
         });
     </script>
     <script>
+        // Toggle Mobile Menu
+        function toggleMobileMenu() {
+            const drawer = document.getElementById('mobileDrawer');
+            const overlay = document.getElementById('drawerOverlay');
+
+            if (drawer.classList.contains('active')) {
+                drawer.classList.remove('active');
+                overlay.classList.remove('active');
+            } else {
+                drawer.classList.add('active');
+                overlay.classList.add('active');
+            }
+
+            // Re-render icons just in case
+            if (window.lucide) lucide.createIcons();
+        }
+
         // --- INTERSECTION OBSERVER FOR REVEAL ---
         document.addEventListener('DOMContentLoaded', () => {
             const observerOptions = {
@@ -1602,19 +1917,52 @@
 
             if (window.lucide) lucide.createIcons();
         }
+
+        // --- TRANSITION LOGIC ---
+        function playTransition(e, url) {
+            e.preventDefault();
+
+            const tLayer = document.getElementById('transitionLayer');
+            tLayer.style.display = 'flex';
+
+            // 1. Trigger Slash
+            setTimeout(() => {
+                tLayer.classList.add('slashing');
+            }, 10);
+
+            // 2. Screen Shake (Sync with Slash)
+            // CSS handles this via .slashing class
+
+            // 3. Slam Shutters (delayed to let slash finish cut)
+            setTimeout(() => {
+                tLayer.classList.add('active');
+            }, 250); // Slightly longer delay for impact
+
+            // 4. Redirect
+            setTimeout(() => {
+                window.location.href = url;
+            }, 1000);
+        }
+
+        function createWisteria() {
+            const container = document.getElementById('wisteria');
+            if (!container) return;
+
+            const petalCount = 20; // Number of petals
+
+            for (let i = 0; i < petalCount; i++) {
+                const petal = document.createElement('div');
+                petal.classList.add('petal');
+                petal.style.left = Math.random() * 100 + '%';
+                petal.style.animationDuration = (Math.random() * 3 + 4) + 's';
+                petal.style.animationDelay = Math.random() * 5 + 's';
+                petal.style.opacity = Math.random() * 0.5 + 0.3;
+                container.appendChild(petal);
+            }
+        }
     </script>
-    function createWisteria() {
-    const container = document.getElementById('wisteria');
-    if (!container) return;
-
-    const petalCount = 20; // Number of petals
-
-    for (let i = 0; i < petalCount; i++) { const petal=document.createElement('div'); petal.classList.add('petal');
-        petal.style.left=Math.random() * 100 + '%' ; petal.style.animationDuration=(Math.random() * 3 + 4) + 's' ;
-        petal.style.animationDelay=Math.random() * 5 + 's' ; petal.style.opacity=Math.random() * 0.5 + 0.3;
-        container.appendChild(petal); } } </script>
-        <script src="auth_system.js"></script>
-        <script src="premium_system.js"></script>
+    <script src="auth_system.js"></script>
+    <script src="premium_system.js"></script>
 </body>
 
 </html>

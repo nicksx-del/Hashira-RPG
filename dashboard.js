@@ -3927,3 +3927,91 @@ window.showAttributeBoostModal = function (featureKey, level) {
     };
 };
 
+
+// MOBILE MENU TOGGLE
+window.toggleMobileMenu = function () {
+    const overlay = document.getElementById('mobileMenuOverlay');
+    if (!overlay) return;
+
+    if (overlay.style.display === 'flex') {
+        // Close
+        overlay.style.opacity = '0';
+        const content = overlay.querySelector('.menu-content');
+        if (content) content.style.transform = 'scale(0.9)';
+
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, 300);
+    } else {
+        // Open
+        overlay.style.display = 'flex';
+        // Force reflow
+        void overlay.offsetWidth;
+
+        overlay.style.opacity = '1';
+        const content = overlay.querySelector('.menu-content');
+        if (content) content.style.transform = 'scale(1)';
+    }
+};
+
+// Complete Mission Mock
+window.completeMission = function () {
+    humanData.xp += 100;
+    // Add yen
+    const yenItem = humanData.inventory.find(i => i.name === "Bolsa de Ienes" || i.name.includes("Ienes"));
+    if (yenItem) {
+        // sophisticated parsing/adding logic would go here
+        showToast("Missão Completa! +100 XP", "success");
+    } else {
+        humanData.inventory.push({ name: "Bolsa de Ienes", type: "consumable", props: "1000", desc: "Recompensa." });
+        showToast("Missão Completa! +100 XP e 1000 Ienes", "success");
+    }
+    saveHuman();
+    initDashboard(); // Refresh
+};
+
+// RENDER STORE (Premium)
+window.renderStore = function () {
+    const list = document.getElementById('storeList');
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    const items = [
+        { name: "Membership Premium", price: "R$ 15,00", desc: "Acesso a todos os estilos de respiração e slots de personagem.", icon: "crown", color: "#ffd700" },
+        { name: "Pílula de Reset", price: "5000 Ienes", desc: "Redefine todos os seus atributos e escolhas.", icon: "refresh-cw", color: "#4cc9f0" },
+        { name: "Skin Visual: Hashira", price: "Premium", desc: "Desbloqueia visuais exclusivos de Hashira.", icon: "shirt", color: "#f72585" }
+    ];
+
+    items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = "store-card";
+        card.style.cssText = `
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.2s;
+        `;
+
+        card.innerHTML = `
+            <div style="background:${item.color}20; padding:10px; border-radius:50%; border:1px solid ${item.color}; display:flex;">
+                <i data-lucide="${item.icon}" color="${item.color}"></i>
+            </div>
+            <div style="flex:1;">
+                <h4 style="color:white; margin:0 0 5px 0;">${item.name}</h4>
+                <p style="color:#888; margin:0; font-size:0.85rem;">${item.desc}</p>
+            </div>
+            <button style="background:${item.color}; color:black; border:none; padding:8px 15px; border-radius:6px; font-weight:bold; cursor:pointer;">
+                ${item.price}
+            </button>
+        `;
+
+        list.appendChild(card);
+    });
+
+    if (window.lucide) lucide.createIcons();
+};

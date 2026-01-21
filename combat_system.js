@@ -60,12 +60,47 @@ window.renderAttacks = function () {
 };
 
 // === MODAL DE ADICIONAR ATAQUE (PREMIUM) ===
-window.openAttackModal = function () {
+window.openAttackModal = function (editIndex = null) {
     const modal = document.getElementById('attackModal');
     if (modal) {
         // Reset form
-        document.getElementById('attackForm').reset();
-        document.getElementById('attack-bonus').value = '+0';
+        const form = modal.querySelector('div.modal-content');
+        // Note: The HTML doesn't strictly have a <form> tag, it uses inputs. 
+        // We need to clear them manually or set them.
+
+        const btnConfirm = document.getElementById('btnConfirmAttack');
+
+        if (editIndex !== null && charData.attacks[editIndex]) {
+            // EDIT MODE
+            const atk = charData.attacks[editIndex];
+            document.getElementById('atkNameInput').value = atk.name;
+            document.getElementById('atkDmgInput').value = atk.damage;
+            document.getElementById('atkCritInput').value = atk.crit || 20;
+            document.getElementById('atkMultInput').value = atk.mult || 2;
+            document.getElementById('atkBonusInput').value = atk.bonus;
+            document.getElementById('atkTypeInput').value = atk.type;
+
+            // Handle Type if not in select? (Fallback)
+            // document.getElementById('atkRangeInput').value = atk.range; // Add range support if needed in object
+
+            btnConfirm.onclick = () => confirmAddAttack(editIndex);
+            btnConfirm.innerText = "SALVAR ALTERAÇÕES";
+
+            modal.setAttribute('data-mode', 'edit');
+        } else {
+            // CREATE MODE
+            document.getElementById('atkNameInput').value = '';
+            document.getElementById('atkDmgInput').value = '';
+            document.getElementById('atkCritInput').value = 20;
+            document.getElementById('atkMultInput').value = 2;
+            document.getElementById('atkBonusInput').value = 0;
+            document.getElementById('atkTypeInput').value = '';
+
+            btnConfirm.onclick = () => confirmAddAttack(null);
+            btnConfirm.innerText = "CRIAR ATAQUE";
+
+            modal.setAttribute('data-mode', 'create');
+        }
 
         modal.style.display = 'flex';
         setTimeout(() => {
@@ -83,35 +118,41 @@ window.closeAttackModal = function () {
     }
 };
 
-window.handleAttackSubmit = function (e) {
-    e.preventDefault();
-
-    const name = document.getElementById('attack-name').value.trim();
-    const bonus = document.getElementById('attack-bonus').value.trim();
-    const damage = document.getElementById('attack-damage').value.trim();
-    const type = document.getElementById('attack-type').value;
-    const description = document.getElementById('attack-description').value.trim();
+window.confirmAddAttack = function (editIndex = null) {
+    const name = document.getElementById('atkNameInput').value.trim();
+    const damage = document.getElementById('atkDmgInput').value.trim();
+    const bonus = document.getElementById('atkBonusInput').value.trim();
+    const type = document.getElementById('atkTypeInput').value;
+    const crit = parseInt(document.getElementById('atkCritInput').value) || 20;
+    const mult = parseInt(document.getElementById('atkMultInput').value) || 2;
+    // const range = document.getElementById('atkRangeInput').value;
 
     if (!name || !damage) {
-        alert('Por favor, preencha o nome e o dano do ataque.');
+        if (typeof showToast === 'function') showToast('Nome e Dano são obrigatórios!', 'error');
+        else alert('Por favor, preencha o nome e o dano do ataque.');
         return;
     }
 
     const newAttack = {
         name,
-        bonus: bonus || '+0',
         damage,
-        type,
-        description
+        bonus: bonus || '0',
+        type: type || 'Físico',
+        crit,
+        mult
     };
 
-    charData.attacks.push(newAttack);
+    if (editIndex !== null) {
+        charData.attacks[editIndex] = newAttack;
+        if (typeof showToast === 'function') showToast(`Ataque "${name}" atualizado!`, 'success');
+    } else {
+        charData.attacks.push(newAttack);
+        if (typeof showToast === 'function') showToast(`Ataque "${name}" criado com sucesso!`, 'success');
+    }
 
-    if (typeof saveState === 'function') saveState();
+    saveHuman(); // Assuming helper from dashboard.js is available globally or we use local save logic
     renderAttacks();
-
     closeAttackModal();
-    showFlashMessage(`✓ ${newAttack.name} adicionado!`);
 };
 
 // === ROLAR ATAQUE COM ANIMAÇÃO 3D ===
@@ -276,23 +317,7 @@ function rollDamageString(damageStr) {
 
 // === EDITAR E REMOVER ===
 window.editAttack = function (index) {
-    const attack = charData.attacks[index];
-    if (!attack) return;
-
-    const newName = prompt('Nome do Ataque:', attack.name);
-    if (newName !== null && newName.trim()) attack.name = newName.trim();
-
-    const newBonus = prompt('Bônus de Ataque:', attack.bonus);
-    if (newBonus !== null) attack.bonus = newBonus.trim();
-
-    const newDamage = prompt('Dano:', attack.damage);
-    if (newDamage !== null && newDamage.trim()) attack.damage = newDamage.trim();
-
-    const newType = prompt('Tipo:', attack.type);
-    if (newType !== null && newType.trim()) attack.type = newType.trim();
-
-    if (typeof saveState === 'function') saveState();
-    renderAttacks();
+    openAttackModal(index);
 };
 
 window.removeAttack = function (index) {

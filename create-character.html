@@ -9,6 +9,7 @@
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700&display=swap"
         rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="breathing_class_db.js"></script>
     <style>
         :root {
             --bg-dark: #050505;
@@ -262,7 +263,7 @@
         /* CARDS GRID (Race) */
         .grid-2 {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2.5rem;
         }
 
@@ -1437,6 +1438,11 @@
                 width: 100%;
             }
 
+            .step-nav-btns {
+                flex-direction: column-reverse;
+                gap: 1rem;
+            }
+
             /* Typography */
             .page-title {
                 font-size: 2.2rem;
@@ -1746,11 +1752,6 @@
             <div onclick="goToStep(5); toggleSidebar()" class="nav-item locked" id="nav-step-5">
                 <div class="step-icon">5</div>
                 <span>Identidade</span>
-                <i data-lucide="lock" class="lock-icon"></i>
-            </div>
-            <div onclick="goToStep(6); toggleSidebar()" class="nav-item locked" id="nav-step-6">
-                <div class="step-icon">6</div>
-                <span>Companheiro</span>
                 <i data-lucide="lock" class="lock-icon"></i>
             </div>
         </div>
@@ -2219,73 +2220,26 @@
 
             <div class="step-nav-btns">
                 <button class="btn-prev" onclick="goToStep(4)"><i data-lucide="arrow-left"></i> Voltar</button>
-                <button class="btn-next" onclick="goToStep(6)">Próximo <i data-lucide="arrow-right"></i></button>
-            </div>
-        </div>
-
-        <!-- STEP 6: COMPANION -->
-        <div id="step-6" class="form-step">
-            <div class="section-header">
-                <span class="sec-num">06.</span> <span class="sec-title">Companheiro Kasugai</span>
-            </div>
-
-            <div class="corps-id-card">
-                <!-- CROW SECTION -->
-                <div class="idc-right" style="width:100% !important; border:none !important; padding:0 !important;">
-                    <div class="idc-section">
-                        <label>Companheiro de Ligação (Corvo Kasugai)</label>
-                        <div style="font-size:0.8rem; color:#888; margin-bottom:8px;">Todo caçador recebe um Corvo
-                            Kasugai para comunicação.
-                        </div>
-
-                        <div style="display:flex; gap:15px; align-items:center;">
-                            <!-- Crow Icon -->
-                            <div
-                                style="width:50px; height:50px; background:#1a1a20; border:1px solid #333; border-radius:50%; display:flex; align-items:center; justify-content:center;">
-                                <i data-lucide="bird" size="24" color="#666"></i>
-                            </div>
-
-                            <!-- Inputs -->
-                            <div style="flex:1; display:flex; gap:10px;">
-                                <input type="text" id="inputCrowName" class="ds-input" placeholder="Nome do Corvo"
-                                    style="flex:1; background:#0a0a0a; border:1px solid #333; height:40px;">
-                                <select id="inputCrowPersonality" class="ds-input"
-                                    style="flex:1; background:#0a0a0a; border:1px solid #333; height:40px;">
-                                    <option value="" disabled selected>Personalidade</option>
-                                    <option value="Arrogante">Arrogante</option>
-                                    <option value="Medroso">Medroso</option>
-                                    <option value="Estrito">Estrito</option>
-                                    <option value="Fofoqueiro">Fofoqueiro</option>
-                                    <option value="Mudo">Mudo</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+                <div style="display:flex; justify-content:center; flex:1;">
+                    <button id="btnSealRecord" class="confirm-btn" onclick="finishCreation()"
+                        style="width:auto; padding:15px 50px; font-size:1.2rem; transition: all 0.5s ease; border-color:var(--accent-red); color:var(--accent-red);">
+                        SELAR REGISTRO <i data-lucide="scroll" style="margin-left:10px;"></i>
+                    </button>
                 </div>
             </div>
-
-            <div style="display:flex; justify-content:center; margin-top:30px;">
-                <button id="btnSealRecord" class="confirm-btn" onclick="finishCreation()"
-                    style="width:auto; padding:15px 50px; font-size:1.2rem; transition: all 0.5s ease;">
-                    SELAR REGISTRO <i data-lucide="scroll" style="margin-left:10px;"></i>
-                </button>
-            </div>
-
-            <!-- WELCOME OVERLAY MOVED HERE -->
-            <div id="welcomeOverlay"
-                style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:20000; align-items:center; justify-content:center; flex-direction:column; animation: fadeIn 2s;">
-                <h1
-                    style="font-family:'Cinzel', serif; color:white; font-size:3rem; margin-bottom:20px; text-align:center; animation: slideUp 1s;">
-                    BEM-VINDO À<br><span style="color:var(--accent-red); font-size:4rem;">CORPORAÇÃO</span>
-                </h1>
-                <p style="color:#aaa; font-size:1.2rem; letter-spacing:2px; animation: fadeIn 3s;">Sua jornada começa
-                    agora.</p>
-            </div>
-
-            <div class="step-nav-btns">
-                <button class="btn-prev" onclick="goToStep(5)"><i data-lucide="arrow-left"></i> Voltar</button>
-            </div>
         </div>
+
+        <!-- WELCOME OVERLAY MOVED HERE -->
+        <div id="welcomeOverlay"
+            style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:20000; align-items:center; justify-content:center; flex-direction:column; animation: fadeIn 2s;">
+            <h1
+                style="font-family:'Cinzel', serif; color:white; font-size:3rem; margin-bottom:20px; text-align:center; animation: slideUp 1s;">
+                BEM-VINDO À<br><span style="color:var(--accent-red); font-size:4rem;">CORPORAÇÃO</span>
+            </h1>
+            <p style="color:#aaa; font-size:1.2rem; letter-spacing:2px; animation: fadeIn 3s;">Sua jornada começa
+                agora.</p>
+        </div>
+
 
     </main>
 
@@ -3250,7 +3204,7 @@
 
         function updatePreview() {
             // Name
-            const name = document.getElementById('inputName').value;
+            const name = document.getElementById('inputCharName').value;
             document.getElementById('displayName').innerText = name || "Sem Nome";
 
             // --- RACE DISPLAY MAPPING ---
@@ -3523,55 +3477,15 @@
         updatePreview();
         updateSkillsDisplay();
 
-        // --- THUNDER BREATHING MODAL LOGIC ---
-        function selectCombatStyle(id, element) {
-            // Unselect others visual
-            document.querySelectorAll('.style-btn').forEach(btn => {
-                btn.classList.remove('selected');
-                btn.style.borderColor = '#333';
-                btn.style.transform = 'scale(1)';
-            });
-
-            if (element) {
-                // If Thunder, don't auto-select yet, show modal
-                if (id === 'thunder') {
-                    // Visual select just for feedback or wait?
-                    // Let's show modal immediately
-                    document.getElementById('thunderWizardModal').style.display = 'flex';
-                    return;
-                }
-
-                selectedCombatStyle = id;
-                element.classList.add('selected');
-                element.style.borderColor = (id === 'thunder' ? '#ffd700' : id === 'flame' ? '#ff4d00' : id === 'beast' ? '#7b8cde' : id === 'wind' ? '#56ab2f' : '#00b4d8');
-                element.style.transform = 'scale(1.05)';
-            }
-        }
-
-        function confirmThunderWizard(subType) {
-            // Find Thunder Element to visually select it
-            const thunderBtn = document.querySelector('.style-btn[onclick*="thunder"]');
-
-            selectedCombatStyle = 'thunder';
-            if (thunderBtn) {
-                thunderBtn.classList.add('selected');
-                thunderBtn.style.borderColor = '#ffd700';
-                thunderBtn.style.transform = 'scale(1.05)';
-            }
-
-            // Save subtype preference
-            state.thunderMastery = subType; // 'specialist' or 'versed'
-
-            // Close Modal
-            document.getElementById('thunderWizardModal').style.display = 'none';
-        }
 
         // --- FINISH CREATION UPDATE ---
         // --- FINISH CREATION UPDATE ---
         function finishCreation() {
             // 1. Validation
-            const name = document.getElementById('inputName').value;
-            if (!name) {
+            const nameEl = document.getElementById('inputCharName') || document.getElementById('inputName');
+            const name = nameEl ? nameEl.value : "Caçador Sem Nome";
+
+            if (!name || name === "Caçador Sem Nome") {
                 showMsg("Nome Inválido", "Por favor, dê um nome ao seu caçador.");
                 return;
             }
@@ -3736,11 +3650,7 @@
                 portrait: state.portrait, // From portrait upload
                 traits: state.traits, // From trait tags
 
-                // Kasugai Crow
-                kasugaiCrow: {
-                    name: document.getElementById('inputCrowName').value || "Não nomeado",
-                    personality: document.getElementById('inputCrowPersonality').value || "Mudo"
-                },
+                traits: state.traits, // From trait tags
 
                 inventory: finalInventory,
                 skills: finalSkills,
