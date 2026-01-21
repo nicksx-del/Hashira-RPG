@@ -997,80 +997,73 @@
             opacity: 0;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             transition-delay: 0.3s;
-        }
 
-        .transition-layer.active .transition-icon {
-            transform: translate(-50%, -50%) scale(1.5);
-            opacity: 1;
-        }
-
-        /* --- SLASH ANIMATION --- */
-        .slash-line {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0%;
-            height: 5px;
-            background: #fff;
-            box-shadow:
-                0 0 10px #fff,
-                0 0 30px var(--accent-red),
-                0 0 60px var(--accent-red);
-            transform: translate(-50%, -50%) rotate(-45deg);
-            z-index: 10001;
-            opacity: 0;
-            transition: opacity 0.1s;
-        }
-
-        .transition-layer.slashing .slash-line {
-            animation: slashCut 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            opacity: 1;
-        }
-
-        /* Screen Shake */
-        .transition-layer.slashing {
-            animation: screenShake 0.4s ease-out;
-        }
-
-        @keyframes slashCut {
-            0% {
-                width: 0%;
-                opacity: 0;
+            /* --- PREMIUM SWIPE TRANSITION --- */
+            .transition-layer {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 9999;
+                pointer-events: none;
+                overflow: hidden;
             }
 
-            50% {
+            .swipe-layer-1,
+            .swipe-layer-2 {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 150%;
+                height: 100%;
+                transform: translateX(-100%) skewX(-15deg);
+                transform-origin: top left;
+                transition: transform 0.8s cubic-bezier(0.7, 0, 0.2, 1);
+                will-change: transform;
+            }
+
+            .swipe-layer-1 {
+                background: var(--accent-red);
+                z-index: 1;
+            }
+
+            .swipe-layer-2 {
+                background: #000;
+                z-index: 2;
+                transition-delay: 0.15s;
+                /* Staggered by CSS now */
+            }
+
+            /* Active States */
+            .transition-layer.active {
+                pointer-events: all;
+            }
+
+            .transition-layer.active .swipe-layer-1,
+            .transition-layer.active .swipe-layer-2 {
+                transform: translateX(-10%) skewX(-15deg);
+                /* Moves both, delay handles stagger */
+            }
+
+            /* Icon Entrance */
+            .transition-icon {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0.8);
+                z-index: 3;
+                opacity: 0;
+                transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+                transition-delay: 0.5s;
+                /* Wait for black swipe */
+            }
+
+            .transition-layer.active .transition-icon {
+                transform: translate(-50%, -50%) scale(1);
                 opacity: 1;
             }
-
-            100% {
-                width: 150%;
-                opacity: 0;
-            }
-        }
-
-        @keyframes screenShake {
-            0% {
-                transform: translate(0, 0);
-            }
-
-            10% {
-                transform: translate(-5px, 5px);
-            }
-
-            20% {
-                transform: translate(5px, -5px);
-            }
-
-            30% {
-                transform: translate(-3px, 3px);
-            }
-
-            40% {
-                transform: translate(0, 0);
-            }
-        }
-
-        /* --- UPDATED SHUTTER --- */
     </style>
     <link rel="stylesheet" href="custom_effects.css">
 </head>
@@ -1078,11 +1071,11 @@
 <body>
     <!-- TRANSITION LAYER -->
     <div id="transitionLayer" class="transition-layer">
-        <div class="slash-line"></div>
-        <div class="shutter-top"></div>
-        <div class="shutter-bottom"></div>
+        <div class="swipe-layer-1"></div>
+        <div class="swipe-layer-2"></div>
         <div class="transition-icon">
-            <i data-lucide="flame" size="64"></i>
+            <img src="assets/hashira-logo.png"
+                style="width: 200px; filter: drop-shadow(0 0 20px rgba(255, 42, 42, 0.6));">
         </div>
     </div>
 
@@ -1090,8 +1083,9 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
-                <i data-lucide="flame"></i>
-                HASHIRA RPG
+                <span
+                    style="font-family: 'Outfit', sans-serif; font-weight: 300; font-size: 1.2rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.9);">Hashira
+                    RPG</span>
             </div>
 
             <!-- Links Removidos (Sistema, História, Comunidade) -->
@@ -1129,15 +1123,14 @@
     <header class="hero">
         <div class="wisteria-container" id="wisteria"></div>
         <div class="hero-content">
-            <div class="hero-title-container" style="padding: 0 1rem;">
-                <div class="hero-kanji">日の呼吸</div>
-                <div class="slash-container">
-                    <h1 class="slash-text" data-text="BREATH&#10;OF THE SUN">BREATH&#10;OF THE SUN</h1>
-                    <div class="slash-line"></div>
-                </div>
+            <div class="hero-title-container"
+                style="padding: 0 1rem; display: flex; justify-content: center; margin-bottom: 1.5rem;">
+                <img src="assets/hashira-logo.png" alt="Hashira RPG"
+                    style="max-width: 350px; width: 100%; opacity: 0; animation: heroFadeIn 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.2s; filter: drop-shadow(0 0 15px rgba(0,0,0,0.6)); image-rendering: -webkit-optimize-contrast; transform: translateZ(0);">
             </div>
-            <h2 class="hero-subtitle">END THE NIGHTMARE.</h2>
-            <p>Junte-se à Corporação de Caçadores na experiência definitiva de RPG baseada em navegador. Cace demônios,
+            <h2 class="hero-subtitle" style="display:none;">END THE NIGHTMARE.</h2>
+            <p style="margin-top: 1rem;">Junte-se à Corporação de Caçadores na experiência definitiva de RPG baseada em
+                navegador. Cace demônios,
                 masterize estilos de respiração e ascenda de Mizunoto a Hashira.</p>
             <div class="hero-btns">
                 <a href="create-character.html" onclick="playTransition(event, 'create-character.html')"
@@ -1920,28 +1913,26 @@
 
         // --- TRANSITION LOGIC ---
         function playTransition(e, url) {
-            e.preventDefault();
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
 
             const tLayer = document.getElementById('transitionLayer');
-            tLayer.style.display = 'flex';
+            tLayer.style.display = 'block';
 
-            // 1. Trigger Slash
-            setTimeout(() => {
-                tLayer.classList.add('slashing');
-            }, 10);
+            // Force Reflow
+            void tLayer.offsetWidth;
 
-            // 2. Screen Shake (Sync with Slash)
-            // CSS handles this via .slashing class
-
-            // 3. Slam Shutters (delayed to let slash finish cut)
-            setTimeout(() => {
+            // Trigger Animation via Class
+            requestAnimationFrame(() => {
                 tLayer.classList.add('active');
-            }, 250); // Slightly longer delay for impact
 
-            // 4. Redirect
-            setTimeout(() => {
-                window.location.href = url;
-            }, 1000);
+                // Redirect logic
+                setTimeout(() => {
+                    window.location.href = url;
+                }, 1200);
+            });
         }
 
         function createWisteria() {
