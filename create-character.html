@@ -566,6 +566,159 @@
             border-color: #555;
         }
 
+        .identity-summary-card {
+            background: #0f0f14;
+            border: 1px solid #2f2f3a;
+            padding: 24px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.35);
+        }
+
+        .identity-summary-title {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            color: #ffd700;
+            text-transform: uppercase;
+        }
+
+        .identity-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .identity-summary-item {
+            background: #0a0a0f;
+            border: 1px solid #262632;
+            padding: 12px;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .identity-summary-item span {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #777;
+            letter-spacing: 1px;
+        }
+
+        .identity-summary-item strong {
+            font-size: 1rem;
+            color: #f2f2f2;
+        }
+
+        .identity-summary-notes {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .identity-summary-note {
+            background: #0a0a0f;
+            border: 1px solid #262632;
+            padding: 12px;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .identity-summary-note span {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #777;
+            letter-spacing: 1px;
+        }
+
+        .identity-summary-note p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #d3d3d3;
+            line-height: 1.4;
+        }
+
+        .identity-summary-traits {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .identity-summary-traits span {
+            background: rgba(217, 4, 41, 0.12);
+            border: 1px solid rgba(217, 4, 41, 0.3);
+            color: #f2f2f2;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+        }
+
+        .identity-preview {
+            margin-top: 1.8rem;
+            padding: 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            background: rgba(15, 15, 20, 0.7);
+        }
+
+        .identity-preview h3 {
+            margin: 0 0 1rem;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ffd700;
+        }
+
+        .identity-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .identity-preview-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .identity-preview-item span {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #7d7d7d;
+            letter-spacing: 0.5px;
+        }
+
+        .identity-preview-item strong {
+            font-size: 0.95rem;
+            color: #f4f4f4;
+        }
+
+        .identity-preview-traits {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .identity-preview-traits span {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 0.7rem;
+            color: #eaeaea;
+        }
+
         /* CARD STYLES (Old - keep just in case or remove if unused) */
         .form-step {
             display: none;
@@ -1670,6 +1823,30 @@
                 width: 100% !important;
                 flex: none !important;
             }
+
+            .corps-id-card {
+                padding: 22px !important;
+                gap: 20px !important;
+            }
+
+            .identity-summary-card {
+                padding: 20px !important;
+                gap: 16px !important;
+            }
+
+            .identity-summary-grid,
+            .identity-summary-notes,
+            .identity-preview-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            .identity-summary-note p {
+                font-size: 0.9rem !important;
+            }
+
+            .identity-preview {
+                margin-top: 1.5rem !important;
+            }
         }
 
         /* Desktop Only overrides for cleanup */
@@ -2218,6 +2395,48 @@
                 </div>
             </div>
 
+            <div class="identity-summary-card" id="identitySummary">
+                <div class="identity-summary-title">Resumo do Personagem</div>
+                <div class="identity-summary-grid">
+                    <div class="identity-summary-item">
+                        <span>Nome</span>
+                        <strong id="summaryName">-</strong>
+                    </div>
+                    <div class="identity-summary-item">
+                        <span>Idade</span>
+                        <strong id="summaryAge">-</strong>
+                    </div>
+                    <div class="identity-summary-item">
+                        <span>Altura</span>
+                        <strong id="summaryHeight">-</strong>
+                    </div>
+                    <div class="identity-summary-item">
+                        <span>Peso</span>
+                        <strong id="summaryWeight">-</strong>
+                    </div>
+                    <div class="identity-summary-item">
+                        <span>Traços</span>
+                        <div class="identity-summary-traits" id="summaryTraits">
+                            <span>Nenhum selecionado</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="identity-summary-notes">
+                    <div class="identity-summary-note">
+                        <span>Motivação</span>
+                        <p id="summaryMotivation">Não informado.</p>
+                    </div>
+                    <div class="identity-summary-note">
+                        <span>Treinamento</span>
+                        <p id="summaryTraining">Não informado.</p>
+                    </div>
+                    <div class="identity-summary-note">
+                        <span>Peculiaridade</span>
+                        <p id="summaryPeculiarity">Não informado.</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="step-nav-btns">
                 <button class="btn-prev" onclick="goToStep(4)"><i data-lucide="arrow-left"></i> Voltar</button>
                 <div style="display:flex; justify-content:center; flex:1;">
@@ -2268,6 +2487,27 @@
             </tr>
         </table>
 
+        <div class="identity-preview">
+            <h3>Dados do Personagem</h3>
+            <div class="identity-preview-grid">
+                <div class="identity-preview-item">
+                    <span>Idade</span>
+                    <strong id="displayAge">-</strong>
+                </div>
+                <div class="identity-preview-item">
+                    <span>Altura</span>
+                    <strong id="displayHeight">-</strong>
+                </div>
+                <div class="identity-preview-item">
+                    <span>Peso</span>
+                    <strong id="displayWeight">-</strong>
+                </div>
+            </div>
+            <div class="identity-preview-traits" id="displayTraits">
+                <span>Nenhum traço</span>
+            </div>
+        </div>
+
         <div class="vital-stats">
             <div class="vital-box">
                 <span class="vital-label">Vida <i data-lucide="info"
@@ -2300,7 +2540,12 @@
             bladeColor: '#00b4d8',
             stats: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 },
             pointsMax: 27,
-            pointsSpent: 0
+            pointsSpent: 0,
+            bonuses: [],
+            manualMode: false,
+            thunderMastery: null,
+            portrait: null,
+            traits: []
         };
 
         const raceData = {
@@ -3201,6 +3446,86 @@
         }
 
         // --- UPDATERS ---
+        function updateIdentitySummary() {
+            const nameValue = document.getElementById('inputCharName')?.value?.trim() || '';
+            const ageValue = document.getElementById('inputAge')?.value?.trim() || '';
+            const heightValue = document.getElementById('inputHeight')?.value?.trim() || '';
+            const weightValue = document.getElementById('inputWeight')?.value?.trim() || '';
+            const motivationValue = document.getElementById('inputMotivation')?.value?.trim() || '';
+            const trainingValue = document.getElementById('inputTraining')?.value?.trim() || '';
+            const peculiarityValue = document.getElementById('inputPeculiarity')?.value?.trim() || '';
+
+            const formatUnit = (value, unit) => {
+                if (!value) return '-';
+                if (/[a-zA-Z]/.test(value)) return value;
+                return `${value} ${unit}`;
+            };
+
+            const traitsList = Array.isArray(state.traits) && state.traits.length
+                ? state.traits
+                : [];
+
+            const updateText = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = value;
+            };
+
+            updateText('summaryName', nameValue || '-');
+            updateText('summaryAge', ageValue || '-');
+            updateText('summaryHeight', formatUnit(heightValue, 'cm'));
+            updateText('summaryWeight', formatUnit(weightValue, 'kg'));
+            updateText('summaryMotivation', motivationValue || 'Não informado.');
+            updateText('summaryTraining', trainingValue || 'Não informado.');
+            updateText('summaryPeculiarity', peculiarityValue || 'Não informado.');
+
+            updateText('displayAge', ageValue || '-');
+            updateText('displayHeight', formatUnit(heightValue, 'cm'));
+            updateText('displayWeight', formatUnit(weightValue, 'kg'));
+
+            const summaryTraits = document.getElementById('summaryTraits');
+            if (summaryTraits) {
+                summaryTraits.innerHTML = traitsList.length
+                    ? traitsList.map(trait => `<span>${trait}</span>`).join('')
+                    : '<span>Nenhum selecionado</span>';
+            }
+
+            const displayTraits = document.getElementById('displayTraits');
+            if (displayTraits) {
+                displayTraits.innerHTML = traitsList.length
+                    ? traitsList.map(trait => `<span>${trait}</span>`).join('')
+                    : '<span>Nenhum traço</span>';
+            }
+        }
+
+        function toggleTrait(el) {
+            if (!el) return;
+            el.classList.toggle('active');
+            const activeTraits = Array.from(document.querySelectorAll('#traitsTags .trait-tag.active'))
+                .map(tag => tag.textContent.trim());
+            state.traits = activeTraits;
+            updateIdentitySummary();
+        }
+
+        function handlePortraitUpload(input) {
+            const file = input?.files?.[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const result = event.target?.result;
+                if (!result) return;
+                state.portrait = result;
+
+                const avatarPreview = document.getElementById('avatarPreview');
+                if (avatarPreview) {
+                    avatarPreview.innerHTML = `<img src="${result}" class="avatar-img-preview" alt="Retrato do personagem">`;
+                }
+
+                const sidePortrait = document.getElementById('charPortrait');
+                if (sidePortrait) sidePortrait.src = result;
+            };
+            reader.readAsDataURL(file);
+        }
 
         function updatePreview() {
             // Name
@@ -3313,6 +3638,29 @@
                     <div><strong>Total: ${totalPE}</strong></div>
                 `;
             }
+
+            updateIdentitySummary();
+        }
+
+        function bindIdentityInputs() {
+            const identityFields = [
+                'inputCharName',
+                'inputAge',
+                'inputHeight',
+                'inputWeight',
+                'inputMotivation',
+                'inputTraining',
+                'inputPeculiarity'
+            ];
+
+            identityFields.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.addEventListener('input', () => {
+                    if (id === 'inputCharName') updatePreview();
+                    updateIdentitySummary();
+                });
+            });
         }
 
 
@@ -3474,6 +3822,7 @@
         let selectedCombatStyle = 'water';
 
         if (window.goToStep) window.goToStep(1);
+        bindIdentityInputs();
         updatePreview();
         updateSkillsDisplay();
 
@@ -3648,8 +3997,6 @@
                 height: height,
                 weight: weight,
                 portrait: state.portrait, // From portrait upload
-                traits: state.traits, // From trait tags
-
                 traits: state.traits, // From trait tags
 
                 inventory: finalInventory,
