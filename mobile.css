@@ -134,6 +134,87 @@
         grid-template-columns: 1fr;
     }
 
+    /* === DASHBOARD BREATHING (SKILLS) MOBILE === */
+    .skill-tabs-nav {
+        gap: 8px !important;
+        overflow-x: auto;
+        padding-bottom: 8px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .skill-tabs-nav::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    .skill-tabs-nav::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 999px;
+    }
+
+    .skill-tab-btn {
+        flex: 0 0 auto;
+        font-size: 0.75rem !important;
+        padding: 6px 10px !important;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    #tab-breathing .breathing-header {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    #tab-breathing .forms-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    #tab-breathing .form-card {
+        border-radius: 12px;
+    }
+
+    #tab-breathing .form-header-bg {
+        padding: 0.9rem;
+    }
+
+    #tab-breathing .form-body {
+        padding: 0.9rem;
+        gap: 0.75rem;
+    }
+
+    #tab-breathing .stat-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-align: left;
+        padding: 8px 10px;
+    }
+
+    #tab-breathing .stat-value {
+        justify-content: flex-end;
+    }
+
+    #tab-breathing .form-desc {
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+
+    #tab-breathing .form-actions {
+        padding: 0.9rem;
+    }
+
+    #tab-breathing .form-use-btn {
+        padding: 14px;
+        font-size: 0.85rem;
+    }
+
     /* === CHARACTER CREATOR MOBILE LAYOUT === */
     /* Hide desktop sidebar for character creator */
     body:has(.form-step) .sidebar-left {
