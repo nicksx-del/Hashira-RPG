@@ -86,13 +86,32 @@
                 </div>
 
                 <!-- Page Content (Centered Container) -->
-                <div id="page-content" style="padding: 1.5rem; max-width: 80rem; margin: 0 auto; width: 100%;">
+                <div id="page-content" class="page-content">
 
                     <style>
                         .avatar-circle:hover .avatar-overlay {
                             opacity: 1 !important;
                         }
                     </style>
+
+                    <div class="overview-hero glass-panel">
+                        <div>
+                            <span class="overview-kicker">Boas-vindas ao painel</span>
+                            <h2>Pronto para a missão, <span id="overviewName">Caçador</span>?</h2>
+                            <p>Atualize suas informações, gerencie recursos e prepare suas próximas ações.</p>
+                        </div>
+                        <div class="overview-actions">
+                            <button class="overview-action" onclick="showSection('character')">
+                                <i data-lucide="book-open"></i> Personagem
+                            </button>
+                            <button class="overview-action" onclick="showSection('inventory')">
+                                <i data-lucide="backpack"></i> Inventário
+                            </button>
+                            <button class="overview-action" onclick="showSection('attacks')">
+                                <i data-lucide="swords"></i> Combate
+                            </button>
+                        </div>
+                    </div>
 
                     <!-- CHARACTER HEADER -->
                     <div class="char-header-panel"
@@ -117,12 +136,16 @@
                                         <i data-lucide="camera" size="20" color="#fff"></i>
                                     </div>
                                 </div>
-                                <div>
+                                <div style="position: relative;">
                                     <h2 id="dispName" contenteditable="true" onblur="updateCharName(this.innerText)"
                                         style="margin: 0; font-size: 1.5rem; color: #fff; cursor: text; border-bottom: 1px dashed #444;"
                                         title="Clique para editar">Caçador</h2>
-                                    <span id="dispRank"
-                                        style="font-size: 0.85rem; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">MIZUNOTO</span>
+                                    <span id="dispRank" onclick="toggleRankSelector()" title="Clique para selecionar o rank"
+                                        style="font-size: 0.85rem; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; cursor:pointer;">MIZUNOTO</span>
+                                    <div id="rankSelector"
+                                        style="display:none; position:absolute; top:100%; left:0; background:#111; border:1px solid #444; border-radius:8px; max-height:220px; overflow-y:auto; z-index:110; padding:5px; box-shadow:0 4px 12px rgba(0,0,0,0.5); min-width:180px;">
+                                        <!-- JS Generated Rank Options -->
+                                    </div>
                                 </div>
                             </div>
 
@@ -1646,6 +1669,11 @@
             <button onclick="completeMission(); toggleMobileMenu()"
                 style="background:rgba(0, 180, 216, 0.1); border:1px solid var(--accent-primary); color:var(--accent-primary); padding:15px; border-radius:8px; font-weight:bold; display:flex; align-items:center; justify-content:center; gap:10px;">
                 <i data-lucide="coins"></i> Resgatar Salário
+            </button>
+
+            <button onclick="showSection('character'); toggleMobileMenu()"
+                style="background:rgba(0, 180, 216, 0.08); border:1px solid rgba(0, 180, 216, 0.4); color:var(--accent-primary); padding:15px; border-radius:8px; font-weight:bold; display:flex; align-items:center; justify-content:center; gap:10px;">
+                <i data-lucide="book-open"></i> Informações do Personagem
             </button>
 
             <button onclick="showSection('forge'); toggleMobileMenu()"
