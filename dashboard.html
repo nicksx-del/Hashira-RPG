@@ -917,6 +917,32 @@
 
     <!-- STYLES FOR DISCOVERY -->
     <style>
+        #discoverySelection {
+            max-height: 90vh;
+            overflow-y: auto;
+            padding-bottom: 2rem;
+        }
+
+        #stylesGrid {
+            grid-auto-rows: minmax(0, auto);
+        }
+
+        @media (max-width: 768px) {
+            #discoverySelection {
+                width: 95%;
+                padding: 0 1rem 2rem 1rem;
+            }
+
+            #discoverySelection h2 {
+                font-size: 1.8rem;
+            }
+
+            #stylesGrid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+        }
+
         .discovery-card {
             background: rgba(20, 20, 25, 0.95);
             border: 1px solid #333;

@@ -197,6 +197,7 @@ window.CampaignSystem = {
 
             // WS Sync if Player
             if (!isNPC) {
+                this.syncToRealCharacter(entityId, updates);
                 this.sendUpdate(campId, entityId, updates, true);
             }
         }
@@ -301,21 +302,6 @@ window.CampaignSystem = {
         this.saveCampaigns(list);
     },
 
-    syncToRealCharacter: function (charId, updates) {
-        const rawSlots = localStorage.getItem('demonSlayerSaveSlots');
-        if (!rawSlots) return;
-
-        const slots = JSON.parse(rawSlots);
-        const charIndex = slots.findIndex(s => s.id === charId);
-        if (charIndex === -1) return;
-
-        // Only sensitive vitals
-        if (updates.currentHP !== undefined) slots[charIndex].currentHP = updates.currentHP;
-        if (updates.currentPE !== undefined) slots[charIndex].currentPE = updates.currentPE;
-
-        localStorage.setItem('demonSlayerSaveSlots', JSON.stringify(slots));
-    },
-
     // --- LOG ---
     addLog: function (campId, msg, type = 'info') {
         const list = this.getCampaigns();
@@ -365,6 +351,35 @@ window.CampaignSystem = {
 
         // Save back to localStorage
         localStorage.setItem('demonSlayerSaveSlots', JSON.stringify(chars));
+
+        // Update active sheet if it matches
+        try {
+            const activeRaw = localStorage.getItem('demonSlayerChar');
+            if (activeRaw) {
+                const activeChar = JSON.parse(activeRaw);
+                if (activeChar && activeChar.id === charId) {
+                    Object.assign(activeChar, updates);
+                    localStorage.setItem('demonSlayerChar', JSON.stringify(activeChar));
+                }
+            }
+        } catch (e) {
+            console.warn('Erro ao sincronizar ficha ativa:', e);
+        }
+
+        // Backwards compatibility: update legacy list if present
+        try {
+            const legacyRaw = localStorage.getItem('demonSlayerAllChars');
+            if (legacyRaw) {
+                const legacy = JSON.parse(legacyRaw);
+                const legacyIndex = legacy.findIndex(c => c.id === charId);
+                if (legacyIndex > -1) {
+                    Object.assign(legacy[legacyIndex], updates);
+                    localStorage.setItem('demonSlayerAllChars', JSON.stringify(legacy));
+                }
+            }
+        } catch (e) {
+            console.warn('Erro ao sincronizar lista legada:', e);
+        }
 
         console.log(`[Sync] Character ${charId} updated:`, updates);
     },
@@ -456,7 +471,9 @@ window.CampaignSystem = {
         localStorage.setItem('demonSlayerChar', JSON.stringify(char));
 
         // Sync to "slots" as well to be safe
-        this.syncToRealCharacter(char.id, payload);
+        if (char.id) {
+            this.syncToRealCharacter(char.id, payload);
+        }
 
         // Dispatch Custom Event for UI to listen
         window.dispatchEvent(new CustomEvent('character-synced', { detail: char }));
