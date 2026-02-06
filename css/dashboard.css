@@ -200,6 +200,196 @@ body {
     margin-bottom: 4px;
 }
 
+/* --- CHARACTER DETAILS TAB --- */
+.character-notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.character-intro {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    gap: 16px;
+}
+
+.character-intro h2 {
+    margin: 0 0 6px;
+    font-size: 1.3rem;
+}
+
+.character-intro p {
+    margin: 0;
+    color: #8b8b93;
+    font-size: 0.95rem;
+}
+
+.character-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.character-badge {
+    background: rgba(0, 180, 216, 0.12);
+    color: var(--accent-primary);
+    border: 1px solid rgba(0, 180, 216, 0.3);
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.character-badge.muted {
+    color: #b0b0b8;
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.character-note-card {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-radius: 12px;
+}
+
+.character-summary-card {
+    background: linear-gradient(135deg, rgba(0, 180, 216, 0.12), rgba(10, 10, 14, 0.9));
+    border: 1px solid rgba(0, 180, 216, 0.2);
+}
+
+.character-summary-progress {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #8b8b93;
+    font-size: 0.85rem;
+}
+
+.character-summary-bar {
+    flex: 1;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.character-summary-bar span {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent-primary), #48cae4);
+    transition: width 0.3s ease;
+}
+
+.character-summary-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+}
+
+.character-summary-list div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.character-summary-list span {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #8b8b93;
+}
+
+.character-summary-list strong {
+    font-size: 0.95rem;
+    color: #fff;
+    font-weight: 600;
+}
+
+.character-card-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #fff;
+}
+
+.character-card-header span {
+    font-size: 0.85rem;
+    color: #777;
+}
+
+.character-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.character-note-card label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.character-note-card input,
+.character-note-card textarea {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    resize: vertical;
+    min-height: 44px;
+}
+
+.character-note-card textarea {
+    min-height: 120px;
+}
+
+.character-note-card textarea + textarea {
+    margin-top: 6px;
+}
+
+.character-note-card input:focus,
+.character-note-card textarea:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px rgba(0, 180, 216, 0.15);
+}
+
+.character-subgrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+@media (max-width: 768px) {
+    .character-intro {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .character-badges {
+        justify-content: flex-start;
+    }
+}
+
 .hunter-stat-value {
     font-family: 'Cinzel', serif;
     font-size: 1.3rem;
