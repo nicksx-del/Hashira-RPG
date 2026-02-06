@@ -736,6 +736,29 @@ function confirmLevelUp(lvl, mode, val1, val2, count = 1) {
 let pendingLevelUpData = null;
 let pendingAttackData = null;
 
+function applyDiceTheme(styleId) {
+    const overlay = document.getElementById('diceOverlay');
+    if (!overlay) return;
+    const themes = [
+        'water',
+        'thunder',
+        'flame',
+        'beast',
+        'wind',
+        'stone',
+        'mist',
+        'flower',
+        'serpent',
+        'love',
+        'sound',
+        'moon',
+        'sun'
+    ];
+    themes.forEach((theme) => overlay.classList.remove(`dice-theme-${theme}`));
+    const normalized = styleId && themes.includes(styleId) ? styleId : 'water';
+    overlay.classList.add(`dice-theme-${normalized}`);
+}
+
 function applyLevelUp(lvl, hpGain) {
     // Apply Changes: Update manualMaxHP to persist over auto-calc
     if (!humanData.manualMaxHP) {
@@ -775,6 +798,8 @@ function showLevelUpDice(rolls, conTotal, totalGain, lvl) {
     infoPanel.style.opacity = '0';
     diceDiv.classList.remove('rolling');
     void diceDiv.offsetWidth; // trigger reflow
+
+    applyDiceTheme(currentBreathingStyle);
 
     // Show Overlay
     overlay.classList.add('show');
@@ -850,6 +875,8 @@ function showAttackDice(name, rollData) {
     infoPanel.style.opacity = '0';
     diceDiv.classList.remove('rolling');
     void diceDiv.offsetWidth; // trigger reflow
+
+    applyDiceTheme(currentBreathingStyle);
 
     // Show Overlay
     overlay.classList.add('show');

@@ -1,5 +1,9 @@
 /* === ULTRA PREMIUM DICE SYSTEM - DARK THEME === */
 #diceOverlay {
+    --dice-accent: #a855f7;
+    --dice-accent-rgb: 168, 85, 247;
+    --dice-accent-soft: rgba(168, 85, 247, 0.2);
+    --dice-accent-strong: rgba(168, 85, 247, 0.45);
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.95); /* Menos roxo, mais preto sólido */
@@ -28,8 +32,8 @@
     position: absolute;
     inset: 0;
     /* Gradiente radial muito sutil e escuro */
-    background: radial-gradient(circle at center, #1a0b2e 0%, #000 70%);
-    opacity: 0.8;
+    background: radial-gradient(circle at center, var(--dice-accent-soft) 0%, #000 70%);
+    opacity: 0.9;
     z-index: -1;
 }
 
@@ -40,7 +44,7 @@
     height: 200px;
     margin-bottom: 40px;
     /* Leve brilho atrás do dado */
-    filter: drop-shadow(0 0 20px rgba(100, 50, 150, 0.3));
+    filter: drop-shadow(0 0 20px var(--dice-accent-strong));
 }
 
 /* O DADO */
@@ -71,8 +75,9 @@
     width: 180px;
     height: 180px;
     /* Gradiente escuro e elegante */
-    background: linear-gradient(145deg, #1a0b2e 0%, #240046 100%);
-    border: 2px solid #5a189a; /* Borda mais fina e menos neon */
+    background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.08), transparent 55%),
+        linear-gradient(145deg, #0c0a10 0%, #1b1026 100%);
+    border: 2px solid var(--dice-accent); /* Borda mais fina e menos neon */
     border-radius: 20px; /* Hexagon approximation handled by image usually, but box is fine */
     display: flex;
     justify-content: center;
@@ -80,12 +85,13 @@
     font-family: 'Cinzel', serif;
     font-size: 5rem;
     font-weight: 700;
-    color: #e0aaff; /* Texto lilás claro, não branco puro */
+    color: #f8f7ff; /* Texto claro para contraste */
     
     /* Sombras internas para profundidade */
-    box-shadow: 
+    box-shadow:
         inset 0 0 30px #000,
-        0 10px 20px rgba(0,0,0,0.5);
+        0 10px 20px rgba(0, 0, 0, 0.5),
+        0 0 25px var(--dice-accent-strong);
     
     position: relative;
     overflow: hidden;
@@ -99,8 +105,18 @@
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.05) 50%, transparent 60%);
+    background: linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.08) 50%, transparent 60%);
     animation: shine 4s ease-in-out infinite;
+}
+
+.dice-face::after {
+    content: '';
+    position: absolute;
+    inset: 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 18px var(--dice-accent-soft);
+    pointer-events: none;
 }
 
 @keyframes shine {
@@ -113,13 +129,13 @@
     font-family: 'Cinzel', serif;
     font-size: 6rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--dice-accent);
     opacity: 0;
     transform: scale(0.8);
     transition: all 0.4s ease-out;
     margin-bottom: 20px;
     /* Glow bem reduzido */
-    text-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+    text-shadow: 0 0 18px var(--dice-accent-strong);
 }
 
 #diceResultDisplay.show {
@@ -150,7 +166,7 @@
 }
 
 .dice-attack-info .attacker-name {
-    color: #e0aaff;
+    color: var(--dice-accent);
     font-weight: 600;
     font-size: 1.1rem;
     margin-bottom: 8px;
@@ -184,6 +200,98 @@
     text-transform: uppercase;
     opacity: 0.7;
     animation: blink 3s ease-in-out infinite;
+}
+
+/* THEME VARIANTS */
+#diceOverlay.dice-theme-water {
+    --dice-accent: #00b4d8;
+    --dice-accent-rgb: 0, 180, 216;
+    --dice-accent-soft: rgba(0, 180, 216, 0.18);
+    --dice-accent-strong: rgba(0, 180, 216, 0.4);
+}
+
+#diceOverlay.dice-theme-thunder {
+    --dice-accent: #ffb703;
+    --dice-accent-rgb: 255, 183, 3;
+    --dice-accent-soft: rgba(255, 183, 3, 0.18);
+    --dice-accent-strong: rgba(255, 183, 3, 0.45);
+}
+
+#diceOverlay.dice-theme-flame {
+    --dice-accent: #ef4444;
+    --dice-accent-rgb: 239, 68, 68;
+    --dice-accent-soft: rgba(239, 68, 68, 0.2);
+    --dice-accent-strong: rgba(239, 68, 68, 0.45);
+}
+
+#diceOverlay.dice-theme-beast {
+    --dice-accent: #7b8cde;
+    --dice-accent-rgb: 123, 140, 222;
+    --dice-accent-soft: rgba(123, 140, 222, 0.2);
+    --dice-accent-strong: rgba(123, 140, 222, 0.4);
+}
+
+#diceOverlay.dice-theme-wind {
+    --dice-accent: #56ab2f;
+    --dice-accent-rgb: 86, 171, 47;
+    --dice-accent-soft: rgba(86, 171, 47, 0.18);
+    --dice-accent-strong: rgba(86, 171, 47, 0.4);
+}
+
+#diceOverlay.dice-theme-stone {
+    --dice-accent: #888888;
+    --dice-accent-rgb: 136, 136, 136;
+    --dice-accent-soft: rgba(136, 136, 136, 0.2);
+    --dice-accent-strong: rgba(136, 136, 136, 0.45);
+}
+
+#diceOverlay.dice-theme-mist {
+    --dice-accent: #a2d2ff;
+    --dice-accent-rgb: 162, 210, 255;
+    --dice-accent-soft: rgba(162, 210, 255, 0.18);
+    --dice-accent-strong: rgba(162, 210, 255, 0.4);
+}
+
+#diceOverlay.dice-theme-flower {
+    --dice-accent: #ff7ab6;
+    --dice-accent-rgb: 255, 122, 182;
+    --dice-accent-soft: rgba(255, 122, 182, 0.2);
+    --dice-accent-strong: rgba(255, 122, 182, 0.45);
+}
+
+#diceOverlay.dice-theme-serpent {
+    --dice-accent: #9065fc;
+    --dice-accent-rgb: 144, 101, 252;
+    --dice-accent-soft: rgba(144, 101, 252, 0.2);
+    --dice-accent-strong: rgba(144, 101, 252, 0.45);
+}
+
+#diceOverlay.dice-theme-love {
+    --dice-accent: #ffb1d8;
+    --dice-accent-rgb: 255, 177, 216;
+    --dice-accent-soft: rgba(255, 177, 216, 0.2);
+    --dice-accent-strong: rgba(255, 177, 216, 0.45);
+}
+
+#diceOverlay.dice-theme-sound {
+    --dice-accent: #ffbf69;
+    --dice-accent-rgb: 255, 191, 105;
+    --dice-accent-soft: rgba(255, 191, 105, 0.2);
+    --dice-accent-strong: rgba(255, 191, 105, 0.45);
+}
+
+#diceOverlay.dice-theme-moon {
+    --dice-accent: #8b5cf6;
+    --dice-accent-rgb: 139, 92, 246;
+    --dice-accent-soft: rgba(139, 92, 246, 0.2);
+    --dice-accent-strong: rgba(139, 92, 246, 0.45);
+}
+
+#diceOverlay.dice-theme-sun {
+    --dice-accent: #ffd000;
+    --dice-accent-rgb: 255, 208, 0;
+    --dice-accent-soft: rgba(255, 208, 0, 0.2);
+    --dice-accent-strong: rgba(255, 208, 0, 0.5);
 }
 
 @keyframes blink {
