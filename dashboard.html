@@ -136,12 +136,16 @@
                                         <i data-lucide="camera" size="20" color="#fff"></i>
                                     </div>
                                 </div>
-                                <div>
+                                <div style="position: relative;">
                                     <h2 id="dispName" contenteditable="true" onblur="updateCharName(this.innerText)"
                                         style="margin: 0; font-size: 1.5rem; color: #fff; cursor: text; border-bottom: 1px dashed #444;"
                                         title="Clique para editar">Caçador</h2>
-                                    <span id="dispRank"
-                                        style="font-size: 0.85rem; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">MIZUNOTO</span>
+                                    <span id="dispRank" onclick="toggleRankSelector()" title="Clique para selecionar o rank"
+                                        style="font-size: 0.85rem; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; cursor:pointer;">MIZUNOTO</span>
+                                    <div id="rankSelector"
+                                        style="display:none; position:absolute; top:100%; left:0; background:#111; border:1px solid #444; border-radius:8px; max-height:220px; overflow-y:auto; z-index:110; padding:5px; box-shadow:0 4px 12px rgba(0,0,0,0.5); min-width:180px;">
+                                        <!-- JS Generated Rank Options -->
+                                    </div>
                                 </div>
                             </div>
 

@@ -78,7 +78,7 @@ function initDashboard() {
     if (overviewNameEl) overviewNameEl.textContent = humanData.name;
 
     const rankEl = document.getElementById('dispRank');
-    if (rankEl) rankEl.textContent = getRankName(humanData.level);
+    if (rankEl) rankEl.textContent = getRankName();
 
     const levelEl = document.getElementById('dispLevel');
     if (levelEl) levelEl.textContent = humanData.level;
@@ -353,18 +353,6 @@ function updateCharacterSummary() {
     const labelEl = document.getElementById('characterSummaryLabel');
     if (fillEl) fillEl.style.width = `${percent}%`;
     if (labelEl) labelEl.textContent = `${percent}% completo`;
-}
-
-function getRankName(lvl) {
-    if (lvl <= 2) return "Mizunoto";
-    if (lvl <= 4) return "Mizunoe";
-    if (lvl <= 6) return "Kanoto";
-    if (lvl <= 8) return "Kanoe";
-    if (lvl <= 10) return "Tsuchinoto";
-    if (lvl <= 12) return "Tsuchinoe";
-    if (lvl <= 15) return "Hinoe";
-    if (lvl <= 18) return "Hashira";
-    return "Hashira Lendário";
 }
 
 function updateVitalsUI() {
@@ -1029,6 +1017,46 @@ function toggleLevelSelector() {
     }
 }
 
+function toggleRankSelector() {
+    const selector = document.getElementById('rankSelector');
+    if (!selector) return;
+
+    if (selector.style.display === 'none' || selector.style.display === '') {
+        selector.style.display = 'block';
+        if (!selector.hasChildNodes() || selector.childElementCount < RANK_OPTIONS.length) {
+            selector.innerHTML = "";
+            RANK_OPTIONS.forEach(rank => {
+                const opt = document.createElement('div');
+                opt.innerText = rank;
+                opt.style.padding = "8px 15px";
+                opt.style.cursor = "pointer";
+                opt.style.color = "#fff";
+                opt.style.borderBottom = "1px solid #333";
+                opt.onmouseover = () => { opt.style.background = "#333"; };
+                opt.onmouseout = () => { opt.style.background = "transparent"; };
+                opt.onclick = () => setRank(rank);
+                selector.appendChild(opt);
+            });
+        }
+    } else {
+        selector.style.display = 'none';
+    }
+}
+
+function setRank(rank) {
+    humanData.rank = rank;
+    if (rank === "Hashira") humanData.isHashira = true;
+    if (rank !== "Hashira") humanData.isHashira = false;
+    saveHuman();
+    const rankEl = document.getElementById('dispRank');
+    if (rankEl) rankEl.textContent = getRankName();
+    renderHunterOrganization();
+    if (window.lucide) lucide.createIcons();
+    const selector = document.getElementById('rankSelector');
+    if (selector) selector.style.display = 'none';
+    showToast(`Rank atualizado para ${rank}.`, "success");
+}
+
 function updateCharName(newName) {
     humanData.name = newName.trim();
     saveHuman();
@@ -1319,6 +1347,22 @@ window.editProficiencyBonus = function (skillName, e) {
 };
 
 // --- RANK & ORGANIZATION LOGIC ---
+const RANK_DATA_MAP = {
+    Mizunoto: { salary: 200000, mission: "D" },
+    Mizunoe: { salary: 230000, mission: "D" },
+    Kanoto: { salary: 260000, mission: "C" },
+    Kanoe: { salary: 290000, mission: "C" },
+    Tsuchinoto: { salary: 320000, mission: "B" },
+    Tsuchinoe: { salary: 350000, mission: "B" },
+    Hinoto: { salary: 380000, mission: "A" },
+    Hinoe: { salary: 410000, mission: "A" },
+    Kinoto: { salary: 440000, mission: "S" },
+    Kinoe: { salary: 470000, mission: "S" },
+    Hashira: { salary: "∞", mission: "SS" }
+};
+
+const RANK_OPTIONS = Object.keys(RANK_DATA_MAP);
+
 function getRankData(lvl) {
     // Table from User Image
     if (lvl <= 2) return { name: "Mizunoto", salary: 200000, mission: "D" };
@@ -1335,9 +1379,13 @@ function getRankData(lvl) {
     return { name: "Kinoe", salary: 470000, mission: "S" };
 }
 
-function getRankName(lvl) {
+function getRankDataByName(name) {
+    return RANK_DATA_MAP[name] || null;
+}
+
+function getRankName() {
     if (humanData.isHashira) return "Hashira";
-    return getRankData(lvl).name;
+    return humanData.rank || getRankData(humanData.level).name;
 }
 
 function renderHunterOrganization() {
@@ -1350,10 +1398,11 @@ function renderHunterOrganization() {
     if (!rankEl) return;
 
     // Determine current state
-    const data = getRankData(humanData.level);
-    let rankName = data.name;
-    let salary = data.salary;
-    let missionRank = data.mission;
+    const defaultData = getRankData(humanData.level);
+    let rankName = humanData.rank || defaultData.name;
+    const selectedRankData = getRankDataByName(rankName) || defaultData;
+    let salary = selectedRankData.salary;
+    let missionRank = selectedRankData.mission;
 
     // Hashira Override
     if (humanData.isHashira) {
