@@ -2951,9 +2951,30 @@
 
             // Populate Data
             // Identity
-            document.getElementById('csName').innerText = document.getElementById('charName')?.value || 'Sem Nome';
+            const nameValue = document.getElementById('inputCharName')?.value?.trim() || 'Sem Nome';
+            const ageValue = document.getElementById('inputAge')?.value?.trim() || '18';
+            const heightValue = document.getElementById('inputHeight')?.value?.trim() || '';
+            const weightValue = document.getElementById('inputWeight')?.value?.trim() || '';
+            const motivationValue = document.getElementById('inputMotivation')?.value?.trim() || '';
+            const trainingValue = document.getElementById('inputTraining')?.value?.trim() || '';
+            const peculiarityValue = document.getElementById('inputPeculiarity')?.value?.trim() || '';
+
+            document.getElementById('csName').innerText = nameValue;
             document.getElementById('csRace').innerText = state.race || 'Indefinida';
-            document.getElementById('csAge').innerText = (document.getElementById('charAge')?.value || '18') + " anos";
+            document.getElementById('csAge').innerText = `${ageValue} anos`;
+            document.getElementById('csHeight').innerText = heightValue ? `${heightValue} cm` : '-';
+            document.getElementById('csWeight').innerText = weightValue ? `${weightValue} kg` : '-';
+            document.getElementById('csMotivation').innerText = motivationValue || 'Não informado.';
+            document.getElementById('csTraining').innerText = trainingValue || 'Não informado.';
+            document.getElementById('csPeculiarity').innerText = peculiarityValue || 'Não informado.';
+
+            const traits = Array.isArray(state.traits) && state.traits.length ? state.traits : [];
+            const traitsEl = document.getElementById('csTraits');
+            if (traitsEl) {
+                traitsEl.innerHTML = traits.length
+                    ? traits.map(trait => `<span>${trait}</span>`).join('')
+                    : '<span>Nenhum traço</span>';
+            }
 
             // Combat
             document.getElementById('csStyle').innerText = state.combat ? (state.combat.charAt(0).toUpperCase() + state.combat.slice(1)) : 'Iniciante';
@@ -4942,6 +4963,8 @@
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
+            gap: 0.75rem;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
         }
 
         .cs-label {
@@ -4958,6 +4981,34 @@
             color: #eee;
             font-family: 'Cinzel', serif;
             margin-bottom: 15px;
+        }
+
+        .cs-section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.05rem;
+            color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+
+        .cs-section-title i {
+            color: var(--accent-red);
+        }
+
+        .cs-muted {
+            color: #9a9a9a;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .cs-inline-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding: 10px 0 6px 0;
         }
 
         .cs-stat-row {
@@ -4990,6 +5041,28 @@
             .cs-card {
                 margin-bottom: 1rem;
             }
+        }
+
+        .cs-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .cs-tags span {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            color: #ddd;
+        }
+
+        .cs-divider {
+            height: 1px;
+            width: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            margin: 8px 0;
         }
     </style>
 
@@ -5060,16 +5133,44 @@
 
                     <!-- Background Info -->
                     <div class="cs-card">
-                        <div class="cs-label"><i data-lucide="scroll" size="14" style="margin-right:5px;"></i>
-                            Antecedente</div>
+                        <h3 class="cs-section-title"><i data-lucide="scroll" size="16"></i>Antecedente</h3>
                         <div id="csBgTitle" class="cs-val" style="color:#ffd700;">-</div>
-                        <p id="csBgDesc" style="font-size:0.95rem; color:#aaa; margin:0 0 15px 0; line-height:1.5;">-
-                        </p>
+                        <p id="csBgDesc" class="cs-muted">-</p>
 
-                        <div class="cs-label" style="margin-top:10px;">Itens Iniciais</div>
+                        <div class="cs-divider"></div>
+                        <div class="cs-label" style="margin-top:4px;">Itens Iniciais</div>
                         <ul id="csItems" style="padding-left:20px; margin:0; list-style:circle; color:#888;">
                             <li>Nenhum item</li>
                         </ul>
+                    </div>
+
+                    <div class="cs-card">
+                        <h3 class="cs-section-title"><i data-lucide="user" size="16"></i>Aparência</h3>
+                        <div class="cs-inline-group" style="color:#aaa; font-size:0.95rem;">
+                            <div>
+                                <div class="cs-label" style="margin-bottom:4px;">Altura</div>
+                                <div id="csHeight" class="cs-val" style="margin-bottom:0;">-</div>
+                            </div>
+                            <div>
+                                <div class="cs-label" style="margin-bottom:4px;">Peso</div>
+                                <div id="csWeight" class="cs-val" style="margin-bottom:0;">-</div>
+                            </div>
+                        </div>
+                        <div class="cs-divider"></div>
+                        <div class="cs-label" style="margin-top:0;">Traços</div>
+                        <div id="csTraits" class="cs-tags">
+                            <span>Nenhum traço</span>
+                        </div>
+                    </div>
+
+                    <div class="cs-card">
+                        <h3 class="cs-section-title"><i data-lucide="feather" size="16"></i>História</h3>
+                        <div class="cs-label" style="margin-top:6px;">Motivação</div>
+                        <p id="csMotivation" class="cs-muted">-</p>
+                        <div class="cs-label">Treinamento</div>
+                        <p id="csTraining" class="cs-muted">-</p>
+                        <div class="cs-label">Peculiaridade</div>
+                        <p id="csPeculiarity" class="cs-muted">-</p>
                     </div>
                 </div>
             </div>
