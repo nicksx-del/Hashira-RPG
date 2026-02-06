@@ -1797,12 +1797,26 @@
                 background: rgba(255, 255, 255, 0.03) !important;
             }
 
-            /* --- FINAL POLISH (AGGRESSIVE STACKING) --- */
-            /* Force Vitals to Stack */
+            /* --- FINAL POLISH (MOBILE VITALS REFLOW) --- */
             .vitals-grid {
                 display: grid !important;
-                grid-template-columns: 1fr !important;
-                gap: 15px !important;
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                gap: 8px !important;
+                padding: 10px !important;
+                background: rgba(10, 10, 12, 0.7);
+                border: 1px solid #2a2a33;
+                border-radius: 10px;
+            }
+
+            .vital-input label {
+                font-size: 0.65rem !important;
+                letter-spacing: 0.6px;
+            }
+
+            .vital-input input {
+                padding: 6px !important;
+                font-size: 0.85rem !important;
+                height: 38px;
             }
 
             /* Force Crow Inputs to Stack (Targeting the nested flex container) */
