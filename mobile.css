@@ -171,6 +171,44 @@
         border: 1px solid rgba(255, 255, 255, 0.06);
     }
 
+    #tab-breathing .breathing-layout {
+        flex-direction: column;
+        height: auto;
+    }
+
+    #tab-breathing .b-sidebar {
+        width: 100%;
+        flex-direction: row;
+        gap: 10px;
+        padding: 12px;
+        overflow-x: auto;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    #tab-breathing .b-sidebar::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    #tab-breathing .b-sidebar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 999px;
+    }
+
+    #tab-breathing .style-item {
+        flex: 0 0 auto;
+        padding: 10px 12px;
+    }
+
+    #tab-breathing .style-name {
+        font-size: 0.8rem;
+    }
+
+    #tab-breathing .b-content {
+        padding: 1.25rem;
+        overflow: visible;
+    }
+
     #tab-breathing .forms-grid {
         grid-template-columns: 1fr !important;
         gap: 12px !important;
