@@ -38,6 +38,10 @@
                     <i data-lucide="layout-dashboard"></i>
                     <span>Visão Geral</span>
                 </div>
+                <div class="nav-item" id="nav-character" onclick="showSection('character')">
+                    <i data-lucide="book-open"></i>
+                    <span>Personagem</span>
+                </div>
                 <div class="nav-item" id="nav-inventory" onclick="showSection('inventory')">
                     <i data-lucide="backpack"></i>
                     <span>Inventário</span>
@@ -82,13 +86,32 @@
                 </div>
 
                 <!-- Page Content (Centered Container) -->
-                <div id="page-content" style="padding: 1.5rem; max-width: 80rem; margin: 0 auto; width: 100%;">
+                <div id="page-content" class="page-content">
 
                     <style>
                         .avatar-circle:hover .avatar-overlay {
                             opacity: 1 !important;
                         }
                     </style>
+
+                    <div class="overview-hero glass-panel">
+                        <div>
+                            <span class="overview-kicker">Boas-vindas ao painel</span>
+                            <h2>Pronto para a missão, <span id="overviewName">Caçador</span>?</h2>
+                            <p>Atualize suas informações, gerencie recursos e prepare suas próximas ações.</p>
+                        </div>
+                        <div class="overview-actions">
+                            <button class="overview-action" onclick="showSection('character')">
+                                <i data-lucide="book-open"></i> Personagem
+                            </button>
+                            <button class="overview-action" onclick="showSection('inventory')">
+                                <i data-lucide="backpack"></i> Inventário
+                            </button>
+                            <button class="overview-action" onclick="showSection('attacks')">
+                                <i data-lucide="swords"></i> Combate
+                            </button>
+                        </div>
+                    </div>
 
                     <!-- CHARACTER HEADER -->
                     <div class="char-header-panel"
@@ -279,6 +302,176 @@
                     </div>
 
                     <div class="attributes-grid" id="attrGrid"></div>
+            </section>
+
+            <!-- SECTION: CHARACTER DETAILS -->
+            <section id="character" class="dashboard-section">
+                <div class="section-header">
+                    <span class="sec-title">Personagem & História</span>
+                    <i data-lucide="scroll-text" color="#00b4d8"></i>
+                </div>
+
+                <div class="character-intro glass-panel">
+                    <div>
+                        <h2>Ficha narrativa</h2>
+                        <p>Organize identidade, personalidade e história do personagem em um só lugar.</p>
+                    </div>
+                    <div class="character-badges">
+                        <span class="character-badge">Salvo automaticamente</span>
+                        <span class="character-badge muted">Arraste para ajustar o tamanho</span>
+                    </div>
+                </div>
+
+                <div class="character-notes-grid">
+                    <div class="character-note-card glass-panel character-summary-card">
+                        <div class="character-card-header">
+                            <h3>Resumo rápido</h3>
+                            <span>Visão geral da narrativa</span>
+                        </div>
+                        <div class="character-summary-progress">
+                            <div class="character-summary-bar">
+                                <span id="characterSummaryFill"></span>
+                            </div>
+                            <span id="characterSummaryLabel">0% completo</span>
+                        </div>
+                        <div class="character-summary-list">
+                            <div>
+                                <span>Nome</span>
+                                <strong id="summaryName">-</strong>
+                            </div>
+                            <div>
+                                <span>Origem</span>
+                                <strong id="summaryOrigin">-</strong>
+                            </div>
+                            <div>
+                                <span>Afiliação</span>
+                                <strong id="summaryAffiliation">-</strong>
+                            </div>
+                            <div>
+                                <span>Objetivo atual</span>
+                                <strong id="summaryGoal">-</strong>
+                            </div>
+                            <div>
+                                <span>Traço marcante</span>
+                                <strong id="summaryTrait">-</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="character-note-card glass-panel">
+                        <div class="character-card-header">
+                            <h3>Identidade</h3>
+                            <span>Informações básicas</span>
+                        </div>
+                        <div class="character-form-grid">
+                            <label>
+                                Nome
+                                <input id="detailName" type="text" placeholder="Nome do personagem"
+                                    oninput="updateCharDetail('name', this.value)">
+                            </label>
+                            <label>
+                                Sexo
+                                <input id="detailSex" type="text" placeholder="Ex: Masculino, Feminino, Outro"
+                                    oninput="updateCharDetail('sex', this.value)">
+                            </label>
+                            <label>
+                                Altura
+                                <input id="detailHeight" type="text" placeholder="Ex: 1,72m"
+                                    oninput="updateCharDetail('height', this.value)">
+                            </label>
+                            <label>
+                                Peso
+                                <input id="detailWeight" type="text" placeholder="Ex: 68kg"
+                                    oninput="updateCharDetail('weight', this.value)">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="character-note-card glass-panel">
+                        <div class="character-card-header">
+                            <h3>Origem</h3>
+                            <span>Contexto social e vínculos</span>
+                        </div>
+                        <div class="character-form-grid">
+                            <label>
+                                Região
+                                <input id="detailOrigin" type="text" placeholder="Ex: Montanhas de Sagiri"
+                                    oninput="updateCharDetail('origin', this.value)">
+                            </label>
+                            <label>
+                                Afiliação
+                                <input id="detailAffiliation" type="text" placeholder="Ex: Corpo de Caçadores"
+                                    oninput="updateCharDetail('affiliation', this.value)">
+                            </label>
+                        </div>
+                        <label>
+                            Mentores & Aliados
+                            <textarea id="detailAllies" placeholder="Quem apoia o personagem?"
+                                oninput="updateCharDetail('allies', this.value)"></textarea>
+                        </label>
+                    </div>
+
+                    <div class="character-note-card glass-panel">
+                        <div class="character-card-header">
+                            <h3>Aparência</h3>
+                            <span>Detalhes físicos e visuais</span>
+                        </div>
+                        <textarea id="detailPhysical" placeholder="Descreva a aparência do personagem..."
+                            oninput="updateCharDetail('physical', this.value)"></textarea>
+                    </div>
+
+                    <div class="character-note-card glass-panel">
+                        <div class="character-card-header">
+                            <h3>Personalidade</h3>
+                            <span>Jeito de agir e pensar</span>
+                        </div>
+                        <textarea id="detailPersonality" placeholder="Descreva traços de personalidade..."
+                            oninput="updateCharDetail('personality', this.value)"></textarea>
+                        <div class="character-subgrid">
+                            <label>
+                                Ideais
+                                <textarea id="detailIdeals" placeholder="O que guia o personagem?"
+                                    oninput="updateCharDetail('ideals', this.value)"></textarea>
+                            </label>
+                            <label>
+                                Defeitos
+                                <textarea id="detailFlaws" placeholder="Fraquezas e falhas marcantes"
+                                    oninput="updateCharDetail('flaws', this.value)"></textarea>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="character-note-card glass-panel">
+                        <div class="character-card-header">
+                            <h3>História & Objetivos</h3>
+                            <span>Passado, motivações e metas</span>
+                        </div>
+                        <textarea id="detailStory" placeholder="Conte a história do personagem..."
+                            oninput="updateCharDetail('story', this.value)"></textarea>
+                        <textarea id="detailGoals" placeholder="Quais são os objetivos atuais?"
+                            oninput="updateCharDetail('goals', this.value)"></textarea>
+                    </div>
+
+                    <div class="character-note-card glass-panel">
+                        <div class="character-card-header">
+                            <h3>Manias & Frases</h3>
+                            <span>Detalhes marcantes</span>
+                        </div>
+                        <textarea id="detailHabits" placeholder="Hábitos, medos ou vícios..."
+                            oninput="updateCharDetail('habits', this.value)"></textarea>
+                        <textarea id="detailQuotes" placeholder="Frases favoritas ou juramentos"
+                            oninput="updateCharDetail('quotes', this.value)"></textarea>
+                    </div>
+
+                    <div class="character-note-card glass-panel">
+                        <div class="character-card-header">
+                            <h3>Anotações do mestre</h3>
+                            <span>Gancho de campanha e lembretes</span>
+                        </div>
+                        <textarea id="detailNotes" placeholder="Segredos, pistas, inimigos..."
+                            oninput="updateCharDetail('notes', this.value)"></textarea>
+                    </div>
+                </div>
             </section>
 
             <!-- SECTION: INVENTORY -->
@@ -1472,6 +1665,11 @@
             <button onclick="completeMission(); toggleMobileMenu()"
                 style="background:rgba(0, 180, 216, 0.1); border:1px solid var(--accent-primary); color:var(--accent-primary); padding:15px; border-radius:8px; font-weight:bold; display:flex; align-items:center; justify-content:center; gap:10px;">
                 <i data-lucide="coins"></i> Resgatar Salário
+            </button>
+
+            <button onclick="showSection('character'); toggleMobileMenu()"
+                style="background:rgba(0, 180, 216, 0.08); border:1px solid rgba(0, 180, 216, 0.4); color:var(--accent-primary); padding:15px; border-radius:8px; font-weight:bold; display:flex; align-items:center; justify-content:center; gap:10px;">
+                <i data-lucide="book-open"></i> Informações do Personagem
             </button>
 
             <button onclick="showSection('forge'); toggleMobileMenu()"

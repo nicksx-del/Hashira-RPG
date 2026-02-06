@@ -74,6 +74,9 @@ function initDashboard() {
     const nameEl = document.getElementById('dispName');
     if (nameEl) nameEl.textContent = humanData.name;
 
+    const overviewNameEl = document.getElementById('overviewName');
+    if (overviewNameEl) overviewNameEl.textContent = humanData.name;
+
     const rankEl = document.getElementById('dispRank');
     if (rankEl) rankEl.textContent = getRankName(humanData.level);
 
@@ -129,11 +132,20 @@ function initDashboard() {
         if (document.getElementById('detailPersonality')) document.getElementById('detailPersonality').value = humanData.details.personality || "";
         if (document.getElementById('detailIdeals')) document.getElementById('detailIdeals').value = humanData.details.ideals || "";
         if (document.getElementById('detailFlaws')) document.getElementById('detailFlaws').value = humanData.details.flaws || "";
+        if (document.getElementById('detailOrigin')) document.getElementById('detailOrigin').value = humanData.details.origin || "";
+        if (document.getElementById('detailAffiliation')) document.getElementById('detailAffiliation').value = humanData.details.affiliation || "";
+        if (document.getElementById('detailAllies')) document.getElementById('detailAllies').value = humanData.details.allies || "";
+        if (document.getElementById('detailStory')) document.getElementById('detailStory').value = humanData.details.story || "";
+        if (document.getElementById('detailGoals')) document.getElementById('detailGoals').value = humanData.details.goals || "";
+        if (document.getElementById('detailHabits')) document.getElementById('detailHabits').value = humanData.details.habits || "";
+        if (document.getElementById('detailQuotes')) document.getElementById('detailQuotes').value = humanData.details.quotes || "";
+        if (document.getElementById('detailNotes')) document.getElementById('detailNotes').value = humanData.details.notes || "";
     } else {
         // Init if empty
         humanData.details = {};
         if (document.getElementById('detailName')) document.getElementById('detailName').value = humanData.name || "";
     }
+    updateCharacterSummary();
     // Check for Tutorial (Skill Selection)
     if (!humanData.tutorialComplete && !humanData.skillTutorialSeen) {
         showSkillTutorial();
@@ -304,10 +316,44 @@ window.updateCharDetail = function (field, value) {
         if (nameEl) nameEl.textContent = value;
         const nameDisplay = document.getElementById('charNameDisplay');
         if (nameDisplay) nameDisplay.textContent = value;
+        const overviewNameEl = document.getElementById('overviewName');
+        if (overviewNameEl) overviewNameEl.textContent = value;
     }
 
     saveHuman();
+    updateCharacterSummary();
 };
+
+function updateCharacterSummary() {
+    const details = humanData.details || {};
+    const setText = (id, value, fallback = '-') => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value && value.trim() ? value : fallback;
+    };
+
+    setText('summaryName', details.name || humanData.name || '');
+    setText('summaryOrigin', details.origin || '');
+    setText('summaryAffiliation', details.affiliation || '');
+    setText('summaryGoal', details.goals || '');
+    setText('summaryTrait', details.personality || details.habits || '');
+
+    const fieldsToCheck = [
+        details.name || humanData.name,
+        details.origin,
+        details.affiliation,
+        details.story,
+        details.goals,
+        details.personality,
+        details.physical,
+        details.allies
+    ];
+    const filled = fieldsToCheck.filter(item => item && item.toString().trim().length > 0).length;
+    const percent = Math.round((filled / fieldsToCheck.length) * 100);
+    const fillEl = document.getElementById('characterSummaryFill');
+    const labelEl = document.getElementById('characterSummaryLabel');
+    if (fillEl) fillEl.style.width = `${percent}%`;
+    if (labelEl) labelEl.textContent = `${percent}% completo`;
+}
 
 function getRankName(lvl) {
     if (lvl <= 2) return "Mizunoto";
