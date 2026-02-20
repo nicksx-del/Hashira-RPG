@@ -1589,6 +1589,7 @@
                 if (typeof PARTS === 'undefined') throw new Error("PARTS data not found");
 
                 const char = {
+                    id: Date.now().toString(),
                     name: document.getElementById('oniName').value || 'Oni Desconhecido',
                     race: 'Oni',
                     oniPath: state.path,

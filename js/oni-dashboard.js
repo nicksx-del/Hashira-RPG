@@ -16,12 +16,39 @@ const SKILL_MAP = {
 // --- DATA MANAGEMENT ---
 function saveChar() {
     localStorage.setItem('demonSlayerChar', JSON.stringify(charData));
+
+    // Sync with Save Slots
+    try {
+        let allChars = JSON.parse(localStorage.getItem('demonSlayerSaveSlots') || '[]');
+        let index = -1;
+
+        // Try to find by ID
+        if (charData.id) {
+            index = allChars.findIndex(c => c.id === charData.id);
+        } else {
+            // Fallback for older characters without ID
+            index = allChars.findIndex(c => c.name === charData.name && c.race === 'Oni');
+            if (index !== -1) charData.id = allChars[index].id || Date.now().toString();
+        }
+
+        if (index !== -1) {
+            allChars[index] = charData;
+            localStorage.setItem('demonSlayerSaveSlots', JSON.stringify(allChars));
+        }
+    } catch (e) {
+        console.error("Error syncing save slots:", e);
+    }
 }
 
 function loadChar() {
     const raw = localStorage.getItem('demonSlayerChar');
     if (raw) {
         charData = JSON.parse(raw);
+        // Ensure character has an ID for sync purposes
+        if (!charData.id) {
+            charData.id = Date.now().toString();
+            localStorage.setItem('demonSlayerChar', JSON.stringify(charData));
+        }
         if (!charData.stats) charData.stats = charData.attributes || { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 };
         if (!charData.level) charData.level = 1;
 
@@ -31,6 +58,7 @@ function loadChar() {
         if (!charData.hp) charData.hp = 20;
     } else {
         charData = {
+            id: Date.now().toString(),
             name: "Oni",
             level: 1,
             stats: { str: 14, dex: 12, con: 14, int: 10, wis: 10, cha: 8 },

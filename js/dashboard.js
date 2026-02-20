@@ -26,12 +26,39 @@ const SKILL_MAP = {
 
 function saveHuman() {
     localStorage.setItem('demonSlayerChar', JSON.stringify(humanData));
+
+    // Sync with Save Slots
+    try {
+        let allChars = JSON.parse(localStorage.getItem('demonSlayerSaveSlots') || '[]');
+        let index = -1;
+
+        // Try to find by ID
+        if (humanData.id) {
+            index = allChars.findIndex(c => c.id === humanData.id);
+        } else {
+            // Fallback for older characters without ID
+            index = allChars.findIndex(c => c.name === humanData.name);
+            if (index !== -1) humanData.id = allChars[index].id || Date.now().toString();
+        }
+
+        if (index !== -1) {
+            allChars[index] = humanData;
+            localStorage.setItem('demonSlayerSaveSlots', JSON.stringify(allChars));
+        }
+    } catch (e) {
+        console.error("Error syncing save slots:", e);
+    }
 }
 
 function loadHuman() {
     const raw = localStorage.getItem('demonSlayerChar');
     if (raw) {
         humanData = JSON.parse(raw);
+        // Ensure character has an ID for sync purposes
+        if (!humanData.id) {
+            humanData.id = Date.now().toString();
+            localStorage.setItem('demonSlayerChar', JSON.stringify(humanData));
+        }
         // Normalize attributes -> stats (Creation uses .attributes, Dashboard uses .stats)
         if (humanData.attributes && !humanData.stats) {
             humanData.stats = humanData.attributes;
@@ -44,6 +71,7 @@ function loadHuman() {
         if (!humanData.level) humanData.level = 1;
     } else {
         humanData = {
+            id: Date.now().toString(),
             name: "Caçador",
             level: 1,
             xp: 0,
