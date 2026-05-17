@@ -4,6 +4,9 @@
   "description": "",
   "main": "js/attributes_enhanced.js",
   "scripts": {
+    "dev:web": "npm run dev --prefix web",
+    "build:web": "npm run build --prefix web",
+    "preview:web": "npm run preview --prefix web",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
