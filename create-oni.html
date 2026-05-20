@@ -4,1730 +4,2439 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ascensão Demoníaca | Demon Slayer RPG</title>
+    <title>Criacao Oni Premium | Hashira Handbook</title>
     <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Cinzel:wght@500;700&display=swap"
         rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --bg-deep: #020202;
-            --bg-panel: #0a0a0c;
-            --blood-primary: #990000;
-            --blood-bright: #ff0000;
-            --blood-dark: #4a0000;
-            --text-main: #e0e0e0;
-            --text-muted: #888;
+            --bg-0: #08090f;
+            --bg-1: #0e1017;
+            --bg-2: #141825;
+            --line: rgba(255, 255, 255, 0.12);
+            --line-strong: rgba(255, 255, 255, 0.2);
+            --text: #f4f6ff;
+            --muted: #aeb4c6;
+            --blood: #dc143c;
+            --blood-soft: rgba(220, 20, 60, 0.2);
+            --moon: #6ea8fe;
+            --violet: #b392f0;
+            --ok: #34d399;
+            --warn: #f59e0b;
             --font-main: 'Outfit', sans-serif;
             --font-display: 'Cinzel', serif;
         }
 
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
         }
 
+        html,
         body {
+            margin: 0;
+            min-height: 100%;
+        }
+
+        body {
+            color: var(--text);
             font-family: var(--font-main);
-            background-color: var(--bg-deep);
-            color: var(--text-main);
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: radial-gradient(circle at center, #1a0505 0%, #000 70%);
-            animation: fadeEntry 2s ease-out forwards;
+            background:
+                radial-gradient(900px 520px at 14% 8%, rgba(220, 20, 60, 0.16), transparent 52%),
+                radial-gradient(760px 460px at 88% 22%, rgba(110, 168, 254, 0.14), transparent 48%),
+                linear-gradient(180deg, #0d0f16 0%, #090a10 60%, #07080d 100%);
+            overflow-x: hidden;
         }
 
-        @keyframes fadeEntry {
-            0% {
-                opacity: 0;
-            }
-
-            100% {
-                opacity: 1;
-            }
-        }
-
-        /* --- BACKGROUND FX --- */
-        .blood-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+        .oni-backdrop {
+            position: fixed;
+            inset: 0;
             pointer-events: none;
             z-index: 0;
-            opacity: 0.4;
         }
 
-        .particle {
+        .mist-layer {
             position: absolute;
-            background: var(--blood-bright);
-            border-radius: 50%;
-            opacity: 0;
-            animation: floatUp 10s infinite linear;
+            inset: -10%;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(220, 20, 60, 0.18), transparent 36%),
+                radial-gradient(circle at 80% 32%, rgba(179, 146, 240, 0.12), transparent 32%),
+                radial-gradient(circle at 52% 84%, rgba(110, 168, 254, 0.1), transparent 28%);
+            filter: blur(12px);
+            animation: mistShift 16s ease-in-out infinite alternate;
+            opacity: 0.7;
         }
 
-        @keyframes floatUp {
-            0% {
-                transform: translateY(100vh) scale(0);
-                opacity: 0;
+        @keyframes mistShift {
+            from {
+                transform: translate3d(-1.2%, 0.8%, 0) scale(1);
             }
 
-            20% {
-                opacity: 0.6;
-            }
-
-            100% {
-                transform: translateY(-100px) scale(1);
-                opacity: 0;
+            to {
+                transform: translate3d(1.4%, -0.9%, 0) scale(1.04);
             }
         }
 
-        /* --- CONTAINER --- */
-        .creation-container {
-            width: 100%;
-            max-width: none;
-            height: 100vh;
-            display: flex;
-            background: rgba(10, 10, 12, 0.8);
-            border: none;
-            border-radius: 0;
-            overflow: hidden;
-            backdrop-filter: blur(20px);
-            box-shadow: none;
+        .oni-shell {
             position: relative;
-            z-index: 10;
+            z-index: 1;
+            width: min(1620px, 100%);
+            min-height: 100vh;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 264px minmax(0, 1fr) 356px;
+            background: linear-gradient(120deg, rgba(11, 12, 20, 0.78), rgba(8, 9, 14, 0.9));
+            border-left: 1px solid var(--line);
+            border-right: 1px solid var(--line);
+            backdrop-filter: blur(8px);
         }
 
-        /* --- SIDEBAR --- */
-        .sidebar {
-            width: 300px;
-            background: linear-gradient(180deg, var(--bg-panel) 0%, #050505 100%);
-            border-right: 1px solid #222;
-            padding: 3rem 2rem;
+        .left-rail {
+            border-right: 1px solid var(--line);
+            background: linear-gradient(180deg, rgba(16, 17, 26, 0.95), rgba(10, 11, 17, 0.92));
+            padding: 1.4rem 1rem 1.2rem;
             display: flex;
             flex-direction: column;
-            gap: 2rem;
+            gap: 1rem;
         }
 
-        .brand-title {
-            font-family: var(--font-display);
-            font-size: 2rem;
-            color: var(--blood-bright);
-            text-align: center;
-            letter-spacing: 4px;
-            text-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
-            margin-bottom: 2rem;
-        }
-
-        .steps-nav {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .step-item {
+        .rail-brand {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 0.95rem 0.9rem;
             display: flex;
             align-items: center;
-            gap: 15px;
-            padding: 1rem;
-            border-radius: 8px;
-            color: #666;
+            gap: 0.7rem;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .brand-mark {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            border: 1px solid rgba(220, 20, 60, 0.4);
+            background: linear-gradient(145deg, rgba(220, 20, 60, 0.3), rgba(110, 168, 254, 0.2));
+            display: grid;
+            place-items: center;
+        }
+
+        .brand-copy h1 {
+            margin: 0;
+            font-family: var(--font-display);
+            font-size: 1rem;
+            letter-spacing: 0;
+            line-height: 1.1;
+        }
+
+        .brand-copy p {
+            margin: 0.18rem 0 0;
+            color: var(--muted);
+            font-size: 0.73rem;
+        }
+
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            margin-top: 0.45rem;
+        }
+
+        .step-btn {
+            border: 1px solid transparent;
+            border-radius: 10px;
+            background: transparent;
+            color: var(--muted);
+            width: 100%;
+            text-align: left;
+            padding: 0.78rem 0.72rem;
+            display: flex;
+            align-items: center;
+            gap: 0.62rem;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            position: relative;
-            overflow: hidden;
+            transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease, color 0.2s ease;
+            font-size: 0.92rem;
         }
 
-        .step-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 3px;
-            background: var(--blood-bright);
-            transform: scaleY(0);
-            transition: transform 0.3s ease;
+        .step-btn:hover {
+            border-color: rgba(255, 255, 255, 0.16);
+            background: rgba(255, 255, 255, 0.05);
+            color: #d5daea;
+            transform: translateX(1px);
         }
 
-        .step-item:hover {
+        .step-btn.active {
             color: white;
-            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(220, 20, 60, 0.38);
+            background: linear-gradient(90deg, rgba(220, 20, 60, 0.2), rgba(220, 20, 60, 0.05));
         }
 
-        .step-item.locked {
-            opacity: 0.5;
+        .step-btn.locked {
+            opacity: 0.48;
             cursor: not-allowed;
             pointer-events: none;
-            filter: grayscale(1);
         }
 
-        .lock-icon {
-            margin-left: auto;
-            width: 16px;
-            height: 16px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .step-item.locked .lock-icon {
-            opacity: 1;
-        }
-
-        .step-item.active {
-            color: white;
-            background: linear-gradient(90deg, rgba(153, 0, 0, 0.1), transparent);
-        }
-
-        .step-item.active::before {
-            transform: scaleY(1);
-        }
-
-        .step-num {
-            font-family: var(--font-display);
-            font-size: 1.2rem;
+        .step-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            display: grid;
+            place-items: center;
+            font-size: 0.8rem;
             font-weight: 700;
-            opacity: 0.5;
+            color: #dbe0ef;
+            flex: 0 0 auto;
         }
 
-        /* --- MAIN CONTENT --- */
-        .content-area {
-            flex: 1;
-            padding: 4rem 6rem;
-            overflow-y: auto;
-            position: relative;
+        .step-btn.active .step-dot {
+            border-color: rgba(220, 20, 60, 0.52);
+            background: rgba(220, 20, 60, 0.3);
+            color: #fff;
         }
 
-        .step-section {
+        .left-meta {
+            margin-top: auto;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 0.75rem 0.7rem;
+            background: rgba(255, 255, 255, 0.02);
+            font-size: 0.78rem;
+            color: var(--muted);
+            display: grid;
+            gap: 0.35rem;
+        }
+
+        .workspace {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem 1.35rem 1rem;
+            gap: 0.8rem;
+        }
+
+        .workspace-head {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 1rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .head-copy h2 {
+            margin: 0;
+            font-family: var(--font-display);
+            font-size: clamp(1.35rem, 2.3vw, 2rem);
+            letter-spacing: 0;
+        }
+
+        .head-copy p {
+            margin: 0.38rem 0 0;
+            color: var(--muted);
+            font-size: 0.92rem;
+            max-width: 68ch;
+        }
+
+        .progress-box {
+            border: 1px solid rgba(220, 20, 60, 0.38);
+            border-radius: 999px;
+            background: rgba(220, 20, 60, 0.12);
+            color: #ffd7e0;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 0.35rem 0.72rem;
+            white-space: nowrap;
+        }
+
+        .panel-area {
+            min-height: 0;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.008)),
+                linear-gradient(140deg, rgba(220, 20, 60, 0.04), transparent 35%);
+            padding: 1rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .step-panel {
             display: none;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s ease;
+            animation: panelIn 0.28s ease;
         }
 
-        .step-section.active {
+        .step-panel.active {
             display: block;
-            opacity: 1;
-            transform: translateY(0);
+        }
+
+        @keyframes panelIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 0.8rem;
         }
 
         .section-title {
+            margin: 0;
             font-family: var(--font-display);
-            font-size: 3rem;
-            color: white;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            border-bottom: 1px solid #333;
-            padding-bottom: 20px;
+            font-size: clamp(1.25rem, 2vw, 1.75rem);
+            line-height: 1.1;
         }
 
-        .section-desc {
-            color: #aaa;
-            font-size: 1.1rem;
-            margin-bottom: 3rem;
-            line-height: 1.6;
+        .section-sub {
+            margin: 0.35rem 0 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+            max-width: 68ch;
         }
 
-        /* --- CARDS & GRID --- */
-        .options-grid {
+        .option-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
+            gap: 0.8rem;
         }
 
-        .bg-card {
-            background: #0f0f13;
-            border: 1px solid #333;
+        .option-grid.cols-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .option-grid.cols-3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .option-grid.cols-4 {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .option-card {
+            border: 1px solid var(--line);
             border-radius: 12px;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            height: 400px;
-        }
-
-        .bg-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-            border-color: #666;
-        }
-
-        .bg-card.selected {
-            border-color: var(--blood-bright);
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.2);
-        }
-
-        .card-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.6;
-            transition: 0.4s;
-        }
-
-        .bg-card:hover .card-img {
-            opacity: 0.8;
-            scale: 1.05;
-        }
-
-        .bg-card.selected .card-img {
-            opacity: 0.4;
-            scale: 1.1;
-            filter: grayscale(100%) sepia(50%) hue-rotate(-50deg) saturate(300%);
-        }
-
-        .card-content {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.95), transparent);
-            padding: 2rem;
-            z-index: 2;
-        }
-
-        .card-title {
-            font-family: var(--font-display);
-            font-size: 1.8rem;
-            color: white;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-text {
-            color: #ccc;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        /* --- ATTRIBUTES --- */
-        .attr-dashboard {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-        }
-
-        .attr-input-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid #333;
-            border-radius: 10px;
-            padding: 1.5rem;
+            background: rgba(15, 18, 28, 0.82);
+            min-height: 156px;
+            padding: 0.88rem 0.88rem;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 10px;
+            gap: 0.58rem;
+            text-align: left;
+            color: var(--text);
             cursor: pointer;
-            transition: 0.3s;
+            transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
         }
 
-        .attr-input-card:hover,
-        .attr-input-card:focus-within {
-            border-color: var(--blood-bright);
-            background: rgba(153, 0, 0, 0.05);
+        .option-card:hover {
+            border-color: var(--line-strong);
+            transform: translateY(-1px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
         }
 
-        .attr-val-input {
-            background: transparent;
-            border: none;
-            color: white;
+        .option-card.selected {
+            border-color: rgba(220, 20, 60, 0.56);
+            box-shadow: 0 0 0 2px rgba(220, 20, 60, 0.2), 0 14px 26px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(160deg, rgba(220, 20, 60, 0.18), rgba(220, 20, 60, 0.06) 36%, rgba(15, 18, 28, 0.92));
+        }
+
+        .option-card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.6rem;
+        }
+
+        .option-name {
+            margin: 0;
             font-family: var(--font-display);
-            font-size: 2.5rem;
-            text-align: center;
-            width: 100px;
-            outline: none;
-            border-bottom: 2px solid #333;
-            transition: 0.3s;
+            font-size: 1.03rem;
+            line-height: 1.12;
+            letter-spacing: 0;
         }
 
-        .attr-val-input:focus {
-            border-color: var(--blood-bright);
+        .option-badge {
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            padding: 0.2rem 0.52rem;
+            font-size: 0.69rem;
+            color: #d6dcee;
+            background: rgba(255, 255, 255, 0.04);
+            white-space: nowrap;
         }
 
-        /* --- PARTICULARITIES --- */
-        .part-grid {
+        .option-desc {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.86rem;
+            line-height: 1.43;
+            flex: 1;
+        }
+
+        .option-perk {
+            margin: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 0.45rem;
+            color: #dbe1f2;
+            font-size: 0.79rem;
+        }
+
+        .split-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1rem;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.9rem;
         }
 
-        .part-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid #333;
-            padding: 1.2rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.2s;
+        .block-panel {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 0.75rem;
+            min-height: 100%;
         }
 
-        .part-item:hover {
-            background: rgba(255, 255, 255, 0.06);
+        .block-panel h4 {
+            margin: 0 0 0.2rem;
+            font-size: 0.95rem;
         }
 
-        .part-item.selected {
-            background: linear-gradient(135deg, rgba(153, 0, 0, 0.2), transparent);
-            border-color: var(--blood-bright);
+        .block-panel p {
+            margin: 0 0 0.6rem;
+            color: var(--muted);
+            font-size: 0.8rem;
         }
 
-        /* --- INPUTS TEXT --- */
-        .text-input-group {
-            margin-bottom: 2rem;
+        .instinct-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            margin-top: 0.9rem;
         }
 
-        .ds-input {
+        .instinct-card {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 0.75rem;
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .instinct-card .line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.6rem;
+            color: var(--muted);
+            font-size: 0.8rem;
+        }
+
+        .instinct-card .line strong {
+            color: #ecf0ff;
+            font-size: 0.94rem;
+        }
+
+        .slider {
             width: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid #444;
-            color: white;
-            padding: 1rem;
-            font-size: 1rem;
-            border-radius: 8px;
-            font-family: var(--font-main);
-        }
-
-        .ds-input:focus {
-            outline: none;
-            border-color: var(--blood-bright);
-        }
-
-        /* --- CONTROLS --- */
-        .bottom-nav {
-            position: absolute;
-            bottom: 0;
-            left: 300px;
-            right: 320px;
-            width: auto;
-            padding: 2rem 4rem;
-            display: flex;
-            justify-content: space-between;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
-            z-index: 20;
-        }
-
-        .btn {
-            padding: 12px 30px;
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn-text {
-            background: transparent;
-            color: #888;
-            border: 1px solid transparent;
-        }
-
-        .btn-text:hover {
-            color: white;
-        }
-
-        .btn-primary {
-            background: var(--blood-primary);
-            color: white;
-            border: none;
-            box-shadow: 0 0 20px rgba(153, 0, 0, 0.4);
-        }
-
-        .btn-primary:hover {
-            background: var(--blood-bright);
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
-            transform: scale(1.05);
-        }
-
-        /* Locked Placeholder */
-        .locked-card {
-            opacity: 0.3;
-            filter: grayscale(1);
-            pointer-events: none;
-        }
-
-        /* ATTRIBUTE SLIDERS */
-        .attr-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 25px;
-            background: rgba(255, 255, 255, 0.03);
-            padding: 1rem;
-            border-radius: 8px;
-            border: 1px solid #333;
-        }
-
-        .attr-label {
-            width: 140px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #ddd;
-        }
-
-        .attr-input-group {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        input[type="range"] {
-            flex: 1;
-            -webkit-appearance: none;
             appearance: none;
-            height: 6px;
-            background: #333;
-            border-radius: 3px;
+            height: 7px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.14);
+            outline: none;
         }
 
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
+        .slider::-webkit-slider-thumb {
+            appearance: none;
             width: 18px;
             height: 18px;
-            background: var(--blood-bright);
             border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            background: var(--blood);
             cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.2);
         }
 
-        input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-            background: #ff4d4d;
+        .counter-badge {
+            border: 1px solid rgba(220, 20, 60, 0.45);
+            border-radius: 999px;
+            background: rgba(220, 20, 60, 0.15);
+            padding: 0.26rem 0.62rem;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #ffd7e0;
         }
 
-        .attr-val-box {
-            background: #222;
-            width: 40px;
-            height: 30px;
+        .chip-row {
             display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+        }
+
+        .chip-btn {
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.03);
+            color: #dbe1f2;
+            padding: 0.3rem 0.65rem;
+            font-size: 0.77rem;
+            cursor: pointer;
+            transition: border-color 0.2s ease, background-color 0.2s ease;
+        }
+
+        .chip-btn.selected {
+            border-color: rgba(220, 20, 60, 0.58);
+            background: rgba(220, 20, 60, 0.26);
+            color: #fff;
+        }
+
+        .attr-head {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-            font-weight: bold;
-            font-family: var(--font-display);
-            color: white;
-            border: 1px solid #444;
+            gap: 1rem;
+            margin-bottom: 0.6rem;
         }
 
         .points-box {
-            background: rgba(153, 0, 0, 0.2);
-            border: 1px solid var(--blood-bright);
-            color: var(--blood-bright);
-            padding: 8px 20px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            float: right;
-            transform: translateY(-5px);
-            font-family: var(--font-display);
+            border: 1px solid rgba(220, 20, 60, 0.45);
+            border-radius: 999px;
+            background: rgba(220, 20, 60, 0.15);
+            color: #ffd7e0;
+            padding: 0.3rem 0.72rem;
+            font-size: 0.82rem;
+            font-weight: 700;
         }
 
-        /* --- RIGHT SIDEBAR --- */
-        .sidebar-right {
-            width: 320px;
-            background: linear-gradient(180deg, var(--bg-panel) 0%, #050505 100%);
-            border-left: 1px solid #222;
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            overflow-y: auto;
+        .points-box.warn {
+            border-color: rgba(245, 158, 11, 0.45);
+            background: rgba(245, 158, 11, 0.16);
+            color: #ffe3b2;
         }
 
-        .preview-header {
+        .attr-list {
+            display: grid;
+            gap: 0.58rem;
+        }
+
+        .attr-row {
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 0.55rem;
+            display: grid;
+            grid-template-columns: 130px minmax(0, 1fr);
+            gap: 0.55rem;
+            align-items: center;
+        }
+
+        .attr-label {
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            gap: 0.45rem;
+            color: #dbe1f2;
+            font-weight: 600;
         }
 
-        .preview-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: #222;
-            border: 2px solid var(--blood-bright);
+        .attr-controls {
+            display: grid;
+            grid-template-columns: 34px minmax(0, 1fr) 34px 42px 42px;
+            gap: 0.46rem;
+            align-items: center;
+        }
+
+        .stepper-btn {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            color: #fff;
+            cursor: pointer;
+            width: 34px;
+            height: 34px;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .stepper-btn:hover {
+            border-color: var(--line-strong);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .value-box {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.88rem;
+            line-height: 34px;
+            height: 34px;
+        }
+
+        .value-box.eff {
+            border-color: rgba(220, 20, 60, 0.46);
+            color: #ffe1e8;
+            background: rgba(220, 20, 60, 0.14);
+        }
+
+        .identity-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.25fr;
+            gap: 0.9rem;
+        }
+
+        .avatar-panel,
+        .identity-panel {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 0.76rem;
+        }
+
+        .avatar-main {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            overflow: hidden;
+            min-height: 240px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(155deg, rgba(220, 20, 60, 0.2), rgba(110, 168, 254, 0.15));
+        }
+
+        .avatar-main img {
+            width: 100%;
+            height: 240px;
+            object-fit: contain;
+        }
+
+        .avatar-presets {
+            margin-top: 0.7rem;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 0.45rem;
+        }
+
+        .avatar-option {
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 0.18rem;
+            background: rgba(255, 255, 255, 0.02);
+            cursor: pointer;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .avatar-option:hover {
+            border-color: var(--line-strong);
+            transform: translateY(-1px);
+        }
+
+        .avatar-option.selected {
+            border-color: rgba(220, 20, 60, 0.56);
+            box-shadow: 0 0 0 2px rgba(220, 20, 60, 0.18);
+        }
+
+        .avatar-option img {
+            width: 100%;
+            height: 56px;
+            object-fit: cover;
+            border-radius: 7px;
+        }
+
+        .upload-row {
+            margin-top: 0.65rem;
+            display: flex;
+            gap: 0.4rem;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .upload-row label {
+            border: 1px dashed rgba(255, 255, 255, 0.35);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            color: #d9deed;
+            padding: 0.42rem 0.62rem;
+            font-size: 0.78rem;
+            cursor: pointer;
+        }
+
+        .upload-row span {
+            color: var(--muted);
+            font-size: 0.75rem;
+        }
+
+        .field-grid {
+            display: grid;
+            gap: 0.58rem;
+        }
+
+        .field {
+            display: grid;
+            gap: 0.28rem;
+        }
+
+        .field label {
+            font-size: 0.78rem;
+            color: var(--muted);
+            letter-spacing: 0;
+        }
+
+        .field input,
+        .field textarea {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            background: rgba(0, 0, 0, 0.28);
+            color: #f3f6ff;
+            font: inherit;
+            padding: 0.58rem 0.66rem;
+            resize: vertical;
+            min-height: 38px;
+        }
+
+        .field textarea {
+            min-height: 118px;
+        }
+
+        .field input:focus,
+        .field textarea:focus,
+        .slider:focus,
+        .option-card:focus,
+        .chip-btn:focus,
+        .step-btn:focus,
+        .stepper-btn:focus,
+        .nav-btn:focus,
+        .confirm-btn:focus,
+        .avatar-option:focus,
+        .upload-row label:focus {
+            outline: 2px solid rgba(110, 168, 254, 0.64);
+            outline-offset: 2px;
+        }
+
+        .panel-footer {
+            margin-top: auto;
+            border-top: 1px solid var(--line);
+            padding-top: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.72rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            color: #f3f6ff;
+            padding: 0.62rem 1.06rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.42rem;
+            min-height: 42px;
+            transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            border-color: var(--line-strong);
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .nav-btn.primary {
+            border-color: rgba(220, 20, 60, 0.48);
+            background: linear-gradient(120deg, rgba(220, 20, 60, 0.42), rgba(220, 20, 60, 0.18));
+            color: #fff;
+        }
+
+        .nav-btn.primary:hover {
+            border-color: rgba(220, 20, 60, 0.7);
+            box-shadow: 0 12px 22px rgba(220, 20, 60, 0.22);
+        }
+
+        .preview-rail {
+            border-left: 1px solid var(--line);
+            background: linear-gradient(180deg, rgba(14, 16, 24, 0.96), rgba(10, 11, 17, 0.92));
+            padding: 1rem 0.92rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.72rem;
+            min-width: 0;
+        }
+
+        .preview-card {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 0.68rem;
+        }
+
+        .preview-top {
+            display: flex;
+            gap: 0.62rem;
+            align-items: center;
+        }
+
+        .preview-avatar-wrap {
+            width: 62px;
+            height: 62px;
+            border-radius: 12px;
+            border: 1px solid rgba(220, 20, 60, 0.5);
+            background: rgba(220, 20, 60, 0.14);
+            overflow: hidden;
+            flex: 0 0 auto;
+        }
+
+        .preview-avatar-wrap img {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
         }
 
-        .summary-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-            color: #aaa;
+        .preview-name {
+            margin: 0;
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            line-height: 1.08;
         }
 
-        .summary-table td {
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        .preview-sub {
+            margin: 0.2rem 0 0;
+            color: var(--muted);
+            font-size: 0.78rem;
         }
 
-        .summary-table td:last-child {
-            text-align: right;
-            color: white;
-            font-weight: bold;
+        .badge-line {
+            margin-top: 0.52rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
         }
 
-        .vital-box {
+        .badge {
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 0.16rem 0.5rem;
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 1rem;
-            text-align: center;
-            position: relative;
+            color: #dbe1f2;
+            font-size: 0.68rem;
         }
 
-        .vital-label {
+        .metric-grid {
+            margin-top: 0.56rem;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.45rem;
+        }
+
+        .metric {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 0.42rem;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .metric span {
             display: block;
+            color: var(--muted);
+            font-size: 0.68rem;
+        }
+
+        .metric strong {
+            display: block;
+            margin-top: 0.08rem;
+            font-size: 0.98rem;
+            color: #fff;
+        }
+
+        .mini-title {
+            margin: 0 0 0.34rem;
+            font-size: 0.78rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0;
+        }
+
+        .mini-list {
+            display: grid;
+            gap: 0.22rem;
             font-size: 0.8rem;
-            color: #888;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
-        .vital-val {
-            font-size: 1.8rem;
-            font-family: var(--font-display);
-            font-weight: bold;
+        .mini-list div {
+            color: #dce1f1;
         }
 
-        .vital-val span {
-            font-size: 1rem;
-            color: #555;
-            font-weight: normal;
+        .stats-mini {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.35rem;
+            font-size: 0.74rem;
         }
 
-        .confirm-btn {
-            width: 100%;
-            padding: 1rem;
-            background: var(--blood-bright);
-            color: white;
-            border: none;
+        .stats-mini div {
+            border: 1px solid var(--line);
             border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-family: var(--font-display);
-            margin-top: auto;
+            padding: 0.3rem 0.38rem;
+            background: rgba(255, 255, 255, 0.03);
+            color: #d8deef;
+            display: flex;
+            justify-content: space-between;
+            gap: 0.3rem;
         }
 
-        .confirm-btn:hover {
-            box-shadow: 0 0 20px var(--blood-dim);
-            transform: translateY(-2px);
+        .feedback-toast {
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            z-index: 90;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: rgba(8, 10, 16, 0.94);
+            color: #eef2ff;
+            min-width: 250px;
+            max-width: 340px;
+            padding: 0.62rem 0.75rem;
+            box-shadow: 0 18px 28px rgba(0, 0, 0, 0.32);
+            display: none;
+        }
+
+        .feedback-toast strong {
+            display: block;
+            font-size: 0.84rem;
+        }
+
+        .feedback-toast p {
+            margin: 0.22rem 0 0;
+            color: #d0d6e6;
+            font-size: 0.78rem;
+            line-height: 1.35;
+        }
+
+        .feedback-toast.ok {
+            border-color: rgba(52, 211, 153, 0.5);
+        }
+
+        .feedback-toast.warn {
+            border-color: rgba(245, 158, 11, 0.55);
+        }
+
+        .ritual-overlay {
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 52% 42%, rgba(220, 20, 60, 0.28), rgba(0, 0, 0, 0.92) 58%),
+                #040406;
+            z-index: 120;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .ritual-box {
+            max-width: 520px;
+            border: 1px solid rgba(220, 20, 60, 0.42);
+            border-radius: 14px;
+            background: rgba(8, 8, 12, 0.72);
+            padding: 1.2rem 1rem;
+            animation: ritualPulse 1.2s ease;
+        }
+
+        .ritual-box h3 {
+            margin: 0;
+            font-family: var(--font-display);
+            font-size: clamp(1.35rem, 2.4vw, 2rem);
+        }
+
+        .ritual-box p {
+            margin: 0.52rem 0 0;
+            color: #c9d0e3;
+            font-size: 0.92rem;
+        }
+
+        @keyframes ritualPulse {
+            0% {
+                transform: scale(0.96);
+                opacity: 0;
+            }
+
+            70% {
+                transform: scale(1.01);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 1320px) {
+            .oni-shell {
+                grid-template-columns: 240px minmax(0, 1fr) 330px;
+            }
+
+            .option-grid.cols-4 {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 1180px) {
+            .oni-shell {
+                grid-template-columns: 220px minmax(0, 1fr);
+            }
+
+            .preview-rail {
+                grid-column: 1 / -1;
+                border-left: none;
+                border-top: 1px solid var(--line);
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                align-content: start;
+            }
+
+            .preview-rail .preview-card:first-child {
+                grid-column: 1 / -1;
+            }
+
+            .option-grid.cols-3 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 920px) {
+            .oni-shell {
+                grid-template-columns: 1fr;
+                border-left: none;
+                border-right: none;
+            }
+
+            .left-rail {
+                border-right: none;
+                border-bottom: 1px solid var(--line);
+                padding: 0.9rem 0.8rem;
+            }
+
+            .rail-brand {
+                margin-bottom: 0.35rem;
+            }
+
+            .step-list {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 0.35rem;
+            }
+
+            .step-btn {
+                padding: 0.56rem;
+                font-size: 0.8rem;
+            }
+
+            .step-dot {
+                width: 24px;
+                height: 24px;
+                border-radius: 7px;
+                font-size: 0.74rem;
+            }
+
+            .left-meta {
+                display: none;
+            }
+
+            .workspace {
+                padding: 0.75rem 0.65rem;
+            }
+
+            .split-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .identity-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .option-grid.cols-2,
+            .option-grid.cols-3,
+            .option-grid.cols-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .instinct-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .attr-row {
+                grid-template-columns: 1fr;
+            }
+
+            .attr-controls {
+                grid-template-columns: 32px minmax(0, 1fr) 32px 40px 40px;
+            }
+
+            .avatar-presets {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .panel-footer {
+                justify-content: stretch;
+            }
+
+            .panel-footer .nav-btn {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .preview-rail {
+                grid-template-columns: 1fr;
+                padding: 0.7rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0s !important;
+                transition-duration: 0s !important;
+                scroll-behavior: auto !important;
+            }
         }
     </style>
 </head>
 
 <body>
-
-    <div class="blood-canvas" id="bloodCanvas"></div>
-
-    <div class="creation-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="brand-title">DEMON<br>SLAYER</div>
-            <nav class="steps-nav">
-                <div class="step-item active" id="nav-step-1" onclick="goToStep(1)">
-                    <span class="step-num">01.</span>
-                    <span>Caminho</span>
-                    <i data-lucide="lock" class="lock-icon"></i>
-                </div>
-                <div class="step-item locked" id="nav-step-2" onclick="goToStep(2)">
-                    <span class="step-num">02.</span>
-                    <span>Kekkijutsu</span>
-                    <i data-lucide="lock" class="lock-icon"></i>
-                </div>
-                <div class="step-item locked" id="nav-step-3" onclick="goToStep(3)">
-                    <span class="step-num">03.</span>
-                    <span>Particularidades</span>
-                    <i data-lucide="lock" class="lock-icon"></i>
-                </div>
-                <div class="step-item locked" id="nav-step-4" onclick="goToStep(4)">
-                    <span class="step-num">04.</span>
-                    <span>Atributos</span>
-                    <i data-lucide="lock" class="lock-icon"></i>
-                </div>
-                <div class="step-item locked" id="nav-step-5" onclick="goToStep(5)">
-                    <span class="step-num">05.</span>
-                    <span>Identidade</span>
-                    <i data-lucide="lock" class="lock-icon"></i>
-                </div>
-            </nav>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="content-area">
-
-            <!-- STEP 1: PATH -->
-            <section id="step-1" class="step-section active">
-                <h1 class="section-title">Escolha seu Destino</h1>
-                <p class="section-desc">Você renasceu nas sombras. Como irá sustentar sua existência imortal?</p>
-
-                <div class="options-grid">
-                    <div class="bg-card selected" onclick="selectPath('blood', this)">
-                        <img src="assets/criação_personagem/Oni-removebg-preview.png" class="card-img" alt="Oni Sangue"
-                            style="object-fit:contain;">
-                        <div class="card-content">
-                            <h3 class="card-title"> <i data-lucide="droplet" style="color:red"></i> Caminho do Sangue
-                            </h3>
-                            <p class="card-text">O caminho tradicional. Consumir carne humana concede poder
-                                incomensurável, regeneração rápida e força bruta. Mas a fome é uma fera indomável.</p>
-                        </div>
-                    </div>
-
-                    <div class="bg-card" onclick="selectPath('flesh', this)">
-                        <img src="assets/NezukoKamado.png" class="card-img" alt="Nezuko Style"
-                            style="object-fit:contain;">
-                        <div class="card-content">
-                            <h3 class="card-title"> <i data-lucide="moon" style="color:cyan"></i> Retenção de Carne</h3>
-                            <p class="card-text">Um caminho raro. Através do sono profundo e controle mental, você
-                                rejeita a carne humana. Sua evolução é mais lenta, mas sua humanidade permanece.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- STEP 2: KEKKIJUTSU -->
-            <section id="step-2" class="step-section">
-                <h1 class="section-title">Arte Demoníaca</h1>
-                <p class="section-desc">Seu sangue carrega poderes únicos. Qual elemento se manifesta em você?</p>
-
-                <div class="options-grid" style="grid-template-columns: repeat(3, 1fr);">
-                    <div class="bg-card selected" style="height:300px;" onclick="selectKekk('ice', this)">
-                        <div
-                            style="position:absolute; inset:0; background:linear-gradient(45deg, #00b4d8, transparent);">
-                        </div>
-                        <div class="card-content">
-                            <h3 class="card-title"><i data-lucide="snowflake"></i> Criocinese</h3>
-                            <p class="card-text">Gere e manipule gelo a partir do seu sangue e vapor d'água.</p>
-                        </div>
-                    </div>
-
-                    <div class="bg-card locked-card" style="height:300px;">
-                        <div
-                            style="position:absolute; inset:0; background:#111; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px;">
-                            <i data-lucide="lock" size="48" style="color:#444;"></i>
-                            <span style="font-family:var(--font-display); color:#666; font-size:1.2rem;">Fios (Nível
-                                5)</span>
-                        </div>
-                    </div>
-
-                    <div class="bg-card locked-card" style="height:300px;">
-                        <div
-                            style="position:absolute; inset:0; background:#111; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px;">
-                            <i data-lucide="lock" size="48" style="color:#444;"></i>
-                            <span style="font-family:var(--font-display); color:#666; font-size:1.2rem;">Pântano (Nível
-                                3)</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- STEP 3: PARTICULARITIES -->
-            <section id="step-3" class="step-section">
-                <h1 class="section-title">Dons Sobrenaturais</h1>
-                <p class="section-desc">Selecione 2 características biológicas que definem seu corpo oni.</p>
-                <div id="partCounter" style="color:var(--blood-bright); margin-bottom:1rem; font-weight:bold;">0 / 2
-                    Selecionado(s)</div>
-                <div class="part-grid" id="particularitiesRef">
-                    <!-- JS Fill -->
-                </div>
-            </section>
-
-            <!-- STEP 4: ATTRIBUTES -->
-            <section id="step-4" class="step-section">
-                <div
-                    style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #333; padding-bottom: 20px; margin-bottom: 2rem;">
-                    <div>
-                        <h1 class="section-title" style="border:none; margin:0; padding:0;">Atributos Base</h1>
-                        <p class="section-desc" style="margin:0;">Defina suas capacidades demoníacas (27 Pontos).</p>
-                    </div>
-                    <div class="points-box">Pontos: <span id="pointsRemain">27</span></div>
-                </div>
-
-                <!-- BONUS SELECTION UI -->
-                <div
-                    style="margin-bottom:2rem; background:rgba(255,255,255,0.02); padding:1rem; border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
-                    <h4 style="margin-top:0; color:var(--blood-bright); margin-bottom:10px; font-size:1rem;">Bônus
-                        Racial (+2) <span style="font-weight:400; color:#888; font-size:0.8rem;">(Escolha 2)</span></h4>
-                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                        <button class="bonus-toggle" data-attr="str" onclick="toggleBonus('str')"
-                            style="padding:5px 10px; border:1px solid #333; background:rgba(255,255,255,0.05); color:#888; border-radius:4px; cursor:pointer;">Força</button>
-                        <button class="bonus-toggle" data-attr="dex" onclick="toggleBonus('dex')"
-                            style="padding:5px 10px; border:1px solid #333; background:rgba(255,255,255,0.05); color:#888; border-radius:4px; cursor:pointer;">Destreza</button>
-                        <button class="bonus-toggle" data-attr="con" onclick="toggleBonus('con')"
-                            style="padding:5px 10px; border:1px solid #333; background:rgba(255,255,255,0.05); color:#888; border-radius:4px; cursor:pointer;">Constituição</button>
-                        <button class="bonus-toggle" data-attr="int" onclick="toggleBonus('int')"
-                            style="padding:5px 10px; border:1px solid #333; background:rgba(255,255,255,0.05); color:#888; border-radius:4px; cursor:pointer;">Inteligência</button>
-                        <button class="bonus-toggle" data-attr="wis" onclick="toggleBonus('wis')"
-                            style="padding:5px 10px; border:1px solid #333; background:rgba(255,255,255,0.05); color:#888; border-radius:4px; cursor:pointer;">Sabedoria</button>
-                        <button class="bonus-toggle" data-attr="cha" onclick="toggleBonus('cha')"
-                            style="padding:5px 10px; border:1px solid #333; background:rgba(255,255,255,0.05); color:#888; border-radius:4px; cursor:pointer;">Carisma</button>
-                    </div>
-                </div>
-
-                <div style="max-width: 800px; margin: 0 auto;">
-                    <!-- STR -->
-                    <div class="attr-row">
-                        <div class="attr-label"><i data-lucide="swords" size="16" style="color:var(--blood-bright)"></i>
-                            Força</div>
-                        <div class="attr-input-group">
-                            <input type="range" id="input-str" min="6" max="18" step="2" value="8" style="--val:0%"
-                                oninput="updateStat('str', this.value)">
-                            <div class="attr-val-box" id="val-str">8</div>
-                        </div>
-                    </div>
-                    <!-- DEX -->
-                    <div class="attr-row">
-                        <div class="attr-label"><i data-lucide="wind" size="16" style="color:var(--blood-bright)"></i>
-                            Destreza</div>
-                        <div class="attr-input-group">
-                            <input type="range" id="input-dex" min="6" max="18" step="2" value="8"
-                                oninput="updateStat('dex', this.value)">
-                            <div class="attr-val-box" id="val-dex">8</div>
-                        </div>
-                    </div>
-                    <!-- CON -->
-                    <div class="attr-row">
-                        <div class="attr-label"><i data-lucide="shield" size="16" style="color:var(--blood-bright)"></i>
-                            Constituição</div>
-                        <div class="attr-input-group">
-                            <input type="range" id="input-con" min="6" max="18" step="2" value="8"
-                                oninput="updateStat('con', this.value)">
-                            <div class="attr-val-box" id="val-con">8</div>
-                        </div>
-                    </div>
-                    <!-- INT -->
-                    <div class="attr-row">
-                        <div class="attr-label"><i data-lucide="brain" size="16" style="color:var(--blood-bright)"></i>
-                            Inteligência</div>
-                        <div class="attr-input-group">
-                            <input type="range" id="input-int" min="6" max="18" step="2" value="8"
-                                oninput="updateStat('int', this.value)">
-                            <div class="attr-val-box" id="val-int">8</div>
-                        </div>
-                    </div>
-                    <!-- WIS -->
-                    <div class="attr-row">
-                        <div class="attr-label"><i data-lucide="eye" size="16" style="color:var(--blood-bright)"></i>
-                            Sabedoria</div>
-                        <div class="attr-input-group">
-                            <input type="range" id="input-wis" min="6" max="18" step="2" value="8"
-                                oninput="updateStat('wis', this.value)">
-                            <div class="attr-val-box" id="val-wis">8</div>
-                        </div>
-                    </div>
-                    <!-- CHA -->
-                    <div class="attr-row">
-                        <div class="attr-label"><i data-lucide="smile" size="16" style="color:var(--blood-bright)"></i>
-                            Carisma</div>
-                        <div class="attr-input-group">
-                            <input type="range" id="input-cha" min="6" max="18" step="2" value="8"
-                                oninput="updateStat('cha', this.value)">
-                            <div class="attr-val-box" id="val-cha">8</div>
-                        </div>
-                    </div>
-
-                    <button onclick="openDiceModal()" style="
-                        width:100%; 
-                        max-width: 800px;
-                        margin: 1.5rem auto 0 auto; 
-                        padding:12px; 
-                        background:rgba(255,255,255,0.05); 
-                        border:1px dashed #555; 
-                        color:#ccc; 
-                        border-radius:8px; 
-                        cursor:pointer; 
-                        display:flex; 
-                        align-items:center; 
-                        justify-content:center; 
-                        gap:10px; 
-                        transition:0.3s;
-                    " onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='#999';"
-                        onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.borderColor='#555';">
-                        <i data-lucide="dices" size="18"></i> Girar os Dados / Manual
-                    </button>
-                </div>
-            </section>
-
-            <!-- STEP 5: FINAL -->
-            <section id="step-5" class="step-section">
-                <h1 class="section-title">Renascimento</h1>
-                <p class="section-desc">O último passo. Quem é você agora?</p>
-
-                <div style="max-width: 600px;">
-                    <div class="text-input-group">
-                        <label style="display:block; color:#ddd; margin-bottom:10px;">Nome do Oni</label>
-                        <input type="text" id="oniName" class="ds-input" placeholder="Ex: Akaza">
-                    </div>
-
-                    <div class="text-input-group">
-                        <label style="display:block; color:#ddd; margin-bottom:10px;">Aparência / Detalhes</label>
-                        <textarea id="oniDesc" class="ds-input" rows="5"
-                            placeholder="Descreva suas marcas, chifres, cor da pele..."></textarea>
-                    </div>
-
-                    <div
-                        style="margin-top:2rem; padding: 1rem; border: 1px dashed #444; border-radius:8px; color:#888; font-size:0.9rem;">
-                        <i data-lucide="info" style="vertical-align:middle; width:16px;"></i> Ao clicar em "Aceitar o
-                        Sangue", você será transportado para o seu painel de controle.
-                    </div>
-                </div>
-            </section>
-
-        </main>
-
-        <!-- RIGHT SIDEBAR -->
-        <aside class="sidebar-right">
-            <div class="preview-header">
-                <img src="assets/criação_personagem/Oni-removebg-preview.png" class="preview-avatar" id="previewImg">
-                <div>
-                    <div style="font-size:1.2rem; font-weight:bold; font-family:var(--font-display); color:white;"
-                        id="previewName">Oni Desconhecido</div>
-                    <div style="font-size:0.85rem; color:var(--blood-dim);" id="previewPath">Caminho do Sangue</div>
-                </div>
-            </div>
-
-            <table class="summary-table">
-                <tr>
-                    <td>Raça</td>
-                    <td>Oni</td>
-                </tr>
-                <tr>
-                    <td>Rank</td>
-                    <td>Oni Inferior</td>
-                </tr>
-                <tr>
-                    <td>Kekkijutsu</td>
-                    <td id="previewKekk">Gelo</td>
-                </tr>
-                <tr>
-                    <td>Antecedente</td>
-                    <td id="previewBg">-</td>
-                </tr>
-                <tr>
-                    <td>Deslocamento</td>
-                    <td id="previewSpeed">9m</td>
-                </tr>
-            </table>
-
-            <div style="margin-top:1rem; display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <div class="vital-box">
-                    <span class="vital-label">Vida Max</span>
-                    <div class="vital-val" style="color:var(--blood-bright);" id="previewHP">15</div>
-                </div>
-                <div class="vital-box">
-                    <span class="vital-label">Pontos de Sangue</span>
-                    <div class="vital-val" style="color:#a855f7;" id="previewPE">1</div>
-                </div>
-            </div>
-
-            <div style="margin-top:1.5rem;">
-                <span class="vital-label" style="margin-bottom:10px;">Particularidades</span>
-                <div id="previewParts"
-                    style="display:flex; flex-direction:column; gap:8px; font-size:0.9rem; color:#ccc;">
-                    <span style="opacity:0.5; font-style:italic;">Nenhuma selecionada</span>
-                </div>
-            </div>
-
-            <button class="confirm-btn" onclick="finishCreation()">CONFIRMAR CRIAÇÃO</button>
-
-        </aside>
-
-        <!-- Navigation Buttons -->
-        <footer class="bottom-nav">
-            <button class="btn btn-text" id="prevBtn" onclick="prevStep()">Voltar</button>
-            <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Próximo <i
-                    data-lucide="arrow-right"></i></button>
-        </footer>
+    <div class="oni-backdrop" aria-hidden="true">
+        <div class="mist-layer"></div>
     </div>
 
-    <!-- PARTICULARITY DETAIL MODAL -->
-    <div id="partDetailModal"
-        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:99999; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
-        <div
-            style="background:#111; width:600px; max-width:90%; border-radius:12px; border:1px solid #333; overflow:hidden; display:flex; flex-direction:column; max-height:85vh;">
-            <!-- Header -->
-            <div
-                style="padding:1.5rem; background:#1a1a1a; display:flex; align-items:center; gap:15px; border-bottom:1px solid #333;">
-                <div id="pdIcon"
-                    style="width:50px; height:50px; background:var(--blood-dim); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white;">
-                    <!-- Icon injected here -->
+    <div class="oni-shell">
+        <aside class="left-rail">
+            <div class="rail-brand">
+                <div class="brand-mark">
+                    <i data-lucide="flame" style="color:#ffd6df; width:20px; height:20px;"></i>
                 </div>
-                <h2 id="pdTitle" style="color:white; margin:0; font-family:var(--font-display); font-size:1.8rem;">
-                    Título</h2>
+                <div class="brand-copy">
+                    <h1>Criacao Oni</h1>
+                    <p>Ritual demoniaco premium</p>
+                </div>
             </div>
 
-            <!-- Body -->
-            <div style="padding:2rem; overflow-y:auto; color:#ccc; line-height:1.6; font-size:1.05rem;" id="pdContent">
-                <!-- Text injected here -->
-            </div>
-
-            <!-- Footer -->
-            <div
-                style="padding:1.5rem; background:#1a1a1a; border-top:1px solid #333; display:flex; justify-content:flex-end; gap:10px;">
-                <button onclick="document.getElementById('partDetailModal').style.display='none'"
-                    style="padding:10px 20px; background:transparent; border:1px solid #555; color:#aaa; border-radius:6px; cursor:pointer;">Fechar</button>
-                <button id="pdSelectBtn"
-                    style="padding:10px 25px; background:var(--blood-primary); border:none; color:white; border-radius:6px; cursor:pointer; font-weight:bold; display:flex; align-items:center; gap:8px;">
-                    SELECIONAR
+            <div class="step-list" id="stepList">
+                <button class="step-btn active" data-step="1" type="button">
+                    <span class="step-dot">1</span><span>Caminho</span>
+                </button>
+                <button class="step-btn locked" data-step="2" type="button">
+                    <span class="step-dot">2</span><span>Kekkijutsu</span>
+                </button>
+                <button class="step-btn locked" data-step="3" type="button">
+                    <span class="step-dot">3</span><span>Pacto e Origem</span>
+                </button>
+                <button class="step-btn locked" data-step="4" type="button">
+                    <span class="step-dot">4</span><span>Particularidades</span>
+                </button>
+                <button class="step-btn locked" data-step="5" type="button">
+                    <span class="step-dot">5</span><span>Atributos</span>
+                </button>
+                <button class="step-btn locked" data-step="6" type="button">
+                    <span class="step-dot">6</span><span>Identidade</span>
                 </button>
             </div>
-        </div>
+
+            <div class="left-meta">
+                <div><strong>Meta:</strong> build Oni jogavel no Nivel 1</div>
+                <div><strong>Regra:</strong> 2 particularidades e 2 bonus raciais</div>
+                <div><strong>Saida:</strong> compatibilidade com oni-dashboard</div>
+            </div>
+        </aside>
+
+        <main class="workspace">
+            <header class="workspace-head">
+                <div class="head-copy">
+                    <h2 id="headerTitle">Passo 1 - Caminho Oni</h2>
+                    <p id="headerSubtitle">Defina sua fome ancestral e a forma como seu corpo sustenta o sangue demonio.</p>
+                </div>
+                <div class="progress-box" id="progressBadge">Etapa 1 de 6</div>
+            </header>
+
+            <div class="panel-area">
+                <section class="step-panel active" id="panel-1">
+                    <div class="section-head">
+                        <div>
+                            <h3 class="section-title">Caminho Oni</h3>
+                            <p class="section-sub">Escolha seu eixo de sobrevivencia. Isso influencia bonus iniciais e parte do pacote de ataques.</p>
+                        </div>
+                    </div>
+                    <div id="pathGrid" class="option-grid cols-2"></div>
+                </section>
+
+                <section class="step-panel" id="panel-2">
+                    <div class="section-head">
+                        <div>
+                            <h3 class="section-title">Kekkijutsu e Instinto</h3>
+                            <p class="section-sub">Defina sua Arte Demonica e o estado interno que controla risco de instinto e leitura da build.</p>
+                        </div>
+                    </div>
+                    <div id="kekkGrid" class="option-grid cols-3"></div>
+                    <div class="instinct-grid">
+                        <div class="instinct-card">
+                            <div class="line"><span>Fome Demoniaca</span><strong id="hungerValue">45</strong></div>
+                            <input id="hungerRange" type="range" class="slider" min="0" max="100" step="1" value="45">
+                            <div class="line"><span>Escala</span><span>0 calmo - 100 frenesi</span></div>
+                        </div>
+                        <div class="instinct-card">
+                            <div class="line"><span>Sintonia Lunar</span><strong id="moonValue">40</strong></div>
+                            <input id="moonRange" type="range" class="slider" min="0" max="100" step="1" value="40">
+                            <div class="line"><span>Escala</span><span>0 instavel - 100 controle fino</span></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="step-panel" id="panel-3">
+                    <div class="section-head">
+                        <div>
+                            <h3 class="section-title">Pacto e Origem</h3>
+                            <p class="section-sub">Escolha o pacto de estilo de jogo e a origem humana que define pericias e inventario inicial.</p>
+                        </div>
+                    </div>
+                    <div class="split-grid">
+                        <div class="block-panel">
+                            <h4>Pacto Demoniaco</h4>
+                            <p>Um pacto molda postura de combate e perk principal.</p>
+                            <div id="pactGrid" class="option-grid cols-2"></div>
+                        </div>
+                        <div class="block-panel">
+                            <h4>Origem Humana</h4>
+                            <p>Mantem identidade da vida anterior e define proficiencias iniciais.</p>
+                            <div id="bgGrid" class="option-grid cols-2"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="step-panel" id="panel-4">
+                    <div class="section-head">
+                        <div>
+                            <h3 class="section-title">Particularidades Oni</h3>
+                            <p class="section-sub">Escolha exatamente 2 mutacoes de assinatura. O preview atualiza seus perks em tempo real.</p>
+                        </div>
+                        <div class="counter-badge" id="partCounter">0 / 2 selecionadas</div>
+                    </div>
+                    <div id="partGrid" class="option-grid cols-4"></div>
+                </section>
+
+                <section class="step-panel" id="panel-5">
+                    <div class="attr-head">
+                        <div>
+                            <h3 class="section-title">Atributos e Bonus Racial</h3>
+                            <p class="section-sub">Point-buy (27) usa apenas valor base. Bonus racial +2 em dois atributos aparece no valor efetivo.</p>
+                        </div>
+                        <div class="points-box" id="pointsBox">Pontos restantes: <span id="pointsRemain">27</span></div>
+                    </div>
+
+                    <div style="margin-bottom:0.7rem;">
+                        <div class="mini-title">Bonus racial (+2 em 2 atributos)</div>
+                        <div class="chip-row" id="bonusRow"></div>
+                    </div>
+
+                    <div class="attr-list" id="attrList"></div>
+                </section>
+
+                <section class="step-panel" id="panel-6">
+                    <div class="section-head">
+                        <div>
+                            <h3 class="section-title">Identidade Oni</h3>
+                            <p class="section-sub">Defina nome, titulo e historia curta para finalizar o renascimento.</p>
+                        </div>
+                    </div>
+                    <div class="identity-grid">
+                        <div class="avatar-panel">
+                            <div class="avatar-main" id="identityAvatarMain">
+                                <img id="identityAvatar" src="assets/NezukoKamado.png" alt="Retrato Oni">
+                            </div>
+                            <div class="avatar-presets" id="avatarPresetGrid"></div>
+                            <div class="upload-row">
+                                <label for="avatarUpload">Enviar retrato</label>
+                                <input id="avatarUpload" type="file" accept="image/*" style="display:none;">
+                                <span id="avatarHint">PNG/JPG local</span>
+                            </div>
+                        </div>
+                        <div class="identity-panel">
+                            <div class="field-grid">
+                                <div class="field">
+                                    <label for="oniName">Nome Oni</label>
+                                    <input id="oniName" type="text" maxlength="40" placeholder="Ex: Akaza">
+                                </div>
+                                <div class="field">
+                                    <label for="oniTitle">Titulo</label>
+                                    <input id="oniTitle" type="text" maxlength="60"
+                                        placeholder="Ex: Carniceiro da Lua Fria">
+                                </div>
+                                <div class="field">
+                                    <label for="oniHistory">Historia curta</label>
+                                    <textarea id="oniHistory"
+                                        placeholder="Conte sua queda, sua fome e o motivo da sua ascensao."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <footer class="panel-footer">
+                    <button id="prevBtn" class="nav-btn" type="button"><i data-lucide="arrow-left"></i> Voltar</button>
+                    <button id="nextBtn" class="nav-btn primary" type="button">Proximo <i data-lucide="arrow-right"></i></button>
+                </footer>
+            </div>
+        </main>
+
+        <aside class="preview-rail">
+            <div class="preview-card">
+                <div class="preview-top">
+                    <div class="preview-avatar-wrap">
+                        <img id="previewAvatar" src="assets/NezukoKamado.png" alt="Preview Oni">
+                    </div>
+                    <div>
+                        <h3 class="preview-name" id="previewName">Oni Desconhecido</h3>
+                        <p class="preview-sub" id="previewTitle">Sem titulo definido</p>
+                    </div>
+                </div>
+                <div class="badge-line">
+                    <span class="badge" id="previewPath">Caminho: Sangue</span>
+                    <span class="badge" id="previewKekk">Kekk: Criocinese</span>
+                    <span class="badge" id="previewPact">Pacto: Predador</span>
+                </div>
+                <div class="metric-grid">
+                    <div class="metric"><span>HP Inicial</span><strong id="previewHP">15</strong></div>
+                    <div class="metric"><span>PE Inicial</span><strong id="previewPE">1</strong></div>
+                    <div class="metric"><span>Instinto DC</span><strong id="previewInstinctDC">12</strong></div>
+                    <div class="metric"><span>Controle</span><strong id="previewControl">Oscilante</strong></div>
+                </div>
+            </div>
+
+            <div class="preview-card">
+                <div class="mini-title">Atributos efetivos</div>
+                <div class="stats-mini" id="previewStats"></div>
+            </div>
+
+            <div class="preview-card">
+                <div class="mini-title">Particularidades (2)</div>
+                <div class="mini-list" id="previewParts">
+                    <div>Nenhuma selecionada</div>
+                </div>
+            </div>
+
+            <div class="preview-card">
+                <div class="mini-title">Perks ativos</div>
+                <div class="mini-list" id="previewPerks">
+                    <div>Selecione caminho, kekkijutsu e pacto</div>
+                </div>
+            </div>
+
+            <div class="preview-card">
+                <div class="mini-title">Ataques iniciais</div>
+                <div class="mini-list" id="previewAttacks">
+                    <div>Pacote sera gerado ao finalizar</div>
+                </div>
+            </div>
+        </aside>
     </div>
 
-    <!-- DICE ROLL MODAL (MANUAL INPUT) -->
-    <div id="diceRollModal"
-        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:99999; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
-        <div
-            style="background:#111; padding:2rem; border-radius:12px; border:1px solid #333; width:400px; text-align:center;">
-            <h3 style="color:var(--blood-bright); margin-top:0; font-family:var(--font-display);">Atributos Manuais</h3>
-            <p style="color:#888; font-size:0.9rem; margin-bottom:1.5rem;">Insira os valores rolados (ex: 4d6 drop
-                lowest).
-            </p>
+    <div class="feedback-toast" id="feedbackToast" role="status" aria-live="polite">
+        <strong id="toastTitle">Aviso</strong>
+        <p id="toastBody">Mensagem</p>
+    </div>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:1.5rem;">
-                <!-- Inputs -->
-                <div
-                    style="display:flex; align-items:center; justify-content:space-between; background:#222; padding:8px; border-radius:4px;">
-                    <span style="font-weight:bold; color:#ccc;">FOR</span>
-                    <input type="number" id="manual-str" value="10"
-                        style="width:50px; background:#111; border:1px solid #444; color:white; text-align:center; padding:5px; border-radius:4px;">
-                </div>
-                <div
-                    style="display:flex; align-items:center; justify-content:space-between; background:#222; padding:8px; border-radius:4px;">
-                    <span style="font-weight:bold; color:#ccc;">DES</span>
-                    <input type="number" id="manual-dex" value="10"
-                        style="width:50px; background:#111; border:1px solid #444; color:white; text-align:center; padding:5px; border-radius:4px;">
-                </div>
-                <div
-                    style="display:flex; align-items:center; justify-content:space-between; background:#222; padding:8px; border-radius:4px;">
-                    <span style="font-weight:bold; color:#ccc;">CON</span>
-                    <input type="number" id="manual-con" value="10"
-                        style="width:50px; background:#111; border:1px solid #444; color:white; text-align:center; padding:5px; border-radius:4px;">
-                </div>
-                <div
-                    style="display:flex; align-items:center; justify-content:space-between; background:#222; padding:8px; border-radius:4px;">
-                    <span style="font-weight:bold; color:#ccc;">INT</span>
-                    <input type="number" id="manual-int" value="10"
-                        style="width:50px; background:#111; border:1px solid #444; color:white; text-align:center; padding:5px; border-radius:4px;">
-                </div>
-                <div
-                    style="display:flex; align-items:center; justify-content:space-between; background:#222; padding:8px; border-radius:4px;">
-                    <span style="font-weight:bold; color:#ccc;">SAB</span>
-                    <input type="number" id="manual-wis" value="10"
-                        style="width:50px; background:#111; border:1px solid #444; color:white; text-align:center; padding:5px; border-radius:4px;">
-                </div>
-                <div
-                    style="display:flex; align-items:center; justify-content:space-between; background:#222; padding:8px; border-radius:4px;">
-                    <span style="font-weight:bold; color:#ccc;">CAR</span>
-                    <input type="number" id="manual-cha" value="10"
-                        style="width:50px; background:#111; border:1px solid #444; color:white; text-align:center; padding:5px; border-radius:4px;">
-                </div>
-            </div>
-
-            <div style="display:flex; gap:10px;">
-                <button onclick="document.getElementById('diceRollModal').style.display='none'"
-                    style="flex:1; padding:10px; background:rgba(255,255,255,0.1); border:none; color:white; border-radius:4px; cursor:pointer;">Cancelar</button>
-                <button onclick="applyManualStats()"
-                    style="flex:1; padding:10px; background:var(--blood-primary); border:none; color:white; border-radius:4px; cursor:pointer; font-weight:bold;">Aplicar</button>
-            </div>
+    <div class="ritual-overlay" id="ritualOverlay">
+        <div class="ritual-box">
+            <h3>Pacto Selado</h3>
+            <p>Seu Oni foi registrado. Abrindo o painel de dominio...</p>
         </div>
     </div>
 
     <script>
         lucide.createIcons();
 
-        // --- BACKGROUND ---
-        function createParticles() {
-            const canvas = document.getElementById('bloodCanvas');
-            for (let i = 0; i < 30; i++) {
-                const p = document.createElement('div');
-                p.className = 'particle';
-                p.style.width = Math.random() * 6 + 2 + 'px';
-                p.style.height = p.style.width;
-                p.style.left = Math.random() * 100 + '%';
-                p.style.animationDuration = Math.random() * 5 + 5 + 's';
-                p.style.animationDelay = Math.random() * 5 + 's';
-                canvas.appendChild(p);
-            }
-        }
-        createParticles();
-
-        // --- LOGIC ---
-        let currentStep = 1;
-        const totalSteps = 6;
-
-        // Define State
-        let state = {
-            path: 'blood',
-            kekkijutsu: 'ice',
-            particularities: [],
-            background: 'criminal',
-            stats: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 },
-            bonuses: [],
-            pointsMax: 27,
-            pointsSpent: 0,
-            manualMode: false,
-            maxStep: 1
+        const COSTS = { 6: -2, 8: 0, 10: 2, 12: 4, 14: 7, 16: 12, 18: 17 };
+        const STAT_KEYS = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
+        const STAT_LABELS = {
+            str: 'Forca',
+            dex: 'Destreza',
+            con: 'Constituicao',
+            int: 'Inteligencia',
+            wis: 'Sabedoria',
+            cha: 'Carisma'
         };
 
-        const PARTS = [
+        const PATHS = [
             {
-                id: 'size', name: 'Alteração Corporal', icon: 'maximize',
-                desc: 'Ação para diminuir (15cm) ou aumentar (5m).',
-                full: 'Você possui a habilidade de alterar seu tamanho em diversas situações. Usando uma ação você pode diminuir para até 15 centímetros de altura ou aumentar para até 5 metros de altura. Ao diminuir para uma altura de 15 centímetros, você pode se tornar extremamente ágil e se infiltrar em espaços pequenos, passando despercebido. Já ao aumentar para 5 metros de altura, você se torna imponente e poderoso, capaz de intimidar e dominar o ambiente ao seu redor.'
+                id: 'blood',
+                name: 'Caminho do Sangue',
+                badge: 'Ofensivo',
+                desc: 'Aceita a fome sem filtro. Pressao agressiva e escalada de dano em combates longos.',
+                perk: 'Perk: +2 HP inicial e bonus de pressao predatoria.'
             },
             {
-                id: 'animal', name: 'Aparência Animalesca', icon: 'cat',
-                desc: 'Adquire características de um animal. Requer aprovação.',
-                full: 'Você tem a capacidade de assumir uma aparência muito semelhante à de um animal de sua escolha e adquirir algumas características relacionadas a ele. Por exemplo, se escolher se transformar em uma aranha, poderá aderir às paredes e tecer teias. No entanto, é importante conversar com seu mestre antes de fazer essa escolha, para determinar quais animais são permitidos para a sua transmutação. Além disso, é relevante considerar que você enfrentará um preconceito severo por conta dessas características, o que pode afetar suas interações com outras pessoas.'
-            },
-            {
-                id: 'disturbing', name: 'Aparência Perturbadora', icon: 'ghost',
-                desc: 'Vantagem em testes de Intimidação.',
-                full: 'Você possui a habilidade de assumir uma forma assustadora, o que lhe permite intimidar criaturas com mais facilidade. Se você deseja intimidar uma criatura, você pode fazer um teste com vantagem para isso.'
-            },
-            {
-                id: 'camo', name: 'Camuflagem Adaptativa', icon: 'eye-off',
-                desc: '+2 em Furtividade. Mistura-se ao ambiente.',
-                full: 'Você é capaz de se adaptar ao ambiente ao seu redor, alterando a textura da sua pele ou padrões corporais para se misturar perfeitamente com a paisagem, tornando-se quase invisível para observadores desatentos. Você ganha um bônus de +2 em testes de furtividade.'
-            },
-            {
-                id: 'extend', name: 'Extensão de Membros', icon: 'chevrons-up',
-                desc: 'Aumenta alcance de ataque corpo-a-corpo em 1,5m.',
-                full: 'Você pode estender seus membros, como braços e pernas, para alcançar objetos distantes ou aumentar seu alcance em ataques físicos, permitindo que você lide com ameaças de longa distância com facilidade, você aumenta seu alcance de ataques em 1,5 metros.'
-            },
-            {
-                id: 'charming', name: 'Forma Cativante', icon: 'heart',
-                desc: 'Aparência atraente. Vantagem em Persuasão.',
-                full: 'Você adquire uma aparência muito atraente aos outros, podendo assumir diferentes formas, como a de uma criança inocente ou de um rosto encantador. Isso lhe confere uma vantagem em testes de persuasão.'
-            },
-            {
-                id: 'claws', name: 'Garra Laminada', icon: 'scissors',
-                desc: 'Ataques desarmados causam dano cortante.',
-                full: 'Suas garras são afiadas como lâminas, permitindo que você cause dano cortante em seus ataques corpo-a-corpo.'
-            },
-            {
-                id: 'mimicry', name: 'Mimetismo', icon: 'mic',
-                desc: 'Imita vozes e sons. CD 15 de Intuição.',
-                full: 'Você tem a habilidade de imitar perfeitamente vozes que você escutou e sons de outras criaturas, você deve realizar um teste de intuição CD 15 para distinguir.'
-            },
-            {
-                id: 'limbs', name: 'Múltiplos Membros', icon: 'users',
-                desc: 'Aumenta dano desarmado para 1d10.',
-                full: 'Você possui a capacidade de criar braços ou pernas adicionais, o que intensifica seus ataques desarmados, aumentando seu dano desarmado para 1d10.'
-            },
-            {
-                id: 'steel_skin', name: 'Pele de Aço', icon: 'shield',
-                desc: 'RD 2 contra corte e concussão.',
-                full: 'Você possui uma pele de aço, reduzindo todo o dano cortante e concussão que você sofre em -2.'
-            },
-            {
-                id: 'human_form', name: 'Transformação Humana', icon: 'user',
-                desc: 'Transformação perfeita em humano.',
-                full: 'Você possui a habilidade de se transformar completamente em humano, tornando-se indistinguível dos demais. Essa transformação apenas é perceptível por aqueles que possuem sentidos extrassensoriais.'
-            },
-            {
-                id: 'water_breath', name: 'Respiração Aquática', icon: 'droplet',
-                desc: 'Respira na água e superfície.',
-                full: 'Você possui a capacidade de respirar tanto na água quanto na superfície, sem nenhuma dificuldade ou restrição.'
-            },
-            {
-                id: 'darkvision', name: 'Visão Noturna', icon: 'eye',
-                desc: 'Enxerga na escuridão (preto e branco).',
-                full: 'Você possui a habilidade de enxergar perfeitamente no escuro, como se fosse plena luz do dia. Seus olhos se adaptam rapidamente a condições de pouca luz, permitindo que você veja detalhes sutis e se mova com facilidade em ambientes com iluminação inadequada. No entanto, essa habilidade não permite que você veja cores, apenas enxergando tudo em preto e branco.'
+                id: 'flesh',
+                name: 'Retencao de Carne',
+                badge: 'Controle',
+                desc: 'Suprime impulsos por disciplina e ritual. Build mais estavel e resposta tatico-mental.',
+                perk: 'Perk: +1 HP inicial e controle de instinto facilitado.'
             }
         ];
 
-        const COSTS = { 6: -2, 8: 0, 10: 2, 12: 4, 14: 7, 16: 12, 18: 17 };
+        const KEKKI = [
+            {
+                id: 'ice',
+                name: 'Criocinese',
+                badge: 'Controle de area',
+                desc: 'Cristaliza sangue em gelo perfurante e cria zonas de desaceleracao.',
+                perk: 'Perk: ganha ataque de gelo com alcance medio.',
+                icon: 'snowflake'
+            },
+            {
+                id: 'blood_manip',
+                name: 'Manipulacao de Sangue',
+                badge: 'Burst',
+                desc: 'Converte sangue em cortes e chicotes compressivos de alto impacto.',
+                perk: 'Perk: ataque de sangue escalando com Carisma.',
+                icon: 'droplet'
+            },
+            {
+                id: 'shadow',
+                name: 'Sombras Vorazes',
+                badge: 'Emboscada',
+                desc: 'Projeta sombras densas para reposicionamento e pressao silenciosa.',
+                perk: 'Perk: ataque de sombra e vantagem narrativa em furtividade.',
+                icon: 'moon'
+            },
+            {
+                id: 'arrow',
+                name: 'Vetores',
+                badge: 'Precisao',
+                desc: 'Dobra trajetorias de impacto com vetores invisiveis e controle de linha.',
+                perk: 'Perk: ataque vetorial tecnico com dano consistente.',
+                icon: 'crosshair'
+            },
+            {
+                id: 'sound',
+                name: 'Ondas Sonoras',
+                badge: 'Disrupcao',
+                desc: 'Explode pulsos vibracionais para desorientar e abrir janelas taticas.',
+                perk: 'Perk: ataque sonoro com efeito de quebra de ritmo.',
+                icon: 'volume-2'
+            },
+            {
+                id: 'swamp',
+                name: 'Pantano Abissal',
+                badge: 'Controle duro',
+                desc: 'Conjura solo viscoso e lacres de mobilidade para aprisionar alvos.',
+                perk: 'Perk: ataque de aprisionamento com dano progressivo.',
+                icon: 'waves'
+            }
+        ];
 
-        const backgroundData = {
-            artista: {
-                title: "Artista", icon: "palette",
-                skills: ["Atuação", "Persuasão"],
-                items: [
-                    { name: "Bolsa de Ienes", type: "consumable", props: "3d6 x 1000", desc: "Ienes obtidos com sua arte.", weight: "0.5 kg" },
-                    { name: "Pincel e Tintas", type: "item", desc: "Ferramentas de pintura.", weight: "1 kg" },
-                    { name: "Roupa de Artista", type: "armor", ac: "11 + Des", props: "Leve", weight: "2 kg" },
-                    { name: "Kit de Disfarce", type: "item", weight: "1.5 kg" }
-                ],
-                desc: "Dedicado à beleza e emoção. Visão única do mundo."
+        const PACTS = [
+            {
+                id: 'predator',
+                name: 'Pacto do Predador',
+                badge: 'Agressivo',
+                desc: 'Pressao corpo a corpo, foco em perseguicao e finalizacao rapida.',
+                perk: 'Perk: +1 em ataques de curta distancia no pacote inicial.',
+                skills: ['Atletismo', 'Intimidacao']
             },
-            brigao: {
-                title: "Brigão", icon: "skull",
-                skills: ["Atletismo", "Intimidação"],
-                items: [
-                    { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Dinheiro de apostas.", weight: "0.5 kg" },
-                    { name: "Porrete", type: "weapon", dmg: "1d4 concussão", props: "Simples, Leve", weight: "1 kg" }
-                ],
-                desc: "Nascido na rua ou arenas. Mestre em combate desarmado."
+            {
+                id: 'juggernaut',
+                name: 'Pacto do Colosso',
+                badge: 'Tanque',
+                desc: 'Corpo resiliente e troca franca. Ideal para linha de frente.',
+                perk: 'Perk: +2 HP inicial adicional.',
+                skills: ['Atletismo', 'Sobrevivencia']
             },
-            costureiro: {
-                title: "Costureiro", icon: "scissors",
-                skills: ["Enganação", "Furtividade"],
-                items: [
-                    { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Economias.", weight: "0.5 kg" },
-                    { name: "Ferramentas de Costura", type: "item", desc: "Agulhas e linhas.", weight: "1 kg" },
-                    { name: "Roupa de Costureiro", type: "armor", ac: "11 + Des", props: "Leve", weight: "2 kg" }
-                ],
-                desc: "Paixão por tecidos e moda. Cria uniformes e disfarces."
+            {
+                id: 'trickster',
+                name: 'Pacto da Miragem',
+                badge: 'Mobilidade',
+                desc: 'Fintas, reposicionamento e ritmo quebrado em combate.',
+                perk: 'Perk: +1m deslocamento inicial.',
+                skills: ['Acrobacia', 'Furtividade']
             },
-            cozinheiro: {
-                title: "Cozinheiro", icon: "utensils",
-                skills: ["História", "Persuasão"],
-                items: [
-                    { name: "Bolsa de Ienes", type: "consumable", props: "3d12 x 1000", desc: "Lucros.", weight: "0.5 kg" },
-                    { name: "Utensílios de Cozinheiro", type: "item", desc: "Panelas e facas.", weight: "2 kg" }
-                ],
-                desc: "Mestre dos sabores. Suas refeições curam e abrem portas."
+            {
+                id: 'oracle',
+                name: 'Pacto do Oraculo Carmesim',
+                badge: 'Tatico',
+                desc: 'Leitura de campo, janelas de controle e punicao precisa.',
+                perk: 'Perk: melhora de controle de instinto em situacoes estaveis.',
+                skills: ['Intuicao', 'Investigacao']
+            }
+        ];
+
+        const BACKGROUNDS = [
+            {
+                id: 'brigao',
+                title: 'Brigao',
+                desc: 'Sobreviveu em ringues, ruas e becos hostis.',
+                skills: ['Atletismo', 'Intimidacao'],
+                items: [{ name: 'Porrete', type: 'weapon', damage: '1d4', note: 'Arma simples' }]
             },
-            estudioso: {
-                title: "Estudioso", icon: "book",
-                skills: ["História", "Intuição"],
-                items: [
-                    { name: "Bolsa de Ienes", type: "consumable", props: "3d12 x 1000", desc: "Fundos.", weight: "0.5 kg" },
-                    { name: "Livros de Pesquisa", type: "item", desc: "Conhecimento.", weight: "3 kg" }
-                ],
-                desc: "Busca incansável pelo saber. Resolve enigmas."
+            {
+                id: 'ladrao',
+                title: 'Ladrao',
+                desc: 'Especialista em brechas, fuga e leitura de oportunidade.',
+                skills: ['Furtividade', 'Enganacao'],
+                items: [{ name: 'Kit de Ladrao', type: 'item', note: 'Ferramentas furtivas' }]
             },
-            ferreiro: {
-                title: "Ferreiro", icon: "hammer",
-                skills: ["História", "Percepção"],
-                items: [
-                    { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Dinheiro do ofício.", weight: "0.5 kg" },
-                    { name: "Ferramentas de Ferreiro", type: "item", weight: "5 kg" }
-                ],
-                desc: "Mestre do metal e forja. Cria e repara as melhores lâminas."
+            {
+                id: 'ninja',
+                title: 'Ninja',
+                desc: 'Treino tecnico de infiltracao e combate de precisao.',
+                skills: ['Acrobacia', 'Furtividade'],
+                items: [{ name: 'Kunai x3', type: 'weapon', damage: '1d4', note: 'Arremesso' }]
             },
-            ladrao: {
-                title: "Ladrão", icon: "footprints",
-                skills: ["Enganação", "Furtividade"],
-                items: [
-                    { name: "Bolsa de Ienes", type: "consumable", props: "3d12 x 1000", desc: "Dinheiro 'encontrado'.", weight: "0.5 kg" },
-                    { name: "Ferramentas de Ladrão", type: "item", weight: "1 kg" }
-                ],
-                desc: "Vive nas sombras. Mestre do engano e da apropriação."
+            {
+                id: 'medico',
+                title: 'Medico',
+                desc: 'Conhecimento de anatomia e suporte em campo hostil.',
+                skills: ['Medicina', 'Natureza'],
+                items: [{ name: 'Kit de Socorro', type: 'consumable', note: 'Uso utilitario' }]
             },
-            medico: {
-                title: "Médico", icon: "activity",
-                skills: ["Medicina", "Natureza"],
-                items: [
-                    { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Pagamentos.", weight: "0.5 kg" },
-                    { name: "Kit de Primeiros Socorros", type: "consumable", props: "1d8+4", weight: "1 kg" },
-                    { name: "Kit de Herbalismo", type: "item", weight: "1 kg" }
-                ],
-                desc: "Dedicação à cura. Salva vidas onde outros falham."
+            {
+                id: 'ferreiro',
+                title: 'Ferreiro',
+                desc: 'Conhece estrutura, materiais e reparos improvisados.',
+                skills: ['Historia', 'Percepcao'],
+                items: [{ name: 'Martelo curto', type: 'weapon', damage: '1d6', note: 'Impacto' }]
             },
-            ninja: {
-                title: "Ninja", icon: "ghost",
-                skills: ["Acrobacia", "Furtividade"],
-                items: [
-                    { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Pagamento.", weight: "0.5 kg" },
-                    { name: "Kunai (x5)", type: "weapon", dmg: "1d4 perfurante", props: "Arremesso" },
-                    { name: "Bomba de Fumaça (x2)", type: "consumable", desc: "Escuridão." }
-                ],
-                desc: "Guerreiro das sombras. Mestre em infiltração."
-            },
-            orfao: {
-                title: "Órfão", icon: "user",
-                skills: ["Natureza", "Sobrevivência"],
-                items: [
-                    { name: "Bolsa de Ienes", type: "consumable", props: "3d10 x 1000", desc: "Esmolas.", weight: "0.5 kg" },
-                    { name: "Adaga Velha", type: "weapon", dmg: "1d4 perfurante", props: "Leve" }
-                ],
-                desc: "Criado nas ruas frias. Resiliente e adaptável."
-            },
-            policial: {
-                title: "Policial", icon: "shield",
-                skills: ["Intuição", "Investigação"],
-                items: [
-                    { name: "Distintivo", type: "item", desc: "Identificação." },
-                    { name: "Pistola", type: "weapon", dmg: "1d10 perfurante", props: "Distância" }
-                ],
-                desc: "Defensor da lei. Investigador nato."
-            },
-            religioso: {
-                title: "Religioso", icon: "sun",
-                skills: ["História", "Intuição"],
-                items: [
-                    { name: "Símbolo Sagrado", type: "item" },
-                    { name: "Água Benta (x2)", type: "consumable" }
-                ],
-                desc: "Guiado pela fé e luz divina."
-            },
-            selvagem: {
-                title: "Selvagem", icon: "tent",
-                skills: ["Sobrevivência", "Natureza"],
-                items: [
-                    { name: "Armadilha de Urso", type: "item" },
-                    { name: "Pele de Animal", type: "item" }
-                ],
-                desc: "Filho da natureza. Caçador primitivo."
+            {
+                id: 'artista',
+                title: 'Artista',
+                desc: 'Presenca social forte e leitura emocional refinada.',
+                skills: ['Atuacao', 'Persuasao'],
+                items: [{ name: 'Kit artistico', type: 'item', note: 'Expressao e disfarce' }]
+            }
+        ];
+
+        const PARTICULARITIES = [
+            { id: 'size', name: 'Alteracao Corporal', desc: 'Ajusta massa e altura para infiltrar ou esmagar.' },
+            { id: 'animal', name: 'Aparencia Animalesca', desc: 'Traits bestiais para pressao visual e mobilidade.' },
+            { id: 'disturb', name: 'Aparencia Perturbadora', desc: 'Vantagem narrativa em intimidacao social.' },
+            { id: 'camo', name: 'Camuflagem Adaptativa', desc: 'Blend corporal em ambientes com pouca luz.' },
+            { id: 'limbs', name: 'Extensao de Membros', desc: 'Alcance corpo a corpo aumentado em combate.' },
+            { id: 'charm', name: 'Forma Cativante', desc: 'Mascara social para enganar e aproximar alvos.' },
+            { id: 'claws', name: 'Garra Laminada', desc: 'Ataques desarmados com perfil cortante.' },
+            { id: 'mimic', name: 'Mimetismo Vocal', desc: 'Replica vozes e padrões de som conhecidos.' },
+            { id: 'multi', name: 'Multiplos Membros', desc: 'Pressao fisica elevada em curta distancia.' },
+            { id: 'steel', name: 'Pele de Aco', desc: 'Resistencia extra a dano fisico comum.' },
+            { id: 'human', name: 'Transformacao Humana', desc: 'Camada social quase perfeita em ambientes urbanos.' },
+            { id: 'water', name: 'Respiracao Aquatica', desc: 'Ajuste fisiologico para terreno submerso.' },
+            { id: 'darkvision', name: 'Visao Noturna', desc: 'Leitura de forma e movimento em baixa luz.' }
+        ];
+
+        const AVATAR_PRESETS = [
+            { id: 'av1', name: 'Oni Base', src: 'assets/criação_personagem/Oni-removebg-preview.png' },
+            { id: 'av2', name: 'Nezuko', src: 'assets/NezukoKamado.png' },
+            { id: 'av3', name: 'Inosuke', src: 'assets/Inosuke3 (1).png' },
+            { id: 'av4', name: 'Tanjirou', src: 'assets/Tanjirou_manga.png' },
+            { id: 'av5', name: 'Zenitsu', src: 'assets/Zenitsu_colored_body_2 (1).png' },
+            { id: 'av6', name: 'Sanemi', src: 'assets/criação_personagem/Sanemi_colored_body-removebg-preview.png' }
+        ];
+
+        const state = {
+            currentStep: 1,
+            maxStep: 1,
+            path: 'blood',
+            kekkijutsu: 'ice',
+            hunger: 45,
+            moonSync: 40,
+            pact: 'predator',
+            background: 'brigao',
+            particularities: [],
+            baseStats: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 },
+            bonuses: [],
+            effectiveStats: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 },
+            pointsMax: 27,
+            identity: {
+                name: '',
+                title: '',
+                history: '',
+                portrait: AVATAR_PRESETS[1].src,
+                presetId: AVATAR_PRESETS[1].id
             }
         };
 
-        // Init Backgrounds
-        const bgGrid = document.getElementById('bgGrid');
-        Object.keys(backgroundData).forEach(key => {
-            const bg = backgroundData[key];
-            const el = document.createElement('div');
-            el.className = `bg-card ${state.background === key ? 'selected' : ''}`;
-            el.onclick = () => selectBg(key, el);
-            el.innerHTML = `
-                <div style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:2rem; text-align:center;">
-                    <i data-lucide="${bg.icon}" size="48" style="color:var(--blood-bright); margin-bottom:1rem;"></i>
-                    <h3 style="color:white; font-family:var(--font-display); margin-bottom:0.5rem;">${bg.title}</h3>
-                    <p style="color:#aaa; font-size:0.9rem; margin-bottom:1rem;">${bg.desc}</p>
-                    <div style="font-size:0.8rem; color:#666;">
-                        <div><strong>Perícias:</strong> ${bg.skills.join(', ')}</div>
-                    </div>
-                </div>
-            `;
-            bgGrid.appendChild(el);
-        });
-
-        function selectBg(id, el) {
-            state.background = id;
-            document.querySelectorAll('#bgGrid .bg-card').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
+        function uniq(items) {
+            return Array.from(new Set(items.filter(Boolean)));
         }
 
+        function getMod(value) {
+            return Math.floor((value - 10) / 2);
+        }
 
+        function getCurrentPath() {
+            return PATHS.find(x => x.id === state.path) || PATHS[0];
+        }
 
-        // Init Parts
-        const pContainer = document.getElementById('particularitiesRef');
-        if (pContainer) {
-            pContainer.innerHTML = '';
-            PARTS.forEach(p => {
-                const el = document.createElement('div');
-                el.className = 'part-item';
-                // CHANGE: onclick opens Modal now
-                el.onclick = () => openPartDetails(p.id);
-                el.id = `part-card-${p.id}`; // Add ID for selector ref
-                el.innerHTML = `
-                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px; color:white; font-weight:700;">
-                        <i data-lucide="${p.icon}" style="width:18px;"></i> ${p.name}
-                    </div>
-                    <div style="font-size:0.85rem; color:#888;">${p.desc}</div>
-                `;
-                pContainer.appendChild(el);
+        function getCurrentKekk() {
+            return KEKKI.find(x => x.id === state.kekkijutsu) || KEKKI[0];
+        }
+
+        function getCurrentPact() {
+            return PACTS.find(x => x.id === state.pact) || PACTS[0];
+        }
+
+        function getCurrentBackground() {
+            return BACKGROUNDS.find(x => x.id === state.background) || BACKGROUNDS[0];
+        }
+
+        function getPartLabelById(partId) {
+            const match = PARTICULARITIES.find(x => x.id === partId);
+            return match ? match.name : partId;
+        }
+
+        function computeInstinctDC() {
+            const wisMod = getMod(state.effectiveStats.wis || 10);
+            const hungerPressure = Math.floor(state.hunger / 25);
+            const moonRelief = Math.floor(state.moonSync / 34);
+            const pactRelief = state.pact === 'oracle' ? 1 : 0;
+            const dc = 10 + hungerPressure - moonRelief - pactRelief - Math.max(0, wisMod > 0 ? 1 : 0);
+            return Math.max(8, Math.min(20, dc));
+        }
+
+        function getControlState() {
+            if (state.hunger >= 70 && state.moonSync < 45) return 'Instavel';
+            if (state.hunger <= 35 && state.moonSync >= 60) return 'Controlado';
+            return 'Oscilante';
+        }
+
+        function computeSpeed() {
+            let speed = 9;
+            if (state.pact === 'trickster') speed += 1;
+            if (state.particularities.includes('limbs')) speed += 1;
+            return speed;
+        }
+
+        function computeStartingHP() {
+            const conMod = getMod(state.effectiveStats.con || 10);
+            let hp = 14 + conMod;
+            hp += state.path === 'blood' ? 2 : 1;
+            if (state.pact === 'juggernaut') hp += 2;
+            if (state.hunger >= 72) hp += 1;
+            return Math.max(10, hp);
+        }
+
+        function getPointSpend() {
+            let used = 0;
+            let valid = true;
+            STAT_KEYS.forEach((k) => {
+                const value = Number(state.baseStats[k] || 8);
+                if (!Object.prototype.hasOwnProperty.call(COSTS, value)) {
+                    valid = false;
+                    return;
+                }
+                used += COSTS[value];
+            });
+            return { used, valid };
+        }
+
+        function recomputeEffectiveStats() {
+            const bonusSet = new Set(state.bonuses);
+            STAT_KEYS.forEach((k) => {
+                const base = Number(state.baseStats[k] || 8);
+                state.effectiveStats[k] = base + (bonusSet.has(k) ? 2 : 0);
             });
         }
 
-        let tempPartId = null;
+        function buildPerksList() {
+            const pathPerk = getCurrentPath().perk;
+            const kekkPerk = getCurrentKekk().perk;
+            const pactPerk = getCurrentPact().perk;
+            const parts = state.particularities.map(getPartLabelById);
+            return uniq([pathPerk, kekkPerk, pactPerk, ...parts.map(x => `Particularidade: ${x}`)]);
+        }
 
-        function openPartDetails(pid) {
-            tempPartId = pid;
-            const part = PARTS.find(p => p.id === pid);
-            if (!part) return;
+        function buildInitialAttacks() {
+            const pactAttackMap = {
+                predator: { name: 'Investida Predatoria', damage: '1d8 + FOR', type: 'Corpo a corpo agressivo' },
+                juggernaut: { name: 'Esmagar Costelas', damage: '1d10 + FOR', type: 'Impacto pesado' },
+                trickster: { name: 'Passo Fantasma', damage: '1d6 + DES', type: 'Movimento ofensivo rapido' },
+                oracle: { name: 'Corte de Previsao', damage: '1d8 + DES', type: 'Punicao tatico-tecnica' }
+            };
 
-            document.getElementById('pdTitle').innerText = part.name;
-            document.getElementById('pdIcon').innerHTML = `<i data-lucide="${part.icon}" size="24"></i>`;
-            document.getElementById('pdContent').innerText = part.full;
+            const kekkAttackMap = {
+                ice: { name: 'Lanca de Gelo', damage: '1d8 + CON', type: 'Kekkijutsu criogenico' },
+                blood_manip: { name: 'Laminas de Sangue', damage: '1d8 + CHA', type: 'Kekkijutsu de sangue' },
+                shadow: { name: 'Mordida da Sombra', damage: '1d8 + WIS', type: 'Kekkijutsu sombrio' },
+                arrow: { name: 'Vetor de Impacto', damage: '1d8 + INT', type: 'Kekkijutsu vetorial' },
+                sound: { name: 'Pulso Sonoro', damage: '1d8 + CHA', type: 'Kekkijutsu vibracional' },
+                swamp: { name: 'Prisao Pantano', damage: '1d6 + WIS', type: 'Kekkijutsu de controle' }
+            };
 
-            // Update Button State
-            const btn = document.getElementById('pdSelectBtn');
-            const isSelected = state.particularities.includes(part.id);
+            const pathAttackMap = {
+                blood: { name: 'Frenesi Demoniaco', damage: '1d6', type: 'Surto ofensivo' },
+                flesh: { name: 'Sono Regenerativo', damage: '1d4', type: 'Recuperacao tatico-biologica' }
+            };
 
-            if (isSelected) {
-                btn.innerHTML = `<i data-lucide="x"></i> REMOVER`;
-                btn.style.background = "#333";
-            } else {
-                btn.innerHTML = `<i data-lucide="check"></i> SELECIONAR`;
-                btn.style.background = "var(--blood-primary)";
+            const basePack = [
+                pactAttackMap[state.pact] || pactAttackMap.predator,
+                kekkAttackMap[state.kekkijutsu] || kekkAttackMap.ice,
+                pathAttackMap[state.path] || pathAttackMap.blood
+            ];
+
+            return basePack.map((atk, idx) => ({
+                id: Date.now() + idx,
+                name: atk.name,
+                damage: atk.damage,
+                type: atk.type
+            }));
+        }
+
+        function showToast(title, body, type = 'info') {
+            const toast = document.getElementById('feedbackToast');
+            const toastTitle = document.getElementById('toastTitle');
+            const toastBody = document.getElementById('toastBody');
+            if (!toast || !toastTitle || !toastBody) return;
+
+            toastTitle.textContent = title;
+            toastBody.textContent = body;
+            toast.classList.remove('ok', 'warn');
+            if (type === 'ok') toast.classList.add('ok');
+            if (type === 'warn') toast.classList.add('warn');
+            toast.style.display = 'block';
+
+            window.clearTimeout(showToast.hideTimer);
+            showToast.hideTimer = window.setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2600);
+        }
+
+        function updateStepButtons() {
+            const stepButtons = document.querySelectorAll('.step-btn');
+            stepButtons.forEach((btn) => {
+                const step = Number(btn.dataset.step);
+                btn.classList.toggle('active', step === state.currentStep);
+                btn.classList.toggle('locked', step > state.maxStep);
+            });
+        }
+
+        function updateHeaders() {
+            const titles = {
+                1: ['Passo 1 - Caminho Oni', 'Defina sua fome ancestral e a forma como seu corpo sustenta o sangue demonio.'],
+                2: ['Passo 2 - Kekkijutsu e Instinto', 'Escolha a arte demonica e calibre o risco de instinto.'],
+                3: ['Passo 3 - Pacto e Origem', 'Trave seu estilo de combate e memorias da vida humana.'],
+                4: ['Passo 4 - Particularidades', 'Escolha 2 mutacoes para assinatura visual e tatico.'],
+                5: ['Passo 5 - Atributos', 'Distribua pontos base e aplique bonus racial em 2 atributos.'],
+                6: ['Passo 6 - Identidade', 'Finalize nome, titulo e historia para selar o registro.']
+            };
+            const headerTitle = document.getElementById('headerTitle');
+            const headerSubtitle = document.getElementById('headerSubtitle');
+            const progressBadge = document.getElementById('progressBadge');
+            const curr = titles[state.currentStep];
+            if (headerTitle && curr) headerTitle.textContent = curr[0];
+            if (headerSubtitle && curr) headerSubtitle.textContent = curr[1];
+            if (progressBadge) progressBadge.textContent = `Etapa ${state.currentStep} de 6`;
+        }
+
+        function updatePanelVisibility() {
+            for (let i = 1; i <= 6; i++) {
+                const panel = document.getElementById(`panel-${i}`);
+                if (panel) panel.classList.toggle('active', i === state.currentStep);
             }
+        }
 
+        function updateNavButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            if (prevBtn) prevBtn.style.visibility = state.currentStep === 1 ? 'hidden' : 'visible';
+            if (!nextBtn) return;
+            if (state.currentStep === 6) {
+                nextBtn.innerHTML = 'Aceitar o Sangue <i data-lucide="flame"></i>';
+            } else {
+                nextBtn.innerHTML = 'Proximo <i data-lucide="arrow-right"></i>';
+            }
             lucide.createIcons();
-            document.getElementById('partDetailModal').style.display = 'flex';
         }
 
-        // Logic bound to the modal button
-        document.getElementById('pdSelectBtn').onclick = function () {
-            if (!tempPartId) return;
+        function refreshStepState() {
+            updateStepButtons();
+            updateHeaders();
+            updatePanelVisibility();
+            updateNavButtons();
+        }
 
-            const part = PARTS.find(p => p.id === tempPartId);
-
-            // Toggle Logic
-            if (state.particularities.includes(part.id)) {
-                // Remove
-                state.particularities = state.particularities.filter(x => x !== part.id);
-                // Update UI Card
-                document.getElementById(`part-card-${part.id}`).classList.remove('selected');
-            } else {
-                // Select (Check Limit)
-                if (state.particularities.length >= 2) {
-                    alert("Você já escolheu 2 particularidades.");
-                    return;
-                }
-                state.particularities.push(part.id);
-                document.getElementById(`part-card-${part.id}`).classList.add('selected');
-            }
-
-            document.getElementById('partCounter').innerText = `${state.particularities.length} / 2 Selecionado(s)`;
-
-            // Close Modal or Update Button?
-            // "Ao clicar... mostre tudo... Selecione" -> User likely wants to close after selection?
-            // Or maybe toggle button state? Let's toggle button state to give feedback, then user closes manually or we close.
-            // Let's close for smoother flow.
-            document.getElementById('partDetailModal').style.display = 'none';
-
+        function setPath(pathId) {
+            state.path = pathId;
+            renderPathGrid();
             updatePreview();
-        };
+        }
 
-        // --- ATTRIBUTE FUNCTIONS ---
+        function setKekk(kekkId) {
+            state.kekkijutsu = kekkId;
+            renderKekkGrid();
+            updatePreview();
+        }
 
-        function toggleBonus(stat) {
-            const index = state.bonuses.indexOf(stat);
-            if (index > -1) {
-                state.bonuses.splice(index, 1);
-                document.querySelector(`button[data-attr="${stat}"]`).style.background = 'rgba(255,255,255,0.05)';
-                document.querySelector(`button[data-attr="${stat}"]`).style.border = '1px solid #333';
+        function setPact(pactId) {
+            state.pact = pactId;
+            renderPactGrid();
+            updatePreview();
+        }
+
+        function setBackground(bgId) {
+            state.background = bgId;
+            renderBackgroundGrid();
+            updatePreview();
+        }
+
+        function toggleParticularity(partId) {
+            const idx = state.particularities.indexOf(partId);
+            if (idx >= 0) {
+                state.particularities.splice(idx, 1);
             } else {
-                if (state.bonuses.length >= 2) {
-                    const first = state.bonuses.shift();
-                    document.querySelector(`button[data-attr="${first}"]`).style.background = 'rgba(255,255,255,0.05)';
-                    document.querySelector(`button[data-attr="${first}"]`).style.border = '1px solid #333';
-                }
-                state.bonuses.push(stat);
-                document.querySelector(`button[data-attr="${stat}"]`).style.background = 'var(--blood-bright)';
-                document.querySelector(`button[data-attr="${stat}"]`).style.border = '1px solid var(--blood-bright)';
-            }
-            // Recalculate if needed, but bonuses are separate here.
-        }
-
-        function openDiceModal() {
-            document.getElementById('diceRollModal').style.display = 'flex';
-        }
-
-        function applyManualStats() {
-            try {
-                state.manualMode = true;
-                ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach(stat => {
-                    const input = document.getElementById('manual-' + stat);
-                    let val = parseInt(input.value) || 10;
-                    if (val > 20) val = 20; if (val < 1) val = 1;
-                    state.stats[stat] = val;
-
-                    const slider = document.getElementById('input-' + stat);
-                    if (slider) slider.value = val;
-                    const box = document.getElementById('val-' + stat);
-                    if (box) box.innerText = val;
-                });
-                document.getElementById('pointsRemain').innerText = "Manual";
-                document.getElementById('pointsRemain').style.color = "#aaa";
-                document.getElementById('diceRollModal').style.display = 'none';
-            } catch (e) {
-                alert("Erro ao aplicar manual: " + e.message);
-            }
-        }
-
-        function updateStat(stat, val) {
-            try {
-                val = parseInt(val);
-
-                if (state.manualMode) {
-                    state.stats[stat] = val;
-                    document.getElementById('val-' + stat).innerText = val;
+                if (state.particularities.length >= 2) {
+                    showToast('Limite de particularidades', 'Voce so pode selecionar 2 particularidades.', 'warn');
                     return;
                 }
-
-                if (typeof COSTS === 'undefined') { throw new Error("COSTS não definido"); }
-
-                let usedPoints = 0;
-                for (let key in state.stats) {
-                    if (key !== stat) {
-                        const sVal = state.stats[key];
-                        const sCost = COSTS[sVal] !== undefined ? COSTS[sVal] : 0;
-                        usedPoints += sCost;
-                    }
-                }
-
-                const cost = COSTS[val] !== undefined ? COSTS[val] : 0;
-                const newCost = usedPoints + cost;
-
-                if (newCost > 27) {
-                    const input = document.getElementById(`input-${stat}`);
-                    if (input) input.value = state.stats[stat];
-
-                    const ptLabel = document.getElementById('pointsRemain');
-                    ptLabel.innerText = "SEM PONTOS!";
-                    ptLabel.style.color = "red";
-                    setTimeout(() => {
-                        let currentUsed = 0;
-                        for (let key in state.stats) {
-                            const v = state.stats[key];
-                            currentUsed += (COSTS[v] || 0);
-                        }
-                        ptLabel.innerText = 27 - currentUsed;
-                        ptLabel.style.color = "";
-                    }, 1000);
-                    return;
-                }
-
-                state.stats[stat] = val;
-                document.getElementById(`val-${stat}`).innerText = val;
-                document.getElementById('pointsRemain').innerText = 27 - newCost;
-                document.getElementById('pointsRemain').style.color = "";
-            } catch (e) {
-                console.error(e);
-                alert("Erro no atributo: " + e.message);
+                state.particularities.push(partId);
             }
+            renderPartGrid();
+            updatePreview();
         }
 
+        function toggleBonus(statKey) {
+            const idx = state.bonuses.indexOf(statKey);
+            if (idx >= 0) {
+                state.bonuses.splice(idx, 1);
+            } else {
+                if (state.bonuses.length >= 2) state.bonuses.shift();
+                state.bonuses.push(statKey);
+            }
+            recomputeEffectiveStats();
+            renderBonusChips();
+            renderAttributeRows();
+            updatePreview();
+        }
 
+        function setBaseStat(statKey, nextValue) {
+            const allowed = [6, 8, 10, 12, 14, 16, 18];
+            const oldValue = Number(state.baseStats[statKey] || 8);
+            let value = Number(nextValue);
+            if (!allowed.includes(value)) {
+                const nearest = allowed.reduce((p, c) => Math.abs(c - value) < Math.abs(p - value) ? c : p, oldValue);
+                value = nearest;
+            }
+            state.baseStats[statKey] = value;
 
-        lucide.createIcons();
+            const points = getPointSpend();
+            if (!points.valid || points.used > state.pointsMax) {
+                state.baseStats[statKey] = oldValue;
+                showToast('Pontos insuficientes', 'Essa distribuicao excede o limite de point-buy.', 'warn');
+                renderAttributeRows();
+                return;
+            }
 
+            recomputeEffectiveStats();
+            renderAttributeRows();
+            updatePreview();
+        }
 
-        function updateUI() {
-            // Sections
-            document.querySelectorAll('.step-section').forEach(el => el.classList.remove('active'));
-            document.getElementById(`step-${currentStep}`).classList.add('active');
+        function stepStat(statKey, delta) {
+            const current = Number(state.baseStats[statKey] || 8);
+            setBaseStat(statKey, current + delta);
+        }
 
-            // Sidebar
-            document.querySelectorAll('.step-item').forEach((el, idx) => {
-                const stepNum = idx + 1;
+        function renderPathGrid() {
+            const grid = document.getElementById('pathGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            PATHS.forEach((path) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `option-card ${state.path === path.id ? 'selected' : ''}`;
+                btn.setAttribute('aria-pressed', state.path === path.id ? 'true' : 'false');
+                btn.innerHTML = `
+                    <div class="option-card-head">
+                        <h4 class="option-name">${path.name}</h4>
+                        <span class="option-badge">${path.badge}</span>
+                    </div>
+                    <p class="option-desc">${path.desc}</p>
+                    <p class="option-perk">${path.perk}</p>
+                `;
+                btn.addEventListener('click', () => setPath(path.id));
+                grid.appendChild(btn);
+            });
+        }
 
-                // Active Class
-                if (stepNum === currentStep) el.classList.add('active');
-                else el.classList.remove('active');
+        function renderKekkGrid() {
+            const grid = document.getElementById('kekkGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            KEKKI.forEach((item) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `option-card ${state.kekkijutsu === item.id ? 'selected' : ''}`;
+                btn.setAttribute('aria-pressed', state.kekkijutsu === item.id ? 'true' : 'false');
+                btn.innerHTML = `
+                    <div class="option-card-head">
+                        <h4 class="option-name">${item.name}</h4>
+                        <span class="option-badge">${item.badge}</span>
+                    </div>
+                    <p class="option-desc">${item.desc}</p>
+                    <p class="option-perk">${item.perk}</p>
+                `;
+                btn.addEventListener('click', () => setKekk(item.id));
+                grid.appendChild(btn);
+            });
+        }
 
-                // Locked Class
-                if (stepNum > state.maxStep) {
-                    el.classList.add('locked');
-                } else {
-                    el.classList.remove('locked');
-                }
+        function renderPactGrid() {
+            const grid = document.getElementById('pactGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            PACTS.forEach((item) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `option-card ${state.pact === item.id ? 'selected' : ''}`;
+                btn.setAttribute('aria-pressed', state.pact === item.id ? 'true' : 'false');
+                btn.innerHTML = `
+                    <div class="option-card-head">
+                        <h4 class="option-name">${item.name}</h4>
+                        <span class="option-badge">${item.badge}</span>
+                    </div>
+                    <p class="option-desc">${item.desc}</p>
+                    <p class="option-perk">${item.perk}</p>
+                `;
+                btn.addEventListener('click', () => setPact(item.id));
+                grid.appendChild(btn);
+            });
+        }
+
+        function renderBackgroundGrid() {
+            const grid = document.getElementById('bgGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            BACKGROUNDS.forEach((item) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `option-card ${state.background === item.id ? 'selected' : ''}`;
+                btn.setAttribute('aria-pressed', state.background === item.id ? 'true' : 'false');
+                btn.innerHTML = `
+                    <div class="option-card-head">
+                        <h4 class="option-name">${item.title}</h4>
+                        <span class="option-badge">Origem</span>
+                    </div>
+                    <p class="option-desc">${item.desc}</p>
+                    <p class="option-perk">Pericias: ${item.skills.join(', ')}</p>
+                `;
+                btn.addEventListener('click', () => setBackground(item.id));
+                grid.appendChild(btn);
+            });
+        }
+
+        function renderPartGrid() {
+            const grid = document.getElementById('partGrid');
+            const counter = document.getElementById('partCounter');
+            if (!grid) return;
+            grid.innerHTML = '';
+            PARTICULARITIES.forEach((item) => {
+                const selected = state.particularities.includes(item.id);
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `option-card ${selected ? 'selected' : ''}`;
+                btn.style.minHeight = '132px';
+                btn.setAttribute('aria-pressed', selected ? 'true' : 'false');
+                btn.innerHTML = `
+                    <div class="option-card-head">
+                        <h4 class="option-name">${item.name}</h4>
+                        <span class="option-badge">${selected ? 'Ativa' : 'Livre'}</span>
+                    </div>
+                    <p class="option-desc">${item.desc}</p>
+                `;
+                btn.addEventListener('click', () => toggleParticularity(item.id));
+                grid.appendChild(btn);
+            });
+            if (counter) counter.textContent = `${state.particularities.length} / 2 selecionadas`;
+        }
+
+        function renderBonusChips() {
+            const row = document.getElementById('bonusRow');
+            if (!row) return;
+            row.innerHTML = '';
+            STAT_KEYS.forEach((k) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `chip-btn ${state.bonuses.includes(k) ? 'selected' : ''}`;
+                btn.textContent = `${STAT_LABELS[k]} +2`;
+                btn.addEventListener('click', () => toggleBonus(k));
+                row.appendChild(btn);
+            });
+        }
+
+        function renderAttributeRows() {
+            const list = document.getElementById('attrList');
+            const pointsRemain = document.getElementById('pointsRemain');
+            const pointsBox = document.getElementById('pointsBox');
+            if (!list) return;
+            list.innerHTML = '';
+
+            STAT_KEYS.forEach((k) => {
+                const base = Number(state.baseStats[k] || 8);
+                const eff = Number(state.effectiveStats[k] || base);
+                const row = document.createElement('div');
+                row.className = 'attr-row';
+                row.innerHTML = `
+                    <div class="attr-label">${STAT_LABELS[k]}</div>
+                    <div class="attr-controls">
+                        <button type="button" class="stepper-btn" data-stepper-minus="${k}">-</button>
+                        <input type="range" class="slider" id="range-${k}" min="6" max="18" step="2" value="${base}">
+                        <button type="button" class="stepper-btn" data-stepper-plus="${k}">+</button>
+                        <div class="value-box" id="base-${k}">${base}</div>
+                        <div class="value-box eff" id="eff-${k}">${eff}</div>
+                    </div>
+                `;
+                list.appendChild(row);
             });
 
-            // Buttons
-            const btnNext = document.getElementById('nextBtn');
-            const btnPrev = document.getElementById('prevBtn');
+            STAT_KEYS.forEach((k) => {
+                const range = document.getElementById(`range-${k}`);
+                const minus = list.querySelector(`[data-stepper-minus="${k}"]`);
+                const plus = list.querySelector(`[data-stepper-plus="${k}"]`);
+                if (range) range.addEventListener('input', (e) => setBaseStat(k, Number(e.target.value)));
+                if (minus) minus.addEventListener('click', () => stepStat(k, -2));
+                if (plus) plus.addEventListener('click', () => stepStat(k, 2));
+            });
 
-            btnPrev.style.visibility = currentStep === 1 ? 'hidden' : 'visible';
+            const points = getPointSpend();
+            const remain = state.pointsMax - points.used;
+            if (pointsRemain) pointsRemain.textContent = String(remain);
+            if (pointsBox) pointsBox.classList.toggle('warn', remain < 0 || !points.valid);
+        }
 
-            if (currentStep === totalSteps) {
-                btnNext.innerHTML = 'ACEITAR O SANGUE';
-                btnNext.style.background = '#ff0000';
-            } else {
-                btnNext.innerHTML = 'PRÓXIMO <i data-lucide="arrow-right"></i>';
-                btnNext.style.background = '#990000'; // Reset color
-                lucide.createIcons();
+        function renderAvatarPresets() {
+            const grid = document.getElementById('avatarPresetGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            AVATAR_PRESETS.forEach((preset) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `avatar-option ${state.identity.presetId === preset.id ? 'selected' : ''}`;
+                btn.title = preset.name;
+                btn.innerHTML = `<img src="${preset.src}" alt="${preset.name}">`;
+                btn.addEventListener('click', () => {
+                    state.identity.presetId = preset.id;
+                    state.identity.portrait = preset.src;
+                    document.getElementById('identityAvatar').src = preset.src;
+                    renderAvatarPresets();
+                    updatePreview();
+                });
+                grid.appendChild(btn);
+            });
+        }
+
+        function bindIdentityInputs() {
+            const nameInput = document.getElementById('oniName');
+            const titleInput = document.getElementById('oniTitle');
+            const historyInput = document.getElementById('oniHistory');
+            if (nameInput) {
+                nameInput.addEventListener('input', (e) => {
+                    state.identity.name = e.target.value.trim();
+                    updatePreview();
+                });
             }
+            if (titleInput) {
+                titleInput.addEventListener('input', (e) => {
+                    state.identity.title = e.target.value.trim();
+                    updatePreview();
+                });
+            }
+            if (historyInput) {
+                historyInput.addEventListener('input', (e) => {
+                    state.identity.history = e.target.value.trim();
+                    updatePreview();
+                });
+            }
+
+            const upload = document.getElementById('avatarUpload');
+            const hint = document.getElementById('avatarHint');
+            if (upload) {
+                upload.addEventListener('change', (e) => {
+                    const file = e.target.files && e.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        const result = String(reader.result || '');
+                        if (!result) return;
+                        state.identity.presetId = '';
+                        state.identity.portrait = result;
+                        const img = document.getElementById('identityAvatar');
+                        if (img) img.src = result;
+                        if (hint) hint.textContent = `Arquivo: ${file.name}`;
+                        renderAvatarPresets();
+                        updatePreview();
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+        }
+
+        function updatePreview() {
+            recomputeEffectiveStats();
+            const derived = {
+                hp: computeStartingHP(),
+                speed: computeSpeed(),
+                instinctDC: computeInstinctDC(),
+                control: getControlState()
+            };
+
+            const previewAvatar = document.getElementById('previewAvatar');
+            if (previewAvatar) previewAvatar.src = state.identity.portrait || AVATAR_PRESETS[1].src;
+
+            const nameText = state.identity.name || 'Oni Desconhecido';
+            const titleText = state.identity.title || 'Sem titulo definido';
+            const previewName = document.getElementById('previewName');
+            const previewTitle = document.getElementById('previewTitle');
+            if (previewName) previewName.textContent = nameText;
+            if (previewTitle) previewTitle.textContent = titleText;
+
+            const path = getCurrentPath();
+            const kekk = getCurrentKekk();
+            const pact = getCurrentPact();
+            const bg = getCurrentBackground();
+
+            const previewPath = document.getElementById('previewPath');
+            const previewKekk = document.getElementById('previewKekk');
+            const previewPact = document.getElementById('previewPact');
+            if (previewPath) previewPath.textContent = `Caminho: ${path.name}`;
+            if (previewKekk) previewKekk.textContent = `Kekk: ${kekk.name}`;
+            if (previewPact) previewPact.textContent = `Pacto: ${pact.name}`;
+
+            const previewHP = document.getElementById('previewHP');
+            const previewPE = document.getElementById('previewPE');
+            const previewInstinctDC = document.getElementById('previewInstinctDC');
+            const previewControl = document.getElementById('previewControl');
+            if (previewHP) previewHP.textContent = String(derived.hp);
+            if (previewPE) previewPE.textContent = '1';
+            if (previewInstinctDC) previewInstinctDC.textContent = String(derived.instinctDC);
+            if (previewControl) previewControl.textContent = derived.control;
+
+            const hungerValue = document.getElementById('hungerValue');
+            const moonValue = document.getElementById('moonValue');
+            if (hungerValue) hungerValue.textContent = String(state.hunger);
+            if (moonValue) moonValue.textContent = String(state.moonSync);
+
+            const statsBox = document.getElementById('previewStats');
+            if (statsBox) {
+                statsBox.innerHTML = '';
+                STAT_KEYS.forEach((k) => {
+                    const div = document.createElement('div');
+                    div.innerHTML = `<span>${STAT_LABELS[k]}</span><strong>${state.effectiveStats[k]}</strong>`;
+                    statsBox.appendChild(div);
+                });
+            }
+
+            const previewParts = document.getElementById('previewParts');
+            if (previewParts) {
+                if (!state.particularities.length) {
+                    previewParts.innerHTML = '<div>Nenhuma selecionada</div>';
+                } else {
+                    previewParts.innerHTML = '';
+                    state.particularities.forEach((id) => {
+                        const div = document.createElement('div');
+                        div.textContent = getPartLabelById(id);
+                        previewParts.appendChild(div);
+                    });
+                }
+            }
+
+            const perks = buildPerksList();
+            const previewPerks = document.getElementById('previewPerks');
+            if (previewPerks) {
+                previewPerks.innerHTML = '';
+                perks.slice(0, 5).forEach((perk) => {
+                    const div = document.createElement('div');
+                    div.textContent = perk;
+                    previewPerks.appendChild(div);
+                });
+            }
+
+            const attacks = buildInitialAttacks();
+            const previewAttacks = document.getElementById('previewAttacks');
+            if (previewAttacks) {
+                previewAttacks.innerHTML = '';
+                attacks.forEach((atk) => {
+                    const div = document.createElement('div');
+                    div.textContent = `${atk.name} (${atk.damage})`;
+                    previewAttacks.appendChild(div);
+                });
+            }
+
+            const meta = document.querySelector('.left-meta');
+            if (meta) {
+                meta.innerHTML = `
+                    <div><strong>Origem:</strong> ${bg.title}</div>
+                    <div><strong>Instinto:</strong> Fome ${state.hunger} | Lua ${state.moonSync}</div>
+                    <div><strong>Deslocamento:</strong> ${derived.speed}m</div>
+                `;
+            }
+        }
+
+        function validateStep(stepNum) {
+            if (stepNum === 1) {
+                if (!state.path) {
+                    showToast('Escolha um caminho', 'Selecione um caminho Oni para continuar.', 'warn');
+                    return false;
+                }
+            }
+
+            if (stepNum === 2) {
+                if (!state.kekkijutsu) {
+                    showToast('Escolha um Kekkijutsu', 'Selecione uma arte demonica para continuar.', 'warn');
+                    return false;
+                }
+            }
+
+            if (stepNum === 3) {
+                if (!state.pact || !state.background) {
+                    showToast('Pacto e origem', 'Selecione pacto demoniaco e origem humana.', 'warn');
+                    return false;
+                }
+            }
+
+            if (stepNum === 4) {
+                if (state.particularities.length !== 2) {
+                    showToast('Particularidades incompletas', 'Voce precisa escolher exatamente 2 particularidades.', 'warn');
+                    return false;
+                }
+            }
+
+            if (stepNum === 5) {
+                const points = getPointSpend();
+                if (!points.valid || points.used > state.pointsMax) {
+                    showToast('Atributos invalidos', 'Revise o point-buy: os pontos estao fora do limite.', 'warn');
+                    return false;
+                }
+                if (state.bonuses.length !== 2) {
+                    showToast('Bonus racial incompleto', 'Selecione 2 atributos para receber +2 racial.', 'warn');
+                    return false;
+                }
+            }
+
+            if (stepNum === 6) {
+                const name = (state.identity.name || '').trim();
+                const title = (state.identity.title || '').trim();
+                if (name.length < 2) {
+                    showToast('Nome obrigatorio', 'Defina um nome Oni com pelo menos 2 caracteres.', 'warn');
+                    return false;
+                }
+                if (title.length < 2) {
+                    showToast('Titulo obrigatorio', 'Defina um titulo para finalizar a criacao.', 'warn');
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        function goToStep(targetStep) {
+            if (targetStep < 1 || targetStep > 6) return;
+            if (targetStep > state.maxStep) return;
+            state.currentStep = targetStep;
+            refreshStepState();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function nextStep() {
-            if (currentStep === totalSteps) {
+            if (state.currentStep === 6) {
                 finishCreation();
                 return;
             }
 
-            // Validation Logic (Optional, but user said "choice one... then press next to release")
-            // We can assume pre-selected defaults (Blood, Ice) are valid.
+            if (!validateStep(state.currentStep)) return;
 
-            currentStep++;
-            if (currentStep > state.maxStep) state.maxStep = currentStep;
-
-            updateUI();
+            state.currentStep += 1;
+            state.maxStep = Math.max(state.maxStep, state.currentStep);
+            refreshStepState();
         }
 
         function prevStep() {
-            if (currentStep > 1) {
-                currentStep--;
-                updateUI();
+            if (state.currentStep === 1) return;
+            state.currentStep -= 1;
+            refreshStepState();
+        }
+
+        function buildCharacterPayload() {
+            recomputeEffectiveStats();
+            const path = getCurrentPath();
+            const kekk = getCurrentKekk();
+            const pact = getCurrentPact();
+            const background = getCurrentBackground();
+            const derived = {
+                hp: computeStartingHP(),
+                speed: computeSpeed(),
+                instinctDC: computeInstinctDC(),
+                control: getControlState()
+            };
+
+            const proficiencies = uniq([
+                ...(background.skills || []),
+                ...(pact.skills || [])
+            ]);
+
+            const inventory = [
+                { id: `core-${Date.now()}-0`, name: 'Kit Basico Oni', type: 'item', note: 'Utilitarios de sobrevivencia' },
+                { id: `core-${Date.now()}-1`, name: 'Manto Noturno', type: 'armor', note: 'Disfarcavel em area urbana' },
+                ...(background.items || []).map((item, idx) => ({ id: `bg-${Date.now()}-${idx}`, ...item }))
+            ];
+
+            const attacks = buildInitialAttacks();
+
+            const char = {
+                id: Date.now().toString(),
+                name: state.identity.name || 'Oni Desconhecido',
+                race: 'Oni',
+                level: 1,
+                rank: 'Oni Inferior',
+                oniPath: state.path,
+                kekkijutsu: state.kekkijutsu,
+                pact: state.pact,
+                background: background.title,
+                backgroundId: background.id,
+                particularities: [...state.particularities],
+                bonuses: [...state.bonuses],
+                baseStats: { ...state.baseStats },
+                racialBonuses: [...state.bonuses],
+                attributes: { ...state.effectiveStats },
+                stats: { ...state.effectiveStats },
+                skills: [...proficiencies],
+                proficiencies: [...proficiencies],
+                hp: derived.hp,
+                currentHP: derived.hp,
+                maxPE: 1,
+                currentPE: 1,
+                pe: 1,
+                speed: `${derived.speed}m`,
+                inventory,
+                attacks,
+                instinctDC: derived.instinctDC,
+                devouredCount: 0,
+                oniProfile: {
+                    hunger: state.hunger,
+                    moonSync: state.moonSync,
+                    controlState: derived.control,
+                    title: state.identity.title || '',
+                    history: state.identity.history || '',
+                    portrait: state.identity.portrait || '',
+                    pathName: path.name,
+                    kekkName: kekk.name,
+                    pactName: pact.name
+                },
+                description: state.identity.history || '',
+                manualMaxHP: derived.hp,
+                manualMaxPE: 1
+            };
+
+            return char;
+        }
+
+        function persistCharacter(char) {
+            let allChars = [];
+            try {
+                allChars = JSON.parse(localStorage.getItem('demonSlayerSaveSlots') || '[]');
+                if (!Array.isArray(allChars)) allChars = [];
+            } catch (_) {
+                allChars = [];
             }
-        }
 
-        function goToStep(s) {
-            if (s > state.maxStep) return; // Prevent jumping ahead
-            currentStep = s;
-            updateUI();
-        }
+            if (allChars.length >= 5) {
+                showToast('Limite de slots', 'Voce atingiu o maximo de 5 personagens salvos.', 'warn');
+                return false;
+            }
 
-        function selectPath(id, el) {
-            state.path = id;
-            el.parentElement.querySelectorAll('.bg-card').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
-        }
-
-        function selectKekk(id, el) {
-            state.kekkijutsu = id;
-            el.parentElement.querySelectorAll('.bg-card').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
+            allChars.push(char);
+            localStorage.setItem('demonSlayerSaveSlots', JSON.stringify(allChars));
+            localStorage.setItem('demonSlayerChar', JSON.stringify(char));
+            return true;
         }
 
         function finishCreation() {
-            try {
-                const selectedBg = state.background ? backgroundData[state.background] : null;
-                // Safe access to items/skills
-                const initialItems = (selectedBg && selectedBg.items) ? selectedBg.items.map(i => ({ ...i, id: Date.now() + Math.random() })) : [];
-                const initialSkills = (selectedBg && selectedBg.skills) ? selectedBg.skills : [];
+            if (!validateStep(6)) return;
+            const char = buildCharacterPayload();
+            const ok = persistCharacter(char);
+            if (!ok) return;
 
-                // Apply Bonuses
-                const finalAttributes = { ...state.stats };
-                state.bonuses.forEach(b => {
-                    if (finalAttributes[b] !== undefined) finalAttributes[b] += 2;
-                });
+            showToast('Oni criado', 'Registro salvo com sucesso. Abrindo painel Oni...', 'ok');
+            const overlay = document.getElementById('ritualOverlay');
+            if (overlay) overlay.style.display = 'flex';
 
-                // Ensure PARTS is available
-                if (typeof PARTS === 'undefined') throw new Error("PARTS data not found");
-
-                const char = {
-                    id: Date.now().toString(),
-                    name: document.getElementById('oniName').value || 'Oni Desconhecido',
-                    race: 'Oni',
-                    oniPath: state.path,
-                    kekkijutsu: state.kekkijutsu,
-                    particularities: PARTS.filter(p => state.particularities.includes(p.id)).map(p => ({ name: p.name, effect: p.desc || p.full })),
-                    attributes: finalAttributes,
-                    bonuses: state.bonuses,
-                    background: selectedBg ? selectedBg.title : 'Desconhecido',
-                    proficiencies: initialSkills,
-                    level: 1,
-                    hp: 15 + Math.floor(((finalAttributes.con || 10) - 10) / 2),
-                    currentHP: 15 + Math.floor(((finalAttributes.con || 10) - 10) / 2),
-                    maxPE: 1,
-                    currentPE: 1,
-                    inventory: initialItems.length > 0 ? initialItems : [],
-                    rank: 'Oni Inferior'
-                };
-
-                // Save to Save Slots
-                let allChars = [];
-                try {
-                    const stored = localStorage.getItem('demonSlayerSaveSlots');
-                    if (stored) allChars = JSON.parse(stored);
-                } catch (e) {
-                    console.error("Error reading slots", e);
-                    allChars = [];
-                }
-
-                if (allChars.length >= 5) { alert("Limite de personagens atingido."); return; }
-
-                allChars.push(char);
-                localStorage.setItem('demonSlayerSaveSlots', JSON.stringify(allChars));
-                localStorage.setItem('demonSlayerChar', JSON.stringify(char)); // Set active
-
-                console.log("Character saved. Redirecting...");
-                // Redirect
+            window.setTimeout(() => {
                 window.location.href = 'oni-dashboard.html';
-            } catch (err) {
-                console.error(err);
-                alert("Erro ao finalizar criação: " + err.message);
+            }, 1400);
+        }
+
+        function bindEvents() {
+            const stepList = document.getElementById('stepList');
+            if (stepList) {
+                stepList.addEventListener('click', (event) => {
+                    const btn = event.target.closest('.step-btn');
+                    if (!btn) return;
+                    const step = Number(btn.dataset.step);
+                    goToStep(step);
+                });
+            }
+
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            if (prevBtn) prevBtn.addEventListener('click', prevStep);
+            if (nextBtn) nextBtn.addEventListener('click', nextStep);
+
+            const hungerRange = document.getElementById('hungerRange');
+            const moonRange = document.getElementById('moonRange');
+            if (hungerRange) {
+                hungerRange.addEventListener('input', (e) => {
+                    state.hunger = Number(e.target.value);
+                    updatePreview();
+                });
+            }
+            if (moonRange) {
+                moonRange.addEventListener('input', (e) => {
+                    state.moonSync = Number(e.target.value);
+                    updatePreview();
+                });
             }
         }
 
-        window.onload = function () {
-            updateUI();
-        }
-        function updatePreview() {
-            // Name
-            const nameInput = document.getElementById('oniName');
-            const nameDisplay = document.getElementById('previewName');
-            if (nameInput && nameDisplay) {
-                nameDisplay.innerText = nameInput.value || "Oni Desconhecido";
-            }
-
-            // Path
-            const pathDisplay = document.getElementById('previewPath');
-            if (pathDisplay) pathDisplay.innerText = state.path === 'blood' ? 'Caminho do Sangue' : 'Retenção de Carne';
-
-            // Kekkijutsu
-            const kekkDisplay = document.getElementById('previewKekk');
-            const kekkMap = { 'ice': 'Criocinese', 'swamp': 'Pântano', 'arrow': 'Vetores', 'sound': 'Ondas Sonoras', 'shadow': 'Sombras', 'blood_manip': 'Manipulação de Sangue' };
-            if (kekkDisplay) kekkDisplay.innerText = kekkMap[state.kekkijutsu] || state.kekkijutsu;
-
-            // Background
-            const bgDisplay = document.getElementById('previewBg');
-            const bgData = backgroundData ? backgroundData[state.background] : null;
-            if (bgDisplay) bgDisplay.innerText = bgData ? bgData.title : '-';
-
-            // HP Calculation
-            // Base 15 + ((Con - 10) / 2) + Kekkijutsu Bonus? (Assuming no bonus for now unless specified)
-            const con = state.stats.con || 10;
-            const conMod = Math.floor((con - 10) / 2);
-            let hp = 15 + conMod;
-            const hpDisplay = document.getElementById('previewHP');
-            if (hpDisplay) hpDisplay.innerText = hp;
-
-            // Parts
-            const partsDisplay = document.getElementById('previewParts');
-            if (partsDisplay) {
-                if (state.particularities.length === 0) {
-                    partsDisplay.innerHTML = '<span style="opacity:0.5; font-style:italic;">Nenhuma selecionada</span>';
-                } else {
-                    partsDisplay.innerHTML = '';
-                    state.particularities.forEach(pid => {
-                        const part = PARTS.find(p => p.id === pid);
-                        if (part) {
-                            const div = document.createElement('div');
-                            div.innerHTML = `<i data-lucide="${part.icon}" style="width:14px; margin-right:5px; vertical-align:middle;"></i> ${part.name}`;
-                            partsDisplay.appendChild(div);
-                        }
-                    });
-                    lucide.createIcons();
-                }
-            }
-
-            // Speed
-            // Default 9m. Can be modified by parts if we had speed parts.
-            // Ex: If 'size' part selected (Alteração Corporal) implies speed change? (Desc says Agility/Stealth).
-            // For now fixed 9m.
-            const speedDisplay = document.getElementById('previewSpeed');
-            if (speedDisplay) speedDisplay.innerText = "9m";
-
-        }
-
-        // Hook updatePreview into existing functions
-        const originalUpdateStat = updateStat;
-        updateStat = function (stat, val) {
-            originalUpdateStat(stat, val);
+        function init() {
+            recomputeEffectiveStats();
+            renderPathGrid();
+            renderKekkGrid();
+            renderPactGrid();
+            renderBackgroundGrid();
+            renderPartGrid();
+            renderBonusChips();
+            renderAttributeRows();
+            renderAvatarPresets();
+            bindIdentityInputs();
+            bindEvents();
+            refreshStepState();
             updatePreview();
-        };
-
-        const originalSelectPath = selectPath;
-        selectPath = function (path, el) {
-            originalSelectPath(path, el);
-            updatePreview();
+            lucide.createIcons();
         }
 
-        const originalSelectKekk = selectKekk;
-        selectKekk = function (kekk, el) {
-            originalSelectKekk(kekk, el);
-            updatePreview();
-        }
-
-        const originalSelectBg = selectBg;
-        selectBg = function (id, el) {
-            originalSelectBg(id, el);
-            updatePreview();
-        }
-
-        const originalTogglePart = togglePart;
-        togglePart = function (id, el) {
-            originalTogglePart(id, el);
-            updatePreview();
-        }
-
-        // Init
-        setTimeout(updatePreview, 500);
-
+        init();
     </script>
 </body>
 

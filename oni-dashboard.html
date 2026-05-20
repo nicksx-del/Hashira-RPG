@@ -417,6 +417,596 @@
             transform: translateY(-2px);
         }
 
+        /* BLACK MARKET */
+        .market-shell {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .market-topbar {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 1rem;
+        }
+
+        .market-panel {
+            background: linear-gradient(160deg, rgba(18, 8, 20, 0.96), rgba(9, 9, 9, 0.98));
+            border: 1px solid rgba(218, 112, 214, 0.2);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .market-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.7rem;
+            gap: 0.7rem;
+        }
+
+        .market-eyebrow {
+            font-size: 0.68rem;
+            color: #8f7a98;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 700;
+        }
+
+        .market-subtle {
+            color: #a89db0;
+            font-size: 0.82rem;
+        }
+
+        .market-currencies {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.8rem;
+        }
+
+        .currency-chip {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 0.8rem;
+        }
+
+        .currency-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #c8b8cf;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.35rem;
+        }
+
+        .currency-value {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #f3edf7;
+        }
+
+        .market-pass-card {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            background: linear-gradient(140deg, rgba(90, 16, 90, 0.32), rgba(40, 14, 60, 0.26));
+            border: 1px solid rgba(224, 170, 255, 0.35);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .market-pass-status {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: #f0ceff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .market-pass-actions {
+            display: flex;
+            gap: 0.55rem;
+            flex-wrap: wrap;
+        }
+
+        .market-btn {
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+            color: #f8f8f8;
+            border-radius: 8px;
+            padding: 0.55rem 0.8rem;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .market-btn:hover {
+            border-color: rgba(224, 170, 255, 0.45);
+            transform: translateY(-2px);
+        }
+
+        .market-btn.primary {
+            background: linear-gradient(135deg, #673484, #b358cc);
+            border-color: #b358cc;
+        }
+
+        .market-btn.claim {
+            background: linear-gradient(135deg, #64213d, #a53860);
+            border-color: #a53860;
+        }
+
+        .market-content {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(0, 1.1fr);
+            gap: 1rem;
+        }
+
+        .market-offers-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.85rem;
+        }
+
+        .market-card {
+            background: rgba(10, 8, 14, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 0.9rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .market-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(130deg, rgba(255, 255, 255, 0.03), transparent 65%);
+            pointer-events: none;
+        }
+
+        .market-card-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 0.6rem;
+            margin-bottom: 0.45rem;
+        }
+
+        .market-tag {
+            font-size: 0.62rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #d8a0ff;
+            border: 1px solid rgba(216, 160, 255, 0.45);
+            border-radius: 999px;
+            padding: 2px 7px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .market-card-title {
+            font-weight: 700;
+            color: #f5e8ff;
+            font-size: 0.98rem;
+            margin: 0;
+        }
+
+        .market-card-desc {
+            color: #b7a5bf;
+            font-size: 0.79rem;
+            line-height: 1.3;
+            margin-bottom: 0.7rem;
+            min-height: 2.3em;
+        }
+
+        .market-price-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        .market-price {
+            color: #f6f0fa;
+            font-size: 0.9rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .market-card.is-owned {
+            border-color: rgba(50, 205, 160, 0.55);
+        }
+
+        .market-card.is-owned .market-tag {
+            color: #7ef2c8;
+            border-color: rgba(126, 242, 200, 0.5);
+        }
+
+        .market-card.is-locked {
+            border-color: rgba(189, 130, 194, 0.45);
+        }
+
+        .market-empty {
+            font-size: 0.8rem;
+            color: #927f9d;
+            text-align: center;
+            padding: 1.1rem;
+            border: 1px dashed rgba(255, 255, 255, 0.14);
+            border-radius: 9px;
+        }
+
+        .market-contracts {
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+
+        .contract-card {
+            background: rgba(14, 8, 17, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 0.75rem;
+        }
+
+        .contract-name {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #f4e1ff;
+            margin-bottom: 0.25rem;
+        }
+
+        .contract-desc {
+            color: #ac99b7;
+            font-size: 0.74rem;
+            margin-bottom: 0.45rem;
+        }
+
+        .contract-progress {
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+            margin-bottom: 0.45rem;
+        }
+
+        .contract-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8d3fbf, #d68cff);
+            transition: width 0.25s ease;
+        }
+
+        .contract-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .contract-reward {
+            font-size: 0.72rem;
+            color: #cdb8d9;
+        }
+
+        .market-bottom {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+            gap: 1rem;
+        }
+
+        .collection-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.7rem;
+        }
+
+        .collection-item {
+            background: rgba(12, 11, 16, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 0.75rem;
+        }
+
+        .collection-title {
+            font-weight: 700;
+            color: #f2ebf7;
+            font-size: 0.86rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .collection-meta {
+            color: #a89db0;
+            font-size: 0.72rem;
+            margin-bottom: 0.55rem;
+        }
+
+        .loadout-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+
+        .loadout-item {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 0.75rem;
+            background: rgba(10, 10, 10, 0.95);
+        }
+
+        .loadout-item.active {
+            border-color: rgba(214, 140, 255, 0.6);
+            box-shadow: 0 0 0 1px rgba(214, 140, 255, 0.3) inset;
+        }
+
+        .loadout-item.locked {
+            opacity: 0.72;
+            border-style: dashed;
+        }
+
+        .loadout-title {
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: #f4e8f9;
+            margin-bottom: 0.35rem;
+        }
+
+        .loadout-meta {
+            color: #aa9ab3;
+            font-size: 0.72rem;
+            margin-bottom: 0.55rem;
+        }
+
+        .loadout-actions {
+            display: flex;
+            gap: 0.45rem;
+            flex-wrap: wrap;
+        }
+
+        .market-btn:focus-visible {
+            outline: 2px solid #e0aaff;
+            outline-offset: 2px;
+        }
+
+        .dice-lab-fab {
+            position: fixed;
+            right: 332px;
+            bottom: 20px;
+            z-index: 1400;
+            border: 1px solid rgba(224, 170, 255, 0.45);
+            border-radius: 999px;
+            background: linear-gradient(135deg, rgba(42, 13, 55, 0.95), rgba(120, 34, 163, 0.92));
+            color: #f8ecff;
+            padding: 0.75rem 1rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4), 0 0 18px rgba(224, 170, 255, 0.25);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .dice-lab-fab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 34px rgba(0, 0, 0, 0.5), 0 0 24px rgba(224, 170, 255, 0.35);
+        }
+
+        .dice-lab-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 1600;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(5, 5, 7, 0.82);
+            backdrop-filter: blur(6px);
+            padding: 1rem;
+        }
+
+        .dice-lab-card {
+            width: min(960px, 92vw);
+            max-height: 88vh;
+            overflow: auto;
+            border-radius: 14px;
+            border: 1px solid rgba(224, 170, 255, 0.36);
+            background: linear-gradient(165deg, rgba(18, 9, 24, 0.98), rgba(10, 10, 14, 0.98));
+            box-shadow: 0 24px 50px rgba(0, 0, 0, 0.62), 0 0 40px rgba(132, 36, 193, 0.26);
+            padding: 1rem;
+        }
+
+        .dice-lab-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            padding-bottom: 0.7rem;
+        }
+
+        .dice-lab-title {
+            margin: 0;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: #f2e6ff;
+        }
+
+        .dice-lab-close {
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            background: rgba(255, 255, 255, 0.02);
+            color: #ddd;
+            border-radius: 8px;
+            width: 34px;
+            height: 34px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .dice-lab-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+            gap: 1rem;
+        }
+
+        .dice-lab-panel {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            background: rgba(8, 8, 12, 0.86);
+            padding: 0.8rem;
+        }
+
+        .dice-lab-panel h4 {
+            margin: 0 0 0.6rem;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #c8a5db;
+        }
+
+        .dice-lab-style-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 0.55rem;
+        }
+
+        .dice-style-chip {
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 10px;
+            padding: 0.55rem;
+            background: rgba(19, 19, 24, 0.95);
+            cursor: pointer;
+            transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .dice-style-chip:hover {
+            transform: translateY(-1px);
+            border-color: rgba(224, 170, 255, 0.5);
+        }
+
+        .dice-style-chip.active {
+            border-color: rgba(224, 170, 255, 0.9);
+            box-shadow: inset 0 0 0 1px rgba(224, 170, 255, 0.35), 0 0 18px rgba(224, 170, 255, 0.2);
+        }
+
+        .dice-style-name {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #f4ebfa;
+            margin-bottom: 0.2rem;
+        }
+
+        .dice-style-meta {
+            font-size: 0.7rem;
+            color: #aa99b4;
+        }
+
+        .dice-lab-presets {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 0.45rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .dice-preset-btn {
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            color: #f2f2f2;
+            padding: 0.45rem 0.5rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .dice-lab-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.55rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .dice-lab-field label {
+            display: block;
+            font-size: 0.68rem;
+            color: #a89ab2;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 0.2rem;
+        }
+
+        .dice-lab-field input {
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.35);
+            color: #f4f4f4;
+            padding: 0.45rem 0.5rem;
+            font-weight: 600;
+        }
+
+        .dice-lab-roll-btn {
+            width: 100%;
+            border: 1px solid rgba(224, 170, 255, 0.55);
+            border-radius: 10px;
+            padding: 0.7rem 0.8rem;
+            background: linear-gradient(135deg, rgba(94, 23, 134, 0.95), rgba(163, 52, 218, 0.95));
+            color: white;
+            font-weight: 800;
+            letter-spacing: 0.03em;
+            cursor: pointer;
+        }
+
+        .dice-lab-result {
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            background: rgba(12, 12, 16, 0.95);
+            padding: 0.7rem;
+            margin-top: 0.7rem;
+        }
+
+        .dice-lab-result .line {
+            font-size: 0.8rem;
+            color: #d6cedc;
+            margin-bottom: 0.3rem;
+        }
+
+        .dice-lab-result .line strong {
+            color: #f4ebfa;
+        }
+
+        @media (max-width: 1280px) {
+            .market-topbar,
+            .market-content,
+            .market-bottom {
+                grid-template-columns: 1fr;
+            }
+
+            .dice-lab-fab {
+                right: 20px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .market-offers-grid,
+            .collection-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dice-lab-grid,
+            .dice-lab-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .dice-lab-presets {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
         /* SCROLLBAR */
         ::-webkit-scrollbar {
             width: 8px;
@@ -692,16 +1282,93 @@
             <div id="attacksList"></div>
         </section>
 
-        <!-- SECTION: STORE (Premium Mockup) -->
+        <!-- SECTION: STORE (Black Market Premium) -->
         <section id="store" class="dashboard-section">
             <div class="section-header">
                 <span class="sec-title" style="color:#e0aaff">Mercado Negro</span>
                 <i data-lucide="shopping-bag" color="#e0aaff"></i>
             </div>
-            <div
-                style="background:linear-gradient(90deg, #240046, #3c096c); padding:2rem; border-radius:12px; text-align:center;">
-                <h2 style="font-family:'Cinzel'; margin:0; color:#e0aaff;">Favor de Muzan</h2>
-                <p style="color:#c77dff;">Em breve...</p>
+            <div class="market-shell">
+                <div class="market-topbar">
+                    <div class="market-panel">
+                        <div class="market-title-row">
+                            <div>
+                                <div class="market-eyebrow">Tesouro da Noite</div>
+                                <div class="market-subtle" id="marketDailyLabel">Rotação diária ativa.</div>
+                            </div>
+                        </div>
+                        <div class="market-currencies">
+                            <div class="currency-chip">
+                                <div class="currency-label"><i data-lucide="coins" size="14"></i> Yen Demoníaco</div>
+                                <div class="currency-value" id="yenBalance">0</div>
+                            </div>
+                            <div class="currency-chip">
+                                <div class="currency-label"><i data-lucide="gem" size="14"></i> Selo Carmesim</div>
+                                <div class="currency-value" id="scarletBalance">0</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="market-pass-card">
+                        <div class="market-pass-status" id="marketPassStatus">
+                            <i data-lucide="crown" size="16"></i> Oni Pass Desativado
+                        </div>
+                        <div class="market-subtle" id="marketPassHint">Ative o Oni Pass para descontos e contratos especiais.</div>
+                        <div class="market-pass-actions">
+                            <button class="market-btn primary" id="goPremiumBtn" onclick="window.location.href='premium.html'">Ativar Oni Pass</button>
+                            <button class="market-btn claim" id="monthlyClaimBtn" onclick="claimMonthlyCosmetic()">Resgatar Cosmético Mensal</button>
+                            <button class="market-btn" id="toggleInfiniteMoneyBtn" onclick="toggleInfiniteMarketMoney()">Dinheiro Infinito: ON</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="market-content">
+                    <div class="market-panel">
+                        <div class="market-title-row">
+                            <div class="market-eyebrow">Rotação da Madrugada</div>
+                            <div class="market-subtle">6 ofertas (3 premium, 2 utilidades, 1 evento)</div>
+                        </div>
+                        <div class="market-offers-grid" id="marketOffersGrid">
+                            <div class="market-empty">Carregando ofertas do Mercado Negro...</div>
+                        </div>
+                    </div>
+                    <div class="market-panel">
+                        <div class="market-title-row">
+                            <div class="market-eyebrow">Contratos Lendários</div>
+                            <div class="market-subtle">3 contratos por dia</div>
+                        </div>
+                        <div class="market-contracts" id="marketContractsGrid">
+                            <div class="market-empty">Carregando contratos...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="market-bottom">
+                    <div class="market-panel">
+                        <div class="market-title-row">
+                            <div class="market-eyebrow">Coleção Oni</div>
+                            <div class="market-subtle">Auras, molduras e títulos equipáveis</div>
+                        </div>
+                        <div class="collection-grid" id="marketCosmeticCollection">
+                            <div class="market-empty">Nenhum cosmético adquirido ainda.</div>
+                        </div>
+                        <div class="market-title-row" style="margin-top:1rem;">
+                            <div class="market-eyebrow">Dados Cosméticos</div>
+                            <div class="market-subtle">Tema global de rolagens</div>
+                        </div>
+                        <div class="collection-grid" id="marketDiceStyleCollection">
+                            <div class="market-empty">Nenhum estilo de dado desbloqueado.</div>
+                        </div>
+                    </div>
+                    <div class="market-panel">
+                        <div class="market-title-row">
+                            <div class="market-eyebrow">Presets de Combate</div>
+                            <div class="market-subtle">1 slot free + 1 slot Oni Pass</div>
+                        </div>
+                        <div class="loadout-list" id="marketLoadoutSlots">
+                            <div class="market-empty">Preparando slots de build...</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -754,6 +1421,38 @@
             </div>
         </div>
     </aside>
+
+    <button id="diceLabOpenBtn" class="dice-lab-fab" onclick="openDiceLab()" type="button">
+        <i data-lucide="dices"></i>
+        Testar Dados 3D
+    </button>
+
+    <div id="diceLabModal" class="dice-lab-modal" aria-hidden="true">
+        <div class="dice-lab-card">
+            <div class="dice-lab-head">
+                <h3 class="dice-lab-title">Laboratório de Dados 3D</h3>
+                <button class="dice-lab-close" type="button" onclick="closeDiceLab()">&times;</button>
+            </div>
+            <div class="dice-lab-grid">
+                <div class="dice-lab-panel">
+                    <h4>Skins de Dado</h4>
+                    <div id="diceLabStyleGrid" class="dice-lab-style-grid">
+                        <div class="dice-style-meta">Carregando estilos...</div>
+                    </div>
+                </div>
+                <div class="dice-lab-panel">
+                    <h4>Rolagem Cinematica</h4>
+                    <button class="dice-lab-roll-btn" type="button" onclick="rollDiceLab()">
+                        Rolar 1d20 3D
+                    </button>
+                    <div class="dice-lab-result" id="diceLabResult">
+                        <div class="line"><strong>Modo:</strong> d20 unico</div>
+                        <div class="line"><strong>Ultimo:</strong> -</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- MODALS (Reused/Adapted) -->
     <!-- Dice Modal -->
@@ -821,7 +1520,8 @@
     <!-- SCRIPTS -->
     <script src="js/items_db.js"></script>
     <script src="js/inventory_modules.js"></script> <!-- Uses window.charData -->
-    <script src="js/oni-dashboard.js"></script>
+    <script src="js/dice-cosmetics.js?v=1.6.1"></script>
+    <script src="js/oni-dashboard.js?v=4.3.1"></script>
 
     <script>
         // Init Icons

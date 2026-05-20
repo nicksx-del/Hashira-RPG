@@ -1,0 +1,46 @@
+<svg width="980" height="300" viewBox="0 0 980 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="coalOuter" x1="8" y1="8" x2="972" y2="292" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6B371C"/>
+      <stop offset="0.42" stop-color="#BB5223"/>
+      <stop offset="1" stop-color="#3A1D12"/>
+    </linearGradient>
+    <linearGradient id="coalInner" x1="70" y1="22" x2="900" y2="284" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FAD2A1" stop-opacity="0.62"/>
+      <stop offset="1" stop-color="#A86A3A" stop-opacity="0.45"/>
+    </linearGradient>
+    <radialGradient id="coalHeat" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(490 149) rotate(90) scale(160 470)">
+      <stop stop-color="#FF7138" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#FF7138" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect x="3.5" y="3.5" width="973" height="293" rx="16" stroke="url(#coalOuter)" stroke-width="7"/>
+  <rect x="14.5" y="14.5" width="951" height="271" rx="12" stroke="url(#coalInner)" stroke-width="2.2"/>
+  <rect x="0" y="0" width="980" height="300" rx="18" fill="url(#coalHeat)"/>
+
+  <path d="M37 22L63 22L41 47L54 61L24 62L24 34L37 22Z" fill="#E6702B" fill-opacity="0.53"/>
+  <path d="M942 22L918 22L937 46L923 61L952 62L952 34L942 22Z" fill="#E6702B" fill-opacity="0.53"/>
+  <path d="M37 278L63 278L41 253L54 239L24 238L24 266L37 278Z" fill="#E6702B" fill-opacity="0.53"/>
+  <path d="M942 278L918 278L937 254L923 239L952 238L952 266L942 278Z" fill="#E6702B" fill-opacity="0.53"/>
+
+  <path d="M114 19C127 28 131 36 143 45" stroke="#D49D68" stroke-opacity="0.5" stroke-width="2" stroke-linecap="round"/>
+  <path d="M296 20C307 31 318 36 330 44" stroke="#D49D68" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round"/>
+  <path d="M480 18C489 28 499 34 511 42" stroke="#D49D68" stroke-opacity="0.5" stroke-width="2" stroke-linecap="round"/>
+  <path d="M652 18C664 29 676 35 690 43" stroke="#D49D68" stroke-opacity="0.46" stroke-width="2" stroke-linecap="round"/>
+  <path d="M834 18C846 29 858 34 872 42" stroke="#D49D68" stroke-opacity="0.42" stroke-width="2" stroke-linecap="round"/>
+
+  <path d="M110 282C123 272 131 264 143 255" stroke="#D49D68" stroke-opacity="0.5" stroke-width="2" stroke-linecap="round"/>
+  <path d="M292 282C306 270 316 266 329 257" stroke="#D49D68" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round"/>
+  <path d="M474 282C487 271 498 265 509 257" stroke="#D49D68" stroke-opacity="0.46" stroke-width="2" stroke-linecap="round"/>
+  <path d="M656 282C669 270 680 266 692 257" stroke="#D49D68" stroke-opacity="0.42" stroke-width="2" stroke-linecap="round"/>
+  <path d="M838 282C849 272 861 266 873 257" stroke="#D49D68" stroke-opacity="0.42" stroke-width="2" stroke-linecap="round"/>
+
+  <g opacity="0.18">
+    <circle cx="209" cy="62" r="2.4" fill="#FFE3C2"/>
+    <circle cx="334" cy="247" r="1.9" fill="#FFE3C2"/>
+    <circle cx="523" cy="54" r="2.2" fill="#FFE3C2"/>
+    <circle cx="654" cy="247" r="2.1" fill="#FFE3C2"/>
+    <circle cx="779" cy="61" r="2.4" fill="#FFE3C2"/>
+  </g>
+</svg>

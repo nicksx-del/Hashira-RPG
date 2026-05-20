@@ -1,0 +1,58 @@
+<svg width="980" height="300" viewBox="0 0 980 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="umOuterBlade" x1="10" y1="8" x2="974" y2="292" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6D4F2A"/>
+      <stop offset="0.35" stop-color="#F0D59E"/>
+      <stop offset="0.7" stop-color="#A8794A"/>
+      <stop offset="1" stop-color="#4D3824"/>
+    </linearGradient>
+    <linearGradient id="umInnerBlade" x1="78" y1="24" x2="892" y2="284" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#26183A"/>
+      <stop offset="0.52" stop-color="#171025"/>
+      <stop offset="1" stop-color="#31204A"/>
+    </linearGradient>
+    <linearGradient id="umVein" x1="48" y1="32" x2="934" y2="268" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#824B62"/>
+      <stop offset="0.5" stop-color="#6E3A50"/>
+      <stop offset="1" stop-color="#915A70"/>
+    </linearGradient>
+    <radialGradient id="umGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(490 150) rotate(90) scale(164 520)">
+      <stop stop-color="#A58CFF" stop-opacity="0.23"/>
+      <stop offset="1" stop-color="#A58CFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <path d="M28 12H952L970 30V270L952 288H28L10 270V30L28 12Z" stroke="url(#umOuterBlade)" stroke-width="7"/>
+  <path d="M42 24H938L954 40V116L930 132L954 148V260L938 276H42L26 260V148L50 132L26 116V40L42 24Z" fill="url(#umInnerBlade)" stroke="#F2D8A3" stroke-opacity="0.56" stroke-width="2.2"/>
+  <rect x="2" y="2" width="976" height="296" rx="18" fill="url(#umGlow)"/>
+
+  <path d="M42 132H938" stroke="#E4C489" stroke-opacity="0.34" stroke-width="1.8"/>
+  <path d="M42 149H938" stroke="#E4C489" stroke-opacity="0.22" stroke-width="1.3"/>
+
+  <g opacity="0.52" stroke="url(#umVein)" stroke-width="2.1" stroke-linecap="round">
+    <path d="M56 46C144 62 236 68 336 60C428 53 546 46 640 58C748 72 840 68 924 48"/>
+    <path d="M56 84C152 98 238 108 334 100C430 94 548 86 642 98C754 112 842 108 924 86"/>
+    <path d="M56 182C152 196 238 206 334 198C430 192 548 184 642 196C754 210 842 206 924 184"/>
+    <path d="M56 220C148 236 238 244 338 236C432 230 548 222 640 234C750 248 840 242 924 222"/>
+    <path d="M120 130C170 116 220 116 272 130"/>
+    <path d="M710 130C760 116 810 116 862 130"/>
+    <path d="M120 152C170 166 220 166 272 152"/>
+    <path d="M710 152C760 166 810 166 862 152"/>
+  </g>
+
+  <g fill="#E0CA92" fill-opacity="0.24">
+    <path d="M174 154C186 130 214 121 242 131C216 134 199 150 196 171C193 188 203 205 226 216C195 214 174 188 174 154Z"/>
+    <path d="M432 154C444 130 472 121 500 131C474 134 457 150 454 171C451 188 461 205 484 216C453 214 432 188 432 154Z"/>
+    <path d="M688 154C700 130 728 121 756 131C730 134 713 150 710 171C707 188 717 205 740 216C709 214 688 188 688 154Z"/>
+  </g>
+
+  <g opacity="0.58">
+    <path d="M32 30L56 30L32 54V30Z" fill="#F4D7A2" fill-opacity="0.56"/>
+    <path d="M948 30L924 30L948 54V30Z" fill="#F4D7A2" fill-opacity="0.56"/>
+    <path d="M32 270L56 270L32 246V270Z" fill="#F4D7A2" fill-opacity="0.56"/>
+    <path d="M948 270L924 270L948 246V270Z" fill="#F4D7A2" fill-opacity="0.56"/>
+  </g>
+
+  <path d="M14 132L34 125V139L14 132Z" fill="#D8B77A" fill-opacity="0.44"/>
+  <path d="M966 132L946 125V139L966 132Z" fill="#D8B77A" fill-opacity="0.44"/>
+</svg>

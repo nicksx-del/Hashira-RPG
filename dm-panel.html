@@ -16,11 +16,18 @@
             --primary-dark: #7e22ce;
             --accent-gold: #fbbf24;
             --accent-red: #ef4444;
+            --danger: #ef4444;
 
             --bg-dark: #121214;
             --glass-bg: rgba(24, 24, 28, 0.8);
             --glass-border: rgba(255, 255, 255, 0.08);
+            --border-dark: rgba(255, 255, 255, 0.12);
+            --surface-dark: rgba(15, 15, 22, 0.92);
             --surface-hover: rgba(255, 255, 255, 0.03);
+            --panel-glow: 168, 85, 247;
+            --theme-aura-left: rgba(168, 85, 247, 0.22);
+            --theme-aura-right: rgba(251, 191, 36, 0.13);
+            --theme-aura-bottom: rgba(14, 165, 233, 0.08);
 
             --text-main: #e4e4e7;
             --text-muted: #a1a1aa;
@@ -33,6 +40,42 @@
             /* Typography */
             --font-display: 'Cinzel', serif;
             --font-body: 'Outfit', sans-serif;
+        }
+
+        body[data-theme="agua"] {
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --panel-glow: 14, 165, 233;
+            --theme-aura-left: rgba(14, 165, 233, 0.2);
+            --theme-aura-right: rgba(56, 189, 248, 0.15);
+            --theme-aura-bottom: rgba(15, 23, 42, 0.24);
+        }
+
+        body[data-theme="chama"] {
+            --primary: #f97316;
+            --primary-dark: #ea580c;
+            --panel-glow: 249, 115, 22;
+            --theme-aura-left: rgba(249, 115, 22, 0.2);
+            --theme-aura-right: rgba(239, 68, 68, 0.18);
+            --theme-aura-bottom: rgba(120, 53, 15, 0.24);
+        }
+
+        body[data-theme="trovao"] {
+            --primary: #facc15;
+            --primary-dark: #eab308;
+            --panel-glow: 250, 204, 21;
+            --theme-aura-left: rgba(250, 204, 21, 0.22);
+            --theme-aura-right: rgba(234, 179, 8, 0.18);
+            --theme-aura-bottom: rgba(120, 113, 108, 0.22);
+        }
+
+        body[data-theme="vento"] {
+            --primary: #22c55e;
+            --primary-dark: #16a34a;
+            --panel-glow: 34, 197, 94;
+            --theme-aura-left: rgba(34, 197, 94, 0.2);
+            --theme-aura-right: rgba(6, 182, 212, 0.16);
+            --theme-aura-bottom: rgba(22, 101, 52, 0.24);
         }
 
         * {
@@ -48,9 +91,14 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            letter-spacing: 0;
+            background:
+                radial-gradient(circle at 16% 9%, var(--theme-aura-left), transparent 36%),
+                radial-gradient(circle at 86% 17%, var(--theme-aura-right), transparent 34%),
+                radial-gradient(circle at 56% 100%, var(--theme-aura-bottom), transparent 44%),
+                linear-gradient(to bottom, #0d0c11, #0b0b10 55%, #09090d);
         }
 
-        
         #wisteria-bg {
             position: fixed;
             top: 0;
@@ -60,9 +108,9 @@
             pointer-events: none;
             z-index: -1;
             background:
-                radial-gradient(circle at 10% 20%, rgba(60, 20, 80, 0.15), transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(200, 50, 50, 0.1), transparent 40%),
-                linear-gradient(to bottom, #121214, #0a0a0c);
+                radial-gradient(circle at 8% 18%, rgba(var(--panel-glow), 0.16), transparent 40%),
+                radial-gradient(circle at 92% 84%, rgba(239, 68, 68, 0.1), transparent 40%),
+                linear-gradient(to bottom, #111117, #09090e);
         }
 
         .noise-overlay {
@@ -91,25 +139,72 @@
 
         /* LEFT SIDEBAR (NPC LIBRARY) */
         .wis-sidebar {
-            width: 30%;
+            width: min(360px, 34vw);
             min-width: 300px;
-            max-width: 450px;
-            background: var(--glass-bg);
+            max-width: 420px;
+            background: linear-gradient(165deg, rgba(13, 13, 19, 0.92), rgba(11, 11, 17, 0.82));
             backdrop-filter: blur(12px);
-            border-right: 1px solid var(--glass-border);
+            border-right: 1px solid var(--border-dark);
             display: flex;
             flex-direction: column;
             z-index: 20;
-            box-shadow: 20px 0 40px rgba(0, 0, 0, 0.5);
+            box-shadow: 22px 0 44px rgba(0, 0, 0, 0.48);
         }
 
         .wis-sidebar-header {
-            padding: 24px;
-            border-bottom: 1px solid var(--glass-border);
-            background: transparent;
+            padding: 18px 18px 16px;
+            border-bottom: 1px solid var(--border-dark);
+            background: linear-gradient(180deg, rgba(var(--panel-glow), 0.08), rgba(0, 0, 0, 0));
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 12px;
+        }
+
+        .wis-shell-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .wis-campaign-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .wis-campaign-theme {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.66rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #f4f4fb;
+            width: fit-content;
+            padding: 0.22rem 0.55rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            background: rgba(var(--panel-glow), 0.2);
+        }
+
+        .wis-campaign-name {
+            margin: 0;
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            line-height: 1.1;
+            color: #f8f8fc;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .wis-campaign-sub {
+            margin: 0;
+            font-size: 0.78rem;
+            color: var(--text-muted);
         }
 
         .wis-search-box {
@@ -118,10 +213,10 @@
 
         .wis-search-input {
             width: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--border-dark);
             padding: 12px 14px 12px 40px;
-            border-radius: 4px;
+            border-radius: 10px;
             color: var(--text-main);
             font-family: var(--font-body);
             font-size: 0.95rem;
@@ -131,7 +226,7 @@
         .wis-search-input:focus {
             outline: none;
             border-color: transparent;
-            box-shadow: 0 0 15px rgba(168, 85, 247, 0.3), inset 0 0 8px rgba(168, 85, 247, 0.1);
+            box-shadow: 0 0 0 2px rgba(var(--panel-glow), 0.22), inset 0 0 8px rgba(var(--panel-glow), 0.1);
         }
 
         .wis-search-icon {
@@ -143,10 +238,10 @@
         }
 
         .wis-add-btn {
-            background: rgba(168, 85, 247, 0.1);
+            background: rgba(var(--panel-glow), 0.12);
             color: var(--primary);
-            border: 1px solid transparent;
-            border-radius: 4px;
+            border: 1px solid rgba(var(--panel-glow), 0.35);
+            border-radius: 10px;
             padding: 12px;
             cursor: pointer;
             font-family: var(--font-display);
@@ -159,13 +254,19 @@
             justify-content: center;
             gap: 10px;
             transition: all 0.3s;
-            box-shadow: 0 0 10px rgba(168, 85, 247, 0.15);
+            box-shadow: 0 0 14px rgba(var(--panel-glow), 0.12);
         }
 
         .wis-add-btn:hover {
             background: var(--primary);
             color: #fff;
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.6), 0 0 40px rgba(168, 85, 247, 0.3);
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.34), 0 0 20px rgba(var(--panel-glow), 0.42);
+            transform: translateY(-1px);
+        }
+
+        .wis-add-btn:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(var(--panel-glow), 0.26), 0 0 18px rgba(var(--panel-glow), 0.3);
         }
 
         .wis-sidebar-content {
@@ -369,6 +470,483 @@
             /* Increased padding */
         }
 
+        .tactical-stage {
+            position: relative;
+            border: 1px solid var(--border-dark);
+            border-radius: 14px;
+            background: rgba(9, 9, 14, 0.76);
+            box-shadow: 0 18px 30px rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(8px);
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .tactical-stage-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 0.7rem;
+            flex-wrap: wrap;
+        }
+
+        .tactical-stage-title {
+            margin: 0;
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            color: #f5f5fb;
+            letter-spacing: 0.02em;
+        }
+
+        .tactical-stage-sub {
+            margin: 0.15rem 0 0;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .tactical-quick-actions {
+            display: flex;
+            gap: 0.4rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .tactical-board-shell {
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 0.55rem;
+            background:
+                linear-gradient(180deg, rgba(var(--panel-glow), 0.08), rgba(255, 255, 255, 0.01)),
+                rgba(8, 8, 12, 0.88);
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 300px;
+            gap: 0.6rem;
+            align-items: start;
+        }
+
+        .tactical-board-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 6px;
+            width: min(100%, 640px);
+            min-height: 440px;
+            aspect-ratio: 1 / 1;
+        }
+
+        .board-cell {
+            position: relative;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background:
+                radial-gradient(circle at 18% 16%, rgba(255, 255, 255, 0.05), transparent 55%),
+                rgba(13, 13, 19, 0.7);
+            transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            min-width: 0;
+            min-height: 0;
+        }
+
+        .board-cell:hover {
+            border-color: rgba(var(--panel-glow), 0.5);
+            box-shadow: inset 0 0 0 1px rgba(var(--panel-glow), 0.28);
+        }
+
+        .board-cell.drop-target {
+            border-color: rgba(var(--panel-glow), 0.82);
+            box-shadow: inset 0 0 0 2px rgba(var(--panel-glow), 0.4);
+            background: rgba(var(--panel-glow), 0.16);
+        }
+
+        .board-token {
+            position: absolute;
+            inset: 3px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(18, 18, 27, 0.95);
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            justify-items: center;
+            align-content: center;
+            gap: 0.2rem;
+            padding: 0.22rem;
+            cursor: grab;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+
+        .board-token:hover {
+            transform: translateY(-1px);
+            border-color: rgba(var(--panel-glow), 0.55);
+            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.28);
+        }
+
+        .board-token:active {
+            cursor: grabbing;
+        }
+
+        .board-token.player {
+            border-left: 3px solid #22c55e;
+        }
+
+        .board-token.npc {
+            border-left: 3px solid #ef4444;
+        }
+
+        .board-token.active-turn {
+            border-color: rgba(var(--panel-glow), 0.78);
+            box-shadow: 0 0 0 1px rgba(var(--panel-glow), 0.25), 0 12px 24px rgba(0, 0, 0, 0.34);
+            background: linear-gradient(145deg, rgba(var(--panel-glow), 0.2), rgba(18, 18, 27, 0.95));
+        }
+
+        .board-token.selected {
+            box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.55), 0 10px 20px rgba(0, 0, 0, 0.34);
+        }
+
+        .board-token.critical {
+            box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.35);
+        }
+
+        .board-token-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+
+        .board-token-name {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #f4f4fb;
+            white-space: normal;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: center;
+            line-height: 1.1;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .board-token-hp {
+            font-size: 0.66rem;
+            font-weight: 700;
+            color: #c9cad4;
+            flex-shrink: 0;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 0.1rem 0.35rem;
+            border-radius: 999px;
+        }
+
+        .turn-token-panel {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            width: 100%;
+            min-height: 440px;
+            border: 1px solid rgba(var(--panel-glow), 0.55);
+            border-radius: 12px;
+            background: rgba(10, 10, 15, 0.94);
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            padding: 0.65rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .turn-token-panel.hidden {
+            display: none;
+        }
+
+        .turn-panel-empty {
+            flex: 1;
+            border: 1px dashed rgba(255, 255, 255, 0.16);
+            border-radius: 10px;
+            display: grid;
+            place-content: center;
+            gap: 0.4rem;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 0.9rem;
+            font-size: 0.76rem;
+        }
+
+        .turn-panel-head {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+        }
+
+        .turn-panel-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+            flex-shrink: 0;
+        }
+
+        .turn-panel-meta {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.18rem;
+        }
+
+        .turn-panel-chip {
+            align-self: flex-start;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 999px;
+            padding: 0.14rem 0.45rem;
+            font-size: 0.62rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #e3e4ec;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .turn-panel-title {
+            margin: 0;
+            font-size: 0.94rem;
+            font-weight: 700;
+            color: #f5f5fb;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .turn-panel-sub {
+            margin: 0.15rem 0 0.45rem;
+            color: var(--text-muted);
+            font-size: 0.72rem;
+        }
+
+        .turn-panel-resources {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.35rem;
+            margin-bottom: 0.45rem;
+        }
+
+        .turn-resource {
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 0.3rem 0.4rem;
+            font-size: 0.67rem;
+            color: #cfd0d8;
+        }
+
+        .turn-resource strong {
+            display: block;
+            font-size: 0.77rem;
+            color: #f6f7fd;
+            margin-top: 0.1rem;
+        }
+
+        .turn-attacks {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .turn-panel-actions {
+            display: flex;
+            gap: 0.35rem;
+            margin-top: auto;
+        }
+
+        .turn-panel-open-sheet {
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.03);
+            color: #ececf5;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.43rem 0.5rem;
+            cursor: pointer;
+        }
+
+        .turn-panel-open-sheet:hover,
+        .turn-panel-open-sheet:focus-visible {
+            border-color: rgba(var(--panel-glow), 0.52);
+            background: rgba(var(--panel-glow), 0.18);
+            outline: none;
+        }
+
+        .turn-attack-btn {
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            background: rgba(var(--panel-glow), 0.12);
+            color: #f0f0f7;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-align: left;
+            padding: 0.38rem 0.45rem;
+            cursor: pointer;
+        }
+
+        .turn-attack-btn:hover,
+        .turn-attack-btn:focus-visible {
+            border-color: rgba(var(--panel-glow), 0.55);
+            background: rgba(var(--panel-glow), 0.24);
+            outline: none;
+        }
+
+        .turn-attack-empty {
+            color: var(--text-muted);
+            font-size: 0.68rem;
+            border: 1px dashed rgba(255, 255, 255, 0.16);
+            border-radius: 8px;
+            padding: 0.4rem;
+            text-align: center;
+        }
+
+        .dice-dock {
+            position: fixed;
+            right: 1rem;
+            bottom: 1rem;
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: min(320px, calc(100vw - 2rem));
+        }
+
+        .dice-card {
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 10px;
+            background: rgba(10, 10, 15, 0.94);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+            padding: 0.5rem 0.6rem;
+            backdrop-filter: blur(6px);
+        }
+
+        .dice-card-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .dice-card-title {
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: #f4f5fb;
+        }
+
+        .dice-card-close {
+            border: none;
+            background: transparent;
+            color: #9fa0aa;
+            cursor: pointer;
+            padding: 0;
+            display: grid;
+            place-items: center;
+        }
+
+        .dice-card-body {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.45rem;
+            align-items: center;
+        }
+
+        .dice-card-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            display: grid;
+            place-items: center;
+            color: #d0d1da;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .dice-main-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .dice-main-cell {
+            text-align: center;
+            border-right: 1px solid rgba(255, 255, 255, 0.14);
+            padding-right: 0.4rem;
+        }
+
+        .dice-main-cell:last-child {
+            border-right: none;
+            padding-right: 0;
+        }
+
+        .dice-main-value {
+            font-size: 2rem;
+            line-height: 1;
+            font-weight: 800;
+            color: #f8f8ff;
+        }
+
+        .dice-main-label {
+            margin-top: 0.15rem;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #9fa0aa;
+            font-weight: 700;
+        }
+
+        .dice-meta {
+            font-size: 0.68rem;
+            color: #b9bac5;
+            margin-top: 0.2rem;
+        }
+
+        .dice-skill-grid {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dice-skill-eq {
+            color: #c8c9d3;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .dice-skill-total {
+            font-size: 2rem;
+            line-height: 1;
+            color: #4ade80;
+            font-weight: 800;
+            text-align: right;
+        }
+
+        .dice-mini-btn {
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            color: #e5e6ee;
+            padding: 0.26rem 0.4rem;
+            font-size: 0.68rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .dice-mini-btn:hover,
+        .dice-mini-btn:focus-visible {
+            border-color: rgba(var(--panel-glow), 0.55);
+            background: rgba(var(--panel-glow), 0.2);
+            outline: none;
+        }
+
         /* EMPTY STATE / DASHBOARD */
         .wis-empty-state {
             display: flex;
@@ -470,16 +1048,16 @@
         }
 
         .wis-combat-sidebar {
-            width: 300px;
-            background: var(--surface-dark);
-            /* Transparent */
+            width: min(390px, 35vw);
+            min-width: 320px;
+            background: linear-gradient(170deg, rgba(14, 14, 21, 0.94), rgba(10, 10, 16, 0.88));
             border-left: 1px solid var(--border-dark);
             display: flex;
             flex-direction: column;
             z-index: 15;
-            transition: width 0.3s ease, transform 0.3s ease;
+            transition: width 0.26s ease, transform 0.26s ease;
             backdrop-filter: blur(10px);
-            /* Slight blur for sidebar overlay feel if needed */
+            box-shadow: -20px 0 40px rgba(0, 0, 0, 0.45);
         }
 
         .wis-combat-sidebar.collapsed {
@@ -488,12 +1066,37 @@
         }
 
         .wis-combat-header {
-            padding: 16px;
-            background: transparent;
+            padding: 14px 14px 12px;
+            background: linear-gradient(180deg, rgba(var(--panel-glow), 0.08), rgba(0, 0, 0, 0));
             border-bottom: 1px solid var(--border-dark);
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        .combat-header-main {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .combat-header-title {
+            margin: 0;
+            font-family: var(--font-display);
+            font-size: 1rem;
+            color: #fbfbff;
+            letter-spacing: 0.03em;
+        }
+
+        .combat-header-sub {
+            margin: 0;
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 210px;
         }
 
         /* --- TREE VIEW STYLES (Windows-like) --- */
@@ -593,51 +1196,90 @@
         .wis-combat-list {
             flex: 1;
             overflow-y: auto;
-            padding: 12px;
+            padding: 10px 12px 14px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
         }
 
         .combatant-card {
             display: flex;
-            align-items: center;
-            gap: 12px;
+            align-items: flex-start;
+            gap: 10px;
             padding: 10px;
-            background: transparent;
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--border-dark);
-            border-radius: 8px;
+            border-radius: 12px;
             position: relative;
-            transition: all 0.2s;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+        }
+
+        .combatant-card:hover {
+            border-color: rgba(var(--panel-glow), 0.44);
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28);
+            transform: translateY(-1px);
         }
 
         .combatant-card.active-turn {
-            border-color: transparent;
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.5), 0 0 40px rgba(168, 85, 247, 0.2), inset 0 0 15px rgba(168, 85, 247, 0.15);
-            background: rgba(168, 85, 247, 0.1);
-            transform: scale(1.02);
+            border-color: rgba(var(--panel-glow), 0.7);
+            box-shadow: 0 0 0 1px rgba(var(--panel-glow), 0.2), 0 14px 28px rgba(0, 0, 0, 0.35);
+            background: linear-gradient(145deg, rgba(var(--panel-glow), 0.16), rgba(255, 255, 255, 0.02));
+            transform: translateY(-1px);
+        }
+
+        .turn-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 0.62rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            border-radius: 999px;
+            padding: 0.16rem 0.46rem;
+            color: #d4d4dd;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .combatant-card.active-turn .turn-badge {
+            color: #fff;
+            background: rgba(var(--panel-glow), 0.24);
+            border-color: rgba(var(--panel-glow), 0.55);
         }
 
         .combatant-init-box {
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: transparent;
-            padding: 4px 8px;
-            border-radius: 6px;
-            border: 1px solid var(--border-dark);
-            min-width: 35px;
+            justify-content: center;
+            gap: 1px;
+            background: rgba(0, 0, 0, 0.34);
+            padding: 6px 8px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            min-width: 42px;
         }
 
         .init-val {
-            font-weight: 600;
-            color: var(--text-main);
+            font-weight: 800;
+            font-size: 0.95rem;
+            color: #f8f8fe;
         }
 
         .init-label {
-            font-size: 0.6rem;
+            font-size: 0.58rem;
             color: var(--text-muted);
             text-transform: uppercase;
+            letter-spacing: 0.07em;
+        }
+
+        .combatant-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .combatant-info {
@@ -645,15 +1287,152 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            gap: 0.4rem;
+            min-width: 0;
+        }
+
+        .combatant-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.35rem;
         }
 
         .combatant-name {
-            font-weight: 600;
-            color: var(--text-main);
+            font-weight: 700;
+            color: #f4f4fb;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             font-size: 0.9rem;
+        }
+
+        .combat-role-badge {
+            font-size: 0.64rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #d8d8df;
+            padding: 0.14rem 0.45rem;
+            flex-shrink: 0;
+        }
+
+        .combatant-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            flex-wrap: wrap;
+        }
+
+        .combatant-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.1rem 0.42rem;
+            border-radius: 999px;
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            border: 1px solid rgba(255, 255, 255, 0.17);
+        }
+
+        .combatant-status.ok {
+            color: #86efac;
+            border-color: rgba(34, 197, 94, 0.45);
+            background: rgba(34, 197, 94, 0.12);
+        }
+
+        .combatant-status.warn {
+            color: #fcd34d;
+            border-color: rgba(234, 179, 8, 0.45);
+            background: rgba(234, 179, 8, 0.12);
+        }
+
+        .combatant-status.crit {
+            color: #fda4af;
+            border-color: rgba(239, 68, 68, 0.45);
+            background: rgba(239, 68, 68, 0.13);
+        }
+
+        .combatant-resource-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.3rem;
+        }
+
+        .combatant-resource {
+            display: flex;
+            flex-direction: column;
+            gap: 0.16rem;
+            font-size: 0.67rem;
+            color: #c6c7d0;
+        }
+
+        .combatant-resource strong {
+            color: #f2f3fa;
+            font-size: 0.74rem;
+            letter-spacing: 0.01em;
+        }
+
+        .resource-track {
+            position: relative;
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.45);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .resource-fill {
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 0%;
+            border-radius: inherit;
+            transition: width 0.25s ease;
+        }
+
+        .resource-fill.hp {
+            background: linear-gradient(90deg, #16a34a, #86efac);
+        }
+
+        .resource-fill.pe {
+            background: linear-gradient(90deg, #0ea5e9, #7dd3fc);
+        }
+
+        .combatant-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            align-self: flex-start;
+        }
+
+        .combat-remove-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fda4af;
+            cursor: pointer;
+        }
+
+        .combat-remove-btn:hover,
+        .combat-remove-btn:focus-visible {
+            background: rgba(239, 68, 68, 0.22);
+            color: #ffe4e6;
+            outline: none;
+        }
+
+        .combat-empty {
+            text-align: center;
+            padding: 1.4rem 0.9rem;
+            color: var(--text-muted);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
         }
 
         /* Seamless Input Style */
@@ -837,14 +1616,6 @@
             background: #444;
         }
 
-        font-size: 0.9rem;
-        font-weight: 500;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        color: var(--text-main);
-        }
-
         .combatant-hp {
             font-size: 0.75rem;
             color: var(--text-muted);
@@ -925,6 +1696,35 @@
                 width: 100%;
             }
 
+            .wis-workspace-content {
+                padding: 70px 12px 16px;
+            }
+
+            .tactical-stage {
+                padding: 0.55rem;
+            }
+
+            .tactical-board-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .tactical-board-grid {
+                width: 100%;
+                min-height: 300px;
+                gap: 4px;
+            }
+
+            .turn-token-panel {
+                min-height: 260px;
+            }
+
+            .dice-dock {
+                right: 0.5rem;
+                left: 0.5rem;
+                bottom: 0.5rem;
+                width: auto;
+            }
+
             /* Combat Sidebar Mobile */
             .wis-combat-sidebar {
                 position: fixed;
@@ -947,21 +1747,47 @@
         .combat-dock {
             padding: 16px;
             border-top: 1px solid var(--border-dark);
-            background: transparent;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.25));
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
 
+        .combat-round-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.55rem;
+        }
+
+        .combat-round-pill {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #e2e3ea;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 999px;
+            padding: 0.2rem 0.58rem;
+            background: rgba(255, 255, 255, 0.04);
+            white-space: nowrap;
+        }
+
         /* Conditions Tags */
         .cond-tag {
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            border-radius: 4px;
+            font-size: 0.62rem;
+            padding: 0.1rem 0.42rem;
+            border-radius: 999px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border-dark);
             color: var(--text-muted);
             margin-right: 4px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .cond-tag.muted {
+            opacity: 0.72;
         }
 
         .noise-overlay {
@@ -971,21 +1797,28 @@
 
         /* General UI */
         .btn {
-            background: transparent;
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-dark);
             color: var(--text-main);
             padding: 8px 16px;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 0.85rem;
-            font-weight: 500;
-            transition: all 0.2s;
+            font-weight: 700;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
         }
 
         .btn:hover {
             border-color: var(--primary);
-            background: rgba(168, 85, 247, 0.05);
-            transform: translateY(0);
+            background: rgba(var(--panel-glow), 0.12);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn:focus-visible {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(var(--panel-glow), 0.24);
         }
 
         .btn-primary {
@@ -1007,6 +1840,7 @@
 
         .btn-danger:hover {
             background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.72);
         }
 
         .d-input {
@@ -1022,7 +1856,7 @@
         .d-input:focus {
             outline: none;
             border-color: transparent;
-            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4), inset 0 0 10px rgba(168, 85, 247, 0.1);
+            box-shadow: 0 0 0 2px rgba(var(--panel-glow), 0.2), inset 0 0 10px rgba(var(--panel-glow), 0.1);
         }
 
         .modal-overlay {
@@ -1366,6 +2200,14 @@
                 transform: translateX(100%);
             }
         }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+                scroll-behavior: auto !important;
+            }
+        }
     </style>
 </head>
 
@@ -1384,10 +2226,15 @@
         <!-- LEFT SIDEBAR: NPC LIBRARY -->
         <div class="wis-sidebar">
             <div class="wis-sidebar-header">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h2 class="wis-title"
-                        style="margin:0; font-size:1.4rem; font-family:var(--font-display); color:var(--accent-gold);">
-                        BIBLIOTECA</h2>
+                <div class="wis-shell-top">
+                    <div class="wis-campaign-meta">
+                        <span class="wis-campaign-theme" id="sidebarThemeBadge">
+                            <i data-lucide="flower-2" size="12" aria-hidden="true"></i>
+                            Wisteria
+                        </span>
+                        <h2 class="wis-campaign-name" id="sidebarCampaignName">Campanha</h2>
+                        <p class="wis-campaign-sub" id="sidebarCampaignSub">Mestre nao definido</p>
+                    </div>
                     <div style="display:flex; gap:8px;">
                         <button class="wis-add-btn" onclick="openSettingsModal()" title="Configurações da Campanha"
                             style="padding:6px; background:rgba(255,255,255,0.05);">
@@ -1412,7 +2259,7 @@
 
                 <div class="wis-search-box">
                     <i data-lucide="search" size="14" class="wis-search-icon"></i>
-                    <input type="text" class="wis-search-input" placeholder="Buscar NPC..."
+                    <input type="text" class="wis-search-input" placeholder="Buscar jogador ou criatura..."
                         onkeyup="filterSidebar(this.value)">
                 </div>
 
@@ -1431,6 +2278,24 @@
             <div class="wis-workspace-bg"></div>
 
             <div class="wis-workspace-content" id="mainWorkspace">
+                <section class="tactical-stage" aria-label="Tabuleiro tatico">
+                    <div class="tactical-stage-head">
+                        <div>
+                            <h2 class="tactical-stage-title">Tabuleiro Tatico</h2>
+                            <p class="tactical-stage-sub">Arraste jogadores e criaturas para a grade 4x4 e clique para abrir o painel lateral.</p>
+                        </div>
+                        <div class="tactical-quick-actions">
+                            <button class="dice-mini-btn" type="button" onclick="clearBoardTokens()">Limpar Tabuleiro</button>
+                            <button class="dice-mini-btn" type="button" onclick="focusActiveTurnToken()">Ir para Turno</button>
+                        </div>
+                    </div>
+
+                    <div class="tactical-board-shell" id="tacticalBoardShell">
+                        <div class="tactical-board-grid" id="tacticalBoardGrid"></div>
+                        <aside class="turn-token-panel" id="turnTokenPanel"></aside>
+                    </div>
+                </section>
+
                 <!-- DEFAULT STATE: EMPTY -->
                 <div id="sessionDashboardState"
                     style="height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:var(--text-muted);">
@@ -1454,7 +2319,10 @@
         <!-- RIGHT COMBAT SIDEBAR -->
         <div class="wis-combat-sidebar collapsed" id="combatSidebar">
             <div class="wis-combat-header">
-                <div class="wis-title" style="font-size:1rem;">Iniciativa</div>
+                <div class="combat-header-main">
+                    <h3 class="combat-header-title">Comando de Combate</h3>
+                    <p class="combat-header-sub" id="combatHeaderSub">Nenhum turno ativo.</p>
+                </div>
                 <button class="btn-icon" onclick="toggleCombatSidebar()"
                     style="background:none; border:none; color:#fff; cursor:pointer;">
                     <i data-lucide="x" size="18"></i>
@@ -1462,20 +2330,19 @@
             </div>
 
             <div class="wis-combat-list" id="combatList">
-                <div style="text-align:center; padding:20px; color:#555; font-size:0.8rem;">
+                <div class="combat-empty">
                     Adicione combatentes pela lista de NPCs
                 </div>
             </div>
 
             <div class="combat-dock">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <div style="font-size:0.7rem; color:#777;">ROUND <span id="combatRound">1</span></div>
-                    <button class="btn" onclick="nextTurn()" style="background:var(--primary); color:#fff; width:100%;">
+                <div class="combat-round-row">
+                    <div class="combat-round-pill">Round <span id="combatRound">1</span></div>
+                    <button class="btn btn-primary" onclick="nextTurn()" style="width:100%;">
                         Próximo Turno
                     </button>
                 </div>
-                <button class="btn" onclick="openConditionModal()"
-                    style="width:100%; background:#27272a; border:1px solid #333;">
+                <button class="btn" onclick="openConditionModal()" style="width:100%;">
                     <i data-lucide="zap" size="14"></i> Add Condição
                 </button>
                 <div style="display:flex; gap:5px;">
@@ -1487,6 +2354,50 @@
             </div>
         </div>
     </div>
+
+    <aside class="dice-dock" id="diceDock" aria-live="polite">
+        <section class="dice-card" id="diceAttackCard" style="display:none;">
+            <div class="dice-card-head">
+                <div class="dice-card-title" id="diceAttackTitle">Ataque</div>
+                <button class="dice-card-close" type="button" onclick="hideDiceCard('attack')" aria-label="Fechar card de ataque">
+                    <i data-lucide="x" size="16"></i>
+                </button>
+            </div>
+            <div class="dice-card-body">
+                <div class="dice-card-icon"><i data-lucide="hexagon" size="14"></i></div>
+                <div>
+                    <div class="dice-main-grid">
+                        <div class="dice-main-cell">
+                            <div class="dice-main-value" id="diceAttackHit">0</div>
+                            <div class="dice-main-label">Ataque</div>
+                        </div>
+                        <div class="dice-main-cell">
+                            <div class="dice-main-value" id="diceAttackDamage">0</div>
+                            <div class="dice-main-label">Dano</div>
+                        </div>
+                    </div>
+                    <div class="dice-meta" id="diceAttackMeta">Sem rolagens ainda.</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="dice-card" id="diceSkillCard" style="display:none;">
+            <div class="dice-card-head">
+                <div class="dice-card-title" id="diceSkillTitle">Pericia</div>
+                <button class="dice-card-close" type="button" onclick="hideDiceCard('skill')" aria-label="Fechar card de pericia">
+                    <i data-lucide="x" size="16"></i>
+                </button>
+            </div>
+            <div class="dice-card-body">
+                <div class="dice-card-icon"><i data-lucide="hexagon" size="14"></i></div>
+                <div class="dice-skill-grid">
+                    <div class="dice-meta" id="diceSkillExpr">[d20]</div>
+                    <div class="dice-skill-eq">=</div>
+                    <div class="dice-skill-total" id="diceSkillTotal">0</div>
+                </div>
+            </div>
+        </section>
+    </aside>
 
     <!-- MODALS -->
 
@@ -1960,6 +2871,7 @@
     <script src="js/bestiary_db.js"></script>
     <script src="js/auth_system.js"></script> <!-- Auth System -->
     <script src="js/npc_creator.js"></script>
+    <script src="js/dice-cosmetics.js?v=1.6.1"></script>
 
     <script>
         // Check Auth immediately
@@ -1981,6 +2893,9 @@
         } else {
             console.warn("Global: Lucide icons not available.");
         }
+        if (window.DiceCosmetics && typeof window.DiceCosmetics.init === 'function') {
+            window.DiceCosmetics.init();
+        }
 
         // --- STATE ---
         const urlParams = new URLSearchParams(window.location.search);
@@ -1994,6 +2909,692 @@
         let turnIndex = 0;
         let round = 1;
         let pendingCombatAdd = null; // { id, isPlayer, name, ... }
+
+        const CAMP_THEME_META = {
+            wisteria: { label: 'Wisteria', icon: 'flower-2' },
+            agua: { label: 'Agua', icon: 'waves' },
+            chama: { label: 'Chama', icon: 'flame' },
+            trovao: { label: 'Trovao', icon: 'zap' },
+            vento: { label: 'Vento', icon: 'wind' }
+        };
+        const CAMP_THEME_KEYS = Object.keys(CAMP_THEME_META);
+
+        function inferThemeFromId(id) {
+            const source = id || Date.now().toString();
+            let hash = 0;
+            for (let i = 0; i < source.length; i += 1) {
+                hash = source.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            return CAMP_THEME_KEYS[Math.abs(hash) % CAMP_THEME_KEYS.length];
+        }
+
+        function normalizeTheme(themeKey, fallbackId) {
+            if (themeKey && CAMP_THEME_META[themeKey]) return themeKey;
+            return inferThemeFromId(fallbackId);
+        }
+
+        function getCampaignThemeMeta() {
+            const key = normalizeTheme(currentCamp?.theme, currentCamp?.id || CAMP_ID);
+            return { key, ...CAMP_THEME_META[key] };
+        }
+
+        function getEntityEnergy(entity) {
+            const currentRaw = entity?.currentPE ?? entity?.currentBP ?? entity?.pe ?? 0;
+            const maxRaw = entity?.maxPE ?? entity?.maxBP ?? entity?.maxPe ?? currentRaw ?? 0;
+
+            const current = Number.isFinite(Number(currentRaw)) ? Number(currentRaw) : 0;
+            const max = Number.isFinite(Number(maxRaw)) ? Number(maxRaw) : 0;
+
+            return {
+                current: Math.max(0, current),
+                max: Math.max(1, max || current || 1)
+            };
+        }
+
+        function clampPct(current, max) {
+            if (!max || max <= 0) return 0;
+            return Math.max(0, Math.min(100, (current / max) * 100));
+        }
+
+        function getLifeState(hp, maxHP) {
+            if (hp <= 0) return { label: 'Caido', className: 'crit' };
+            const pct = clampPct(hp, maxHP);
+            if (pct <= 30) return { label: 'Critico', className: 'crit' };
+            if (pct <= 60) return { label: 'Ferido', className: 'warn' };
+            return { label: 'Estavel', className: 'ok' };
+        }
+
+        function updateCampaignShell() {
+            if (!currentCamp) return;
+
+            const { key, label, icon } = getCampaignThemeMeta();
+            document.body.setAttribute('data-theme', key);
+
+            const themeBadge = document.getElementById('sidebarThemeBadge');
+            if (themeBadge) {
+                themeBadge.innerHTML = `<i data-lucide="${icon}" size="12" aria-hidden="true"></i> ${label}`;
+            }
+
+            const nameEl = document.getElementById('sidebarCampaignName');
+            if (nameEl) nameEl.textContent = currentCamp.name || 'Campanha sem nome';
+
+            const subEl = document.getElementById('sidebarCampaignSub');
+            if (subEl) {
+                const dmName = currentCamp.dmName || 'Mestre';
+                const playerCount = (currentCamp.players || []).length;
+                subEl.textContent = `Mestre: ${dmName} • ${playerCount} jogador(es)`;
+            }
+
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons();
+            }
+        }
+
+        function updateCombatHeaderState() {
+            const sub = document.getElementById('combatHeaderSub');
+            if (!sub) return;
+            if (!combatItems.length) {
+                sub.textContent = 'Nenhum combatente na ordem.';
+                return;
+            }
+            const active = combatItems[Math.min(turnIndex, combatItems.length - 1)];
+            if (!active) {
+                sub.textContent = 'Ordem pronta para iniciar.';
+                return;
+            }
+            sub.textContent = `Turno: ${active.name} • Iniciativa ${active.init}`;
+        }
+
+        function escapeHtml(value) {
+            return String(value || '')
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#39;');
+        }
+
+        const TACTICAL_ROWS = 4;
+        const TACTICAL_COLS = 4;
+        let tacticalDragData = null;
+
+        function persistCurrentCampaignState() {
+            if (!currentCamp) return;
+            const list = window.CampaignSystem.getCampaigns();
+            const idx = list.findIndex(c => c.id === currentCamp.id);
+            if (idx === -1) return;
+            list[idx] = currentCamp;
+            window.CampaignSystem.saveCampaigns(list);
+        }
+
+        function getEntityFromKey(entityId, isPlayer) {
+            if (!currentCamp) return null;
+            if (isPlayer) {
+                return (currentCamp.players || []).find(p => p.charId === entityId) || null;
+            }
+            return (currentCamp.monsters || []).find(m => m.id === entityId) || null;
+        }
+
+        function tokenId(entityId, isPlayer) {
+            return `${isPlayer ? 'p' : 'm'}:${entityId}`;
+        }
+
+        function decodeTokenId(rawId) {
+            const [prefix, ...rest] = String(rawId || '').split(':');
+            return {
+                isPlayer: prefix === 'p',
+                entityId: rest.join(':')
+            };
+        }
+
+        function ensureTacticalBoardModel() {
+            if (!currentCamp) return;
+            let changed = false;
+
+            if (!currentCamp.tacticalBoard || typeof currentCamp.tacticalBoard !== 'object') {
+                currentCamp.tacticalBoard = {};
+                changed = true;
+            }
+
+            if (!currentCamp.tacticalBoard.grid || typeof currentCamp.tacticalBoard.grid !== 'object') {
+                currentCamp.tacticalBoard.grid = { rows: TACTICAL_ROWS, cols: TACTICAL_COLS };
+                changed = true;
+            } else {
+                if (currentCamp.tacticalBoard.grid.rows !== TACTICAL_ROWS) {
+                    currentCamp.tacticalBoard.grid.rows = TACTICAL_ROWS;
+                    changed = true;
+                }
+                if (currentCamp.tacticalBoard.grid.cols !== TACTICAL_COLS) {
+                    currentCamp.tacticalBoard.grid.cols = TACTICAL_COLS;
+                    changed = true;
+                }
+            }
+
+            if (!Array.isArray(currentCamp.tacticalBoard.tokens)) {
+                currentCamp.tacticalBoard.tokens = [];
+                changed = true;
+            }
+
+            if (!currentCamp.tacticalBoard.ui || typeof currentCamp.tacticalBoard.ui !== 'object') {
+                currentCamp.tacticalBoard.ui = { activeTokenId: null, selectedTokenId: null };
+                changed = true;
+            } else {
+                if (!Object.prototype.hasOwnProperty.call(currentCamp.tacticalBoard.ui, 'activeTokenId')) {
+                    currentCamp.tacticalBoard.ui.activeTokenId = null;
+                    changed = true;
+                }
+                if (!Object.prototype.hasOwnProperty.call(currentCamp.tacticalBoard.ui, 'selectedTokenId')) {
+                    currentCamp.tacticalBoard.ui.selectedTokenId = null;
+                    changed = true;
+                }
+            }
+
+            const normalized = normalizeTacticalTokens(currentCamp.tacticalBoard.tokens || []);
+            if (JSON.stringify(normalized) !== JSON.stringify(currentCamp.tacticalBoard.tokens || [])) {
+                currentCamp.tacticalBoard.tokens = normalized;
+                changed = true;
+            }
+
+            const selectedTokenId = currentCamp.tacticalBoard.ui.selectedTokenId || null;
+            if (selectedTokenId && !normalized.some(token => token.tokenId === selectedTokenId)) {
+                currentCamp.tacticalBoard.ui.selectedTokenId = null;
+                changed = true;
+            }
+
+            if (changed) persistCurrentCampaignState();
+        }
+
+        function normalizeTacticalTokens(tokens) {
+            const seenEntities = new Set();
+            const seenCells = new Set();
+            const normalized = [];
+
+            (tokens || []).forEach(token => {
+                if (!token || typeof token !== 'object') return;
+
+                const entityId = String(token.entityId || '').trim();
+                const isPlayer = Boolean(token.isPlayer);
+                const row = Number(token.row);
+                const col = Number(token.col);
+
+                if (!entityId) return;
+                if (!Number.isInteger(row) || !Number.isInteger(col)) return;
+                if (row < 0 || row >= TACTICAL_ROWS || col < 0 || col >= TACTICAL_COLS) return;
+                if (!getEntityFromKey(entityId, isPlayer)) return;
+
+                const id = tokenId(entityId, isPlayer);
+                const cell = `${row}:${col}`;
+                if (seenEntities.has(id)) return;
+                if (seenCells.has(cell)) return;
+
+                seenEntities.add(id);
+                seenCells.add(cell);
+                normalized.push({
+                    tokenId: id,
+                    entityId,
+                    isPlayer,
+                    row,
+                    col
+                });
+            });
+
+            return normalized;
+        }
+
+        function getBoardTokens() {
+            ensureTacticalBoardModel();
+            return currentCamp.tacticalBoard.tokens || [];
+        }
+
+        function persistBoardTokens(tokens, updateUi = true) {
+            ensureTacticalBoardModel();
+            const normalized = normalizeTacticalTokens(tokens);
+            currentCamp.tacticalBoard.tokens = normalized;
+            if (updateUi) {
+                const active = getActiveTurnCombatant();
+                currentCamp.tacticalBoard.ui.activeTokenId = active
+                    ? tokenId(active.id, active.isPlayer)
+                    : null;
+            }
+            const selectedTokenId = currentCamp.tacticalBoard.ui.selectedTokenId || null;
+            if (selectedTokenId && !normalized.some(token => token.tokenId === selectedTokenId)) {
+                currentCamp.tacticalBoard.ui.selectedTokenId = null;
+            }
+            persistCurrentCampaignState();
+        }
+
+        function getSelectedTokenId() {
+            ensureTacticalBoardModel();
+            return currentCamp.tacticalBoard.ui.selectedTokenId || null;
+        }
+
+        function setSelectedToken(tokenKey) {
+            ensureTacticalBoardModel();
+            currentCamp.tacticalBoard.ui.selectedTokenId = tokenKey || null;
+            persistCurrentCampaignState();
+        }
+
+        function onSidebarTokenDragStart(event, entityId, isPlayer) {
+            tacticalDragData = { entityId, isPlayer: Boolean(isPlayer), source: 'sidebar' };
+            event.dataTransfer.effectAllowed = 'move';
+            event.dataTransfer.setData('text/plain', JSON.stringify(tacticalDragData));
+        }
+
+        function onCombatTokenDragStart(event, entityId, isPlayer) {
+            tacticalDragData = { entityId, isPlayer: Boolean(isPlayer), source: 'combat' };
+            event.dataTransfer.effectAllowed = 'move';
+            event.dataTransfer.setData('text/plain', JSON.stringify(tacticalDragData));
+        }
+
+        function onBoardTokenDragStart(event, tokenKey) {
+            const decoded = decodeTokenId(tokenKey);
+            const current = getBoardTokens().find(t => t.tokenId === tokenKey);
+            tacticalDragData = {
+                entityId: decoded.entityId,
+                isPlayer: decoded.isPlayer,
+                source: 'board',
+                fromRow: current ? current.row : null,
+                fromCol: current ? current.col : null
+            };
+            event.dataTransfer.effectAllowed = 'move';
+            event.dataTransfer.setData('text/plain', JSON.stringify(tacticalDragData));
+        }
+
+        function allowBoardDrop(event) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'move';
+            const cell = event.currentTarget;
+            if (cell) cell.classList.add('drop-target');
+        }
+
+        function clearCellDropState(event) {
+            const cell = event.currentTarget;
+            if (cell) cell.classList.remove('drop-target');
+        }
+
+        function getTokenAtCell(tokens, row, col) {
+            return tokens.find(t => t.row === row && t.col === col) || null;
+        }
+
+        function placeOrMoveToken(entityId, isPlayer, row, col) {
+            const entity = getEntityFromKey(entityId, isPlayer);
+            if (!entity) return false;
+
+            const tokens = [...getBoardTokens()];
+            const id = tokenId(entityId, isPlayer);
+            const existing = tokens.find(t => t.tokenId === id);
+            const occupied = getTokenAtCell(tokens, row, col);
+
+            if (existing) {
+                if (occupied && occupied.tokenId !== existing.tokenId) {
+                    const prevRow = existing.row;
+                    const prevCol = existing.col;
+                    existing.row = row;
+                    existing.col = col;
+                    occupied.row = prevRow;
+                    occupied.col = prevCol;
+                } else {
+                    existing.row = row;
+                    existing.col = col;
+                }
+            } else {
+                if (occupied) return false;
+                tokens.push({
+                    tokenId: id,
+                    entityId,
+                    isPlayer,
+                    row,
+                    col
+                });
+            }
+
+            persistBoardTokens(tokens);
+            renderTacticalBoard();
+            return true;
+        }
+
+        function onBoardDrop(event, row, col) {
+            event.preventDefault();
+            const cell = event.currentTarget;
+            if (cell) cell.classList.remove('drop-target');
+
+            let payload = tacticalDragData;
+            if (!payload) {
+                try {
+                    payload = JSON.parse(event.dataTransfer.getData('text/plain'));
+                } catch (e) {
+                    payload = null;
+                }
+            }
+            tacticalDragData = null;
+            if (!payload) return;
+
+            const moved = placeOrMoveToken(payload.entityId, Boolean(payload.isPlayer), row, col);
+            if (!moved && payload.source !== 'board') {
+                showToast("Essa celula ja esta ocupada.");
+            }
+        }
+
+        function removeTokenFromBoard(tokenKey) {
+            const tokens = getBoardTokens().filter(t => t.tokenId !== tokenKey);
+            persistBoardTokens(tokens);
+            renderTacticalBoard();
+        }
+
+        function clearBoardTokens() {
+            persistBoardTokens([]);
+            renderTacticalBoard();
+            showToast("Tabuleiro limpo.");
+        }
+
+        function syncBoardTokenStatsForEntity(entityId, isPlayer) {
+            const tokens = getBoardTokens();
+            const key = tokenId(entityId, isPlayer);
+            if (!tokens.some(t => t.tokenId === key)) return;
+            persistBoardTokens(tokens, false);
+            renderTacticalBoard();
+        }
+
+        function getActiveTurnCombatant() {
+            if (!combatItems.length) return null;
+            const active = combatItems[Math.min(turnIndex, combatItems.length - 1)];
+            if (!active) return null;
+            return { id: active.id, isPlayer: Boolean(active.isPlayer), combat: active };
+        }
+
+        function getTokenForCombatant(combatant) {
+            if (!combatant) return null;
+            return getBoardTokens().find(t => t.tokenId === tokenId(combatant.id, combatant.isPlayer)) || null;
+        }
+
+        function getSelectedBoardToken() {
+            const selectedTokenId = getSelectedTokenId();
+            if (!selectedTokenId) return null;
+            return getBoardTokens().find(token => token.tokenId === selectedTokenId) || null;
+        }
+
+        function selectBoardToken(tokenKey) {
+            const token = getBoardTokens().find(item => item.tokenId === tokenKey);
+            if (!token) return;
+            setSelectedToken(token.tokenId);
+            renderTacticalBoard();
+        }
+
+        function clearSelectedBoardToken() {
+            if (!getSelectedTokenId()) return;
+            setSelectedToken(null);
+            renderTacticalBoard();
+        }
+
+        function openSelectedBoardTokenSheet() {
+            const token = getSelectedBoardToken();
+            if (!token) return showToast("Selecione um token no tabuleiro.");
+            selectEntity(token.entityId, token.isPlayer);
+        }
+
+        function renderTurnPanelEmpty(panel, message = "Clique em um token para ver detalhes e acoes rapidas.") {
+            panel.innerHTML = `
+                <div class="turn-panel-empty">
+                    <i data-lucide="user-round-search" size="18" aria-hidden="true"></i>
+                    <span>${escapeHtml(message)}</span>
+                </div>
+            `;
+            if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        }
+
+        function legacyBuildTurnTokenPanelContent(combatant, entity, tokenKey) {
+            const energy = getEntityEnergy(entity);
+            const attacks = Array.isArray(entity.attacks) ? entity.attacks.slice(0, 4) : [];
+            const attacksHtml = attacks.length > 0
+                ? attacks.map((atk, idx) => `
+                    <button class="turn-attack-btn" type="button" onclick="runTokenAttack('${tokenKey}', ${idx})">
+                        ${escapeHtml(atk.name || `Ataque ${idx + 1}`)}
+                    </button>
+                `).join('')
+                : `<div class="turn-attack-empty">Sem ataques cadastrados.</div>`;
+
+            return `
+                <h4 class="turn-panel-title">${escapeHtml(entity.name || combatant.combat.name || 'Combatente')}</h4>
+                <p class="turn-panel-sub">Turno ativo • Iniciativa ${combatant.combat.init}</p>
+                <div class="turn-panel-resources">
+                    <div class="turn-resource">HP<strong>${combatant.combat.hp}/${combatant.combat.maxHP}</strong></div>
+                    <div class="turn-resource">PE<strong>${combatant.combat.pe}/${combatant.combat.maxPE}</strong></div>
+                </div>
+                <div class="turn-attacks">${attacksHtml}</div>
+            `;
+        }
+
+        function legacyRenderTurnTokenPanel() {
+            const panel = document.getElementById('turnTokenPanel');
+            const shell = document.getElementById('tacticalBoardShell');
+            if (!panel || !shell) return;
+
+            const active = getActiveTurnCombatant();
+            if (!active) {
+                panel.classList.add('hidden');
+                return;
+            }
+
+            const token = getTokenForCombatant(active);
+            if (!token) {
+                panel.classList.add('hidden');
+                return;
+            }
+
+            const tokenEl = shell.querySelector(`.board-token[data-token-id="${token.tokenId}"]`);
+            const entity = getEntityFromKey(active.id, active.isPlayer);
+            if (!tokenEl || !entity) {
+                panel.classList.add('hidden');
+                return;
+            }
+
+            panel.innerHTML = buildTurnTokenPanelContent(active, entity, token.tokenId);
+            panel.classList.remove('hidden');
+
+            const shellRect = shell.getBoundingClientRect();
+            const tokenRect = tokenEl.getBoundingClientRect();
+            const panelRect = panel.getBoundingClientRect();
+
+            let left = tokenRect.right - shellRect.left + 8;
+            let top = tokenRect.top - shellRect.top;
+
+            if (left + panelRect.width > shellRect.width - 8) {
+                left = tokenRect.left - shellRect.left - panelRect.width - 8;
+            }
+            if (left < 8) left = 8;
+            if (top + panelRect.height > shellRect.height - 8) {
+                top = shellRect.height - panelRect.height - 8;
+            }
+            if (top < 8) top = 8;
+
+            panel.style.left = `${left}px`;
+            panel.style.top = `${top}px`;
+        }
+
+        function buildTurnTokenPanelContent(token, entity, activeTurn) {
+            const energy = getEntityEnergy(entity);
+            const linkedCombatant = combatItems.find(item =>
+                item.id === token.entityId && Boolean(item.isPlayer) === Boolean(token.isPlayer)
+            ) || null;
+            const hpCurrent = linkedCombatant ? linkedCombatant.hp : Number(entity.currentHP || 0);
+            const hpMax = linkedCombatant ? linkedCombatant.maxHP : Math.max(1, Number(entity.maxHP || 1));
+            const peCurrent = linkedCombatant ? linkedCombatant.pe : Number(energy.current || 0);
+            const peMax = linkedCombatant ? linkedCombatant.maxPE : Math.max(1, Number(energy.max || 1));
+            const tokenKey = token.tokenId;
+            const attacks = Array.isArray(entity.attacks) ? entity.attacks.slice(0, 4) : [];
+            const attacksHtml = attacks.length > 0
+                ? attacks.map((atk, idx) => `
+                    <button class="turn-attack-btn" type="button" onclick="runTokenAttack('${tokenKey}', ${idx})">
+                        ${escapeHtml(atk.name || `Ataque ${idx + 1}`)}
+                    </button>
+                `).join('')
+                : `<div class="turn-attack-empty">Sem ataques cadastrados.</div>`;
+            const isActiveTurn = activeTurn
+                && activeTurn.id === token.entityId
+                && Boolean(activeTurn.isPlayer) === Boolean(token.isPlayer);
+            const roleLabel = token.isPlayer ? 'Jogador' : 'Criatura';
+            const turnLabel = activeTurn
+                ? (isActiveTurn
+                    ? `Turno ativo • Iniciativa ${activeTurn.combat.init}`
+                    : `Turno atual: ${escapeHtml(activeTurn.combat.name)}`)
+                : 'Sem turno ativo.';
+            const avatar = entity.avatar || (token.isPlayer ? 'assets/default_slayer.png' : 'assets/default_oni.png');
+
+            return `
+                <div class="turn-panel-head">
+                    <img class="turn-panel-avatar" src="${avatar}" onerror="this.src='assets/default_slayer.png'" alt="">
+                    <div class="turn-panel-meta">
+                        <span class="turn-panel-chip">${roleLabel}</span>
+                        <h4 class="turn-panel-title">${escapeHtml(entity.name || 'Combatente')}</h4>
+                        <p class="turn-panel-sub">${turnLabel}</p>
+                    </div>
+                </div>
+                <div class="turn-panel-resources">
+                    <div class="turn-resource">HP<strong>${hpCurrent}/${hpMax}</strong></div>
+                    <div class="turn-resource">PE<strong>${peCurrent}/${peMax}</strong></div>
+                </div>
+                <div class="turn-attacks">${attacksHtml}</div>
+                <div class="turn-panel-actions">
+                    <button class="turn-panel-open-sheet" type="button" onclick="openSelectedBoardTokenSheet()">Abrir ficha completa</button>
+                    <button class="turn-panel-open-sheet" type="button" onclick="clearSelectedBoardToken()">Fechar</button>
+                </div>
+            `;
+        }
+
+        function renderTurnTokenPanel() {
+            const panel = document.getElementById('turnTokenPanel');
+            if (!panel || !currentCamp) return;
+
+            const token = getSelectedBoardToken();
+            if (!token) {
+                renderTurnPanelEmpty(panel);
+                panel.classList.remove('hidden');
+                return;
+            }
+
+            const entity = getEntityFromKey(token.entityId, token.isPlayer);
+            if (!entity) {
+                setSelectedToken(null);
+                renderTurnPanelEmpty(panel, "O token selecionado nao esta mais disponivel.");
+                panel.classList.remove('hidden');
+                return;
+            }
+
+            const activeTurn = getActiveTurnCombatant();
+            panel.innerHTML = buildTurnTokenPanelContent(token, entity, activeTurn);
+            panel.classList.remove('hidden');
+            if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        }
+
+        function renderTacticalBoard() {
+            const grid = document.getElementById('tacticalBoardGrid');
+            if (!grid || !currentCamp) return;
+            ensureTacticalBoardModel();
+            const tokens = getBoardTokens();
+
+            const activeTurn = getActiveTurnCombatant();
+            const activeKey = activeTurn ? tokenId(activeTurn.id, activeTurn.isPlayer) : null;
+            const selectedKey = getSelectedTokenId();
+
+            grid.innerHTML = '';
+            for (let row = 0; row < TACTICAL_ROWS; row += 1) {
+                for (let col = 0; col < TACTICAL_COLS; col += 1) {
+                    const cell = document.createElement('div');
+                    cell.className = 'board-cell';
+                    cell.dataset.row = String(row);
+                    cell.dataset.col = String(col);
+                    cell.addEventListener('dragover', allowBoardDrop);
+                    cell.addEventListener('dragleave', clearCellDropState);
+                    cell.addEventListener('drop', (event) => onBoardDrop(event, row, col));
+
+                    const token = getTokenAtCell(tokens, row, col);
+                    if (token) {
+                        const entity = getEntityFromKey(token.entityId, token.isPlayer);
+                        if (entity) {
+                            const hp = Number(entity.currentHP || 0);
+                            const maxHP = Math.max(1, Number(entity.maxHP || 1));
+                            const isCritical = clampPct(hp, maxHP) <= 30;
+                            const tokenEl = document.createElement('button');
+                            tokenEl.type = 'button';
+                            tokenEl.className = `board-token ${token.isPlayer ? 'player' : 'npc'} ${token.tokenId === activeKey ? 'active-turn' : ''} ${token.tokenId === selectedKey ? 'selected' : ''} ${isCritical ? 'critical' : ''}`;
+                            tokenEl.dataset.tokenId = token.tokenId;
+                            tokenEl.draggable = true;
+                            tokenEl.addEventListener('dragstart', (event) => onBoardTokenDragStart(event, token.tokenId));
+                            tokenEl.addEventListener('click', (event) => {
+                                event.stopPropagation();
+                                selectBoardToken(token.tokenId);
+                            });
+                            tokenEl.innerHTML = `
+                                <img class="board-token-avatar" src="${entity.avatar || (token.isPlayer ? 'assets/default_slayer.png' : 'assets/default_oni.png')}" onerror="this.src='assets/default_slayer.png'">
+                                <span class="board-token-name">${escapeHtml(entity.name || 'Token')}</span>
+                                <span class="board-token-hp">${hp}/${maxHP}</span>
+                            `;
+                            cell.appendChild(tokenEl);
+                        }
+                    }
+                    grid.appendChild(cell);
+                }
+            }
+
+            renderTurnTokenPanel();
+            if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        }
+
+        function focusActiveTurnToken() {
+            const active = getActiveTurnCombatant();
+            if (!active) return showToast("Nenhum turno ativo.");
+            const key = tokenId(active.id, active.isPlayer);
+            const token = document.querySelector(`.board-token[data-token-id="${key}"]`);
+            if (!token) return showToast("O turno ativo nao esta no tabuleiro.");
+            token.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+            token.animate(
+                [
+                    { transform: 'scale(1)' },
+                    { transform: 'scale(1.04)' },
+                    { transform: 'scale(1)' }
+                ],
+                { duration: 400, easing: 'ease-out' }
+            );
+        }
+
+        function runTokenAttack(rawTokenId, attackIndex) {
+            const decoded = decodeTokenId(rawTokenId);
+            activeEntityId = decoded.entityId;
+            rollActiveEntityAttack(attackIndex);
+        }
+
+        function showDiceAttackCard(data) {
+            const card = document.getElementById('diceAttackCard');
+            if (!card) return;
+            document.getElementById('diceAttackTitle').textContent = data.title || 'Ataque';
+            document.getElementById('diceAttackHit').textContent = String(data.hit ?? 0);
+            document.getElementById('diceAttackDamage').textContent = String(data.damage ?? 0);
+            document.getElementById('diceAttackMeta').textContent = data.meta || '';
+            card.style.display = 'block';
+            if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        }
+
+        function showDiceSkillCard(data) {
+            const card = document.getElementById('diceSkillCard');
+            if (!card) return;
+            document.getElementById('diceSkillTitle').textContent = data.title || 'Pericia';
+            document.getElementById('diceSkillExpr').textContent = data.expr || '[d20]';
+            document.getElementById('diceSkillTotal').textContent = String(data.total ?? 0);
+            card.style.display = 'block';
+            if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        }
+
+        function hideDiceCard(kind) {
+            if (kind === 'attack') {
+                const card = document.getElementById('diceAttackCard');
+                if (card) card.style.display = 'none';
+                return;
+            }
+            if (kind === 'skill') {
+                const card = document.getElementById('diceSkillCard');
+                if (card) card.style.display = 'none';
+            }
+        }
 
         // --- INIT ---
         // --- INIT ---
@@ -2050,6 +3651,9 @@
                 window.location.href = 'campaign-hub.html';
                 return;
             }
+            updateCampaignShell();
+            ensureTacticalBoardModel();
+            renderTacticalBoard();
             renderLogs();
         }
 
@@ -2076,6 +3680,7 @@
 
                 const players = currentCamp.players || [];
                 const monsters = currentCamp.monsters || [];
+                updateCampaignShell();
                 const folders = currentCamp.folders || ["Aliados", "Luas Superiores", "Onis Menores", "Aldeões"];
 
                 // 1. Players Section (Root Node)
@@ -2187,7 +3792,7 @@
             const clickDup = `event.stopPropagation(); duplicateEntity('${id}', ${isPlayer});`;
 
             return `
-                <div class="wis-tree-item ${activeEntityId === id ? 'selected' : ''}" onclick="${clickSelect}">
+                <div class="wis-tree-item ${activeEntityId === id ? 'selected' : ''}" draggable="true" ondragstart="onSidebarTokenDragStart(event, '${id}', ${isPlayer})" onclick="${clickSelect}">
                      <img src="${avatar}" class="wis-tree-item-avatar" onerror="this.src='https://via.placeholder.com/20'">
                      <span style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${name}</span>
                      ${!isPlayer ? `<span style="font-size:0.7rem; color:#555; margin-right:4px;">Lv.${level}</span>` : ''}
@@ -3131,13 +4736,16 @@
                 return;
             }
 
+            const energy = getEntityEnergy(entity);
             pendingCombatAdd = {
                 id: id,
                 isPlayer: isPlayer,
-                name: entity.name,
-                hp: entity.currentHP, // Copy vals
-                maxHP: entity.maxHP,
-                avatar: entity.avatar
+                name: entity.name || 'Combatente',
+                hp: Number(entity.currentHP || 0),
+                maxHP: Math.max(1, Number(entity.maxHP || 1)),
+                pe: energy.current,
+                maxPE: energy.max,
+                avatar: entity.avatar || (isPlayer ? 'assets/default_slayer.png' : 'assets/default_oni.png')
             };
 
             // Open Prompt
@@ -3153,7 +4761,22 @@
 
         function rollInitForPrompt() {
             const roll = Math.floor(Math.random() * 20) + 1;
-            document.getElementById('initInput').value = roll; // Ignore mod for quick roll logic
+            const applyRoll = () => {
+                document.getElementById('initInput').value = roll; // Ignore mod for quick roll logic
+            };
+            const visualShown = showCosmeticDiceThen({
+                type: 'initiative',
+                label: 'Iniciativa',
+                expr: `d20 (${roll})`,
+                result: roll,
+                rawRoll: roll,
+                isCrit: roll === 20,
+                isFail: roll === 1
+            }, applyRoll);
+
+            if (!visualShown) {
+                applyRoll();
+            }
         }
 
         function confirmAddToCombat() {
@@ -3176,13 +4799,10 @@
 
         function sortCombat() {
             combatItems.sort((a, b) => b.init - a.init);
-            // If active index affected, we should track by ID, but simple reset for now is acceptable or keep index?
-            // Usually sort happens before round start. If mid-round sort, index might point to wrong person.
-            // Let's keep it simple: sorting resets active turn if we aren't careful.
-            // For now, let's just re-render.
+            if (turnIndex >= combatItems.length) turnIndex = 0;
         }
 
-        function renderCombatList() {
+        function legacyRenderCombatList() {
             const list = document.getElementById('combatList');
             list.innerHTML = '';
 
@@ -3225,6 +4845,113 @@
             if (activeEl) activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
+        function legacyNextTurn() {
+            if (combatItems.length === 0) return;
+            turnIndex++;
+            if (turnIndex >= combatItems.length) {
+                turnIndex = 0;
+                round++;
+                document.getElementById('combatRound').innerText = round;
+                showToast(`Round ${round} Iniciado!`);
+            }
+            renderCombatList();
+        }
+
+        function legacyRemoveCombatant(index) {
+            combatItems.splice(index, 1);
+            if (turnIndex >= index && turnIndex > 0) turnIndex--;
+            renderCombatList();
+        }
+
+        function legacyClearCombat() {
+            if (!confirm("Limpar todo o combate?")) return;
+            combatItems = [];
+            turnIndex = 0;
+            round = 1;
+            renderCombatList();
+        }
+
+        // Override de UI de combate para layout premium (mantendo a mesma logica de fluxo).
+        function renderCombatList() {
+            const list = document.getElementById('combatList');
+            list.innerHTML = '';
+
+            if (combatItems.length === 0) {
+                list.innerHTML = `<div class="combat-empty">Sem combatentes na ordem.</div>`;
+                updateCombatHeaderState();
+                renderTacticalBoard();
+                return;
+            }
+
+            combatItems.forEach((c, i) => {
+                const isActive = (i === turnIndex);
+                const isDead = c.hp <= 0;
+                const hpPct = clampPct(Number(c.hp || 0), Number(c.maxHP || 1));
+                const pePct = clampPct(Number(c.pe || 0), Number(c.maxPE || 1));
+                const state = getLifeState(Number(c.hp || 0), Number(c.maxHP || 1));
+                const condHtml = (c.conditions || []).length > 0
+                    ? c.conditions.map(cond => `<span class="cond-tag">${escapeHtml(cond)}</span>`).join('')
+                    : `<span class="cond-tag muted">Sem status</span>`;
+
+                const html = `
+                <div class="combatant-card ${isActive ? 'active-turn' : ''}" 
+                     style="${isDead ? 'opacity:0.58; filter:saturate(0.45);' : ''}; cursor:pointer;"
+                     draggable="true"
+                     ondragstart="onCombatTokenDragStart(event, '${c.id}', ${c.isPlayer})"
+                     onclick="selectEntity('${c.id}', ${c.isPlayer})">
+                        <span class="turn-badge">${isActive ? 'Turno Ativo' : 'Na Ordem'}</span>
+                        <div class="combatant-init-box">
+                            <span class="init-val">${c.init}</span>
+                            <span class="init-label">INI</span>
+                        </div>
+                        <img class="combatant-avatar" src="${c.avatar || 'assets/default_slayer.png'}" onerror="this.src='assets/default_slayer.png'">
+                        <div class="combatant-info">
+                            <div class="combatant-top">
+                                <div class="combatant-name">${escapeHtml(c.name)}</div>
+                                <span class="combat-role-badge">${c.isPlayer ? 'Jogador' : 'Criatura'}</span>
+                            </div>
+                            <div class="combatant-meta">
+                                <span class="combatant-status ${state.className}">${state.label}</span>
+                                ${condHtml}
+                            </div>
+                            <div class="combatant-resource-row">
+                                <div class="combatant-resource">
+                                    <span>HP <strong>${c.hp}/${c.maxHP}</strong></span>
+                                    <div class="resource-track">
+                                        <span class="resource-fill hp" style="width:${hpPct}%;"></span>
+                                    </div>
+                                </div>
+                                <div class="combatant-resource">
+                                    <span>PE <strong>${c.pe}/${c.maxPE}</strong></span>
+                                    <div class="resource-track">
+                                        <span class="resource-fill pe" style="width:${pePct}%;"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="combatant-actions">
+                            <button class="combat-remove-btn" type="button" title="Remover da ordem" onclick="event.stopPropagation(); removeCombatant(${i})">
+                                <i data-lucide="x" size="14" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+            `;
+                list.insertAdjacentHTML('beforeend', html);
+            });
+
+            const activeEl = list.children[turnIndex];
+            if (activeEl) {
+                const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                activeEl.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'center' });
+            }
+
+            updateCombatHeaderState();
+            renderTacticalBoard();
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons();
+            }
+        }
+
         function nextTurn() {
             if (combatItems.length === 0) return;
             turnIndex++;
@@ -3240,6 +4967,7 @@
         function removeCombatant(index) {
             combatItems.splice(index, 1);
             if (turnIndex >= index && turnIndex > 0) turnIndex--;
+            if (combatItems.length === 0) round = 1;
             renderCombatList();
         }
 
@@ -3258,10 +4986,14 @@
 
         function deleteEntity(id, isPlayer) {
             if (!confirm("Tem certeza que deseja remover este entidade?")) return;
+            const key = tokenId(id, isPlayer);
+            const filtered = getBoardTokens().filter(t => t.tokenId !== key);
+            persistBoardTokens(filtered);
             window.CampaignSystem.removeEntity(CAMP_ID, id, !isPlayer);
             loadCampaignData();
             renderSidebar();
             closeSheet();
+            renderTacticalBoard();
             showToast("Removido com sucesso.");
         }
 
@@ -3294,6 +5026,8 @@
                     combatant.hp = ent.currentHP;
                     renderCombatList();
                 }
+
+                syncBoardTokenStatsForEntity(activeEntityId, isPlayer);
 
                 addLog(`${ent.name} HP ${amount > 0 ? '+' : ''}${amount} (${ent.currentHP}/${ent.maxHP})`, amount > 0 ? 'heal' : 'dmg');
             }
@@ -3344,6 +5078,8 @@
                     combatant.maxHP = ent.maxHP;
                     renderCombatList();
                 }
+
+                syncBoardTokenStatsForEntity(activeEntityId, isPlayer);
             }
         }
 
@@ -3883,18 +5619,40 @@
             if (m) m.style.display = 'none';
         }
 
+        function showCosmeticDiceThen(callbackData, onComplete) {
+            if (window.DiceCosmetics && typeof window.DiceCosmetics.showRoll === 'function') {
+                window.DiceCosmetics.showRoll(callbackData, { onComplete });
+                return true;
+            }
+            return false;
+        }
+
         // --- ROLL ACTIONS ---
 
         function rollSkill(skillName, bonus) {
             const d20 = Math.floor(Math.random() * 20) + 1;
             const total = d20 + bonus;
 
-            showCombatResult(skillName.toUpperCase(), {
+            const resultData = {
                 total: total,
                 expr: `d20 (${d20}) ${bonus >= 0 ? '+' : ''} ${bonus}`,
                 type: "PERÍCIA / ATRIBUTO",
                 isAttack: false
-            });
+            };
+
+            const visualShown = showCosmeticDiceThen({
+                type: 'skill',
+                label: skillName,
+                expr: resultData.expr,
+                result: total,
+                rawRoll: d20,
+                isCrit: d20 === 20,
+                isFail: d20 === 1
+            }, () => showCombatResult(skillName.toUpperCase(), resultData));
+
+            if (!visualShown) {
+                showCombatResult(skillName.toUpperCase(), resultData);
+            }
         }
 
         function rollActiveEntityAttack(index) {
@@ -3952,13 +5710,27 @@
             }
             fullExpr += `</div>`;
 
-            showCombatResult(atk.name, {
+            const resultData = {
                 total: totalDmg,
                 expr: fullExpr,
                 type: "DANO TOTAL",
                 isAttack: true,
                 hit: hitTotal
-            });
+            };
+
+            const visualShown = showCosmeticDiceThen({
+                type: 'attack',
+                label: atk.name,
+                expr: `Acerto d20: ${d20} (+${bonus}) | Dano total: ${totalDmg}`,
+                result: totalDmg,
+                rawRoll: d20,
+                isCrit: isCrit,
+                isFail: d20 === 1
+            }, () => showCombatResult(atk.name, resultData));
+
+            if (!visualShown) {
+                showCombatResult(atk.name, resultData);
+            }
         }
     </script>
     <!-- ATTACK MODAL (Ported from Dashboard) -->

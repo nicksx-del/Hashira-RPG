@@ -86,6 +86,9 @@ function loadHuman() {
 function initDashboard() {
     loadHuman();
     console.log("DASHBOARD INIT - Human Loaded:", humanData);
+    if (window.DiceCosmetics && typeof window.DiceCosmetics.init === 'function') {
+        window.DiceCosmetics.init();
+    }
 
     // TUTORIAL CHECK (Top Priority)
     // If never seen tutorial OR (proficiencies are few and not marked complete)
@@ -814,6 +817,22 @@ function applyLevelUp(lvl, hpGain) {
 }
 
 function showLevelUpDice(rolls, conTotal, totalGain, lvl) {
+    if (window.DiceCosmetics && typeof window.DiceCosmetics.showRoll === 'function') {
+        const raw = rolls.reduce((acc, value) => acc + value, 0);
+        window.DiceCosmetics.showRoll({
+            type: 'levelup',
+            label: `Nivel ${lvl} alcancado`,
+            expr: `Dados [${rolls.join(', ')}] | CON +${conTotal}`,
+            result: totalGain,
+            rawRoll: raw,
+            isCrit: true,
+            isFail: false
+        }, {
+            onComplete: () => applyLevelUp(lvl, totalGain)
+        });
+        return;
+    }
+
     const overlay = document.getElementById('diceOverlay');
     const diceDiv = document.getElementById('diceElement');
     const resDisplay = document.getElementById('diceResultDisplay');
@@ -893,6 +912,21 @@ window.closeDiceOverlay = function () {
 };
 
 function showAttackDice(name, rollData) {
+    if (window.DiceCosmetics && typeof window.DiceCosmetics.showRoll === 'function') {
+        window.DiceCosmetics.showRoll({
+            type: 'attack',
+            label: name,
+            expr: `Acerto d20: ${rollData.hit} | Total dano: ${rollData.total}`,
+            result: rollData.total,
+            rawRoll: rollData.rawDie || rollData.hit,
+            isCrit: !!rollData.isCrit,
+            isFail: (rollData.rawDie || rollData.hit) === 1
+        }, {
+            onComplete: () => showCombatResult(name, rollData)
+        });
+        return;
+    }
+
     const overlay = document.getElementById('diceOverlay');
     const diceDiv = document.getElementById('diceElement');
     const resDisplay = document.getElementById('diceResultDisplay');
@@ -1728,11 +1762,28 @@ function rollCheck(label, mod) {
     const d20 = Math.floor(Math.random() * 20) + 1;
     const total = d20 + mod;
 
-    showCombatResult(label, {
+    const resultData = {
         total: total,
         expr: `d20 (${d20}) ${mod >= 0 ? '+' : ''} ${mod}`,
         isAttack: false
-    });
+    };
+
+    if (window.DiceCosmetics && typeof window.DiceCosmetics.showRoll === 'function') {
+        window.DiceCosmetics.showRoll({
+            type: 'skill',
+            label,
+            expr: resultData.expr,
+            result: total,
+            rawRoll: d20,
+            isCrit: d20 === 20,
+            isFail: d20 === 1
+        }, {
+            onComplete: () => showCombatResult(label, resultData)
+        });
+        return;
+    }
+
+    showCombatResult(label, resultData);
 }
 
 // --- NEW PROFICIENCY LOGIC ---
@@ -2260,6 +2311,20 @@ function useBreathing(cost, name, damage) {
 
     // Parse & Roll
     const rollData = parseAndRoll(damage);
+    if (window.DiceCosmetics && typeof window.DiceCosmetics.showRoll === 'function') {
+        window.DiceCosmetics.showRoll({
+            type: 'damage',
+            label: name,
+            expr: rollData.expr,
+            result: rollData.total,
+            rawRoll: rollData.total,
+            isCrit: false,
+            isFail: false
+        }, {
+            onComplete: () => showCombatResult(name, rollData)
+        });
+        return;
+    }
     showCombatResult(name, rollData);
 }
 

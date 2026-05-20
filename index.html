@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="dark" lang="pt-BR">
+<html lang="pt-BR">
 
 <head>
     <meta charset="utf-8" />
@@ -7,311 +7,664 @@
     <title>Manual do Hashira</title>
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;700;900&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Outfit:wght@400;500;700;800&display=swap"
         rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
         rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#df3737",
-                        "primary-dark": "#b05d0e",
-                        "accent-red": "#b91c1c",
-                        "background-light": "#f8f6f6",
-                        "background-dark": "#201212",
-                        "surface-dark": "#2d2216",
-                        "surface-darker": "#1a120b"
-                    },
-                    fontFamily: {
-                        display: "Inter",
-                        serif: ["Noto Serif JP", "serif"]
-                    },
-                    backgroundImage: {
-                        asanoha: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ec7f13' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
-                        seigaiha: "url(\"data:image/svg+xml,%3Csvg width='20' height='12' viewBox='0 0 20 12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M9.8 12c0-5.52 4.48-10 10-10s10 4.48 10 10h-2c0-4.42-3.58-8-8-8s-8 3.58-8 8h-2zM.2 12c0-5.52 4.48-10 10-10s10 4.48 10 10h-2c0-4.42-3.58-8-8-8s-8 3.58-8 8h-2z' fill='%23ec7f13' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E\")"
-                    },
-                    borderRadius: {
-                        DEFAULT: "1rem",
-                        lg: "2rem",
-                        xl: "3rem",
-                        full: "9999px"
-                    }
-                }
-            }
-        };
-    </script>
     <style>
-        ::-webkit-scrollbar {
-            width: 8px;
+        :root {
+            --bg-main: #08080a;
+            --bg-soft: #131318;
+            --panel: rgba(15, 15, 18, 0.72);
+            --panel-border: rgba(255, 255, 255, 0.12);
+            --txt-main: #f5f5f7;
+            --txt-dim: #b4b4bd;
+            --accent-main: #ef4444;
+            --accent-alt: #f59e0b;
+            --accent-cyan: #0ea5e9;
+            --radius: 14px;
         }
 
-        ::-webkit-scrollbar-track {
-            background: #221910;
+        * {
+            box-sizing: border-box;
         }
 
-        ::-webkit-scrollbar-thumb {
-            background: #483623;
-            border-radius: 4px;
+        html {
+            scroll-behavior: smooth;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: #ec7f13;
+        body {
+            margin: 0;
+            font-family: "Outfit", sans-serif;
+            color: var(--txt-main);
+            background: radial-gradient(circle at 15% 15%, rgba(239, 68, 68, 0.14), transparent 32%),
+                radial-gradient(circle at 85% 10%, rgba(14, 165, 233, 0.12), transparent 34%),
+                linear-gradient(180deg, #070709 0%, #0c0c10 52%, #070709 100%);
+            min-height: 100vh;
         }
 
-        .glow-hover:hover {
-            box-shadow: 0 0 20px rgba(236, 127, 19, 0.2);
-            border-color: #ec7f13;
+        a {
+            color: inherit;
+            text-decoration: none;
         }
 
-        .text-shadow-sm {
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        img {
+            display: block;
+            max-width: 100%;
         }
 
-        @media (max-width: 768px) {
-            .mobile-stack {
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            backdrop-filter: blur(14px);
+            background: rgba(8, 8, 10, 0.86);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .container {
+            width: min(1200px, calc(100% - 2rem));
+            margin-inline: auto;
+        }
+
+        .header-wrap {
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            min-width: 0;
+        }
+
+        .brand-badge {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            border: 1px solid rgba(239, 68, 68, 0.55);
+            background: linear-gradient(145deg, rgba(239, 68, 68, 0.2), rgba(15, 15, 18, 0.3));
+            display: grid;
+            place-items: center;
+            color: #fca5a5;
+            flex: 0 0 auto;
+        }
+
+        .brand-title {
+            font-family: "Cinzel", serif;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            white-space: nowrap;
+        }
+
+        .main-nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .main-nav a {
+            color: var(--txt-dim);
+            font-size: 0.93rem;
+            padding: 0.3rem 0.2rem;
+            transition: color 0.2s ease;
+        }
+
+        .main-nav a:hover,
+        .main-nav a:focus-visible {
+            color: #fff;
+            outline: none;
+        }
+
+        .cta-top {
+            border: 1px solid rgba(239, 68, 68, 0.45);
+            padding: 0.48rem 0.95rem;
+            border-radius: 999px;
+            font-weight: 700;
+            color: #ffd8d8;
+            background: rgba(239, 68, 68, 0.12);
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--panel-border);
+            border-radius: 22px;
+            margin-top: 1.3rem;
+            min-height: 540px;
+            display: grid;
+            grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+            align-items: stretch;
+            background: linear-gradient(90deg, rgba(5, 5, 7, 0.96) 0%, rgba(5, 5, 7, 0.85) 45%, rgba(5, 5, 7, 0.58) 100%);
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(120deg, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.58) 40%, rgba(0, 0, 0, 0.28) 100%),
+                url('assets/backgrounds/bg_selvagem.png');
+            background-size: cover;
+            background-position: center;
+            transform: scale(1.03);
+            animation: heroZoom 12s ease-out 1 both;
+        }
+
+        @keyframes heroZoom {
+            from {
+                transform: scale(1.12);
+            }
+
+            to {
+                transform: scale(1.03);
+            }
+        }
+
+        .hero-copy,
+        .hero-side {
+            position: relative;
+            z-index: 1;
+            padding: 2.5rem;
+        }
+
+        .hero-copy {
+            align-self: center;
+            animation: fadeUp 0.75s ease-out both;
+        }
+
+        .hero-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.35rem 0.8rem;
+            border-radius: 999px;
+            border: 1px solid rgba(245, 158, 11, 0.45);
+            color: #fde68a;
+            background: rgba(245, 158, 11, 0.14);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 1rem 0 0.8rem;
+            font-family: "Cinzel", serif;
+            font-size: clamp(2rem, 4.8vw, 3.6rem);
+            line-height: 1.08;
+            letter-spacing: 0.01em;
+        }
+
+        .hero-highlight {
+            color: #fca5a5;
+        }
+
+        .hero-copy p {
+            margin: 0;
+            color: var(--txt-dim);
+            font-size: 1.03rem;
+            line-height: 1.58;
+            max-width: 53ch;
+        }
+
+        .hero-actions {
+            margin-top: 1.6rem;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.75rem;
+        }
+
+        .hero-btn {
+            min-height: 54px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .hero-btn:hover,
+        .hero-btn:focus-visible {
+            transform: translateY(-2px);
+            outline: none;
+        }
+
+        .hero-btn.player {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+            box-shadow: 0 8px 26px rgba(185, 28, 28, 0.36);
+        }
+
+        .hero-btn.create {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.28);
+        }
+
+        .hero-btn.dm {
+            background: rgba(14, 165, 233, 0.16);
+            border-color: rgba(14, 165, 233, 0.55);
+            color: #d0f0ff;
+        }
+
+        .hero-side {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-end;
+            gap: 1rem;
+            animation: fadeUp 0.9s ease-out both;
+        }
+
+        .hero-figure {
+            width: min(100%, 420px);
+            object-fit: contain;
+            filter: drop-shadow(0 20px 38px rgba(0, 0, 0, 0.75));
+        }
+
+        .hero-metrics {
+            width: min(100%, 390px);
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.6rem;
+        }
+
+        .metric {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: var(--panel);
+            backdrop-filter: blur(8px);
+            border-radius: 10px;
+            padding: 0.75rem;
+            text-align: center;
+        }
+
+        .metric strong {
+            display: block;
+            font-size: 1.25rem;
+            margin-bottom: 0.12rem;
+        }
+
+        .metric span {
+            font-size: 0.74rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--txt-dim);
+        }
+
+        .section {
+            padding: 2.2rem 0 0;
+        }
+
+        .section h2 {
+            margin: 0;
+            font-family: "Cinzel", serif;
+            font-size: clamp(1.4rem, 3.2vw, 2rem);
+            letter-spacing: 0.03em;
+        }
+
+        .section p {
+            margin: 0.6rem 0 1.2rem;
+            color: var(--txt-dim);
+            max-width: 70ch;
+        }
+
+        .shortcut-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .shortcut-card {
+            position: relative;
+            isolation: isolate;
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--panel-border);
+            min-height: 190px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .shortcut-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -2;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .shortcut-card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background: linear-gradient(160deg, rgba(0, 0, 0, 0.22) 0%, rgba(0, 0, 0, 0.86) 72%);
+        }
+
+        .shortcut-card:hover,
+        .shortcut-card:focus-visible {
+            transform: translateY(-4px);
+            border-color: rgba(245, 158, 11, 0.46);
+            box-shadow: 0 18px 30px rgba(0, 0, 0, 0.4);
+            outline: none;
+        }
+
+        .shortcut-card h3 {
+            margin: 0;
+            font-size: 1.22rem;
+            font-family: "Cinzel", serif;
+        }
+
+        .shortcut-card p {
+            margin: 0.45rem 0 0;
+            font-size: 0.92rem;
+            color: #d7d7dd;
+            line-height: 1.45;
+        }
+
+        .shortcut-player::before {
+            background-image: url('assets/backgrounds/bg_ninja.png');
+        }
+
+        .shortcut-create::before {
+            background-image: url('assets/backgrounds/bg_ferreiro.png');
+        }
+
+        .shortcut-rules::before {
+            background-image: url('assets/backgrounds/bg_estudioso.png');
+        }
+
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 0.9rem;
+        }
+
+        .rule-card {
+            background: rgba(17, 17, 22, 0.72);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 0.95rem;
+            min-height: 160px;
+        }
+
+        .rule-card .material-symbols-outlined {
+            color: #fca5a5;
+            font-size: 1.45rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .rule-card h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .rule-card p {
+            margin: 0.45rem 0 0;
+            font-size: 0.86rem;
+            color: var(--txt-dim);
+        }
+
+        .site-footer {
+            margin-top: 2.4rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 1.2rem 0 2rem;
+        }
+
+        .footer-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-wrap small {
+            color: #9898a3;
+            font-size: 0.78rem;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+
+        .footer-links a {
+            color: #c8c8d0;
+            font-size: 0.86rem;
+        }
+
+        .footer-links a:hover,
+        .footer-links a:focus-visible {
+            color: #fff;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .hero {
+                grid-template-columns: 1fr;
+                min-height: auto;
+            }
+
+            .hero-copy,
+            .hero-side {
+                padding: 1.4rem;
+            }
+
+            .hero-side {
+                align-items: flex-start;
+                padding-top: 0;
+            }
+
+            .hero-figure {
+                width: min(78vw, 360px);
+            }
+
+            .hero-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .shortcut-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .rules-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 760px) {
+            .header-wrap {
+                height: auto;
+                padding: 0.9rem 0;
+                align-items: flex-start;
                 flex-direction: column;
             }
 
-            .mobile-grid-2 {
-                grid-template-columns: repeat(2, 1fr);
+            .main-nav {
+                width: 100%;
+                justify-content: flex-start;
+                gap: 0.85rem 1rem;
+            }
+
+            .main-nav a {
+                font-size: 0.9rem;
+            }
+
+            .cta-top {
+                padding: 0.42rem 0.75rem;
+            }
+
+            .rules-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-metrics {
+                width: 100%;
             }
         }
     </style>
 </head>
 
-<body
-    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex flex-col antialiased">
-    <header class="sticky top-0 z-50 w-full border-b border-[#483623] bg-background-dark/95 backdrop-blur-md">
-        <div class="px-4 h-16 flex items-center justify-between max-w-7xl mx-auto">
-            <div class="flex items-center gap-3">
-                <button class="md:hidden text-white hover:text-primary transition-colors">
-                    <span class="material-symbols-outlined text-3xl">menu</span>
-                </button>
-                <a class="flex items-center gap-2 text-white hover:text-primary transition-colors duration-300 group"
-                    href="index.html">
-                    <div
-                        class="relative flex items-center justify-center size-8 bg-surface-dark rounded border border-primary/30 group-hover:border-primary/80 transition-all">
-                        <span class="material-symbols-outlined text-primary text-lg">landscape</span>
-                    </div>
-                    <h2
-                        class="font-serif text-lg font-bold tracking-tight text-white group-hover:text-primary transition-colors">
-                        Manual do Hashira</h2>
-                </a>
-                <nav class="hidden md:flex items-center gap-8 pl-4">
-                    <a class="text-slate-300 text-sm font-medium hover:text-white relative group py-2"
-                        href="index.html">
-                        Home
-                        <span
-                            class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
-                    </a>
-                    <a class="text-slate-300 text-sm font-medium hover:text-white relative group py-2"
-                        href="characters.html">
-                        Personagens
-                        <span
-                            class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
-                    </a>
-                    <a class="text-slate-300 text-sm font-medium hover:text-white relative group py-2"
-                        href="campaign-hub.html">
-                        Campanhas
-                        <span
-                            class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
-                    </a>
-                </nav>
-            </div>
-            <div class="flex items-center gap-3">
-                <button class="md:hidden text-slate-300 hover:text-white">
-                    <span class="material-symbols-outlined">search</span>
-                </button>
-                <div
-                    class="hidden md:flex items-center w-64 h-10 bg-surface-dark rounded-full border border-[#483623] focus-within:border-primary/50 transition-colors overflow-hidden">
-                    <span class="material-symbols-outlined text-slate-400 pl-3 text-[20px]">search</span>
-                    <input
-                        class="w-full bg-transparent border-none text-sm text-white placeholder-slate-400 focus:ring-0 h-full py-0"
-                        placeholder="Pesquisar magias, feitos..." type="text" />
-                </div>
-                <button class="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                    <div class="size-8 rounded-full bg-surface-dark border border-[#483623] overflow-hidden">
-                        <img alt="User Avatar" class="w-full h-full object-cover"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1qWktAUgNpSvRBGlWq3f-7DFdrM5FfvwHds1LpVUShUuD03YvohAzP2-pAVZ1XnawZ9G4nneVGqXY1QMguknWyYhH2UnKsqnnyiLCYKTBP9chuyMPJdfbSAOe51kkQwKrsjcXrwv8Tl_iuOsNEgt8UL_gVLIC9BVxFVK5EdiHS0AC6E0IGAN8wQAXsrrEP3gmLFljD7Zu_37_SOU6nv_jUox1dtjgLCxybt7zbwfBmpqPPiN4-N4MKIgPjNZqBlcdHWE-DQIZJaM" />
-                    </div>
-                </button>
-            </div>
+<body>
+    <header class="site-header" id="topo">
+        <div class="container header-wrap">
+            <a class="brand" href="index.html" aria-label="Manual do Hashira">
+                <span class="brand-badge material-symbols-outlined">swords</span>
+                <span class="brand-title">Manual do Hashira</span>
+            </a>
+
+            <nav class="main-nav" aria-label="Navegacao principal">
+                <a href="index.html">Inicio</a>
+                <a href="characters.html">Jogador</a>
+                <a href="campaign-hub.html">Mestre</a>
+                <a href="index.html#regras-rapidas">Regras</a>
+                <a class="cta-top" href="create-character.html">Criar Ficha</a>
+            </nav>
         </div>
     </header>
-    <main class="flex-1 w-full bg-asanoha bg-fixed">
-        <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col gap-8">
-            <div class="relative w-full overflow-hidden rounded-2xl border border-[#483623] shadow-2xl group">
-                <div class="absolute inset-0 bg-cover bg-center"
-                    style="background-image: url('assets/ui/hero_bg.png');"></div>
-                <div
-                    class="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/60 to-transparent">
+
+    <main class="container">
+        <section class="hero" aria-label="Abertura principal">
+            <div class="hero-bg" aria-hidden="true"></div>
+
+            <div class="hero-copy">
+                <span class="hero-kicker">
+                    <span class="material-symbols-outlined">auto_stories</span>
+                    hashira handbook
+                </span>
+                <h1>
+                    A sua campanha comeca aqui.
+                    <span class="hero-highlight">Entre no mundo dos hashiras.</span>
+                </h1>
+                <p>
+                    Monte sua ficha em poucos passos, acompanhe vida e energia durante a sessao e deixe o mestre
+                    controlar o combate com visao completa da mesa.
+                </p>
+
+                <div class="hero-actions">
+                    <a class="hero-btn player" href="characters.html">
+                        <span class="material-symbols-outlined">person</span>
+                        Sou Jogador
+                    </a>
+                    <a class="hero-btn create" href="create-character.html">
+                        <span class="material-symbols-outlined">draw</span>
+                        Criar Ficha
+                    </a>
+                    <a class="hero-btn dm" href="campaign-hub.html">
+                        <span class="material-symbols-outlined">shield_person</span>
+                        Sou Mestre
+                    </a>
                 </div>
-                <div class="relative z-10 flex flex-col justify-end min-h-[420px] p-6">
-                    <div class="flex flex-wrap items-center gap-2 mb-4">
-                        <span
-                            class="px-2 py-0.5 bg-accent-red/20 text-accent-red border border-accent-red/30 rounded-full text-[10px] font-bold uppercase tracking-wider">Acesso
-                            Antecipado</span>
-                        <span
-                            class="px-2 py-0.5 bg-primary/20 text-primary border border-primary/30 rounded-full text-[10px] font-bold uppercase tracking-wider">v1.2</span>
+            </div>
+
+            <div class="hero-side">
+                <img class="hero-figure" src="assets/Tanjirou_manga.png"
+                    alt="Ilustracao de personagem do universo Demon Slayer" />
+                <div class="hero-metrics" aria-label="Resumo rapido do sistema">
+                    <div class="metric">
+                        <strong>5</strong>
+                        <span>Slots</span>
                     </div>
-                    <h1 class="font-serif text-3xl font-black text-white leading-tight mb-3 text-shadow-sm">
-                        Forje sua Lenda.<br />
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-300">Torne-se
-                            um Hashira.</span>
-                    </h1>
-                    <p class="text-slate-300 text-sm font-light mb-6 leading-relaxed">
-                        O sistema definitivo de RPG de mesa compatível com 5e, inspirado no mundo de Demon Slayer.
-                        Domine as técnicas de respiração e cace na noite.
-                    </p>
-                    <div class="flex flex-col gap-3 w-full">
-                        <a href="characters.html"
-                            class="flex items-center justify-center gap-2 h-12 w-full bg-primary hover:bg-primary-dark text-background-dark font-bold rounded-lg transition-all shadow-[0_0_15px_rgba(236,127,19,0.3)]">
-                            <span class="material-symbols-outlined text-[20px]">swords</span>
-                            Começar a Jogar
-                        </a>
-                        <a href="#"
-                            class="flex items-center justify-center gap-2 h-12 w-full bg-surface-dark/50 hover:bg-surface-dark border border-white/20 hover:border-white text-white font-medium rounded-lg backdrop-blur-sm transition-all">
-                            <span class="material-symbols-outlined text-[20px]">menu_book</span>
-                            Ler o Guia
-                        </a>
+                    <div class="metric">
+                        <strong>HP/PE</strong>
+                        <span>Controle</span>
+                    </div>
+                    <div class="metric">
+                        <strong>DM</strong>
+                        <span>Combate</span>
                     </div>
                 </div>
             </div>
-            <section class="flex flex-col gap-4">
-                <a class="group relative overflow-hidden rounded-xl bg-surface-dark border border-[#483623] hover:border-primary transition-all duration-300 glow-hover"
-                    href="create-character.html">
-                    <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent z-10"></div>
-                    <div class="h-32 w-full bg-cover bg-center"
-                        style="background-image: url('assets/ui/card_creator.png')"></div>
-                    <div class="absolute inset-0 flex flex-col justify-center p-5 z-20">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="material-symbols-outlined text-primary text-base">edit_square</span>
-                            <span class="text-primary text-[10px] font-bold uppercase tracking-wider">CRIADOR</span>
-                        </div>
-                        <h3 class="font-serif text-xl font-bold text-white mb-1">Sopro da Criação</h3>
-                        <p class="text-slate-400 text-xs line-clamp-1 w-3/4">Crie seu caçador do zero com ferramentas
-                            customizadas.</p>
-                    </div>
+        </section>
+
+        <section class="section" aria-label="Atalhos principais">
+            <h2>Atalhos Rapidos</h2>
+            <p>
+                Use os caminhos abaixo para abrir o fluxo correto sem perder tempo.
+            </p>
+
+            <div class="shortcut-grid">
+                <a class="shortcut-card shortcut-player" href="characters.html">
+                    <h3>Atalho Jogador</h3>
+                    <p>Abra suas fichas, escolha um personagem e entre direto no painel.</p>
                 </a>
-                <a class="group relative overflow-hidden rounded-xl bg-surface-dark border border-[#483623] hover:border-primary transition-all duration-300 glow-hover"
-                    href="#">
-                    <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent z-10"></div>
-                    <div class="h-32 w-full bg-cover bg-center"
-                        style="background-image: url('assets/ui/card_compendium.png')"></div>
-                    <div class="absolute inset-0 flex flex-col justify-center p-5 z-20">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="material-symbols-outlined text-primary text-base">auto_stories</span>
-                            <span class="text-primary text-[10px] font-bold uppercase tracking-wider">COMPÊNDIO</span>
-                        </div>
-                        <h3 class="font-serif text-xl font-bold text-white mb-1">Arquivos do Caçador</h3>
-                        <p class="text-slate-400 text-xs line-clamp-1 w-3/4">Enciclopédia de formas, onis e itens.</p>
-                    </div>
+                <a class="shortcut-card shortcut-create" href="create-character.html">
+                    <h3>Atalho Criar Ficha</h3>
+                    <p>Comece uma ficha nova e deixe os atributos prontos para a sessao.</p>
                 </a>
-                <a class="group relative overflow-hidden rounded-xl bg-surface-dark border border-[#483623] hover:border-primary transition-all duration-300 glow-hover"
-                    href="#">
-                    <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent z-10"></div>
-                    <div class="h-32 w-full bg-cover bg-center"
-                        style="background-image: url('assets/ui/card_rules.png')"></div>
-                    <div class="absolute inset-0 flex flex-col justify-center p-5 z-20">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="material-symbols-outlined text-primary text-base">gavel</span>
-                            <span class="text-primary text-[10px] font-bold uppercase tracking-wider">REGRAS</span>
-                        </div>
-                        <h3 class="font-serif text-xl font-bold text-white mb-1">Código do Esquadrão</h3>
-                        <p class="text-slate-400 text-xs line-clamp-1 w-3/4">Mecânicas de combate e sobrevivência.</p>
-                    </div>
+                <a class="shortcut-card shortcut-rules" href="index.html#regras-rapidas">
+                    <h3>Atalho Regras</h3>
+                    <p>Veja o resumo essencial de uso da mesa e do fluxo de combate.</p>
                 </a>
-            </section>
-            <section class="bg-surface-darker border border-[#483623] rounded-2xl p-6 relative overflow-hidden">
-                <div
-                    class="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2">
-                </div>
-                <div class="relative z-10">
-                    <h2 class="font-serif text-2xl font-bold text-white mb-2">Sistema em um Relance</h2>
-                    <p class="text-slate-300 text-sm leading-relaxed mb-6">
-                        Adaptando o maior jogo de RPG do mundo para a era Taisho. Mecânicas familiares da 5e com
-                        sistemas únicos.
-                    </p>
-                    <div class="grid grid-cols-2 gap-3 mb-8 mobile-grid-2">
-                        <div class="flex flex-col gap-2 p-3 rounded-lg bg-surface-dark border border-[#483623]">
-                            <span class="material-symbols-outlined text-primary text-2xl">casino</span>
-                            <div>
-                                <h4 class="text-white font-bold text-xs">Compatível com 5e</h4>
-                                <p class="text-slate-400 text-[10px] mt-0.5 leading-tight">Rolagens d20 padrão</p>
-                            </div>
-                        </div>
-                        <div class="flex flex-col gap-2 p-3 rounded-lg bg-surface-dark border border-[#483623]">
-                            <span class="material-symbols-outlined text-primary text-2xl">wind_power</span>
-                            <div>
-                                <h4 class="text-white font-bold text-xs">Estilos de Respiração</h4>
-                                <p class="text-slate-400 text-[10px] mt-0.5 leading-tight">Vigor no lugar de magia</p>
-                            </div>
-                        </div>
-                        <div class="flex flex-col gap-2 p-3 rounded-lg bg-surface-dark border border-[#483623]">
-                            <span class="material-symbols-outlined text-accent-red text-2xl">water_drop</span>
-                            <div>
-                                <h4 class="text-white font-bold text-xs">Arte de Sangue</h4>
-                                <p class="text-slate-400 text-[10px] mt-0.5 leading-tight">Poderes de Oni</p>
-                            </div>
-                        </div>
-                        <div class="flex flex-col gap-2 p-3 rounded-lg bg-surface-dark border border-[#483623]">
-                            <span class="material-symbols-outlined text-primary text-2xl">shield</span>
-                            <div>
-                                <h4 class="text-white font-bold text-xs">Progresso de Rank</h4>
-                                <p class="text-slate-400 text-[10px] mt-0.5 leading-tight">Mizunoto a Hashira</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex flex-col gap-3">
-                        <div
-                            class="flex items-center justify-between bg-surface-dark p-4 rounded-xl border border-[#483623]">
-                            <span class="text-xs text-slate-400 uppercase tracking-widest font-bold">Estilos</span>
-                            <span class="text-2xl font-black text-primary">12</span>
-                        </div>
-                        <div
-                            class="flex items-center justify-between bg-surface-dark p-4 rounded-xl border border-[#483623]">
-                            <span class="text-xs text-slate-400 uppercase tracking-widest font-bold">Nichirins</span>
-                            <span class="text-2xl font-black text-accent-red">50+</span>
-                        </div>
-                        <div
-                            class="flex items-center justify-between bg-surface-dark p-4 rounded-xl border border-[#483623]">
-                            <span class="text-xs text-slate-400 uppercase tracking-widest font-bold">Feitos</span>
-                            <span class="text-2xl font-black text-white">100+</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
+            </div>
+        </section>
+
+        <section class="section" id="regras-rapidas" aria-label="Regras rapidas">
+            <h2>Regras Rapidas</h2>
+            <p>
+                Guia curto para rodada fluida entre jogador e mestre.
+            </p>
+
+            <div class="rules-grid">
+                <article class="rule-card">
+                    <span class="material-symbols-outlined" aria-hidden="true">badge</span>
+                    <h3>1. Crie e salve</h3>
+                    <p>Finalize a ficha no criador para entrar no painel com dados completos.</p>
+                </article>
+                <article class="rule-card">
+                    <span class="material-symbols-outlined" aria-hidden="true">favorite</span>
+                    <h3>2. Atualize HP e PE</h3>
+                    <p>Durante a sessao, ajuste vida e energia para manter o estado real do personagem.</p>
+                </article>
+                <article class="rule-card">
+                    <span class="material-symbols-outlined" aria-hidden="true">groups</span>
+                    <h3>3. Entre na campanha</h3>
+                    <p>Use o Hub para adicionar personagens e centralizar todos na mesma mesa.</p>
+                </article>
+                <article class="rule-card">
+                    <span class="material-symbols-outlined" aria-hidden="true">sports_martial_arts</span>
+                    <h3>4. Mestre controla combate</h3>
+                    <p>No painel do mestre, adicione criaturas e role ataques com controle total.</p>
+                </article>
+            </div>
+        </section>
     </main>
-    <footer class="bg-surface-darker border-t border-[#483623] py-8">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="flex flex-col gap-6 text-center">
-                <div class="flex items-center justify-center gap-3">
-                    <div
-                        class="flex items-center justify-center size-8 bg-surface-dark rounded border border-primary/30">
-                        <span class="material-symbols-outlined text-primary text-xl">landscape</span>
-                    </div>
-                    <span class="font-serif text-lg font-bold text-white">Manual do Hashira</span>
-                </div>
-                <div class="flex flex-col gap-3 text-sm text-slate-400">
-                    <a class="hover:text-primary transition-colors" href="#">Comunidade no Discord</a>
-                    <a class="hover:text-primary transition-colors" href="#">Apoio no Patreon</a>
-                    <a class="hover:text-primary transition-colors" href="#">Termos de Serviço</a>
-                </div>
-                <div class="border-t border-[#483623] pt-6">
-                    <p class="text-[10px] text-slate-500 leading-relaxed">
-                        Hashira Handbook é Conteúdo de Fã não oficial permitido sob a Política de Conteúdo de Fã.
-                        ©Wizards of the Coast LLC.<br />
-                        Demon Slayer: Kimetsu no Yaiba é propriedade de Koyoharu Gotouge, Shueisha e Aniplex.<br />
-                        <span class="text-primary font-bold mt-2 block">Feito por Nicolas Silveira</span>
-                    </p>
-                </div>
-            </div>
+
+    <footer class="site-footer">
+        <div class="container footer-wrap">
+            <small>Hashira Handbook - experiencia fan-made para mesa de RPG.</small>
+            <nav class="footer-links" aria-label="Links do rodape">
+                <a href="index.html">Inicio</a>
+                <a href="characters.html">Jogador</a>
+                <a href="campaign-hub.html">Mestre</a>
+                <a href="index.html#regras-rapidas">Regras Rapidas</a>
+            </nav>
         </div>
     </footer>
 </body>

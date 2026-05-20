@@ -1,0 +1,40 @@
+<svg width="1120" height="420" viewBox="0 0 1120 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="stoneA" x1="68" y1="62" x2="188" y2="190" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3E3E45"/>
+      <stop offset="1" stop-color="#19191E"/>
+    </linearGradient>
+    <linearGradient id="stoneB" x1="930" y1="250" x2="1058" y2="370" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#42424A"/>
+      <stop offset="1" stop-color="#1B1B21"/>
+    </linearGradient>
+    <radialGradient id="emberA" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(90 80) rotate(41) scale(64 44)">
+      <stop stop-color="#FF7B2E" stop-opacity="0.6"/>
+      <stop offset="1" stop-color="#FF7B2E" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="emberB" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1000 325) rotate(46) scale(62 44)">
+      <stop stop-color="#FF7B2E" stop-opacity="0.52"/>
+      <stop offset="1" stop-color="#FF7B2E" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <g opacity="0.9">
+    <path d="M54 74L108 60L148 92L132 144L74 165L36 130L54 74Z" fill="url(#stoneA)" stroke="#9A673D" stroke-opacity="0.72" stroke-width="3"/>
+    <path d="M140 102L180 90L204 114L192 150L154 161L128 139L140 102Z" fill="#27272D" stroke="#C18046" stroke-opacity="0.55" stroke-width="2"/>
+    <path d="M66 154L102 144L126 162L116 194L82 206L58 188L66 154Z" fill="#24242A" stroke="#B87B45" stroke-opacity="0.52" stroke-width="2"/>
+    <path d="M40 84L58 72L74 84L66 102L46 106L36 94L40 84Z" fill="#17171C" stroke="#91603B" stroke-opacity="0.55"/>
+    <ellipse cx="88" cy="106" rx="40" ry="34" fill="url(#emberA)"/>
+  </g>
+
+  <g opacity="0.86">
+    <path d="M986 268L1040 252L1084 288L1066 348L1002 370L958 332L986 268Z" fill="url(#stoneB)" stroke="#9F6B40" stroke-opacity="0.72" stroke-width="3"/>
+    <path d="M930 290L968 280L992 298L982 334L948 346L924 326L930 290Z" fill="#232329" stroke="#BB7D46" stroke-opacity="0.56" stroke-width="2"/>
+    <path d="M1038 316L1072 306L1094 326L1084 356L1054 366L1030 348L1038 316Z" fill="#25252B" stroke="#C2844B" stroke-opacity="0.58" stroke-width="2"/>
+    <ellipse cx="1004" cy="322" rx="38" ry="32" fill="url(#emberB)"/>
+  </g>
+
+  <g opacity="0.62">
+    <path d="M18 220L52 210L74 228L64 260L30 272L10 252L18 220Z" fill="#1A1A20" stroke="#8E5E3A" stroke-opacity="0.5" stroke-width="2"/>
+    <path d="M1048 136L1084 124L1108 144L1098 178L1062 190L1040 170L1048 136Z" fill="#1B1B22" stroke="#93603A" stroke-opacity="0.5" stroke-width="2"/>
+  </g>
+</svg>

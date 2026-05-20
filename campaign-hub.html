@@ -6,380 +6,461 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campanhas | Demon Slayer RPG</title>
     <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700;900&display=swap"
         rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --accent-primary: #00b4d8;
-            --accent-secondary: #d90429;
+            --bg-main: #09080d;
+            --bg-secondary: #101018;
+            --panel-bg: rgba(18, 18, 26, 0.82);
+            --panel-border: rgba(255, 255, 255, 0.1);
+            --txt-main: #ececf2;
+            --txt-dim: #a5a6b2;
+            --accent-wisteria: #a855f7;
             --accent-gold: #fbbf24;
-            /* More vibrant gold */
-            --bg-dark: #050505;
-            --glass-bg: rgba(20, 20, 25, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --card-hover-bg: rgba(30, 30, 35, 0.85);
-            --text-main: #e0e0e0;
-            --font-display: 'Cinzel', serif;
-            --font-body: 'Outfit', sans-serif;
+            --accent-red: #ef4444;
+            --accent-cyan: #0ea5e9;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: var(--font-body);
             margin: 0;
-            overflow-x: hidden;
             min-height: 100vh;
-        }
-
-        /* --- CINEMATIC BACKGROUND --- */
-        #wisteria-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            /* Deep atmospheric background */
+            color: var(--txt-main);
+            font-family: 'Outfit', sans-serif;
             background:
-                radial-gradient(circle at 10% 20%, rgba(60, 20, 80, 0.2), transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(200, 50, 50, 0.15), transparent 40%),
-                linear-gradient(to bottom, #020202, #08080a);
-            background-attachment: fixed;
+                radial-gradient(circle at 12% 8%, rgba(168, 85, 247, 0.22), transparent 30%),
+                radial-gradient(circle at 88% 14%, rgba(239, 68, 68, 0.16), transparent 32%),
+                radial-gradient(circle at 50% 100%, rgba(14, 165, 233, 0.12), transparent 45%),
+                linear-gradient(to bottom, #09080d, #0d0d14 55%, #08080c);
+            overflow-x: hidden;
         }
 
-        /* Subtle texture */
-        .noise-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        a {
+            color: inherit;
+            text-decoration: none;
         }
 
-        /* --- LAYOUT --- */
         .container {
-            max-width: 1400px;
+            width: min(1320px, calc(100% - 2rem));
             margin: 0 auto;
-            padding: 4rem 2rem;
-            position: relative;
-            z-index: 1;
         }
 
-        .header {
+        .hub-hero {
+            padding: 2.8rem 0 1.8rem;
+        }
+
+        .hero-top {
             display: flex;
             justify-content: space-between;
-            align-items: flex-end;
-            /* Align bottom */
-            margin-bottom: 5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding-bottom: 2rem;
-            animation: fadeInDown 1s ease-out;
+            align-items: flex-start;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
 
-        .header-content h1 {
-            font-family: var(--font-display);
-            font-size: 4rem;
-            font-weight: 700;
-            margin: 0;
-            line-height: 1;
-            background: linear-gradient(to right, #fff, #999);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
-            letter-spacing: -1px;
-        }
-
-        .header-content p {
-            color: #666;
-            margin: 10px 0 0 5px;
-            font-size: 1.1rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .btn-back {
-            background: transparent;
-            border: 1px solid var(--glass-border);
-            padding: 12px 28px;
-            border-radius: 4px;
-            color: #888;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
+        .hero-back {
+            display: inline-flex;
             align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-family: var(--font-display);
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            gap: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 999px;
+            padding: 0.55rem 1rem;
+            color: #d7d8de;
+            font-size: 0.88rem;
+            transition: all 0.2s ease;
         }
 
-        .btn-back:hover {
+        .hero-back:hover,
+        .hero-back:focus-visible {
             color: #fff;
-            border-color: #fff;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            border-color: rgba(251, 191, 36, 0.7);
+            box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2);
+            outline: none;
         }
 
-        /* --- GRID --- */
-        .campaign-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-            gap: 40px;
-            animation: fadeInUp 1s ease-out 0.2s backwards;
+        .hero-main {
+            flex: 1 1 460px;
+            min-width: 300px;
         }
 
-        /* --- CAMPAIGN CARD (Refactored) --- */
-        .camp-card {
-            background: rgba(24, 24, 27, 0.6);
-            /* bg-zinc-900/60 */
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            overflow: hidden;
+        .hero-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            border: 1px solid rgba(168, 85, 247, 0.5);
+            border-radius: 999px;
+            background: rgba(168, 85, 247, 0.18);
+            color: #e9d5ff;
+            padding: 0.32rem 0.85rem;
+            letter-spacing: 0.08em;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .hero-main h1 {
+            margin: 1rem 0 0.55rem;
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2rem, 4.4vw, 3.8rem);
+            line-height: 1;
+            letter-spacing: 0.02em;
+            text-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+        }
+
+        .hero-main p {
+            margin: 0;
+            color: var(--txt-dim);
+            max-width: 70ch;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        .hero-actions {
             display: flex;
             flex-direction: column;
-            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            position: relative;
-            min-height: 340px;
+            align-items: flex-end;
+            gap: 0.85rem;
+            min-width: 260px;
         }
 
-        .camp-card:hover {
-            transform: scale(1.02);
-            /* hover:scale-105 equivalent visual */
-            border-color: var(--accent-gold);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-        }
-
-        /* Cover Image Area */
-        .camp-cover {
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: #222;
-            position: relative;
-            display: flex;
+        .btn-create-main {
+            border: 1px solid rgba(251, 191, 36, 0.7);
+            background: linear-gradient(140deg, rgba(251, 191, 36, 0.32), rgba(245, 158, 11, 0.15));
+            color: #fff8df;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            border-radius: 999px;
+            min-height: 46px;
+            min-width: 210px;
+            padding: 0 1.2rem;
+            cursor: pointer;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
+            gap: 0.45rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .btn-create-main:hover,
+        .btn-create-main:focus-visible {
+            transform: translateY(-2px);
+            border-color: #facc15;
+            box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.22), 0 14px 26px rgba(0, 0, 0, 0.42);
+            outline: none;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.6rem;
+            width: 100%;
+            max-width: 340px;
+        }
+
+        .hero-stat {
+            padding: 0.7rem;
+            border-radius: 10px;
+            border: 1px solid var(--panel-border);
+            background: rgba(255, 255, 255, 0.03);
+            text-align: center;
+        }
+
+        .hero-stat strong {
+            display: block;
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        .hero-stat span {
+            display: block;
+            margin-top: 0.2rem;
+            color: var(--txt-dim);
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .campaign-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+            gap: 1rem;
+            padding-bottom: 2rem;
+        }
+
+        .camp-card {
+            border: 1px solid var(--panel-border);
+            border-radius: var(--radius-lg);
+            background: var(--panel-bg);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 360px;
+            transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+        }
+
+        .camp-card:hover,
+        .camp-card:focus-within {
+            transform: translateY(-4px);
+            border-color: rgba(251, 191, 36, 0.42);
+            box-shadow: 0 18px 34px rgba(0, 0, 0, 0.42);
+        }
+
+        .camp-cover {
+            position: relative;
+            aspect-ratio: 16 / 9;
             overflow: hidden;
         }
 
-        .camp-cover-content {
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        /* Dynamic Gradients for Covers */
-        .cover-water {
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-        }
-
-        .cover-flame {
-            background: linear-gradient(135deg, #450b0b, #93291e, #ed213a);
-        }
-
-        .cover-wind {
-            background: linear-gradient(135deg, #134e5e, #71b280);
-        }
-
-        .cover-thunder {
-            background: linear-gradient(135deg, #f09819, #edde5d);
-        }
-
-        .cover-stone {
-            background: linear-gradient(135deg, #304352, #d7d2cc);
-        }
-
-        /* Level Badge */
-        .camp-badge {
+        .camp-cover::before {
+            content: '';
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            backdrop-filter: blur(4px);
-            z-index: 5;
-            display: flex;
-            gap: 5px;
-            align-items: center;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            transform: scale(1.03);
         }
 
-        /* Card Body */
+        .camp-cover::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(150deg, rgba(0, 0, 0, 0.24) 0%, rgba(0, 0, 0, 0.75) 85%);
+        }
+
+        .camp-cover.theme-wisteria::before {
+            background-image: url('assets/backgrounds/bg_religioso.png');
+        }
+
+        .camp-cover.theme-agua::before {
+            background-image: url('assets/backgrounds/bg_selvagem.png');
+        }
+
+        .camp-cover.theme-chama::before {
+            background-image: url('assets/backgrounds/bg_ferreiro.png');
+        }
+
+        .camp-cover.theme-trovao::before {
+            background-image: url('assets/backgrounds/bg_policial.png');
+        }
+
+        .camp-cover.theme-vento::before {
+            background-image: url('assets/backgrounds/bg_ninja.png');
+        }
+
+        .theme-mark {
+            position: absolute;
+            top: 0.7rem;
+            left: 0.7rem;
+            z-index: 3;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.68rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-weight: 800;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        .camp-lvl {
+            position: absolute;
+            z-index: 3;
+            top: 0.7rem;
+            right: 0.7rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .camp-cover-center {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            z-index: 3;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .camp-cover-center i {
+            width: 52px;
+            height: 52px;
+            stroke-width: 1.8;
+            filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.6));
+        }
+
         .camp-body {
-            padding: 1.5rem;
-            flex: 1;
             display: flex;
             flex-direction: column;
+            gap: 0.8rem;
+            padding: 1rem;
+            flex: 1;
         }
 
         .camp-name {
+            margin: 0;
             font-family: 'Cinzel', serif;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             line-height: 1.2;
+            letter-spacing: 0.02em;
             color: #fff;
-            margin-bottom: 0.5rem;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            min-height: 2.45em;
         }
 
         .camp-dm {
-            font-size: 0.85rem;
-            color: #888;
+            margin: 0;
+            color: var(--txt-dim);
             display: flex;
             align-items: center;
-            gap: 6px;
-            margin-bottom: 1.5rem;
+            gap: 0.4rem;
+            font-size: 0.88rem;
         }
 
-        /* Footer */
-        .camp-footer {
+        .camp-meta {
             margin-top: auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 1rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 0.8rem;
-            color: #666;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.45rem;
         }
 
-        .camp-stats {
+        .meta-item {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.55rem 0.65rem;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 0.4rem;
+            font-size: 0.78rem;
+            color: #d2d3db;
         }
 
-        .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        .camp-actions {
+            display: grid;
+            grid-template-columns: 1.1fr repeat(3, 44px);
+            gap: 0.45rem;
+            margin-top: 0.2rem;
         }
 
-        /* Action Overlay (appears on hover) */
-        .camp-overlay-actions {
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(2px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            opacity: 0;
-            transition: 0.3s;
-            z-index: 10;
-        }
-
-        .camp-card:hover .camp-overlay-actions {
-            opacity: 1;
-        }
-
-        .overlay-btn {
-            background: #fff;
-            color: #000;
-            border: none;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .btn-enter,
+        .btn-mini {
+            border-radius: 10px;
+            min-height: 40px;
+            border: 1px solid transparent;
             cursor: pointer;
-            transition: 0.2s;
-            transform: translateY(20px);
+            font-weight: 700;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
         }
 
-        .camp-card:hover .overlay-btn {
-            transform: translateY(0);
+        .btn-enter {
+            background: linear-gradient(130deg, rgba(168, 85, 247, 0.32), rgba(124, 58, 237, 0.2));
+            color: #efe7ff;
+            border-color: rgba(168, 85, 247, 0.45);
         }
 
-        .overlay-btn:hover {
-            background: var(--accent-gold);
-            transform: scale(1.1);
+        .btn-mini {
+            background: rgba(255, 255, 255, 0.05);
+            color: #d8d9e1;
+            border-color: rgba(255, 255, 255, 0.16);
+            display: grid;
+            place-items: center;
         }
 
-        /* Delays for buttons staggering */
-        .camp-card:hover .overlay-btn:nth-child(1) {
-            transition-delay: 0.05s;
+        .btn-enter:hover,
+        .btn-mini:hover,
+        .btn-enter:focus-visible,
+        .btn-mini:focus-visible {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+            outline: none;
         }
 
-        .camp-card:hover .overlay-btn:nth-child(2) {
-            transition-delay: 0.1s;
+        .btn-mini.danger:hover,
+        .btn-mini.danger:focus-visible {
+            border-color: rgba(239, 68, 68, 0.55);
+            color: #ffb0b0;
+            background: rgba(239, 68, 68, 0.14);
         }
 
-        .camp-card:hover .overlay-btn:nth-child(3) {
-            transition-delay: 0.15s;
-        }
-
-        .btn-delete:hover {
-            border-color: var(--accent-secondary);
-            color: var(--accent-secondary);
-            box-shadow: 0 0 15px rgba(217, 4, 41, 0.2);
-        }
-
-        /* --- NEW CAMP CARD --- */
         .new-camp-card {
-            border: 1px dashed rgba(255, 255, 255, 0.2);
-            background: transparent;
-            align-items: center;
-            justify-content: center;
-            color: #666;
+            border: 1px dashed rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.02);
+            display: grid;
+            place-items: center;
+            text-align: center;
+            gap: 0.5rem;
+            padding: 1.2rem;
+            min-height: 280px;
             cursor: pointer;
-            transition: 0.4s;
         }
 
-        .new-camp-card:hover {
-            border-color: var(--accent-gold);
-            background: rgba(255, 215, 0, 0.02);
-            color: var(--accent-gold);
-            transform: translateY(-5px);
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.05);
+        .new-camp-card:hover,
+        .new-camp-card:focus-visible {
+            border-color: rgba(251, 191, 36, 0.65);
+            background: rgba(251, 191, 36, 0.06);
+            outline: none;
         }
 
-        .new-camp-plus {
-            font-size: 3rem;
+        .new-camp-card i {
+            width: 40px;
+            height: 40px;
+            color: #facc15;
+        }
+
+        .empty-state {
+            border: 1px solid var(--panel-border);
+            border-radius: var(--radius-lg);
+            background: linear-gradient(140deg, rgba(168, 85, 247, 0.1), rgba(14, 165, 233, 0.05));
+            padding: 1.5rem;
             margin-bottom: 1rem;
-            opacity: 0.5;
-            transition: 0.3s;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
 
-        .new-camp-card:hover .new-camp-plus {
-            opacity: 1;
-            transform: scale(1.2);
+        .empty-state h3 {
+            margin: 0 0 0.35rem;
+            font-family: 'Cinzel', serif;
+            font-size: 1.45rem;
         }
 
-        /* --- MODAL (Redesigned) --- */
+        .empty-state p {
+            margin: 0;
+            color: var(--txt-dim);
+        }
+
         .modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(12px);
-            z-index: 100;
+            inset: 0;
             display: none;
             align-items: center;
             justify-content: center;
+            background: rgba(6, 6, 9, 0.86);
+            backdrop-filter: blur(12px);
+            z-index: 60;
             opacity: 0;
-            transition: all 0.4s;
+            transition: opacity 0.22s ease;
+            padding: 1rem;
         }
 
         .modal-overlay.modal-open {
@@ -388,138 +469,261 @@
         }
 
         .modal-box {
-            background: #09090b;
-            border: 1px solid #333;
-            padding: 3rem;
-            border-radius: 4px;
-            width: 100%;
-            max-width: 500px;
-            position: relative;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-            transform: scale(0.95) translateY(20px);
-            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            width: min(740px, 100%);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 16px;
+            background: rgba(10, 10, 14, 0.96);
+            box-shadow: 0 22px 48px rgba(0, 0, 0, 0.55);
+            padding: 1.2rem;
+            transform: translateY(16px) scale(0.98);
+            transition: transform 0.22s ease;
         }
 
-        .modal-open .modal-box {
-            transform: scale(1) translateY(0);
+        .modal-overlay.modal-open .modal-box {
+            transform: translateY(0) scale(1);
         }
 
-        /* Gold Accent Top */
-        .modal-box::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: var(--accent-gold);
-            box-shadow: 0 0 15px var(--accent-gold);
+        .modal-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.7rem;
         }
 
-        .modal-title {
-            font-family: var(--font-display);
-            font-size: 2rem;
-            color: #fff;
-            margin-bottom: 2rem;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .input-group {
-            position: relative;
-            margin-bottom: 2rem;
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 15px 0;
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid #333;
-            color: #fff;
+        .modal-head h2 {
+            margin: 0;
             font-family: 'Cinzel', serif;
-            /* Stylish font for input */
-            font-size: 1.1rem;
-            transition: 0.3s;
-            border-radius: 0;
+            font-size: 1.65rem;
         }
 
-        .input-text-alt {
-            font-family: var(--font-body);
-            /* Body font fallback */
-        }
-
-        .input-field:focus {
-            outline: none;
-            border-color: var(--accent-gold);
-        }
-
-        .input-label {
-            position: absolute;
-            top: 15px;
-            left: 0;
-            color: #666;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-            transition: 0.3s;
-            pointer-events: none;
-        }
-
-        .input-field:focus~.input-label,
-        .input-field:not(:placeholder-shown)~.input-label {
-            top: -10px;
-            font-size: 0.7rem;
-            color: var(--accent-gold);
-        }
-
-        .btn-main {
-            width: 100%;
-            padding: 18px;
-            background: #fff;
-            color: #000;
-            border: none;
-            font-family: var(--font-display);
-            font-weight: 800;
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        .close-x {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.17);
+            background: rgba(255, 255, 255, 0.04);
+            color: #d9dae1;
             cursor: pointer;
-            transition: 0.3s;
+            display: grid;
+            place-items: center;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.75rem;
             margin-top: 1rem;
         }
 
-        .btn-main:hover {
-            background: var(--accent-gold);
-            box-shadow: 0 0 30px rgba(251, 191, 36, 0.3);
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .field label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #b8b9c3;
+            font-weight: 700;
+        }
+
+        .field input {
+            min-height: 44px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            background: rgba(255, 255, 255, 0.03);
+            color: #fff;
+            padding: 0 0.8rem;
+            font-family: inherit;
+        }
+
+        .field input:focus-visible {
+            outline: none;
+            border-color: rgba(168, 85, 247, 0.7);
+            box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+        }
+
+        .theme-selector {
+            margin-top: 1rem;
+        }
+
+        .theme-selector h3 {
+            margin: 0 0 0.6rem;
+            font-size: 0.9rem;
+            color: #d7d8e0;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 0.5rem;
+        }
+
+        .theme-option {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .theme-option input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .theme-option-box {
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            min-height: 98px;
+            padding: 0.45rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            gap: 0.15rem;
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .theme-option-box::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(160deg, rgba(0, 0, 0, 0.24), rgba(0, 0, 0, 0.8));
+        }
+
+        .theme-option-box > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .theme-option-title {
+            font-size: 0.74rem;
+            font-weight: 700;
+            color: #f4f4f9;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .theme-option-icon {
+            font-size: 0.68rem;
+            color: #d7d8df;
+        }
+
+        .theme-option input:checked + .theme-option-box {
+            border-color: rgba(251, 191, 36, 0.8);
+            box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2);
             transform: translateY(-2px);
         }
 
-        /* Char Select Grid */
+        .theme-option-box.theme-wisteria {
+            background-image: url('assets/backgrounds/bg_religioso.png');
+        }
+
+        .theme-option-box.theme-agua {
+            background-image: url('assets/backgrounds/bg_selvagem.png');
+        }
+
+        .theme-option-box.theme-chama {
+            background-image: url('assets/backgrounds/bg_ferreiro.png');
+        }
+
+        .theme-option-box.theme-trovao {
+            background-image: url('assets/backgrounds/bg_policial.png');
+        }
+
+        .theme-option-box.theme-vento {
+            background-image: url('assets/backgrounds/bg_ninja.png');
+        }
+
+        .modal-actions {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.55rem;
+        }
+
+        .btn-secondary,
+        .btn-primary {
+            min-height: 42px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            padding: 0 1rem;
+            font-weight: 700;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.16);
+            color: #d8d9e2;
+        }
+
+        .btn-primary {
+            background: linear-gradient(130deg, rgba(168, 85, 247, 0.34), rgba(124, 58, 237, 0.22));
+            border-color: rgba(168, 85, 247, 0.58);
+            color: #efe7ff;
+        }
+
+        .char-select-grid {
+            max-height: 280px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding-right: 0.2rem;
+        }
+
         .char-select-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            background: #111;
-            border: 1px solid #222;
-            margin-bottom: 10px;
+            gap: 0.6rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.75rem;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.2s ease;
         }
 
         .char-select-item:hover {
-            border-color: var(--accent-primary);
-            background: rgba(0, 180, 216, 0.05);
-            padding-left: 20px;
+            border-color: rgba(14, 165, 233, 0.6);
+            transform: translateX(3px);
         }
 
-        /* Animations */
-        @keyframes fadeInDown {
+        .toast-wrap {
+            position: fixed;
+            right: 1rem;
+            bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 70;
+        }
+
+        .toast {
+            min-width: 240px;
+            max-width: 320px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 10px;
+            background: rgba(8, 8, 12, 0.95);
+            padding: 0.7rem 0.85rem;
+            color: #fff;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.42);
+            animation: toastIn 0.2s ease-out;
+            font-size: 0.9rem;
+        }
+
+        @keyframes toastIn {
             from {
                 opacity: 0;
-                transform: translateY(-20px);
+                transform: translateY(8px);
             }
 
             to {
@@ -528,232 +732,339 @@
             }
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+                scroll-behavior: auto !important;
             }
         }
 
-        /* Mobile */
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 20px;
-            }
-
-            .header-content h1 {
-                font-size: 3rem;
+        @media (max-width: 980px) {
+            .theme-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
             }
 
             .campaign-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+        }
+
+        @media (max-width: 760px) {
+            .hero-actions {
+                align-items: stretch;
+                min-width: 0;
+                width: 100%;
+            }
+
+            .btn-create-main {
+                width: 100%;
+            }
+
+            .hero-stats {
+                max-width: none;
+            }
+
+            .form-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .theme-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
         }
     </style>
 </head>
 
 <body>
-    <div id="wisteria-bg"></div>
-    <div class="noise-overlay"></div>
-
-    <div class="container">
-        <div class="header">
-            <div class="header-content">
-                <h1>CAMPANHAS</h1>
-                <p>Hub Central de Aventuras</p>
+    <header class="hub-hero container">
+        <div class="hero-top">
+            <div class="hero-main">
+                <a href="index.html" class="hero-back">
+                    <i data-lucide="arrow-left" aria-hidden="true"></i>
+                    Voltar ao inicio
+                </a>
+                <div style="height:0.8rem;"></div>
+                <span class="hero-kicker">
+                    <i data-lucide="flower-2" aria-hidden="true"></i>
+                    Corpo de Cacadores
+                </span>
+                <h1>Quartel das Campanhas</h1>
+                <p>Crie salas tematicas, convide jogadores e mantenha o controle visual de cada missao com identidade
+                    de Demon Slayer.</p>
             </div>
-            <a href="index.html" class="btn-back">
-                <i data-lucide="arrow-left"></i> Voltar ao Menu
-            </a>
+            <div class="hero-actions">
+                <button class="btn-create-main" type="button" onclick="toggleModal('createModalWrapper', true)">
+                    <i data-lucide="plus-circle" aria-hidden="true"></i>
+                    Nova Campanha
+                </button>
+                <div class="hero-stats" aria-label="Resumo de campanhas">
+                    <div class="hero-stat">
+                        <strong id="statCampaigns">0</strong>
+                        <span>Campanhas</span>
+                    </div>
+                    <div class="hero-stat">
+                        <strong id="statPlayers">0</strong>
+                        <span>Jogadores</span>
+                    </div>
+                    <div class="hero-stat">
+                        <strong id="statThemes">5</strong>
+                        <span>Temas</span>
+                    </div>
+                </div>
+            </div>
         </div>
+    </header>
 
-        <div class="campaign-grid" id="campGrid">
-            <!-- JS Injected -->
-        </div>
-    </div>
+    <main class="container">
+        <section class="empty-state" id="emptyState">
+            <div>
+                <h3>Nenhuma campanha ativa</h3>
+                <p>Abra a primeira sala da sua equipe e comece a organizar as missoes do esquadrao.</p>
+            </div>
+            <button class="btn-create-main" type="button" onclick="toggleModal('createModalWrapper', true)">
+                <i data-lucide="sparkles" aria-hidden="true"></i>
+                Criar Primeira Campanha
+            </button>
+        </section>
 
-    <!-- CREATE MODAL -->
-    <div id="createModalWrapper" class="modal-overlay">
+        <section class="campaign-grid" id="campGrid" aria-label="Lista de campanhas">
+            <!-- Injected by JS -->
+        </section>
+    </main>
+
+    <div id="createModalWrapper" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="createCampTitle">
         <div class="modal-box">
-            <div style="position:absolute; top:20px; right:20px; cursor:pointer; color:#666;"
-                onclick="toggleModal('createModalWrapper', false)">
-                <i data-lucide="x"></i>
+            <div class="modal-head">
+                <h2 id="createCampTitle">Nova Campanha</h2>
+                <button class="close-x" type="button" onclick="toggleModal('createModalWrapper', false)" aria-label="Fechar">
+                    <i data-lucide="x"></i>
+                </button>
             </div>
 
-            <h2 class="modal-title">Nova Aventura</h2>
-
-            <div class="input-group">
-                <input type="text" id="campNameInput" class="input-field" placeholder=" " autocomplete="off">
-                <label class="input-label">Nome da Campanha</label>
+            <div class="form-grid">
+                <div class="field">
+                    <label for="campNameInput">Nome da Campanha</label>
+                    <input type="text" id="campNameInput" autocomplete="off" placeholder="Ex: Patrulha da Wisteria">
+                </div>
+                <div class="field">
+                    <label for="dmNameInput">Nome do Mestre</label>
+                    <input type="text" id="dmNameInput" autocomplete="off" placeholder="Ex: Kagaya">
+                </div>
             </div>
 
-            <div class="input-group">
-                <input type="text" id="dmNameInput" class="input-field input-text-alt" placeholder=" "
-                    autocomplete="off">
-                <label class="input-label">Mestre (Nome de Exibição)</label>
+            <div class="theme-selector">
+                <h3>Tema Visual</h3>
+                <div class="theme-grid" id="themeOptionsGrid">
+                    <!-- Theme options injected -->
+                </div>
             </div>
 
-            <button class="btn-main" onclick="confirmCreate()">Criar Sala</button>
+            <div class="modal-actions">
+                <button class="btn-secondary" type="button" onclick="toggleModal('createModalWrapper', false)">Cancelar</button>
+                <button class="btn-primary" type="button" onclick="confirmCreate()">Criar Sala</button>
+            </div>
         </div>
     </div>
 
-    <!-- JOIN MODAL -->
-    <div id="joinModalWrapper" class="modal-overlay">
-        <div class="modal-box">
-            <h2 style="margin-top:0; color:var(--accent-primary);">Entrar na Campanha</h2>
-            <p style="color:#888; font-size:0.9rem; margin-bottom:20px;">
-                Você foi convidado! Escolha com qual personagem deseja participar desta aventura.
-            </p>
-
-            <div id="charSelectGrid" style="max-height:250px; overflow-y:auto; padding-right:5px;">
-                <!-- List -->
+    <div id="joinModalWrapper" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="joinCampTitle">
+        <div class="modal-box" style="max-width:560px;">
+            <div class="modal-head">
+                <h2 id="joinCampTitle">Entrar na Campanha</h2>
+                <button class="close-x" type="button" onclick="toggleModal('joinModalWrapper', false)" aria-label="Fechar">
+                    <i data-lucide="x"></i>
+                </button>
             </div>
 
-            <button class="btn-main" style="margin-top:20px; background:#333;"
-                onclick="toggleModal('joinModalWrapper', false)">Cancelar</button>
+            <p style="margin:0.5rem 0 0.9rem; color:var(--txt-dim);">Escolha qual personagem voce vai adicionar nesta campanha.</p>
+
+            <div class="char-select-grid" id="charSelectGrid"></div>
+
+            <div class="modal-actions">
+                <button class="btn-secondary" type="button" onclick="toggleModal('joinModalWrapper', false)">Cancelar</button>
+            </div>
         </div>
     </div>
 
-    <div id="toastContainer"
-        style="position:fixed; bottom:20px; right:20px; z-index:999; display:flex; flex-direction:column; gap:10px;">
-    </div>
+    <div class="toast-wrap" id="toastContainer" aria-live="polite"></div>
 
     <script src="js/campaign.js"></script>
     <script>
-        lucide.createIcons();
+        const THEME_META = {
+            wisteria: {
+                name: 'Wisteria',
+                icon: 'flower-2',
+                className: 'theme-wisteria'
+            },
+            agua: {
+                name: 'Agua',
+                icon: 'waves',
+                className: 'theme-agua'
+            },
+            chama: {
+                name: 'Chama',
+                icon: 'flame',
+                className: 'theme-chama'
+            },
+            trovao: {
+                name: 'Trovao',
+                icon: 'zap',
+                className: 'theme-trovao'
+            },
+            vento: {
+                name: 'Vento',
+                icon: 'wind',
+                className: 'theme-vento'
+            }
+        };
+
+        const THEME_ORDER = Object.keys(THEME_META);
         let selectedCampId = null;
 
-        // Initialize
+        lucide.createIcons();
+
         window.onload = function () {
+            renderThemeOptions();
             renderCampaigns();
             checkInvite();
         };
 
+        function inferThemeFromId(id) {
+            const source = id || Date.now().toString();
+            let hash = 0;
+            for (let i = 0; i < source.length; i += 1) {
+                hash = source.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            return THEME_ORDER[Math.abs(hash) % THEME_ORDER.length];
+        }
+
+        function normalizeTheme(themeKey, fallbackId) {
+            if (themeKey && THEME_META[themeKey]) return themeKey;
+            return inferThemeFromId(fallbackId);
+        }
+
         function showToast(msg) {
             const t = document.createElement('div');
-            t.style.padding = '12px 20px';
-            t.style.background = '#111';
-            t.style.border = '1px solid #333';
-            t.style.color = '#fff';
-            t.style.borderRadius = '8px';
-            t.style.boxShadow = '0 5px 20px rgba(0,0,0,0.5)';
-            t.style.animation = 'fadeIn 0.3s ease';
-            t.innerText = msg;
+            t.className = 'toast';
+            t.textContent = msg;
             document.getElementById('toastContainer').appendChild(t);
-            setTimeout(() => t.remove(), 3000);
+            setTimeout(() => t.remove(), 3200);
         }
 
         function checkInvite() {
             const params = new URLSearchParams(window.location.search);
             const joinId = params.get('join');
-            if (joinId) {
-                const camp = window.CampaignSystem.getCampaignById(joinId);
-                if (camp) {
-                    openJoinModal(joinId);
-                } else {
-                    showToast("Campanha inválida ou inexistente.");
-                }
+            if (!joinId) return;
+
+            const camp = window.CampaignSystem.getCampaignById(joinId);
+            if (camp) {
+                openJoinModal(joinId);
+                return;
             }
+            showToast('Campanha invalida ou inexistente.');
+        }
+
+        function renderThemeOptions() {
+            const container = document.getElementById('themeOptionsGrid');
+            container.innerHTML = '';
+
+            THEME_ORDER.forEach((key, index) => {
+                const meta = THEME_META[key];
+                const label = document.createElement('label');
+                label.className = 'theme-option';
+                label.innerHTML = `
+                    <input type="radio" name="campTheme" value="${key}" ${index === 0 ? 'checked' : ''}>
+                    <span class="theme-option-box ${meta.className}">
+                        <span class="theme-option-title">${meta.name}</span>
+                        <span class="theme-option-icon">${meta.icon}</span>
+                    </span>
+                `;
+                container.appendChild(label);
+            });
+        }
+
+        function readSelectedTheme() {
+            const checked = document.querySelector('input[name="campTheme"]:checked');
+            return checked ? checked.value : 'wisteria';
         }
 
         function renderCampaigns() {
             const grid = document.getElementById('campGrid');
-            grid.innerHTML = "";
+            const emptyState = document.getElementById('emptyState');
+            grid.innerHTML = '';
             let list = [];
 
             try {
-                if (window.CampaignSystem && window.CampaignSystem.getCampaigns) {
-                    list = window.CampaignSystem.getCampaigns();
-                }
-            } catch (e) { console.error("Error getting campaigns", e); }
+                list = window.CampaignSystem && window.CampaignSystem.getCampaigns
+                    ? window.CampaignSystem.getCampaigns()
+                    : [];
+            } catch (e) {
+                console.error('Erro ao carregar campanhas:', e);
+                list = [];
+            }
 
-            // Existing
-            list.forEach(c => {
-                const card = document.createElement('div');
+            const totalPlayers = list.reduce((acc, c) => acc + ((c.players && c.players.length) || 0), 0);
+            document.getElementById('statCampaigns').textContent = list.length;
+            document.getElementById('statPlayers').textContent = totalPlayers;
+            emptyState.style.display = list.length === 0 ? 'flex' : 'none';
+
+            list.forEach((c) => {
+                const card = document.createElement('article');
                 card.className = 'camp-card';
 
-                // --- Logic for Fake Data ---
-                // Calculate Average Level
                 let avgLevel = 1;
                 if (c.players && c.players.length > 0) {
                     const total = c.players.reduce((acc, p) => acc + (p.level || 1), 0);
-                    avgLevel = Math.floor(total / c.players.length);
+                    avgLevel = Math.max(1, Math.floor(total / c.players.length));
                 }
 
-                // Determine Cover Style based on ID hash or random consistency
-                const gradients = ['cover-water', 'cover-flame', 'cover-wind', 'cover-thunder', 'cover-stone'];
-                // Simple hash function from string
-                let hash = 0;
-                for (let i = 0; i < c.id.length; i++) hash = c.id.charCodeAt(i) + ((hash << 5) - hash);
-                const styleIndex = Math.abs(hash) % gradients.length;
-                const coverClass = gradients[styleIndex];
+                const themeKey = normalizeTheme(c.theme, c.id);
+                const theme = THEME_META[themeKey];
 
-                // Icon (Sword or Map)
-                const icon = (Math.abs(hash) % 2 === 0) ? 'sword' : 'map';
+                const fakeTimes = ['Agora', 'Hoje', 'Ontem', '3 dias'];
+                const timeAgo = fakeTimes[Math.abs((c.id || '').length + (c.players || []).length) % fakeTimes.length];
+                const playerCount = (c.players || []).length;
 
-                // Fake Time
-                const times = ['2h', '1d', '3d', '1w'];
-                const timeAgo = times[Math.abs(hash) % times.length];
-
-                // Players Count
-                const playerCount = c.players ? c.players.length : 0;
-
-                // --- HTML ---
                 card.innerHTML = `
-                    <div class="camp-cover ${coverClass}">
-                        <div class="camp-badge">
-                            <i data-lucide="shield" size="12"></i> Lvl ${avgLevel}
-                        </div>
-                        <div class="camp-cover-content">
-                            <i data-lucide="${icon}" size="48" style="opacity:0.8;"></i>
-                        </div>
-                        
-                        <!-- Overlay Actions -->
-                        <div class="camp-overlay-actions">
-                            <button class="overlay-btn" title="Entrar" onclick="window.location.href='dm-panel.html?id=${c.id}'">
-                                <i data-lucide="log-in"></i>
-                            </button>
-                            <button class="overlay-btn" title="Convidar" onclick="copyInvite('${c.id}')">
-                                <i data-lucide="link"></i>
-                            </button>
-                            <button class="overlay-btn" title="Apagar" style="color:var(--accent-secondary);" onclick="deleteCamp('${c.id}', '${c.name}')">
-                                <i data-lucide="trash-2"></i>
-                            </button>
+                    <div class="camp-cover ${theme.className}">
+                        <span class="theme-mark">
+                            <i data-lucide="${theme.icon}" size="14"></i> ${theme.name}
+                        </span>
+                        <span class="camp-lvl">Nivel ${avgLevel}</span>
+                        <div class="camp-cover-center">
+                            <i data-lucide="shield"></i>
                         </div>
                     </div>
-                    
+
                     <div class="camp-body">
-                        <div class="camp-name" title="${c.name}">${c.name}</div>
-                        <div class="camp-dm">
-                            <i data-lucide="crown" size="14" style="color:var(--accent-gold);"></i>
-                            Mestre: ${c.dmName}
+                        <h3 class="camp-name" title="${escapeHtml(c.name || 'Nova Campanha')}">${escapeHtml(c.name || 'Nova Campanha')}</h3>
+                        <p class="camp-dm">
+                            <i data-lucide="crown" size="14"></i>
+                            Mestre: ${escapeHtml(c.dmName || 'Mestre')}
+                        </p>
+
+                        <div class="camp-meta">
+                            <div class="meta-item">
+                                <i data-lucide="users" size="14"></i>
+                                ${playerCount}/6 jogadores
+                            </div>
+                            <div class="meta-item">
+                                <i data-lucide="clock-3" size="14"></i>
+                                ${timeAgo}
+                            </div>
                         </div>
-                        
-                        <div class="camp-footer">
-                            <div class="camp-stats">
-                                <div class="stat-item" title="Jogadores">
-                                    <i data-lucide="users" size="14"></i> ${playerCount}/6
-                                </div>
-                                <div class="stat-item" title="Última Sessão">
-                                    <i data-lucide="clock" size="14"></i> ${timeAgo}
-                                </div>
-                            </div>
-                            
-                            <!-- Join Local Button -->
-                             <div style="cursor:pointer; display:flex; align-items:center; opacity:0.7; transition:0.2s;" 
-                                  title="Adicionar Personagem Local" 
-                                  onclick="openJoinModal('${c.id}')"
-                                  onmouseover="this.style.opacity='1'; this.style.color='#fff'"
-                                  onmouseout="this.style.opacity='0.7'; this.style.color='inherit'">
+
+                        <div class="camp-actions">
+                            <button class="btn-enter" type="button" onclick="window.location.href='dm-panel.html?id=${c.id}'">Entrar</button>
+                            <button class="btn-mini" type="button" title="Convidar" onclick="copyInvite('${c.id}')">
+                                <i data-lucide="link" size="16"></i>
+                            </button>
+                            <button class="btn-mini" type="button" title="Adicionar Jogador" onclick="openJoinModal('${c.id}')">
                                 <i data-lucide="user-plus" size="16"></i>
-                            </div>
+                            </button>
+                            <button class="btn-mini danger" type="button" title="Apagar" onclick="deleteCamp('${c.id}', '${jsString(c.name || 'Campanha')}')">
+                                <i data-lucide="trash-2" size="16"></i>
+                            </button>
                         </div>
                     </div>
                 `;
@@ -761,16 +1072,13 @@
                 grid.appendChild(card);
             });
 
-            // New Card (Always render even if list empty)
-            const newCard = document.createElement('div');
+            const newCard = document.createElement('button');
+            newCard.type = 'button';
             newCard.className = 'camp-card new-camp-card';
-
             newCard.innerHTML = `
-                <div class="new-camp-plus">
-                    <i data-lucide="plus" size="32"></i>
-                </div>
-                <!-- Updated Font Class -->
-                <div style="font-family:var(--font-display); font-weight:700; letter-spacing:2px; font-size:1.1rem; text-align:center;">NOVA AVENTURA</div>
+                <i data-lucide="plus-circle"></i>
+                <strong style="font-family:'Cinzel', serif; letter-spacing:0.06em;">NOVA AVENTURA</strong>
+                <span style="color:var(--txt-dim); font-size:0.9rem;">Criar sala com tema do Corpo de Cacadores</span>
             `;
             newCard.onclick = () => toggleModal('createModalWrapper', true);
             grid.appendChild(newCard);
@@ -782,87 +1090,109 @@
             const el = document.getElementById(id);
             if (show) {
                 el.classList.add('modal-open');
-                el.style.display = 'flex'; // Ensure generic fallback
-                setTimeout(() => el.style.opacity = '1', 10);
-            } else {
-                el.classList.remove('modal-open');
-                el.style.opacity = '0';
-                setTimeout(() => el.style.display = 'none', 300);
+                el.style.display = 'flex';
+                requestAnimationFrame(() => {
+                    el.style.opacity = '1';
+                });
+                return;
             }
+            el.style.opacity = '0';
+            el.classList.remove('modal-open');
+            setTimeout(() => {
+                el.style.display = 'none';
+            }, 220);
         }
 
         function confirmCreate() {
-            const name = document.getElementById('campNameInput').value;
-            const dm = document.getElementById('dmNameInput').value;
-            if (!name) return showToast("Nome obrigatório!");
+            const name = document.getElementById('campNameInput').value.trim();
+            const dm = document.getElementById('dmNameInput').value.trim();
+            const theme = readSelectedTheme();
 
-            window.CampaignSystem.createCampaign(name, dm);
+            if (!name) {
+                showToast('Nome da campanha e obrigatorio.');
+                return;
+            }
+
+            window.CampaignSystem.createCampaign(name, dm, theme);
             toggleModal('createModalWrapper', false);
+            document.getElementById('campNameInput').value = '';
+            document.getElementById('dmNameInput').value = '';
             renderCampaigns();
-            showToast("Campanha criada com sucesso!");
+            showToast('Campanha criada com sucesso.');
         }
 
         function copyInvite(id) {
-            // Construct URL
             const url = window.location.origin + window.location.pathname + '?join=' + id;
-            navigator.clipboard.writeText(url).then(() => {
-                showToast("Link de convite copiado!");
-            });
+            navigator.clipboard.writeText(url)
+                .then(() => showToast('Link de convite copiado.'))
+                .catch(() => {
+                    showToast('Nao foi possivel copiar automatico. Link exibido no prompt.');
+                    window.prompt('Copie o link:', url);
+                });
         }
 
         function deleteCamp(id, name) {
-            if (confirm(`Tem certeza que deseja apagar a campanha "${name}"? Essa ação é irreversível e todos os dados serão perdidos.`)) {
-                window.CampaignSystem.deleteCampaign(id);
-                renderCampaigns();
-                showToast("Campanha apagada com sucesso.");
-            }
+            if (!confirm(`Tem certeza que deseja apagar a campanha "${name}"?`)) return;
+            window.CampaignSystem.deleteCampaign(id);
+            renderCampaigns();
+            showToast('Campanha apagada.');
         }
 
         function openJoinModal(id) {
             selectedCampId = id;
             const grid = document.getElementById('charSelectGrid');
-            grid.innerHTML = "";
+            grid.innerHTML = '';
 
-            const raw = localStorage.getItem('demonSlayerSaveSlots');
             let chars = [];
             try {
-                chars = raw ? JSON.parse(raw) : [];
+                chars = JSON.parse(localStorage.getItem('demonSlayerSaveSlots') || '[]');
             } catch (e) {
-                console.error("Error parsing save slots", e);
                 chars = [];
             }
 
             if (chars.length === 0) {
-                grid.innerHTML = "<div style='color:#666; padding:20px; text-align:center;'>Nenhum personagem encontrado. Crie um primeiro!</div>";
-            }
-
-            chars.forEach(char => {
-                const d = document.createElement('div');
-                d.className = 'char-select-item';
-                d.innerHTML = `
-                    <span style="font-weight:600; color:#fff;">${char.name}</span>
-                    <span style="color:#666; font-size:0.8rem;">Nv ${char.level}</span>
-                `;
-                d.onclick = () => {
-                    const success = window.CampaignSystem.addPlayerToCampaign(selectedCampId, char);
-                    if (success) {
-                        showToast("Personagem adicionado!");
-                        toggleModal('joinModalWrapper', false);
-                        renderCampaigns();
-                        // Clear URL param if present
-                        if (window.location.search.includes('join=')) {
-                            window.history.pushState({}, document.title, window.location.pathname);
+                grid.innerHTML = `<div style="padding:1rem; color:var(--txt-dim); text-align:center; border:1px dashed rgba(255,255,255,0.18); border-radius:10px;">Nenhum personagem encontrado. Crie uma ficha primeiro.</div>`;
+            } else {
+                chars.forEach(char => {
+                    const item = document.createElement('button');
+                    item.type = 'button';
+                    item.className = 'char-select-item';
+                    item.innerHTML = `
+                        <span style="font-weight:700; color:#fff;">${escapeHtml(char.name || 'Sem nome')}</span>
+                        <span style="font-size:0.78rem; color:var(--txt-dim);">Nv ${char.level || 1}</span>
+                    `;
+                    item.onclick = () => {
+                        const success = window.CampaignSystem.addPlayerToCampaign(selectedCampId, char);
+                        if (success) {
+                            showToast('Personagem adicionado a campanha.');
+                            toggleModal('joinModalWrapper', false);
+                            renderCampaigns();
+                            if (window.location.search.includes('join=')) {
+                                window.history.pushState({}, document.title, window.location.pathname);
+                            }
+                            return;
                         }
-                    } else {
-                        showToast("Personagem já está na campanha!");
-                    }
-                };
-                grid.appendChild(d);
-            });
+                        showToast('Esse personagem ja esta na campanha.');
+                    };
+                    grid.appendChild(item);
+                });
+            }
 
             toggleModal('joinModalWrapper', true);
         }
 
+        function escapeHtml(value) {
+            return String(value)
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#39;');
+        }
+
+        function jsString(value) {
+            return String(value).replaceAll('\\', '\\\\').replaceAll("'", "\\'");
+        }
     </script>
 </body>
 

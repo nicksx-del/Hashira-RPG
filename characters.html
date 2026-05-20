@@ -4,20 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meus Personagens | Hashira RPG</title>
+    <title>Personagens | Hashira Handbook</title>
     <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cinzel:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Cinzel:wght@500;700&display=swap"
         rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="css/mobile.css">
     <style>
         :root {
-            --bg-deep: #050505;
-            --accent-human: #00b4d8;
-            --accent-oni: #d90429;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-highlight: rgba(255, 255, 255, 0.1);
+            --bg: #0c0d12;
+            --panel: rgba(18, 20, 29, 0.78);
+            --panel-strong: rgba(24, 28, 40, 0.86);
+            --line: rgba(255, 255, 255, 0.12);
+            --text: #f3f4f7;
+            --muted: #aab0bf;
+            --wisteria: #8b5cf6;
+            --water: #38bdf8;
+            --flame: #fb7185;
+            --gold: #fbbf24;
+            --oni: #ef4444;
+            --slayer: #34d399;
             --font-main: 'Outfit', sans-serif;
             --font-display: 'Cinzel', serif;
         }
@@ -28,567 +34,483 @@
 
         body {
             margin: 0;
-            padding: 0;
-            background: var(--bg-deep);
-            color: #fff;
-            font-family: var(--font-main);
             min-height: 100vh;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        /* --- BACKGROUND FX --- */
-        .bg-fx {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
+            color: var(--text);
+            font-family: var(--font-main);
             background:
-                background: radial-gradient(circle at 50% 120%, #1a0b2e 0%, #000000 70%);
-        }
-        
-        .bg-fx::before {
-             content: '';
-             position: absolute;
-             top:0; left:0; width:100%; height:100%;
-             background-image: url('https://w.wallhaven.cc/full/j3/wallhaven-j3m8y5.jpg'); /* Optional: Subtle texture or nebula image if available, using pure gradient for now */
-             background-size: cover;
-             opacity: 0.2;
-             mix-blend-mode: screen;
+                linear-gradient(115deg, rgba(56, 189, 248, 0.08), transparent 38%),
+                linear-gradient(285deg, rgba(239, 68, 68, 0.08), transparent 34%),
+                linear-gradient(to bottom, #10111a, #0a0b10 55%, #090a0f);
         }
 
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.4;
-            animation: floatOrb 20s infinite ease-in-out;
-        }
-
-        .orb-1 { width: 300px; height: 300px; background: #560bad; top: 10%; left: 20%; animation-delay: 0s; }
-        .orb-2 { width: 400px; height: 400px; background: #00b4d8; bottom: 10%; right: 10%; animation-delay: -5s; }
-        .orb-3 { width: 200px; height: 200px; background: #d90429; top: 40%; left: 60%; opacity: 0.2; animation-delay: -10s; }
-
-        @keyframes floatOrb {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(30px, -50px); }
-        }
-
-        /* --- HEADER --- */
-        header {
-            padding: 2rem 4rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
-            position: relative;
-        }
-
-        .logo {
-            font-family: var(--font-display);
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: 4px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            text-transform: uppercase;
-            background: linear-gradient(to right, #fff, #aaa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(255,255,255,0.2);
-        }
-
-        /* --- MAIN LAYOUT --- */
-        main {
-            padding: 2rem;
+        .scene {
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
+        }
+
+        .topbar {
+            display: flex;
             align-items: center;
-            min-height: calc(100vh - 100px);
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1rem 1.35rem;
+            border-bottom: 1px solid var(--line);
+            background: rgba(7, 8, 13, 0.74);
+            backdrop-filter: blur(8px);
+            position: sticky;
+            top: 0;
+            z-index: 20;
         }
 
-        .page-title {
-            text-align: center;
-            margin-bottom: 3rem;
-            animation: fadeInDown 0.8s ease-out;
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            min-width: 0;
         }
 
-        .page-title h1 {
-            font-family: var(--font-display);
-            font-size: 2.5rem;
+        .back-link {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            display: grid;
+            place-items: center;
+            color: var(--text);
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            min-width: 0;
+        }
+
+        .brand-logo {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .brand-title {
             margin: 0;
-            font-weight: 400;
-            letter-spacing: 2px;
-            color: rgba(255,255,255,0.9);
-        }
-        
-        .page-title p {
-            color: rgba(255,255,255,0.5);
-            margin-top: 10px;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            font-family: var(--font-display);
+            font-size: 1.02rem;
+            letter-spacing: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* --- CHARACTER GRID --- */
-        .char-grid {
+        .top-actions {
             display: flex;
-            justify-content: center;
+            gap: 0.55rem;
             flex-wrap: wrap;
-            gap: 40px;
-            width: 100%;
-            max-width: 1400px;
-            perspective: 2000px;
-            padding-bottom: 80px;
+            justify-content: flex-end;
         }
-        
-        /* --- CARD STYLES --- */
-        .char-card {
-            width: 280px;
-            height: 420px;
-            position: relative;
-            border-radius: 20px;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+        .top-btn {
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text);
+            padding: 0.55rem 0.78rem;
+            font-size: 0.82rem;
+            font-weight: 700;
             cursor: pointer;
-            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .top-btn.primary {
+            border-color: rgba(139, 92, 246, 0.45);
+            background: rgba(139, 92, 246, 0.18);
+        }
+
+        .content {
+            width: min(1240px, 100%);
+            margin: 0 auto;
+            padding: 1.5rem 1.25rem 2rem;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
+            gap: 1rem;
+        }
+
+        .page-head {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: end;
+            justify-content: space-between;
+            gap: 0.8rem;
+        }
+
+        .page-head h1 {
+            margin: 0;
+            font-family: var(--font-display);
+            font-size: clamp(1.6rem, 2.4vw, 2.35rem);
+            line-height: 1.1;
+            letter-spacing: 0;
+        }
+
+        .page-head p {
+            margin: 0.3rem 0 0;
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .slot-count {
+            border: 1px solid rgba(251, 191, 36, 0.45);
+            color: var(--gold);
+            padding: 0.36rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 0.95rem;
+        }
+
+        .char-card {
+            position: relative;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            overflow: hidden;
+            min-height: 360px;
+            background: var(--panel);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+            cursor: pointer;
         }
 
         .char-card:hover {
-            transform: translateY(-15px) scale(1.02);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 0 40px rgba(255,255,255,0.05);
-            border-color: rgba(255,255,255,0.3);
-            z-index: 10;
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.24);
+            box-shadow: 0 18px 34px rgba(0, 0, 0, 0.35);
         }
 
-        /* Card Background Image */
-        .card-bg {
-            position: absolute;
-            inset: 0;
+        .card-art {
+            height: 58%;
             background-size: cover;
-            background-position: center top;
-            opacity: 0.7;
-            transition: 0.6s;
-            filter: grayscale(40%) contrast(1.1);
+            background-position: center 20%;
+            position: relative;
         }
 
-        .char-card:hover .card-bg {
-            opacity: 1;
-            filter: grayscale(0%) contrast(1.1);
-            transform: scale(1.1);
-        }
-        
-        /* Gradient Overlay */
-        .card-overlay {
+        .card-art::after {
+            content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(to top, 
-                #000 0%, 
-                rgba(0,0,0,0.9) 30%, 
-                rgba(0,0,0,0.4) 60%, 
-                rgba(0,0,0,0.1) 100%);
-            z-index: 2;
+            background: linear-gradient(to top, rgba(8, 8, 12, 0.96), rgba(8, 8, 12, 0.2));
         }
 
-        /* Card Content */
-        .card-content {
+        .race-chip,
+        .delete-btn {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 25px;
             z-index: 3;
-            transform: translateY(10px);
-            transition: 0.4s;
-        }
-
-        .char-card:hover .card-content {
-            transform: translateY(0);
-        }
-
-        /* Typography */
-        .char-name {
-            font-family: var(--font-display);
-            font-size: 1.8rem;
-            color: #fff;
-            margin: 0;
-            line-height: 1;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.8);
-            letter-spacing: 1px;
-            margin-bottom: 5px;
-        }
-
-        .char-info {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            margin-bottom: 15px;
-            opacity: 0.8;
-            transition: 0.3s;
-        }
-        
-        .char-card:hover .char-info {
-            opacity: 1;
-        }
-
-        .info-row {
-            display: flex;
+            top: 0.65rem;
+            display: inline-flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-        
-        .rank-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 4px;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            gap: 0.25rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.28rem 0.5rem;
+            font-size: 0.68rem;
+            font-weight: 700;
+            background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(5px);
         }
 
-        /* Play Button (Implicit on card, but visual hint) */
-        .play-hint {
-            height: 0;
-            overflow: hidden;
-            transition: 0.4s;
-            opacity: 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #fff;
-            font-weight: 700;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        
-        .char-card:hover .play-hint {
-            height: 30px;
-            opacity: 1;
-            margin-top: 15px;
+        .race-chip {
+            left: 0.65rem;
         }
 
-        /* Race Indicator */
-        .race-mark {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,255,255,0.2);
-            z-index: 5;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        .delete-btn {
+            right: 0.65rem;
+            color: #fecaca;
+            border-color: rgba(239, 68, 68, 0.4);
+            cursor: pointer;
         }
 
-        /* --- EMPTY SLOT --- */
-        .new-slot {
-            background: rgba(255,255,255,0.02);
-            border: 1px dashed rgba(255,255,255,0.2);
+        .card-body {
+            margin-top: -44px;
+            position: relative;
+            z-index: 2;
+            padding: 0.9rem 0.95rem 1rem;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-        
-        .new-slot:hover {
-            background: rgba(255,255,255,0.05);
-            border-color: var(--accent-human);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 40px rgba(0,180,216,0.1);
+            gap: 0.7rem;
+            flex: 1;
+            background: linear-gradient(to bottom, rgba(16, 17, 24, 0.12), rgba(16, 18, 26, 0.95) 36%);
         }
 
-        .plus-circle {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.2);
+        .char-name {
+            margin: 0;
+            font-family: var(--font-display);
+            font-size: 1.28rem;
+            line-height: 1.05;
+            color: #fff;
+            letter-spacing: 0;
+        }
+
+        .style-row {
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            transition: 0.4s;
-            position: relative;
-        }
-        
-        .plus-circle::before, .plus-circle::after {
-            content: '';
-            position: absolute;
-            inset: -5px;
-            border-radius: 50%;
-            border: 1px solid transparent;
-            transition: 0.4s;
+            gap: 0.4rem;
+            font-size: 0.83rem;
+            color: #d7d9e4;
+            min-height: 24px;
         }
 
-        .new-slot:hover .plus-circle {
-            border-color: #fff;
-            transform: scale(1.1);
-            background: rgba(255,255,255,0.1);
-        }
-        
-        .new-slot:hover .plus-circle::before {
-            border-top-color: var(--accent-human);
-            animation: spin 3s linear infinite;
+        .meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.45rem;
         }
 
-        .new-slot-text {
+        .meta-box {
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 9px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.42rem 0.5rem;
+        }
+
+        .meta-label {
+            color: var(--muted);
+            font-size: 0.67rem;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .meta-value {
+            margin-top: 0.12rem;
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: #f4f5fa;
+        }
+
+        .enter-row {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #e5e7eb;
+            font-size: 0.78rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 0.55rem;
+        }
+
+        .new-slot {
+            min-height: 360px;
+            border: 1px dashed rgba(255, 255, 255, 0.22);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            display: grid;
+            place-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .new-slot:hover {
+            border-color: rgba(139, 92, 246, 0.5);
+            background: rgba(139, 92, 246, 0.12);
+        }
+
+        .new-slot h3 {
+            margin: 0.55rem 0 0.1rem;
             font-family: var(--font-display);
             font-size: 1.2rem;
-            letter-spacing: 2px;
-            color: rgba(255,255,255,0.5);
-            transition: 0.3s;
-        }
-        
-        .new-slot:hover .new-slot-text {
-            color: #fff;
-            letter-spacing: 4px;
         }
 
-        /* --- DELETE BUTTON --- */
-        .delete-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%; /* Circle */
-            background: rgba(0,0,0,0.6);
-            border: 1px solid rgba(255, 90, 90, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #ff6b6b;
-            opacity: 0;
-            transform: scale(0.8);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 20;
-        }
-        
-        .char-card:hover .delete-btn {
-            opacity: 1;
-            transform: scale(1);
-        }
-        
-        .delete-btn:hover {
-            background: #d90429;
-            color: #fff;
-            border-color: #d90429;
-            transform: scale(1.1) rotate(90deg);
+        .new-slot p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.84rem;
         }
 
-        /* --- BACK BUTTON --- */
-        .back-nav {
-            position: absolute;
-            top: 40px;
-            left: 60px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: rgba(255,255,255,0.5);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: 0.3s;
-            z-index: 100;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 10px 20px;
-            border-radius: 30px;
-            border: 1px solid transparent;
-        }
-        
-        .back-nav:hover {
-            color: #fff;
-            background: rgba(255,255,255,0.05);
-            border-color: rgba(255,255,255,0.1);
+        .loading {
+            border: 1px dashed var(--line);
+            border-radius: 12px;
+            padding: 1rem;
+            color: var(--muted);
+            text-align: center;
+            font-size: 0.88rem;
         }
 
-        /* --- ANIMATIONS --- */
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes popIn {
-            from { opacity: 0; transform: scale(0.9) translateY(40px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        
-        @keyframes spin {
-             from { transform: rotate(0deg); }
-             to { transform: rotate(360deg); }
-        }
+        @media (max-width: 860px) {
+            .topbar {
+                padding: 0.9rem 0.95rem;
+            }
 
-        /* --- MOBILE --- */
-        @media (max-width: 768px) {
-            header { padding: 1rem; }
-            .back-nav { top: 20px; left: 20px; width: 40px; height: 40px; justify-content: center; padding: 0; }
-            .back-nav span { display: none; }
-            .logo { font-size: 1.5rem; }
-            .main { padding: 1rem; }
-            
-            .char-grid {
-                flex-direction: column;
-                align-items: center;
-                gap: 20px;
+            .content {
+                padding: 1.1rem 0.9rem 1.4rem;
             }
-            .char-card {
-                width: 100%;
-                max-width: 340px;
-                height: 180px; /* Horizontal Card on Mobile */
-                flex-direction: row;
+
+            .grid {
+                grid-template-columns: 1fr;
             }
-            
-            /* Mobile Mobile Adjustments */
-            .char-card .card-bg { opacity: 0.5; }
-            .char-card .card-content {
-                transform: translateY(0);
-                background: linear-gradient(to right, rgba(0,0,0,0.9) 30%, transparent 100%);
-                width: 100%;
-                height: 100%;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: flex-start;
-                padding-left: 25px;
+
+            .char-card,
+            .new-slot {
+                min-height: 300px;
             }
-            
-            .char-card:hover { transform: scale(1.02); }
-            
-            .play-hint { margin-top: 10px; height: auto; opacity: 1; font-size: 0.8rem; }
-            
-            .delete-btn {
-                opacity: 1;
-                transform: scale(1);
-                right: 15px; left: auto; top: 15px; 
-            }
-            
-            .new-slot { height: 120px; flex-direction: row; gap: 20px; }
-            .plus-circle { width: 50px; height: 50px; margin-bottom: 0; }
-            .new-slot-text { font-size: 1rem; }
         }
     </style>
 </head>
 
 <body>
-
-    <div class="bg-fx">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-    </div>
-
-    <!-- Back Button -->
-    <a href="index.html" class="back-nav">
-        <i data-lucide="arrow-left" size="20"></i>
-        <span>Voltar</span>
-    </a>
-
-    <header>
-        <div class="logo">
-            <i data-lucide="sword" color="#fff"></i>
-            HASHIRA RPG
-        </div>
-    </header>
-
-    <main>
-        <div class="page-title">
-            <h1>Selecione seu Personagem</h1>
-            <p>Sua jornada começa aqui</p>
-        </div>
-
-        <div class="char-grid" id="charGrid">
-            <!-- JS Injection -->
-            
-            <!-- Static Loading Fallback -->
-            <div style="width:100%; text-align:center; opacity:0.5;">
-                Carregando almas...
+    <div class="scene">
+        <header class="topbar">
+            <div class="topbar-left">
+                <a href="index.html" class="back-link" aria-label="Voltar ao inicio">
+                    <i data-lucide="arrow-left" size="18"></i>
+                </a>
+                <div class="brand">
+                    <img src="assets/hashira-logo.png" class="brand-logo" alt="Hashira Handbook">
+                    <h2 class="brand-title">Hashira Handbook</h2>
+                </div>
             </div>
-            
-        </div>
-        
-        <!-- Debug/Reset (Subtle) -->
-         <div style="margin-top: auto; opacity: 0.2; font-size: 0.8rem; cursor: pointer;" onclick="clearData()">
-            Resetar Dados
-        </div>
-    </main>
+            <div class="top-actions">
+                <button class="top-btn primary" type="button" onclick="window.location.href='create-character.html'">
+                    <i data-lucide="user-plus" size="15"></i> Novo Cacador
+                </button>
+                <button class="top-btn" type="button" onclick="clearData()">
+                    <i data-lucide="trash-2" size="15"></i> Limpar Slots
+                </button>
+            </div>
+        </header>
+
+        <main class="content">
+            <section class="page-head">
+                <div>
+                    <h1>Selecione Seu Personagem</h1>
+                    <p>Escolha sua ficha ativa e continue sua campanha.</p>
+                </div>
+                <div class="slot-count" id="slotCount">0 / 5 slots</div>
+            </section>
+
+            <section class="grid" id="charGrid">
+                <div class="loading">Carregando personagens...</div>
+            </section>
+        </main>
+    </div>
 
     <script src="js/auth_system.js"></script>
     <script>
-        // Check Authentication First
         (function checkAuth() {
             if (typeof AuthSystem !== 'undefined') {
                 AuthSystem.requireAuth();
-            } else {
-                // Fallback if script load fails (shouldn't happen)
-                if (!localStorage.getItem('demonSlayerSession')) {
-                    window.location.href = 'login.html';
-                }
+            } else if (!localStorage.getItem('demonSlayerSession')) {
+                window.location.href = 'login.html';
             }
         })();
 
-        // DATA MIGRATION & STANDARDIZATION
+        const MAX_SLOTS = 5;
+
         function migrateData() {
-            // 1. Migrate single char 'demonSlayerChar' -> 'demonSlayerSaveSlots' if slots empty
             let slots = JSON.parse(localStorage.getItem('demonSlayerSaveSlots') || '[]');
             const single = localStorage.getItem('demonSlayerChar');
 
             if (slots.length === 0 && single) {
                 try {
                     const char = JSON.parse(single);
-                    if (char.name) {
+                    if (char && char.name) {
                         slots.push(char);
                         localStorage.setItem('demonSlayerSaveSlots', JSON.stringify(slots));
                     }
                 } catch (e) { }
             }
 
-            // 2. Migrate 'demonSlayerAllChars' (old array) -> 'demonSlayerSaveSlots'
-            // If we have 'demonSlayerAllChars' and it has data, merge it or supersede if slots uses it
             const oldArr = localStorage.getItem('demonSlayerAllChars');
             if (oldArr) {
                 try {
                     const oldList = JSON.parse(oldArr);
-                    if (oldList.length > 0) {
-                        // Merge unique chars mainly
-                        oldList.forEach(c => {
-                            if (!slots.find(s => s.id === c.id || s.name === c.name)) {
+                    if (Array.isArray(oldList) && oldList.length) {
+                        oldList.forEach((c) => {
+                            if (!slots.find((s) => s.id === c.id || s.name === c.name)) {
                                 slots.push(c);
                             }
                         });
                         localStorage.setItem('demonSlayerSaveSlots', JSON.stringify(slots));
                     }
-                    // Remove old key to prevent confusion
                     localStorage.removeItem('demonSlayerAllChars');
                 } catch (e) { }
             }
         }
 
+        function getRank(levelValue) {
+            const level = parseInt(levelValue || 1, 10);
+            if (level <= 1) return "Mizunoto";
+            if (level <= 3) return "Mizunoe";
+            if (level <= 5) return "Kanoto";
+            if (level <= 7) return "Kanoe";
+            if (level <= 9) return "Tsuchinoto";
+            if (level <= 11) return "Tsuchinoe";
+            if (level <= 13) return "Hinoto";
+            if (level <= 16) return "Hinoe";
+            if (level <= 19) return "Kinoe";
+            return "Hashira";
+        }
+
+        function getStyleInfo(char) {
+            const isOni = char.race === 'Oni';
+            if (isOni) {
+                return {
+                    name: char.kekkijutsu || 'Arte de Sangue',
+                    icon: 'moon-star',
+                    color: '#ef4444'
+                };
+            }
+
+            const rawStyle = typeof char.breathingStyle === 'object' && char.breathingStyle
+                ? char.breathingStyle.id || char.breathingStyle.name
+                : char.breathingStyle;
+
+            const map = {
+                water: { name: 'Respiracao da Agua', icon: 'droplets', color: '#38bdf8' },
+                thunder: { name: 'Respiracao do Trovao', icon: 'zap', color: '#facc15' },
+                flame: { name: 'Respiracao das Chamas', icon: 'flame', color: '#fb7185' },
+                wind: { name: 'Respiracao do Vento', icon: 'wind', color: '#34d399' },
+                beast: { name: 'Respiracao da Fera', icon: 'paw-print', color: '#a1a1aa' },
+                stone: { name: 'Respiracao da Pedra', icon: 'mountain', color: '#d6d3d1' },
+                serpent: { name: 'Respiracao da Serpente', icon: 'waves', color: '#86efac' },
+                flower: { name: 'Respiracao das Flores', icon: 'flower-2', color: '#f9a8d4' }
+            };
+
+            if (rawStyle && map[String(rawStyle).toLowerCase()]) {
+                return map[String(rawStyle).toLowerCase()];
+            }
+
+            if (typeof char.breathingStyle === 'object' && char.breathingStyle && char.breathingStyle.name) {
+                return { name: char.breathingStyle.name, icon: 'swords', color: '#38bdf8' };
+            }
+
+            return { name: 'Sem Respiracao', icon: 'swords', color: '#aab0bf' };
+        }
+
+        function getCardImage(char) {
+            if (char.avatar) return char.avatar;
+            if (char.portrait) return char.portrait;
+            return char.race === 'Oni' ? 'assets/NezukoKamado.png' : 'assets/Tanjirou_manga.png';
+        }
+
+        function readVital(char, keyA, keyB, fallback) {
+            const value = Number(char[keyA] ?? char[keyB] ?? fallback);
+            return Number.isFinite(value) ? value : fallback;
+        }
+
         function renderChars() {
             migrateData();
-
-            // Single Source of Truth: 'demonSlayerSaveSlots'
             let list = [];
             try {
                 list = JSON.parse(localStorage.getItem('demonSlayerSaveSlots') || '[]');
@@ -596,149 +518,96 @@
                 list = [];
             }
 
+            const slots = list.slice(0, MAX_SLOTS);
             const grid = document.getElementById('charGrid');
+            const slotCount = document.getElementById('slotCount');
+            slotCount.textContent = `${slots.length} / ${MAX_SLOTS} slots`;
             grid.innerHTML = '';
 
-            // Rank Helper
-            const getRank = (lvl) => {
-                const l = parseInt(lvl);
-                if (l <= 1) return "Mizunoto";
-                if (l <= 3) return "Mizunoe";
-                if (l <= 5) return "Kanoto";
-                if (l <= 7) return "Kanoe";
-                if (l <= 9) return "Tsuchinoto";
-                if (l <= 11) return "Tsuchinoe";
-                if (l <= 13) return "Hinoto";
-                if (l <= 16) return "Hinoe";
-                if (l <= 19) return "Kinoe";
-                return "Hashira";
-            };
-
-            // RENDER 5 SLOTS
-            const MAX_SLOTS = 5;
-            
-            // Animation Stagger Delay
-            let delay = 0.1;
-
-            for (let i = 0; i < MAX_SLOTS; i++) {
-                const char = list[i]; // May be undefined
-
-                if (char) {
-                    // --- FILLED SLOT ---
-                    const el = document.createElement('div');
-                    const isOni = char.race === 'Oni';
-                    el.className = `char-card ${isOni ? 'oni-theme' : 'human-theme'}`;
-                    el.style.animationDelay = `${delay}s`;
-                    delay += 0.1;
-
-                    // Colors
-                    const accentColor = isOni ? '#d90429' : '#00b4d8';
-
-                    // Image Logic
-                    let bgUrl = isOni
-                        ? 'https://images5.alphacoders.com/109/1099896.jpg'
-                        : 'https://images2.alphacoders.com/100/1009137.jpg';
-
-                    if (char.avatar) {
-                        bgUrl = char.avatar;
-                    }
-
-                    const raceLabel = isOni ? 'ONI' : 'SLAYER';
-                    const raceIcon = isOni ? 'ghost' : 'sword';
-
-                    // Style Name Logic
-                    let styleName = 'Semeador';
-                    let styleIcon = 'zap'; // default lucide icon
-
-                    if (!isOni) {
-                        if (char.breathingStyle) {
-                            if (typeof char.breathingStyle === 'object' && char.breathingStyle.name) {
-                                styleName = char.breathingStyle.name;
-                            } else if (typeof char.breathingStyle === 'string') {
-                                const styleMap = {
-                                    'water': "Água",
-                                    'thunder': "Trovão",
-                                    'beast': "Fera",
-                                    'flame': "Chamas",
-                                    'wind': "Vento",
-                                    'moon': "Lua",
-                                    'sun': "Sol"
-                                };
-                                styleName = styleMap[char.breathingStyle] || char.breathingStyle;
-                            }
-                        }
-                        // Simple icon mapping
-                        const sLower = styleName.toLowerCase();
-                        if (sLower.includes('água')) styleIcon = 'droplets';
-                        else if (sLower.includes('fogo') || sLower.includes('chama')) styleIcon = 'flame';
-                        else if (sLower.includes('vento')) styleIcon = 'wind';
-                        else if (sLower.includes('pedra')) styleIcon = 'mountain';
-                        else if (sLower.includes('fera')) styleIcon = 'paw-print';
-                        else if (sLower.includes('trovão')) styleIcon = 'zap';
-                    } else {
-                        styleName = char.kekkijutsu || 'Arte de Sangue';
-                        styleIcon = 'skull';
-                    }
-
-                    const rankName = getRank(char.level);
-
-                    el.innerHTML = `
-                        <div class="card-bg" style="background-image: url('${bgUrl}')"></div>
-                        <div class="card-overlay"></div>
-                        
-                        <div class="race-mark" title="${raceLabel}">
-                            <i data-lucide="${raceIcon}" size="16" color="${accentColor}"></i>
-                        </div>
-                        
-                        <div class="delete-btn" onclick="event.stopPropagation(); deleteChar(${i});" title="Apagar Personagem">
-                            <i data-lucide="trash-2" size="16"></i>
-                        </div>
-
-                        <div class="card-content">
-                            <h2 class="char-name">${char.name}</h2>
-                            
-                            <div class="char-info">
-                                <div class="info-row" style="color:${accentColor}">
-                                    <i data-lucide="${styleIcon}" size="14"></i>
-                                    <span>${styleName}</span>
-                                </div>
-                                <div class="info-row">
-                                    <span class="rank-badge">${rankName}</span>
-                                    <span style="opacity:0.6; font-size:0.8rem;">Nv. ${char.level}</span>
-                                </div>
-                            </div>
-                            
-                            <div class="play-hint" style="color: ${accentColor}">
-                                <span>Entrar</span> <i data-lucide="arrow-right" size="16"></i>
-                            </div>
-                        </div>
-                    `;
-
-                    el.onclick = () => selectChar(i);
-                    grid.appendChild(el);
-
-                } else {
-                    // --- EMPTY SLOT ---
-                    const newSlot = document.createElement('div');
-                    newSlot.className = 'char-card new-slot';
-                    newSlot.style.animationDelay = `${delay}s`;
-                    delay += 0.1;
-                    
+            for (let i = 0; i < MAX_SLOTS; i += 1) {
+                const char = slots[i];
+                if (!char) {
+                    const newSlot = document.createElement('article');
+                    newSlot.className = 'new-slot';
+                    newSlot.setAttribute('role', 'button');
+                    newSlot.tabIndex = 0;
                     newSlot.onclick = () => window.location.href = 'create-character.html';
-                    
+                    newSlot.onkeydown = (event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            window.location.href = 'create-character.html';
+                        }
+                    };
                     newSlot.innerHTML = `
-                        <div class="plus-circle">
-                            <i data-lucide="plus" size="32" color="#fff" style="opacity:0.7;"></i>
+                        <div>
+                            <i data-lucide="plus-circle" size="42"></i>
+                            <h3>Novo Personagem</h3>
+                            <p>Forjar nova ficha</p>
                         </div>
-                        <div class="new-slot-text">NOVO</div>
-                        <div style="font-size:0.8rem; opacity:0.4; margin-top:5px; text-transform:uppercase; letter-spacing:1px;">Criar Personagem</div>
                     `;
-
                     grid.appendChild(newSlot);
+                    continue;
                 }
+
+                const isOni = char.race === 'Oni';
+                const accent = isOni ? 'var(--oni)' : 'var(--slayer)';
+                const raceLabel = isOni ? 'ONI' : 'CACADOR';
+                const raceIcon = isOni ? 'ghost' : 'sword';
+                const style = getStyleInfo(char);
+                const hp = readVital(char, 'currentHP', 'hp', 10);
+                const pe = readVital(char, 'pe', 'manualMaxPE', 1);
+                const maxHP = readVital(char, 'manualMaxHP', 'hp', hp);
+                const maxPE = readVital(char, 'manualMaxPE', 'pe', pe);
+
+                const card = document.createElement('article');
+                card.className = 'char-card';
+                card.style.setProperty('--accent-local', accent);
+                card.onclick = () => selectChar(i);
+                card.innerHTML = `
+                    <div class="card-art" style="background-image:url('${getCardImage(char)}')">
+                        <span class="race-chip" style="color:${accent}">
+                            <i data-lucide="${raceIcon}" size="12"></i> ${raceLabel}
+                        </span>
+                        <button class="delete-btn" type="button" title="Apagar personagem" onclick="event.stopPropagation(); deleteChar(${i});">
+                            <i data-lucide="trash-2" size="13"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="char-name">${char.name || 'Sem Nome'}</h3>
+                        <div class="style-row" style="color:${style.color}">
+                            <i data-lucide="${style.icon}" size="14"></i>
+                            <span>${style.name}</span>
+                        </div>
+                        <div class="meta-grid">
+                            <div class="meta-box">
+                                <div class="meta-label">Rank</div>
+                                <div class="meta-value">${getRank(char.level)}</div>
+                            </div>
+                            <div class="meta-box">
+                                <div class="meta-label">Nivel</div>
+                                <div class="meta-value">${Number(char.level || 1)}</div>
+                            </div>
+                            <div class="meta-box">
+                                <div class="meta-label">HP</div>
+                                <div class="meta-value">${hp}/${maxHP}</div>
+                            </div>
+                            <div class="meta-box">
+                                <div class="meta-label">PE</div>
+                                <div class="meta-value">${pe}/${maxPE}</div>
+                            </div>
+                        </div>
+                        <div class="enter-row">
+                            <span>Entrar na ficha</span>
+                            <i data-lucide="arrow-right" size="14"></i>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
             }
 
-            lucide.createIcons();
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons();
+            }
         }
 
         function selectChar(index) {
@@ -746,19 +615,12 @@
             const char = list[index];
             if (!char) return;
 
-            // Set as active
             localStorage.setItem('demonSlayerChar', JSON.stringify(char));
-
-            // Redirect based on race
-            if (char.race === 'Oni') {
-                window.location.href = 'oni-dashboard.html';
-            } else {
-                window.location.href = 'dashboard.html';
-            }
+            window.location.href = char.race === 'Oni' ? 'oni-dashboard.html' : 'dashboard.html';
         }
 
         function deleteChar(index) {
-            if (!confirm('Deseja realmente apagar este personagem? Esta ação é irreversível.')) return;
+            if (!confirm('Deseja realmente apagar este personagem? Essa acao e irreversivel.')) return;
             const list = JSON.parse(localStorage.getItem('demonSlayerSaveSlots') || '[]');
             list.splice(index, 1);
             localStorage.setItem('demonSlayerSaveSlots', JSON.stringify(list));
@@ -766,14 +628,17 @@
         }
 
         function clearData() {
-            if (confirm('ATENÇÃO: Isso apagará TODOS os seus personagens salvos. Continuar?')) {
-                localStorage.removeItem('demonSlayerSaveSlots');
-                localStorage.removeItem('demonSlayerChar');
-                renderChars();
-            }
+            if (!confirm('Isso vai apagar todos os slots salvos. Continuar?')) return;
+            localStorage.removeItem('demonSlayerSaveSlots');
+            localStorage.removeItem('demonSlayerChar');
+            renderChars();
         }
 
-        window.onload = renderChars;
+        window.clearData = clearData;
+        window.selectChar = selectChar;
+        window.deleteChar = deleteChar;
+
+        window.addEventListener('DOMContentLoaded', renderChars);
     </script>
 </body>
 

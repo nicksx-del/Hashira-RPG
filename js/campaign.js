@@ -4,6 +4,23 @@
  */
 
 const CAMP_KEY = 'demonSlayerCampaigns';
+const DEFAULT_CAMP_THEME = 'wisteria';
+const CAMP_THEMES = ['wisteria', 'agua', 'chama', 'trovao', 'vento'];
+
+function inferCampaignTheme(seed) {
+    const source = String(seed || Date.now());
+    let hash = 0;
+    for (let i = 0; i < source.length; i += 1) {
+        hash = source.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return CAMP_THEMES[Math.abs(hash) % CAMP_THEMES.length];
+}
+
+function normalizeCampaignTheme(theme, seed) {
+    if (CAMP_THEMES.includes(theme)) return theme;
+    if (seed) return inferCampaignTheme(seed);
+    return DEFAULT_CAMP_THEME;
+}
 
 window.CampaignSystem = {
     // --- DATA ---
@@ -11,7 +28,27 @@ window.CampaignSystem = {
         const raw = localStorage.getItem(CAMP_KEY);
         if (!raw) return [];
         try {
-            return JSON.parse(raw);
+            const parsed = JSON.parse(raw);
+            if (!Array.isArray(parsed)) return [];
+
+            let changed = false;
+            const normalized = parsed
+                .filter(c => c && typeof c === 'object')
+                .map(camp => {
+                    const nextTheme = normalizeCampaignTheme(camp.theme, camp.id);
+                    if (camp.theme !== nextTheme) {
+                        changed = true;
+                        return { ...camp, theme: nextTheme };
+                    }
+                    return camp;
+                });
+
+            if (normalized.length !== parsed.length) changed = true;
+            if (changed) {
+                localStorage.setItem(CAMP_KEY, JSON.stringify(normalized));
+            }
+
+            return normalized;
         } catch (e) {
             console.error("Corrupted campaign data:", e);
             return [];
@@ -27,12 +64,13 @@ window.CampaignSystem = {
         return list.find(c => c.id === id);
     },
 
-    createCampaign: function (name, dmName) {
+    createCampaign: function (name, dmName, theme) {
         const list = this.getCampaigns();
         const newCamp = {
             id: 'camp_' + Date.now(),
             name: name || "Nova Campanha",
             dmName: dmName || "Mestre",
+            theme: normalizeCampaignTheme(theme),
             createdAt: new Date().toISOString(),
             players: [],
             monsters: [],
